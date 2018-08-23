@@ -11,6 +11,7 @@
         "Topic :: Scientific/Engineering :: Chemistry",
         "Topic :: Scientific/Engineering :: Physics"
     ],
+    "version": "0.1.0a0",
     "entry_points": {
         "aiida.data": [
             "crystal17 = aiida_crystal17.data:DiffParameters"
