@@ -1,9 +1,9 @@
 {
-    "name": "aiida-plugin-template",
+    "name": "aiida-crystal17",
     "author": "Rico Haeuselmann, Leopold Talirz",
     "author_email": "haeuselm@epfl.ch",
     "description": "AiiDA plugin template for testing and getting started with development",
-    "url": "https://github.com/aiidateam/aiida-plugin-template",
+    "url": "https://github.com/aiidateam/aiida-crystal17",
     "license": "Creative Commons",
     "classifiers": [
         "Programming Language :: Python"
@@ -11,16 +11,16 @@
     "version": "0.2.0",
     "entry_points": {
         "aiida.calculations": [
-            "template.multiply = aiida_plugin_template.calculations.multiply:MultiplyCalculation"
+            "crystal17.multiply = aiida_crystal17.calculations.multiply:MultiplyCalculation"
         ],
         "aiida.parsers": [
-            "template.product = aiida_plugin_template.parsers.multiply:MultiplyParser"
+            "crystal17.product = aiida_crystal17.parsers.multiply:MultiplyParser"
         ],
         "aiida.data": [
-            "template.factors = aiida_plugin_template.data.multiply:MultiplyParameters"
+            "crystal17.factors = aiida_crystal17.data.multiply:MultiplyParameters"
         ],
         "aiida.cmdline.data": [
-            "template.factors = aiida_plugin_template.data.data_cli:cli"
+            "crystal17.factors = aiida_crystal17.data.data_cli:cli"
         ]
     },
     "scripts": ["examples/cli.py"],

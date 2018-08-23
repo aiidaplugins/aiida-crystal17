@@ -8,7 +8,7 @@ Note: This script assumes you have set up computer and code as in README.md.
 import os
 
 # use code name specified using 'verdi code setup'
-code = Code.get_from_string('aiida_plugin_template')
+code = Code.get_from_string('aiida_crystal17')
 
 # use computer name specified using 'verdi computer setup'
 computer = Computer.get('localhost')
@@ -19,8 +19,8 @@ parameters = MultiplyParameters(x1=2, x2=3)
 
 # set up calculation
 calc = code.new_calc()
-calc.label = "aiida_plugin_template computes 2*3"
-calc.description = "Test job submission with the aiida_plugin_template plugin"
+calc.label = "aiida_crystal17 computes 2*3"
+calc.description = "Test job submission with the aiida_crystal17 plugin"
 calc.set_max_wallclock_seconds(30 * 60)  # 30 min
 # This line is only needed for local codes, otherwise the computer is
 # automatically set from the code

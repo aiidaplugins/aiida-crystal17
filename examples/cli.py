@@ -31,8 +31,8 @@ def main(codename, computer_name, submit):
 
     # set up calculation
     calc = code.new_calc()
-    calc.label = "aiida_plugin_template computes 2*3"
-    calc.description = "Test job submission with the aiida_plugin_template plugin"
+    calc.label = "aiida_crystal17 computes 2*3"
+    calc.description = "Test job submission with the aiida_crystal17 plugin"
     calc.set_max_wallclock_seconds(30 * 60)  # 30 min
     # This line is only needed for local codes, otherwise the computer is
     # automatically set from the code

@@ -1,4 +1,4 @@
-# aiida-plugin-template
+# aiida-crystal17
 
 AiiDA plugin template for testing and gettings started with development
 
@@ -7,7 +7,7 @@ AiiDA plugin template for testing and gettings started with development
 * includes a basic regression test (submitting a calculation)
 * comes with [Travis CI](https://travis-ci.org) configuration - just enable it to run tests at every commit
 * pre-commit hook configuration to sanitize format and check for syntax errors (enable by `pre-commit install`)
-* documentation ready for [Read the Docs](http://aiida-plugin-template.readthedocs.io/en/latest/)
+* documentation ready for [Read the Docs](http://aiida-crystal17.readthedocs.io/en/latest/)
 * listed on the [AiiDA plugin registry](http://aiidateam.github.io/aiida-registry)
 
 Please see the 
@@ -17,8 +17,8 @@ for step-by-step instructions on how to develop your new AiiDA plugin using this
 # Installation
 
 ```shell
-git clone https://github.com/aiidateam/aiida-plugin-template aiida-plugin-template
-cd aiida-plugin-template
+git clone https://github.com/aiidateam/aiida-crystal17 aiida-crystal17
+cd aiida-crystal17
 pip install -e .  # also installs aiida, if missing (but not postgres)
 #pip install -e .[precommit,testing] # install extras for more features
 reentry scan -r aiida  
@@ -73,11 +73,11 @@ There are no special keys to be configured. Configuration completed.
 $ verdi code setup  # set up (local) code
 At any prompt, type ? to get some help.
 ---------------------------------------
-=> Label: aiida_plugin_template
+=> Label: aiida_crystal17
 => Description: aiida template plugin
 => Local: True
 => Default input plugin: template.multiply
-=> Folder with the code: /your/path/to/aiida_plugin_template
+=> Folder with the code: /your/path/to/aiida_crystal17
 => Relative path of the executable: code.py
 => Text to prepend to each command execution
 FOR INSTANCE, MODULES TO BE LOADED FOR THIS CODE:
@@ -94,7 +94,7 @@ FOR INSTANCE, MODULES TO BE LOADED FOR THIS CODE:
    # End of old input. You can keep adding
    # lines, or press CTRL+D to store this value
    # ------------------------------------------
-Code 'aiida_plugin_template' successfully stored in DB.
+Code 'aiida_crystal17' successfully stored in DB.
 pk: 1, uuid: 7627c747-b7f2-4717-b0fa-94e53915e422
 
 $ verdi run examples/submit.py
@@ -126,12 +126,12 @@ $ verdi calculation show 3
 type         MultiplyCalculation
 pk           23
 uuid         6d4b774a-7de7-485a-82b7-6a36b4a60db8
-label        aiida_plugin_template computes 2*3
-description  Test job submission with the aiida_plugin_template plugin
+label        aiida_crystal17 computes 2*3
+description  Test job submission with the aiida_crystal17 plugin
 ctime        2017-09-27 13:50:14.133219+00:00
 mtime        2017-09-27 13:52:35.683063+00:00
 computer     [1] localhost
-code         aiida_plugin_template
+code         aiida_crystal17
 -----------  --------------------------------------------------
 ##### INPUTS:
 Link label      PK  Type
