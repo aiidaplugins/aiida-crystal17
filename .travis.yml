@@ -20,5 +20,5 @@ env:
 - TEST_AIIDA_BACKEND=sqlalchemy
 
 script:
-- python -m unittest discover
+- pytest -v --doctest-modules --ignore=setup.py
 - python .travis-data/check_version.py
