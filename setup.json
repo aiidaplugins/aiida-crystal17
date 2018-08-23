@@ -1,14 +1,16 @@
 {
     "name": "aiida-crystal17",
-    "author": "Rico Haeuselmann, Leopold Talirz",
-    "author_email": "haeuselm@epfl.ch",
-    "description": "AiiDA plugin template for testing and getting started with development",
-    "url": "https://github.com/aiidateam/aiida-crystal17",
-    "license": "Creative Commons",
+    "author": "Chris Sewell",
+    "author_email": "chrisj_sewell@hotmail.com",
+    "description": "AiiDA plugin for running the CRYSTAL17 code",
+    "url": "https://github.com/chrisjsewell/aiida-crystal17",
+    "license": "MIT",
     "classifiers": [
-        "Programming Language :: Python"
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Topic :: Scientific/Engineering :: Chemistry",
+        "Topic :: Scientific/Engineering :: Physics"
     ],
-    "version": "0.2.0",
     "entry_points": {
         "aiida.calculations": [
             "crystal17.multiply = aiida_crystal17.calculations.multiply:MultiplyCalculation"
@@ -27,7 +29,7 @@
     "setup_requires": ["reentry"],
     "reentry_register": true,
     "install_requires": [
-        "aiida >= 0.11.0"
+        "aiida >= 0.12.0"
     ],
     "extras_require": {
         "testing": [
