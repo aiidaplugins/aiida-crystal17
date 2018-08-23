@@ -19,6 +19,9 @@ env:
 - TEST_AIIDA_BACKEND=django
 - TEST_AIIDA_BACKEND=sqlalchemy
 
+before_script:
+- reentry scan
+
 script:
 - pytest -v --doctest-modules --ignore=setup.py
 - python .travis-data/check_version.py
