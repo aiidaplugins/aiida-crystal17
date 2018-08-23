@@ -5,26 +5,26 @@ from aiida.cmdline.dbenv_lazyloading import load_dbenv_if_not_loaded
 
 
 # See aiida.cmdline.data entry point in setup.json
-@data_cmd.group('template.factors')
+@data_cmd.group('crystal17')
 def cli():
-    """Command line interface for template plugin"""
+    """Command line interface for aiida-crystal17"""
     pass
 
 
 @cli.command('list')
 def list_():  # pylint: disable=redefined-builtin
     """
-    Display all MultiplyParameters nodes
+    Display all DiffParameters nodes
     """
     load_dbenv_if_not_loaded(
     )  # Important to load the dbenv in the last moment
 
     from aiida.orm.querybuilder import QueryBuilder
     from aiida.orm import DataFactory
-    MultiplyParameters = DataFactory('template.factors')
+    DiffParameters = DataFactory('crystal17')
 
     qb = QueryBuilder()
-    qb.append(MultiplyParameters)
+    qb.append(DiffParameters)
     results = qb.all()
 
     s = ""
@@ -42,7 +42,7 @@ def list_():  # pylint: disable=redefined-builtin
     help='Write output to file (default: print to stdout).')
 @click.argument('pk', type=int)
 def export(outfile, pk):
-    """Export a MultiplyParameters node, identified by PK, to plain text"""
+    """Export a DiffParameters node, identified by PK, to plain text"""
     load_dbenv_if_not_loaded(
     )  # Important to load the dbenv in the last moment
 

@@ -9,8 +9,9 @@ if __name__ == '__main__':
     # such that it can be discovered automatically
     with open('setup.json', 'r') as info:
         kwargs = json.load(info)
-    kwargs["version"] = import_module('aiida_crystal17').__version__
     setup(
         packages=find_packages(),
-        **kwargs
-    )
+        version=import_module('aiida_crystal17').__version__,
+        long_description=open('README.md').read(),
+        long_description_content_type='text/markdown',
+        **kwargs)

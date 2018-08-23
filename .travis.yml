@@ -8,30 +8,17 @@ services:
 - postgresql
 
 addons:
-  postgresql: "9.4"
-  #postgresql: "9.5" # Available in Trusty only
-  apt:
-    packages:
-    - texlive-base
-    - texlive-generic-recommended
-    - texlive-fonts-recommended
-    - texlive-latex-base
-    - texlive-latex-recommended
-    - texlive-latex-extra
-    - dvipng
-    - dvidvi
+  postgresql: "9.5"
 
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
 - pip install .[precommit,testing]
-- reentry scan -r aiida
 
 env:
 - TEST_AIIDA_BACKEND=django
 - TEST_AIIDA_BACKEND=sqlalchemy
 
-script: .travis-data/script.sh
-
-git:
-  depth: 3
+script:
+- python -m unittest discover
+- python .travis-data/check_version.py

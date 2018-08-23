@@ -1,22 +1,21 @@
-#####################################
-`AiiDA`_ plugin aiida-plugin-template
-#####################################
-
 .. figure:: images/AiiDA_transparent_logo.png
     :width: 250px
     :align: center
-    :height: 100px
 
-.. _AiiDA: http://www.aiida.net
+The aiida-crystal17 plugin for `AiiDA`_
+=====================================================
 
-Welcome to the example documentation of the AiiDA plugin ``aiida-plugin-template``
-==================================================================================
+``aiida-crystal17`` is available at http://github.com/chrisjsewell/aiida-crystal17
 
-The plugin is available at http://github.com/aiidateam/aiida-plugin-template
+.. toctree::
+   :maxdepth: 2
+
+   user_guide/index
+   module_guide/index
 
 If you use this plugin for your research, please cite the following work:
 
-.. highlights:: Chris Sewell, *Paper title*, Jornal Name XXX, YYYY (Year).
+.. highlights:: Author Name1, Author Name2, *Paper title*, Jornal Name XXX, YYYY (Year).
 
 If you use AiiDA for your research, please cite the following work:
 
@@ -25,21 +24,6 @@ If you use AiiDA for your research, please cite the following work:
   for computational science*, Comp. Mat. Sci 111, 218-230 (2016);
   http://dx.doi.org/10.1016/j.commatsci.2015.09.013; http://www.aiida.net.
 
-User's guide
-++++++++++++
-
-.. toctree::
-   :maxdepth: 4
-
-   user_guide/index
-
-Modules provided with aiida-plugin-template (API reference)
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. toctree::
-   :maxdepth: 4
-
-   module_guide/index
 
 Indices and tables
 ==================
@@ -47,4 +31,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _AiiDA: http://www.aiida.net
 

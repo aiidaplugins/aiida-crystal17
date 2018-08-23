@@ -1,86 +1,41 @@
 """ Tests for calculations
 
 """
-import os
-import tempfile
-
+import aiida_crystal17.tests as tests
 from aiida.utils.fixtures import PluginTestCase
-from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
+import os
 
 
-def get_backend():
-    if os.environ.get('TEST_AIIDA_BACKEND') == BACKEND_SQLA:
-        return BACKEND_SQLA
-    return BACKEND_DJANGO
-
-
-class TestMultiply(PluginTestCase):
-
-    # load the backend to be tested from the environment variable:
-    # TEST_AIIDA_BACKEND=django python -m unittest discover
-    # TEST_AIIDA_BACKEND=sqlalchemy python -m unittest discover
-    BACKEND = get_backend()
-
-    def get_localhost(self):
-        """Setup localhost computer"""
-        from aiida.orm import Computer
-        computer = Computer(
-            name='localhost',
-            description='my computer',
-            hostname='localhost',
-            workdir=tempfile.mkdtemp(),
-            transport_type='local',
-            scheduler_type='direct',
-            enabled_state=True)
-        return computer
-
-    def get_code(self):
-        """Setup code on localhost computer"""
-        from aiida.orm import Code
-
-        script_dir = os.path.dirname(__file__)
-        executable = os.path.realpath(os.path.join(script_dir, '../code.py'))
-
-        code = Code(
-            files=[executable],
-            input_plugin_name='template.multiply',
-            local_executable='code.py')
-        code.label = 'plugin-template'
-        code.description = 'multiply on this computer'
-
-        return code
-
+class TestDiff(PluginTestCase):
     def setUp(self):
-
-        # set up test computer
-        self.computer = self.get_localhost().store()
-        self.code = self.get_code().store()
+        # Set up code, if it does not exist
+        self.code = tests.get_code(entry_point='crystal17')
 
     def test_submit(self):
         """Test submitting a calculation"""
+        from aiida.orm.data.singlefile import SinglefileData
 
-        computer = self.computer
         code = self.code
-        #from aiida.orm import Code, Computer, DataFactory
-        #code = Code.get_from_string('plugin-template')
-        #computer = Computer.get('localhost')
 
         # Prepare input parameters
         from aiida.orm import DataFactory
-        MultiplyParameters = DataFactory('template.factors')
-        parameters = MultiplyParameters(x1=2, x2=3)
+        DiffParameters = DataFactory('crystal17')
+        parameters = DiffParameters({'ignore-case': True})
+
+        file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file1.txt'))
+        file2 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file2.txt'))
 
         # set up calculation
         calc = code.new_calc()
-        calc.label = "aiida_plugin_template computes 2*3"
-        calc.description = "Test job submission with the aiida_plugin_template plugin"
+        calc.label = "aiida_crystal17 test"
+        calc.description = "Test job submission with the aiida_crystal17 plugin"
         calc.set_max_wallclock_seconds(30)
-        # This line is only needed for local codes, otherwise the computer is
-        # automatically set from the code
-        calc.set_computer(computer)
         calc.set_withmpi(False)
         calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+
         calc.use_parameters(parameters)
+        calc.use_file1(file1)
+        calc.use_file2(file2)
 
         calc.store_all()
         calc.submit()

@@ -1,7 +1,7 @@
 """
-AiiDA Plugin Template
+aiida_crystal17
 
-Adapt this template for your own needs.
+AiiDA plugin for running the CRYSTAL17 code
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.0a0"

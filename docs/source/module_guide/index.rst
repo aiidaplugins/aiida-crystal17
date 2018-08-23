@@ -1,11 +1,26 @@
-============================================
-Modules provided with plugin (API reference)
-============================================
+=============
+API reference
+=============
 
-.. toctree::
-    :maxdepth: 3
+List of modules provided by the plugin.
 
-    calculations
-    data
-    parsers
+Data
+++++
+
+.. automodule:: aiida_crystal17.data
+   :members:
+
+Calculations
+++++++++++++
+
+.. automodule:: aiida_crystal17.calculations
+   :members:
+
+Parsers
++++++++
+
+.. automodule:: aiida_crystal17.parsers
+   :members:
+
+
 

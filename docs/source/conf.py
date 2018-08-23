@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Template file provided by the aiida-plugin-template; modify 
-# according to your needs
+# Sphinx configuration for aiida-crystal17
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -15,11 +14,46 @@
 import os
 import sys
 import time
+import aiida_crystal17
+
+# -- AiiDA-related setup --------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-import aiida_plugin_template
+
+# Enable rtd mode via `export READTHEDOCS=True`
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if on_rtd:
+    # Back-end settings for readthedocs online documentation -
+    # we don't want to create a profile there
+    # NOTE: There can be no calls to load_dbenv() before this
+
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'rtd_settings'
+    sys.path.append(os.path.split(__file__)[0])  # to find rtd_settings.py
+    from aiida.backends import settings
+    settings.IN_DOC_MODE = True
+    settings.IN_RT_DOC_MODE = True
+    settings.BACKEND = "django"
+    settings.AIIDADB_PROFILE = "default"
+
+else:
+    # import and set the theme if we're building docs locally
+    try:
+        import sphinx_rtd_theme
+        html_theme = 'sphinx_rtd_theme'
+        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    except ImportError:
+        # No sphinx_rtd_theme installed
+        pass
+    from aiida.backends import settings
+    settings.IN_DOC_MODE = True
+    # Load the dbenv. The backend should be fixed before compiling the
+    # documentation.
+    from aiida.backends.utils import load_dbenv, is_dbenv_loaded
+    if not is_dbenv_loaded():
+        load_dbenv()
 
 # -- General configuration ------------------------------------------------
 
@@ -38,7 +72,7 @@ extensions = [
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/2.7', None),
-    'aiida': ('http://aiida_core.readthedocs.io/en/latest/', None),
+    'aiida': ('http://aiida-core.readthedocs.io/en/latest/', None),
 }
 
 nitpick_ignore = [('py:obj', 'module')]
@@ -57,20 +91,23 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'aiida-plugin-template'
-copyright_first_year = 2017
-copyright_owners = "My Institution, Country"
+project = u'aiida-crystal17'
+copyright_first_year = "2018"
+copyright_owners = "Chris Sewell"
 
-current_year = time.localtime().tm_year
-copyright_year_string = current_year if current_year == copyright_first_year else "{}-{}".format(copyright_first_year, current_year)
-copyright = u'{}, {}. All rights reserved'.format(copyright_year_string, copyright_owners)
+current_year = str(time.localtime().tm_year)
+copyright_year_string = current_year if current_year == copyright_first_year else "{}-{}".format(
+    copyright_first_year, current_year)
+# pylint: disable=redefined-builtin
+copyright = u'{}, {}. All rights reserved'.format(copyright_year_string,
+                                                  copyright_owners)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = aiida_plugin_template.__version__
+release = aiida_crystal17.__version__
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
 
@@ -116,7 +153,6 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -128,9 +164,9 @@ pygments_style = 'sphinx'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #~ html_theme_options = {
-  #~ 'inner_theme': True,
-  #~ 'inner_theme_name': 'bootswatch-darkly',
-  #~ 'nav_fixed_top': False
+#~ 'inner_theme': True,
+#~ 'inner_theme_name': 'bootswatch-darkly',
+#~ 'nav_fixed_top': False
 #~ }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -198,7 +234,7 @@ html_show_sourcelink = False
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-html_use_opensearch = 'http://aiida-plugin-template.readthedocs.io'
+html_use_opensearch = 'http://aiida-crystal17.readthedocs.io'
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 #html_file_suffix = None
@@ -218,22 +254,22 @@ html_search_language = 'en'
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'aiida-plugin-template-doc'
+htmlhelp_basename = 'aiida-crystal17-doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 
-# Latex figure (float) alignment
-#'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    #'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -262,7 +298,6 @@ latex_elements = {
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -272,7 +307,6 @@ latex_elements = {
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -293,44 +327,6 @@ latex_elements = {
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-
-
-## BEFORE STARTING, LET'S LOAD THE CORRECT AIIDA DBENV
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed
-# from docs.readthedocs.org
-# NOTE: it is needed to have these lines before load_dbenv()
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-sys.path.append( os.path.join( os.path.split(__file__)[0],
-                                           os.pardir,os.pardir) )
-sys.path.append( os.path.join( os.path.split(__file__)[0],
-                                           os.pardir))
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'rtd_settings'
-
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    try:
-        import sphinx_rtd_theme
-        html_theme = 'sphinx_rtd_theme'
-        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    except ImportError:
-        # No sphinx_rtd_theme installed
-        pass
-    # Loading the dbenv. The backend should be fixed before compiling the
-    # documentation.
-    from aiida.backends.utils import load_dbenv, is_dbenv_loaded
-    if not is_dbenv_loaded():
-        load_dbenv()
-else:
-    # Back-end settings for readthedocs online documentation -
-    # we don't want to create a profile there
-    from aiida.backends import settings
-    settings.IN_DOC_MODE = True
-    settings.BACKEND = "django"
-    settings.AIIDADB_PROFILE = "default"
-
-
-
 
 # Warnings to ignore when using the -n (nitpicky) option
 # We should ignore any python built-in exception, for instance

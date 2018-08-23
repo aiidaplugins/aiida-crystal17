@@ -3,7 +3,6 @@
 *.swp
 ~*
 *~
-.ropeproj
 .project
 *.egg*
 .DS_Store

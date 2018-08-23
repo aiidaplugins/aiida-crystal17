@@ -12,28 +12,29 @@
         "Topic :: Scientific/Engineering :: Physics"
     ],
     "entry_points": {
+        "aiida.data": [
+            "crystal17 = aiida_crystal17.data:DiffParameters"
+        ],
         "aiida.calculations": [
-            "crystal17.multiply = aiida_crystal17.calculations.multiply:MultiplyCalculation"
+            "crystal17 = aiida_crystal17.calculations:DiffCalculation"
         ],
         "aiida.parsers": [
-            "crystal17.product = aiida_crystal17.parsers.multiply:MultiplyParser"
-        ],
-        "aiida.data": [
-            "crystal17.factors = aiida_crystal17.data.multiply:MultiplyParameters"
+            "crystal17 = aiida_crystal17.parsers:DiffParser"
         ],
         "aiida.cmdline.data": [
-            "crystal17.factors = aiida_crystal17.data.data_cli:cli"
+            "crystal17 = aiida_crystal17.data.data_cli:cli"
         ]
     },
     "scripts": ["examples/cli.py"],
     "setup_requires": ["reentry"],
     "reentry_register": true,
     "install_requires": [
-        "aiida >= 0.12.0"
+        "aiida >= 0.12"
     ],
     "extras_require": {
         "testing": [
-            "aiida-core[testing]"
+            "aiida-core[testing]",
+            "wheel>=0.31"
         ],
         "pre-commit": [
             "pre-commit",
