@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-from importlib import import_module
+# from importlib import import_module
 import json
 
 if __name__ == '__main__':
@@ -11,7 +11,7 @@ if __name__ == '__main__':
         kwargs = json.load(info)
     setup(
         packages=find_packages(),
-        version=import_module('aiida_crystal17').__version__,
+        # version=import_module('aiida_crystal17').__version__,
         long_description=open('README.md').read(),
         long_description_content_type='text/markdown',
         **kwargs)
