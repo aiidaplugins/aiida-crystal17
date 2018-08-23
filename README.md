@@ -17,6 +17,8 @@ verdi calculation plugins  # should now show your calclulation plugins
 
 Here goes a complete example of how to submit a test calculation using this plugin.
 
+Test
+
 # License
 
 MIT
