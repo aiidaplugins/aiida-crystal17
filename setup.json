@@ -14,13 +14,13 @@
     "version": "0.1.0a0",
     "entry_points": {
         "aiida.data": [
-            "crystal17 = aiida_crystal17.data:DiffParameters"
+            "crystal17 = aiida_crystal17.data.diffparams:DiffParameters"
         ],
         "aiida.calculations": [
-            "crystal17 = aiida_crystal17.calculations:DiffCalculation"
+            "crystal17 = aiida_crystal17.calculations.diffcalc:DiffCalculation"
         ],
         "aiida.parsers": [
-            "crystal17 = aiida_crystal17.parsers:DiffParser"
+            "crystal17 = aiida_crystal17.parsers.diffparser:DiffParser"
         ],
         "aiida.cmdline.data": [
             "crystal17 = aiida_crystal17.data.data_cli:cli"

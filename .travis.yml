@@ -23,5 +23,5 @@ before_script:
 - reentry scan
 
 script:
-- pytest -v --doctest-modules --ignore=setup.py --ignore=examples
+- pytest -v #--doctest-modules --ignore=setup.py --ignore=examples
 - python .travis-data/check_version.py

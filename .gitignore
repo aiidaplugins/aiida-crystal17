@@ -6,3 +6,8 @@
 .project
 *.egg*
 .DS_Store
+.idea/
+.pytest_cache/
+.idea/vcs.xml
+postgres*.log
+.aiida_envs.yaml

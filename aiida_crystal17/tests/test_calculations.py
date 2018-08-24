@@ -3,24 +3,23 @@
 """
 import os
 
-import aiida
-import pytest
-
+from aiida.utils.fixtures import fixture_manager
 import aiida_crystal17.tests as tests
+import pytest
 
 
 @pytest.fixture(scope='session')
 def aiida_profile():
-    with aiida.utils.fixtures.fixture_manager() as fixture_mgr:
-        fixture_mgr.create_profile()
-        yield fixture_manager
+    with fixture_manager() as fixture_mgr:
+        # fixture_mgr.create_profile()
+        yield fixture_mgr
 
 
 @pytest.fixture(scope='function')
 def test_data(aiida_profile):
     # load my test data
     yield
-    fixture_manager.reset_db()
+    aiida_profile.reset_db()
 
 
 def test_submit(test_data):
@@ -51,5 +50,4 @@ def test_submit(test_data):
 
     calc.store_all()
     calc.submit()
-    print("submitted calculation; calc=Calculation(uuid='{}') # ID={}"\
-            .format(calc.uuid,calc.dbnode.pk))
+    print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(calc.uuid, calc.dbnode.pk))
