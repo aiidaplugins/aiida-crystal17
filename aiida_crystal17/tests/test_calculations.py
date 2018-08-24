@@ -3,15 +3,8 @@
 """
 import os
 
-from aiida.utils.fixtures import fixture_manager
 import aiida_crystal17.tests as tests
 import pytest
-
-
-@pytest.fixture(scope='session')
-def aiida_profile():
-    with fixture_manager() as fixture_mgr:
-        yield fixture_mgr
 
 
 @pytest.fixture(scope='function')
@@ -23,7 +16,7 @@ def test_data(aiida_profile):
 
 def test_submit(test_data):
     """Test submitting a calculation"""
-    print("{}".format(test_data))  # for pylint test to parse
+    print("{}".format(test_data))  # for pylint test to pass
     from aiida.orm.data.singlefile import SinglefileData
 
     code = tests.get_code(
