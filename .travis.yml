@@ -28,7 +28,7 @@ before_script:
 
 script:
 - if [[ "$TEST_TYPE" == "tests" ]]; then pytest -v; fi
-- if [[ "$TEST_TYPE" == "version" ]]; python .travis-data/check_version.py; fi
+- if [[ "$TEST_TYPE" == "version" ]]; then python .travis-data/check_version.py; fi
 - if [[ "$TEST_TYPE" == "style" ]]; then prospector ; fi
 #--doctest-modules --ignore=setup.py --ignore=examples
 
