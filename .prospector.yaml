@@ -1,0 +1,4 @@
+# configuration for prospector
+strictness: medium
+ignore-patterns:
+  - '^(tests/)|(examples/)'

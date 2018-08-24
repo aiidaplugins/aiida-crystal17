@@ -15,19 +15,20 @@ install:
 - pip install -U pip wheel setuptools
 - pip install .[precommit,testing]
 # the above command does not appear to install pre-commit requirements
-- pip install pre-commit yapf prospector
+- pip install prospector
 
 env:
-- TEST_TYPE="pre-commit"
 - TEST_AIIDA_BACKEND=django TEST_TYPE="tests"
 - TEST_AIIDA_BACKEND=sqlalchemy TEST_TYPE="tests"
+- TEST_TYPE="version"
+- TEST_TYPE="style"
 
 before_script:
 - reentry scan
 
 script:
-- if [[ "$TEST_TYPE" == "pre-commit" ]]; then pre-commit run --all-files; fi
-#- if [[ "$TEST_TYPE" == "pre-commit" ]]; python .travis-data/check_version.py; fi
 - if [[ "$TEST_TYPE" == "tests" ]]; then pytest -v; fi
+- if [[ "$TEST_TYPE" == "version" ]]; python .travis-data/check_version.py; fi
+- if [[ "$TEST_TYPE" == "style" ]]; then prospector ; fi
 #--doctest-modules --ignore=setup.py --ignore=examples
 
