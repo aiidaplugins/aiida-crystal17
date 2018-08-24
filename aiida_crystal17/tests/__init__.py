@@ -15,6 +15,13 @@ executables = {
     'crystal17.basic': 'runcry17',
 }
 
+MOCK_GLOBAL_VAR = "MOCK_CRY_EXECUTABLES"
+
+mock_executables = {
+    'diff': 'diff',
+    'crystal17.basic': 'mock_runcry17',
+}
+
 
 def get_backend():
     """ Return database backend.
@@ -93,11 +100,17 @@ def get_code(entry_point, computer_name='localhost'):
 
     computer = get_computer(computer_name)
 
+    if os.environ.get(MOCK_GLOBAL_VAR, False):
+        exec_lookup = mock_executables
+    else:
+        exec_lookup = executables
+
+
     try:
-        executable = executables[entry_point]
+        executable = exec_lookup[entry_point]
     except KeyError:
         raise KeyError("Entry point {} not recognized. Allowed values: {}"
-                       .format(entry_point, executables.keys()))
+                       .format(entry_point, exec_lookup.keys()))
 
     try:
         code = Code.get_from_string('{}@{}'.format(executable, computer_name))

@@ -11,6 +11,10 @@ if __name__ == '__main__':
         kwargs = json.load(info)
     setup(
         packages=find_packages(),
+        # this doesn't work when placed in setup.json (something to do with str type)
+        package_data={
+            "tests": ["input_files/*", "output_files/*"]
+        },
         # version=import_module('aiida_crystal17').__version__,
         long_description=open('README.md').read(),
         long_description_content_type='text/markdown',

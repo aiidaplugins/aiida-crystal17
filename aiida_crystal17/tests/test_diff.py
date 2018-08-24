@@ -26,8 +26,8 @@ def test_submit(test_data):
     DiffParameters = DataFactory('diff')
     parameters = DiffParameters({'ignore-case': True})
 
-    file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file1.txt'))
-    file2 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file2.txt'))
+    file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'file1.txt'))
+    file2 = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'file2.txt'))
 
     # set up calculation
     calc = code.new_calc()

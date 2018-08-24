@@ -27,7 +27,11 @@
             "diff = aiida_crystal17.data.data_cli:cli"
         ]
     },
-    "scripts": ["examples/cli.py"],
+    "scripts": [
+        "examples/cli.py",
+        "aiida_crystal17/tests/mock_runcry17"
+    ],
+    "include_package_data": true,
     "setup_requires": ["reentry"],
     "reentry_register": true,
     "install_requires": [

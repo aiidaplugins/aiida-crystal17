@@ -20,7 +20,7 @@ class CryBasicCalculation(JobCalculation):
         Init internal parameters at class load time
         """
         # reuse base class function
-        super(CryBasicCalculation, self)._init_internal_params()
+        super(CryBasicCalculation, self)._init_internal_params()  # pylint: disable=useless-super-delegation
 
         # parser entry point defined in setup.json
         # self._default_parser = 'crystal17.main'

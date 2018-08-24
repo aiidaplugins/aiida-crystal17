@@ -19,7 +19,7 @@ def main(codelabel, submit):
 
     # Prepare input parameters
     from aiida.orm import DataFactory
-    DiffParameters = DataFactory('crystal17')
+    DiffParameters = DataFactory('diff')
     parameters = DiffParameters({'ignore-case': True})
 
     file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file1.txt'))

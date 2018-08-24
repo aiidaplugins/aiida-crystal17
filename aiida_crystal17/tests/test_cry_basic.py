@@ -21,7 +21,7 @@ def test_submit(test_data):
     code = tests.get_code(
         entry_point='crystal17.basic')
 
-    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, 'mgo_sto3g.d12'))
+    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g.d12'))
 
     # set up calculation
     calc = code.new_calc()
