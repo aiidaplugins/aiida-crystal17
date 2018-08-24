@@ -13,7 +13,7 @@ addons:
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
-- pip install .[precommit,testing]
+- pip install .[dev_precommit,testing]
 
 env:
 - TEST_TYPE="pre-commit"
@@ -27,5 +27,4 @@ script:
 - if [[ "$TEST_TYPE" == "pre-commit" ]]; then pre-commit run --all-files; fi
 #- if [[ "$TEST_TYPE" == "pre-commit" ]]; python .travis-data/check_version.py; fi
 - if [[ "$TEST_TYPE" == "tests" ]]; then pytest -v; fi
-#--doctest-modules --ignore=setup.py --ignore=examples
 
