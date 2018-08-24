@@ -15,12 +15,12 @@ class CryBasicCalculation(JobCalculation):
     """
     _OUTPUT_FILE_NAME = 'main.out'
 
-    def _init_internal_params(self):
+    def _init_internal_params(self):  # pylint: disable=useless-super-delegation
         """
         Init internal parameters at class load time
         """
         # reuse base class function
-        super(CryBasicCalculation, self)._init_internal_params()  # pylint: disable=useless-super-delegation
+        super(CryBasicCalculation, self)._init_internal_params()
 
         # parser entry point defined in setup.json
         # self._default_parser = 'crystal17.main'
