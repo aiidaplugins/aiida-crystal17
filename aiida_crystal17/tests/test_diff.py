@@ -1,4 +1,4 @@
-""" Tests for calculations
+""" Tests for diff calculation
 
 """
 import os
@@ -16,7 +16,6 @@ def test_data(aiida_profile):
 
 def test_submit(test_data):
     """Test submitting a calculation"""
-    print("{}".format(test_data))  # for pylint test to pass
     from aiida.orm.data.singlefile import SinglefileData
 
     code = tests.get_code(
@@ -46,3 +45,4 @@ def test_submit(test_data):
     calc.submit()
     print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
         calc.uuid, calc.dbnode.pk))
+

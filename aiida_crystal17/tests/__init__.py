@@ -12,6 +12,7 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 executables = {
     'diff': 'diff',
+    'crystal17.basic': 'runcry17',
 }
 
 
@@ -65,7 +66,7 @@ def get_computer(name='localhost'):
 
         computer = Computer(
             name=name,
-            description='localhost computer set up by aiida_gudhi tests',
+            description='localhost computer set up by aiida_crystal17 tests',
             hostname='localhost',
             workdir=tempfile.mkdtemp(),
             transport_type='local',

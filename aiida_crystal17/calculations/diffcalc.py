@@ -30,7 +30,7 @@ class DiffCalculation(JobCalculation):
         # reuse base class function
         super(DiffCalculation, self)._init_internal_params()
 
-        # crystal17.product entry point defined in setup.json
+        # diff.product entry point defined in setup.json
         self._default_parser = 'diff'
 
     @classproperty

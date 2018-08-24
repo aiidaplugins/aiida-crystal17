@@ -17,7 +17,8 @@
             "diff = aiida_crystal17.data.diffparams:DiffParameters"
         ],
         "aiida.calculations": [
-            "diff = aiida_crystal17.calculations.diffcalc:DiffCalculation"
+            "diff = aiida_crystal17.calculations.diffcalc:DiffCalculation",
+            "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation"
         ],
         "aiida.parsers": [
             "diff = aiida_crystal17.parsers.diffparser:DiffParser"
