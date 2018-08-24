@@ -14,7 +14,8 @@ install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
 - pip install .[precommit,testing]
-- pip install pre-commit # the above command does not appear to install pre-commit
+# the above command does not appear to install pre-commit requirements
+- pip install pre-commit yapf prospector
 
 env:
 - TEST_TYPE="pre-commit"
