@@ -1,0 +1,806 @@
+#!/bin/csh -f
+### CRYSTAL17 - running script for crystal executable 
+ if ( $#argv < 1) then
+  echo "  "
+  echo Usage: 
+  echo "  "
+  echo "$0" inpfilename "["filename_restart_data "("r-filename")""]"
+  echo "  "
+  echo inpfilename.d12  "      " CRYSTAL input deck for wave function calculation
+  echo "  "
+  echo "  "  optional files
+  echo "  "
+  echo "["inpfilename.gui"]"   "    " geometry input file 
+  echo "                      " "("EXTERNAL or DLVINPUT in geometry input")"
+  echo "["inpfilename.gui2"]"   "   " auxiliary geometry input file 
+  echo "                      " "("EXTERNAL with FIXINDEX, or NANORE/SWCNTRE in geometry input")"
+  echo "["inpfilename.POINTCHG"]"   ""user-defined point charge input 
+  echo "                      " "("POINTCHG in geometry input")"
+  echo "  "
+  echo "  "  optional files - SCF guess from previous run density matrix
+  echo "  "  or RESTART in geometry optimization and frequency calculation
+  echo "  "
+  echo "["r-filename.f9"]"   "      " fort.9 written by a previous run 
+  echo "                      " "("GUESSP or GUESSF in SCF input")"
+  echo "["r-filename.f13"]"   "     " fort.13 reducible density matrix written by a previous run 
+  echo "                      " "("RESTART in FREQCALC")"
+  echo "["r-filename.f20"]"   "     " fort.20  written by a previous run 
+  echo "["r-filename.f32"]"   "     " fort.32  written by a previous run 
+
+  echo "["r-filename.hessopt"]"   " " HESSOPT.DAT written by a previous opt run
+  echo "                      " "("RESTART in OPTGEOM")"
+  echo "["r-filename.hessfreq"]"   "" HESSFREQ.DAT written by a previous freq run
+  echo "                      " "("RESTART in OPTGEOM for transition state search")"
+  echo "["r-filename.optinfo"]"   " " OPTINFO.DAT written by a previous opt run
+  echo "                      " "("RESTART in OPTGEOM")"
+  echo "["r-filename.freqinfo"]"   "" FREQINFO.DAT written by a previous freq run
+  echo "                      " "("RESTART in FREQCALC")"
+  echo "["r-filename.tensraman"]"   "" TENS_RAMAN.DAT written by a previous run
+  echo "                      " "("RESTART in FREQCALC with INTRAMAN")"
+  echo "["r-filename.elasinfo"]"   "" ELASINFO.DAT written by a previous elastcon run
+ echo "                      " "("RESTART in ELASTCON")"
+  echo "["r-filename.configurations"]"   "" CONFIGURATIONS.DAT written by a previous run
+  echo "["r-filename.xmetro"]"   "" XMETRO.COR written by a previous run
+  echo "["r-filename.eosinfo"]"   " " EOSINFO.DAT written by a previous eos run
+  echo "                      " "("RESTART in EOS")"
+  echo "["r-filename.f80"]"   "     " Wannier functions - written by a previous 
+  echo "                      " FREQCALC "("crystal with INTENS via Wannier functions")"  run
+  echo "["r-filename.f28"]"   "     " POLARI data - written by a previous 
+  echo "                      " FREQCALC "("crystal with INTENS")" via Berry phase approach")" run
+  echo "  "
+  echo "["inpfilename.d3"]" "     " input deck for properties 
+  echo "                      " if present, properties is executed
+  echo "  "
+  echo Results are written in current directory, in file:
+  echo inpfilename.out "("default suffix")"
+  echo "  "
+  echo The following files, if present and not empty, are moved 
+  echo from scratch directory to current directory:
+  echo "  "
+  echo "scratch            current                    content"
+  echo "  "
+  echo fort.9 "           " inpfilename.f9 "           "  binary wave function
+  echo fort.98 "          " inpfilename.f98 "          " formatted wave function 
+  echo optc"*" or opta"*" "   " inpfilename.optstory"/" "    " history of geometry opt
+  echo SCAN"*" "            " inpfilename.scanstory"/" "   " geometries of scanned modes
+  echo HESSOPT.DAT "("66")" " " inpfilename.hessopt "      " formatted hessian
+  echo HESSFREQ.DAT "("66")" "" inpfilename.hessfreq "     " formatted hessian
+  echo OPTINFO.DAT "("68")" " " inpfilename.optinfo "      " complete info for opt restart
+  echo GAUSSIAN.DAT "("92")" "" inpfilename.gjf "          " input for Gaussian94/98
+  echo FINDSYM.DAT "      " inpfilename.FINDSYM "      " input to the program findsym
+  echo STRUC.INCOOR "     " inpfilename.STRUC "        " cell parameters and atom coordinates
+  echo SCFOUT.LOG "       " inpfilename.SCFLOG "       " SCF output in case of multiple points calculations
+  echo XMETRO.COR "       " inpfilename.xmetro "       " 
+  echo FREQINFO.DAT "("94")" "" inpfilename.freqinfo "     " complete info for freq restart
+  echo ELASINFO.DAT "("23")" "" inpfilename.elasinfo "     " complete info for elastcon restart
+  echo EOSINFO.DAT "("23")" " " inpfilename.eosinfo "      " complete info for eos restart
+  echo CONFIGURATIONS.DAT  "  " inpfilename.configurations "  "
+  echo REFLECTANCE.DAT  "  " inpfilename.REFLECTANCE "  " reflectance spectrum in gnuplot format
+  echo TENS_RAMAN.DAT  "  " inpfilename.tensraman "     " raman tensor
+  echo RAMSPEC.DAT  "  " inpfilename.ramandpec "     " formatted raman spectrum
+  echo TENS_IR.DAT  "  " inpfilename.tensir "     " IR tensor
+  echo IRSPEC.DAT  "      " inpfilename.irspec "        " formatted IR spectrum 
+  echo IRRFR.DAT  "       " inpfilename.irrefr "        " 
+  echo IRDIEL.DAT  "      " inpfilename.irdiel "        " 
+  echo BORN.DAT  "  " inpfilename.born "  " born tensor charges
+
+  echo fort.80 "          " inpfilename.f80 "          " Wannier F - FREQCALC restart"("INTENS via WannierF")"
+  echo fort.28 "          " inpfilename.f28 "          " POLARI data-FREQCALC restart"("INTENS via BerryPh")" 
+  echo fort.13 "          " inpfilename.f13 "          " reducible density matrix at central point
+  echo fort.32 "          " inpfilename.f32 "          " 
+  echo fort.33 "          " inpfilename.xyz "          " atoms coordinates - input for Xmol
+  echo fort.34 "          " inpfilename.gui "          " GUI - geometry input - keyword EXTERNAL
+  echo fort.78 "          " inpfilename.f78 "          " data for dual basis-set calculations
+  echo PPAN.DAT "         " inpfilename.ppan "         " Mulliken population analysis data
+  echo " "
+  echo properties only
+  echo "  "
+  echo fort.98 "      " inpfilename_wf-filename.f98 "          " formatted wave function "("FMWF")"
+  echo fort.13 "      " inpfilename_wf-filename.f13 "          "
+  echo FINDSYM.DAT "  " inpfilename_wf-filename.FINDSYM "      "
+  echo fort.80 "      " inpfilename_wf-filename.f80 "          " Wannier functions "("LOCALWF")"
+  echo fort.33 "      " inpfilename_wf-filename.xyz "          " atoms coordinates - input for Xmol "("COORPRT")"
+  echo fort.34 "      " inpfilename_wf-filename.gui "          " GUI - geometry input - "("EXTPRT")"
+  echo PPAN.DAT "     " inpfilename_wf-filename.ppan "         " Mulliken population analysis data"("PPAN")"
+  echo fort.27 "      " inpfilename_wf-filename.pol "          " data from polari
+  echo fort.37 "      " inpfilename_wf-filename.loc "          " data from locali
+  echo fort.25 "      " inpfilename_wf-filename.f25 "          " data for plotting "("BAND, MAPS, DOSS")"
+  echo fort.92 "      " inpfilename_wf-filename.f92 "          " 
+  echo BAND.DAT "     " inpfilename_wf-filename_dat.BAND "     " data for band structure "("BAND")"
+  echo DIEL.DAT "     " inpfilename_wf-filename_dat.DIEL "     " formatted data - dielectric constant
+  echo DOSS.DAT "     " inpfilename_wf-filename_dat.DOSS "     " data for density of states "("DOSS")" 
+  echo RHOLINE.DAT "  " inpfilename_wf-filename_dat.RHOLINE "  " data for 1D charge "("or spin")" density/potential
+  echo fort.31 "      " inpfilename_wf-filename_dat.prop3d "   " data for 3D charge "("or spin")" density/potential
+  echo fort.32 "      " inpfilename_wf-filename_dat.info3d "   " data for graphical user interfaces
+  echo SPIN_CUBE.DAT "" inpfilename_wf-filename_dat.SPIN_CUBE " "spin density in 3D grid - CUBE format
+  echo DENS_CUBE.DAT "" inpfilename_wf-filename_dat.DENS_CUBE " "charge density in 3D grid - CUBE format
+  echo POT_CUBE.DAT " " inpfilename_wf-filename_dat.POT_CUBE "  "electrostatic potential in 3D grid - CUBE format
+  echo LINEA.DAT "    " inpfilename_wf-filename_dat.LINEA "    " formatted data - EMD line
+  echo EMDLM.DAT "    " inpfilename_wf-filename_dat.EMDLM "    " formatted data - EMD
+  echo 3DEMDTOTAL.DAT " " inpfilename_wf-filename_dat.3DEMDTOTAL " " formatted data - 3D EMD
+  echo 3DEMDANISO.DAT " " inpfilename_wf-filename_dat.3DEMDANISO " " formatted data - 3D EMD anisotropy
+  echo WFEMD.DAT "    " inpfilename_wf-filename_dat.WFEMD "    " formatted data - EMD 
+  echo CP.DAT "       " inpfilename_wf-filename_dat.CP "       " 
+  echo ADP.DAT "      " inpfilename_wf-filename_dat.ADP "      " formatted data - anisotropic displacement parameters 
+  echo POTC.DAT "     " inpfilename_wf-filename_dat.POTC "     " formatted data - exact electrostatic potential
+  echo PROF.DAT "     " inpfilename_wf-filename_dat.PROF "     " formatted data - Compton profiles
+  echo KRED.DAT "     " inpfilename_wf-filename_dat.KRED "     " formatted data - reciprocal lattice - full BZ
+  echo GRED.DAT "     " inpfilename_wf-filename_dat.GRED "     " formatted data - direct lattice
+  echo MOLDRAW.DAT "  " inpfilename_wf-filename_dat.mol "    " 
+  echo "  "
+  echo The script defines environment variables that may be modified:
+  echo "  "
+  echo The variable CRY17_INP defines the directory containing all the input files
+  echo Default: current directory
+  echo " "
+  echo The variable OUTFILE defines the suffix for printed output file
+  echo Default: out
+  echo "  "
+  echo To attribute a different value to those variables give the command "("bash")":
+  echo export CRY17_INP=name_of_the_new_directory
+  echo export OUTFILE=name_of_the_new_suffix
+  echo "  "
+  echo To attribute a different value to those variables give the command "("tcsh")":
+  echo setenv CRY17_INP "name_of_the_new_directory"
+  echo setenv OUTFILE "name_of_the_new_suffix"
+  echo "  "
+  exit
+ endif
+#
+ set here = $PWD
+ set TMPDIR = $CRY17_SCRDIR/tmp$$_`whoami`
+#
+ if (! $?VERSION ) then
+  set VERSION = v1_0_1
+ endif
+ if (! $?CRY17_INP ) then
+  set CRY17_INP = $here
+ endif
+ if (! $?OUTFILE ) then
+  set OUTFILE = out
+ endif
+#
+ set XDIR    = $CRY17_EXEDIR/$VERSION
+ set INPDIR  = $CRY17_INP
+ set OUTDIR  = $here
+#
+ set FILEPREFIX = $1
+ set F9PREFIX   = $2
+#
+ set OUTFILE="$FILEPREFIX".$OUTFILE
+#
+ echo date `date` >& $OUTDIR/$OUTFILE
+ echo hostname `hostname` >>& $OUTDIR/$OUTFILE
+ echo system `uname -a` >>& $OUTDIR/$OUTFILE
+ echo user `whoami` >>& $OUTDIR/$OUTFILE
+#
+ echo output data in $OUTDIR/$OUTFILE >>& $OUTDIR/$OUTFILE
+ echo output data in $OUTDIR/$OUTFILE
+#
+ if(-e $XDIR/crystal && ! -z $XDIR/crystal ) then
+  echo crystal executable in $XDIR >>& $OUTDIR/$OUTFILE
+  echo crystal executable in $XDIR
+ else
+  echo crystal executable in $XDIR not found or empty >>& $OUTDIR/$OUTFILE
+  echo crystal executable in $XDIR not found or empty
+  exit
+ endif
+#
+ if (-e $INPDIR/"$FILEPREFIX".d12 && ! -z $INPDIR/"$FILEPREFIX".d12 ) then
+  echo input data in $INPDIR/"$FILEPREFIX".d12 >>& $OUTDIR/$OUTFILE
+  echo input data in $INPDIR/"$FILEPREFIX".d12
+ else
+  echo input data in $INPDIR/"$FILEPREFIX".d12 not found or empty >>& $OUTDIR/$OUTFILE
+  echo input data in $INPDIR/"$FILEPREFIX".d12 not found or empty
+  exit
+ endif
+#
+ echo temporary directory $TMPDIR >>& $OUTDIR/$OUTFILE
+ echo creating temporary directory $TMPDIR
+ mkdir -p $TMPDIR
+#
+ if ( $#argv > 1 ) then
+  if (-e $INPDIR/"$F9PREFIX".f9 && ! -z $INPDIR/"$F9PREFIX".f9 ) then
+   cp $INPDIR/"$F9PREFIX".f9 $TMPDIR/fort.20
+   echo scf guess from $INPDIR/"$F9PREFIX".f9 >>& $OUTDIR/$OUTFILE
+   echo scf guess from $INPDIR/"$F9PREFIX".f9
+  else
+   echo CRYSTAL data $INPDIR/"$F9PREFIX".f9 not found or empty >>& $OUTDIR/$OUTFILE
+   echo CRYSTAL data $INPDIR/"$F9PREFIX".f9 not found or empty
+  endif
+ endif
+ if (-e $CRY17_INP/"$FILEPREFIX".gui && ! -z $CRY17_INP/"$FILEPREFIX".gui ) then
+  cp $CRY17_INP/"$FILEPREFIX".gui $TMPDIR/fort.34
+  cp -f $CRY17_INP/"$FILEPREFIX".gui $CRY17_INP/"$FILEPREFIX"_inp.gui
+  echo external geometry input from $CRY17_INP/"$FILEPREFIX".gui >>& $OUTDIR/$OUTFILE
+  echo external geometry input from $CRY17_INP/"$FILEPREFIX".gui
+  echo external geometry input saved in $CRY17_INP/"$FILEPREFIX"_inp.gui >>& $OUTDIR/$OUTFILE
+  echo external geometry input saved in $CRY17_INP/"$FILEPREFIX"_inp.gui
+ endif
+ if (-e $CRY17_INP/"$FILEPREFIX".gui2 && ! -z $CRY17_INP/"$FILEPREFIX".gui2 ) then
+  cp $CRY17_INP/"$FILEPREFIX".gui2 $TMPDIR/fort.35
+  echo auxiliary external geometry input from $CRY17_INP/"$FILEPREFIX".gui2 >>& $OUTDIR/$OUTFILE
+  echo auxiliary external geometry input from $CRY17_INP/"$FILEPREFIX".gui2
+ endif
+ if (-e $CRY17_INP/"$FILEPREFIX".POINTCHG && ! -z $CRY17_INP/"$FILEPREFIX".POINTCHG) then
+  cp $CRY17_INP/"$FILEPREFIX".POINTCHG $TMPDIR/POINTCHG.INP
+  echo point charges from $CRY17_INP/"$FILEPREFIX".POINTCHG >>& $OUTDIR/$OUTFILE
+  echo point charges from $CRY17_INP/"$FILEPREFIX".POINTCHG
+ endif
+ if (-e $INPDIR/"$F9PREFIX".hessopt && ! -z $INPDIR/"$F9PREFIX".hessopt ) then
+  cp $INPDIR/"$F9PREFIX".hessopt $TMPDIR/HESSOPT.DAT
+  echo hess guess from $INPDIR/"$F9PREFIX".hessopt >>& $OUTDIR/$OUTFILE
+  echo hess guess from $INPDIR/"$F9PREFIX".hessopt
+ endif
+ if (-e $INPDIR/"$F9PREFIX".hessfreq && ! -z $INPDIR/"$F9PREFIX".hessfreq ) then
+  cp $INPDIR/"$F9PREFIX".hessfreq $TMPDIR/HESSFREQ.DAT
+  echo hess guess from $INPDIR/"$F9PREFIX".hessfreq >>& $OUTDIR/$OUTFILE
+  echo hess guess from $INPDIR/"$F9PREFIX".hessfreq
+ endif
+ if (-e $INPDIR/"$F9PREFIX".optinfo && ! -z $INPDIR/"$F9PREFIX".optinfo ) then
+  cp $INPDIR/"$F9PREFIX".optinfo $TMPDIR/OPTINFO.DAT
+  echo opt info from $INPDIR/"$F9PREFIX".optinfo >>& $OUTDIR/$OUTFILE
+  echo opt info from $INPDIR/"$F9PREFIX".optinfo
+ endif
+ if (-e $INPDIR/"$F9PREFIX".freqinfo && ! -z $INPDIR/"$F9PREFIX".freqinfo ) then
+  cp $INPDIR/"$F9PREFIX".freqinfo $TMPDIR/FREQINFO.DAT
+  echo freq info from $INPDIR/"$F9PREFIX".freqinfo >>& $OUTDIR/$OUTFILE
+  echo freq info from $INPDIR/"$F9PREFIX".freqinfo
+ endif
+ if (-e $INPDIR/"$F9PREFIX".born && ! -z $INPDIR/"$F9PREFIX".born ) then
+  cp $INPDIR/"$F9PREFIX".born $TMPDIR/BORN.DAT
+  echo born info from $INPDIR/"$F9PREFIX".born >>& $OUTDIR/$OUTFILE
+  echo born info from $INPDIR/"$F9PREFIX".born
+ endif
+ if (-e $INPDIR/"$F9PREFIX".xmetro && ! -z $INPDIR/"$F9PREFIX".xmetro ) then
+  cp $INPDIR/"$F9PREFIX".xmetro $TMPDIR/XMETRO.COR
+  echo Nuc confs from $INPDIR/"$F9PREFIX".xmetro >>& $OUTDIR/$OUTFILE
+  echo Nuc confs from $INPDIR/"$F9PREFIX".xmetro
+ endif
+ if (-e $INPDIR/"$F9PREFIX".elasinfo && ! -z $INPDIR/"$F9PREFIX".elasinfo ) then
+  cp $INPDIR/"$F9PREFIX".elasinfo $TMPDIR/ELASINFO.DAT
+  echo elastcon info from $INPDIR/"$F9PREFIX".elasinfo >>& $OUTDIR/$OUTFILE
+  echo elastcon info from $INPDIR/"$F9PREFIX".elasinfo
+ endif
+ if (-e $INPDIR/"$F9PREFIX".eosinfo && ! -z $INPDIR/"$F9PREFIX".eosinfo ) then
+  cp $INPDIR/"$F9PREFIX".eosinfo $TMPDIR/EOSINFO.DAT
+  echo eos info from $INPDIR/"$F9PREFIX".eosinfo >>& $OUTDIR/$OUTFILE
+  echo eos info from $INPDIR/"$F9PREFIX".eosinfo
+ endif
+ if (-e $INPDIR/"$F9PREFIX".f28 && ! -z $INPDIR/"$F9PREFIX".f28 ) then
+  cp $INPDIR/"$F9PREFIX".f28 $TMPDIR/fort.28
+  echo polari from $INPDIR/"$F9PREFIX".f28 >>& $OUTDIR/$OUTFILE
+  echo polari from $INPDIR/"$F9PREFIX".f28
+ endif
+ if (-e $INPDIR/"$F9PREFIX".f80 && ! -z $INPDIR/"$F9PREFIX".f80 ) then
+  cp $INPDIR/"$F9PREFIX".f80 $TMPDIR/fort.80
+  echo localwf from $INPDIR/"$F9PREFIX".f80 >>& $OUTDIR/$OUTFILE
+  echo localwf from $INPDIR/"$F9PREFIX".f80
+ endif
+ if (-e $INPDIR/"$F9PREFIX".f20 && ! -z $INPDIR/"$F9PREFIX".f20 ) then
+  cp $INPDIR/"$F9PREFIX".f20 $TMPDIR/fort.20
+  echo file fort.20 from $INPDIR/"$F9PREFIX".f20 >>& $OUTDIR/$OUTFILE
+  echo file fort.20 from $INPDIR/"$F9PREFIX".f20
+ endif
+ if (-e $INPDIR/"$F9PREFIX".f32 && ! -z $INPDIR/"$F9PREFIX".f32 ) then
+  cp $INPDIR/"$F9PREFIX".f32 $TMPDIR/fort.32
+  echo file fort.32 from $INPDIR/"$F9PREFIX".f32 >>& $OUTDIR/$OUTFILE
+  echo file fort.32 from $INPDIR/"$F9PREFIX".f32
+ endif
+ if (-e $INPDIR/"$F9PREFIX".f13 && ! -z $INPDIR/"$F9PREFIX".f13 ) then
+  cp $INPDIR/"$F9PREFIX".f13 $TMPDIR/fort.13
+  echo file fort.13 from $INPDIR/"$F9PREFIX".f13 >>& $OUTDIR/$OUTFILE
+  echo file fort.13 from $INPDIR/"$F9PREFIX".f13
+ endif
+ if (-e $INPDIR/"$F9PREFIX".configurations && ! -z $INPDIR/"$F9PREFIX".configurations ) then
+  cp $INPDIR/"$F9PREFIX".configurations $TMPDIR/CONFIGURATIONS.DAT
+  echo file fort.13 from $INPDIR/"$F9PREFIX".f13 >>& $OUTDIR/$OUTFILE
+  echo file fort.13 from $INPDIR/"$F9PREFIX".f13
+ endif
+ if (-e $INPDIR/"$F9PREFIX".tensir && ! -z $INPDIR/"$F9PREFIX".tensir ) then
+  cp $INPDIR/"$F9PREFIX".tensir $TMPDIR/TENS_IR.DAT
+  echo file TENS_IR.DAT from $INPDIR/"$F9PREFIX".tensir >>& $OUTDIR/$OUTFILE
+  echo file TENS_IR.DAT from $INPDIR/"$F9PREFIX".tensir
+ endif
+ if (-e $INPDIR/"$F9PREFIX".tensraman && ! -z $INPDIR/"$F9PREFIX".tensraman ) then
+  cp $INPDIR/"$F9PREFIX".tensraman $TMPDIR/TENS_RAMAN.DAT
+  echo file TENS_RAMAN.DAT from $INPDIR/"$F9PREFIX".tensraman >>& $OUTDIR/$OUTFILE
+  echo file TENS_RAMAN.DAT from $INPDIR/"$F9PREFIX".tensraman
+ endif
+ if (-e $INPDIR/BASISSETS.DAT && ! -z $INPDIR/BASISSETS.DAT ) then
+  cp $INPDIR/BASISSETS.DAT $TMPDIR/BASISSETS.DAT
+  echo file BASISSETS.DAT from $INPDIR/BASISSETS.DAT >>& $OUTDIR/$OUTFILE
+  echo file BASISSETS.DAT from $INPDIR/BASISSETS.DAT
+ endif
+#
+ cat $INPDIR/"$FILEPREFIX".d12 >>& $OUTDIR/$OUTFILE
+#
+ cd $TMPDIR
+#
+ echo crystal job running in $TMPDIR ...
+ ${XDIR}/crystal <  $INPDIR/"$FILEPREFIX".d12 >> $OUTDIR/$OUTFILE
+ date >>& $OUTDIR/$OUTFILE
+ echo Contents of temporary directory: >>& $OUTDIR/$OUTFILE
+ ls -l >> $OUTDIR/$OUTFILE
+#
+ if (-e fort.9  && ! -z fort.9  ) then
+  cp fort.9 $OUTDIR/"$FILEPREFIX".f9
+  echo wave function binary file $OUTDIR/"$FILEPREFIX".f9 >>& $OUTDIR/$OUTFILE
+  echo wave function binary file $OUTDIR/"$FILEPREFIX".f9
+ else
+  echo SCF abnormal end - no wf written in fort.9 >>& $OUTDIR/$OUTFILE
+  echo SCF abnormal end - no wf written in fort.9
+ endif
+ if(-e fort.98  && ! -z fort.98 ) then
+  cp fort.98 $OUTDIR/"$FILEPREFIX".f98
+  echo file fort.98 saved as $OUTDIR/"$FILEPREFIX".f98 >>& $OUTDIR/$OUTFILE
+  echo file fort.98 saved as $OUTDIR/"$FILEPREFIX".f98
+ endif
+ ls opta* > OPTalist
+ if( ! -z OPTalist ) then
+  mkdir $OUTDIR/"$FILEPREFIX".optstory
+  cp opta* $OUTDIR/"$FILEPREFIX".optstory/
+  echo file "optaxxx" saved as $OUTDIR/"$FILEPREFIX".optstory/opta* >>& $OUTDIR/$OUTFILE
+  echo history of geometry during optimization - file opta* saved as $OUTDIR/"$FILEPREFIX".optstory/*
+ endif
+ ls optc* > OPTclist
+ if( ! -z OPTclist ) then
+  mkdir $OUTDIR/"$FILEPREFIX".optstory
+  cp optc* $OUTDIR/"$FILEPREFIX".optstory/
+  echo file "optcxxx" saved as $OUTDIR/"$FILEPREFIX".optstory/optc* >>& $OUTDIR/$OUTFILE
+  echo history of geometry during optimization - file optc* saved as $OUTDIR/"$FILEPREFIX".optstory/*
+ endif
+ ls SCAN* > scanlist
+ if( ! -z scanlist )then
+  mkdir $OUTDIR/"$FILEPREFIX".scanstory
+  cp SCAN* $OUTDIR/"$FILEPREFIX".scanstory/
+  echo file "SCANxxx" saved as $OUTDIR/"$FILEPREFIX".scanstory/scan* >>& $OUTDIR/$OUTFILE
+  echo history of scanmode - file SCAN* saved in $OUTDIR/"$FILEPREFIX".scanstory/*
+ endif
+ if(-e HESSOPT.DAT  && ! -z HESSOPT.DAT ) then
+  cp HESSOPT.DAT $OUTDIR/"$FILEPREFIX".hessopt
+  echo file HESSOPT.DAT saved as $OUTDIR/"$FILEPREFIX".hessopt >>& $OUTDIR/$OUTFILE
+  echo file HESSOPT.DAT saved as $OUTDIR/"$FILEPREFIX".hessopt
+ endif
+ if(-e HESSFREQ.DAT  && ! -z HESSFREQ.DAT ) then
+  cp HESSFREQ.DAT $OUTDIR/"$FILEPREFIX".hessfreq
+  echo file HESSFREQ.DAT saved as $OUTDIR/"$FILEPREFIX".hessfreq >>& $OUTDIR/$OUTFILE
+  echo file HESSFREQ.DAT saved as $OUTDIR/"$FILEPREFIX".hessfreq
+ endif
+ if(-e OPTINFO.DAT  && ! -z OPTINFO.DAT ) then
+  cp OPTINFO.DAT $OUTDIR/"$FILEPREFIX".optinfo
+  echo file OPTINFO.DAT saved as $OUTDIR/"$FILEPREFIX".optinfo >>& $OUTDIR/$OUTFILE
+  echo file OPTINFO.DAT saved as $OUTDIR/"$FILEPREFIX".optinfo
+ endif
+ if(-e GAUSSIAN.DAT  && ! -z GAUSSIAN.DAT ) then
+  cp GAUSSIAN.DAT $OUTDIR/"$FILEPREFIX".gjf
+  echo file GAUSSIAN.DAT saved as $OUTDIR/"$FILEPREFIX".gjf >>& $OUTDIR/$OUTFILE
+  echo file GAUSSIAN.DAT saved as $OUTDIR/"$FILEPREFIX".gjf 
+ endif
+ if(-e FINDSYM.DAT  && ! -z FINDSYM.DAT ) then
+  cp FINDSYM.DAT $OUTDIR/"$FILEPREFIX".FINDSYM
+  echo file FINDSYM.DAT saved as $OUTDIR/"$FILEPREFIX".FINDSYM >>& $OUTDIR/$OUTFILE
+  echo file FINDSYM.DAT saved as $OUTDIR/"$FILEPREFIX".FINDSYM
+ endif
+ if(-e STRUC.INCOOR && ! -z STRUC.INCOOR) then
+  cp STRUC.INCOOR $OUTDIR/"$FILEPREFIX".STRUC
+  echo file STRUC.INCOOR saved as $OUTDIR/"$FILEPREFIX".STRUC >>& $OUTDIR/$OUTFILE
+  echo file STRUC.INCOOR saved as $OUTDIR/"$FILEPREFIX".STRUC 
+ endif
+ if(-e NANOJMOL.DAT  && ! -z NANOJMOL.DAT ) then
+  cp NANOJMOL.DAT $OUTDIR/"$FILEPREFIX".nanojmol
+  echo file NANOJMOL.DAT saved as $OUTDIR/"$FILEPREFIX".nanojmol >>& $OUTDIR/$OUTFILE
+  echo file NANOJMOL.DAT saved as $OUTDIR/"$FILEPREFIX".nanojmol
+ endif
+ if(-e FULLEJMOL.DAT  && ! -z FULLEJMOL.DAT ) then
+  cp FULLEJMOL.DAT $OUTDIR/"$FILEPREFIX".fullejmol
+  echo file FULLEJMOL.DAT saved as $OUTDIR/"$FILEPREFIX".fullejmol >>& $OUTDIR/$OUTFILE
+  echo file FULLEJMOL.DAT saved as $OUTDIR/"$FILEPREFIX".fullejmol
+ endif
+#
+ if(-e  SCFOUT.LOG  && ! -z  SCFOUT.LOG ) then
+  cp  SCFOUT.LOG $OUTDIR/"$FILEPREFIX".SCFLOG
+  echo file SCFOUT.LOG saved as $OUTDIR/"$FILEPREFIX".SCFLOG >>& $OUTDIR/$OUTFILE
+  echo file SCFOUT.LOG saved as $OUTDIR/"$FILEPREFIX".SCFLOG
+ endif
+ if(-e FREQINFO.DAT  && ! -z FREQINFO.DAT ) then
+  cp FREQINFO.DAT $OUTDIR/"$FILEPREFIX".freqinfo
+  echo file FREQINFO.DAT saved as $OUTDIR/"$FILEPREFIX".freqinfo >>& $OUTDIR/$OUTFILE
+  echo file FREQINFO.DAT saved as $OUTDIR/"$FILEPREFIX".freqinfo
+ endif
+ if(-e XMETRO.COR  && ! -z XMETRO.COR ) then
+  cp XMETRO.COR $OUTDIR/"$FILEPREFIX".xmetro
+  echo file XMETRO.COR saved as $OUTDIR/"$FILEPREFIX".xmetro >>& $OUTDIR/$OUTFILE
+  echo file XMETRO.COR saved as $OUTDIR/"$FILEPREFIX".xmetro
+ endif
+ if(-e ELASINFO.DAT  && ! -z ELASINFO.DAT ) then
+  cp ELASINFO.DAT $OUTDIR/"$FILEPREFIX".elasinfo
+  echo file ELASINFO.DAT saved as $OUTDIR/"$FILEPREFIX".elasinfo >>& $OUTDIR/$OUTFILE
+  echo file ELASINFO.DAT saved as $OUTDIR/"$FILEPREFIX".elasinfo
+ endif
+ if(-e EOSINFO.DAT  && ! -z EOSINFO.DAT ) then
+  cp EOSINFO.DAT $OUTDIR/"$FILEPREFIX".eosinfo
+  echo file EOSINFO.DAT saved as $OUTDIR/"$FILEPREFIX".eosinfo >>& $OUTDIR/$OUTFILE
+  echo file EOSINFO.DAT saved as $OUTDIR/"$FILEPREFIX".eosinfo
+ endif
+ if(-e awesome.log  && ! -z awesome.log ) then
+  cp awesome.log $OUTDIR/"$FILEPREFIX"_awesome.log
+ endif
+ if(-e awesome_1_xy.dat  && ! -z awesome_1_xy.dat ) then
+  cp awesome_1_xy.dat $OUTDIR/"$FILEPREFIX"_awesome_1_xy.dat
+ endif
+ if(-e awesome_1_xz.dat  && ! -z awesome_1_xz.dat ) then
+  cp awesome_1_xz.dat $OUTDIR/"$FILEPREFIX"_awesome_1_xz.dat
+ endif
+ if(-e awesome_1_yz.dat  && ! -z awesome_1_yz.dat ) then
+  cp awesome_1_yz.dat $OUTDIR/"$FILEPREFIX"_awesome_1_yz.dat
+ endif
+ if(-e awesome_2_xy.dat  && ! -z awesome_2_xy.dat ) then
+  cp awesome_2_xy.dat $OUTDIR/"$FILEPREFIX"_awesome_2_xy.dat
+ endif
+ if(-e awesome_2_xz.dat  && ! -z awesome_2_xz.dat ) then
+  cp awesome_2_xz.dat $OUTDIR/"$FILEPREFIX"_awesome_2_xz.dat
+ endif
+ if(-e awesome_2_yz.dat  && ! -z awesome_2_yz.dat ) then
+  cp awesome_2_yz.dat $OUTDIR/"$FILEPREFIX"_awesome_2_yz.dat
+ endif
+ if(-e awesome_l_xy.dat  && ! -z awesome_l_xy.dat ) then
+  cp awesome_l_xy.dat $OUTDIR/"$FILEPREFIX"_awesome_l_xy.dat
+ endif
+ if(-e awesome_l_xz.dat  && ! -z awesome_l_xz.dat ) then
+  cp awesome_l_xz.dat $OUTDIR/"$FILEPREFIX"_awesome_l_xz.dat
+ endif
+ if(-e awesome_l_yz.dat  && ! -z awesome_l_yz.dat ) then
+  cp awesome_l_yz.dat $OUTDIR/"$FILEPREFIX"_awesome_l_yz.dat
+ endif 
+ if(-e awesome_xy.dat  && ! -z awesome_xy.dat ) then
+  cp awesome_xy.dat $OUTDIR/"$FILEPREFIX"_awesome_xy.dat
+ endif
+ if(-e awesome_xz.dat  && ! -z awesome_xz.dat ) then
+  cp awesome_xz.dat $OUTDIR/"$FILEPREFIX"_awesome_xz.dat
+ endif
+ if(-e awesome_yz.dat  && ! -z awesome_yz.dat ) then
+  cp awesome_yz.dat $OUTDIR/"$FILEPREFIX"_awesome_yz.dat
+ endif
+ if(-e awesome_lo.dat  && ! -z awesome_lo.dat ) then
+  cp awesome_lo.dat $OUTDIR/"$FILEPREFIX"_awesome_lo.dat
+ endif
+ if(-e awesome_t1.dat  && ! -z awesome_t1.dat ) then
+  cp awesome_t1.dat $OUTDIR/"$FILEPREFIX"_awesome_t1.dat
+ endif
+ if(-e awesome_t2.dat  && ! -z awesome_t2.dat ) then
+  cp awesome_t2.dat $OUTDIR/"$FILEPREFIX"_awesome_t2.dat
+ endif
+ if(-e ADP.DAT  && ! -z ADP.DAT ) then
+  cp ADP.DAT $OUTDIR/"$FILEPREFIX".adp
+  echo file ADP.DAT saved as $OUTDIR/"$FILEPREFIX".adp >>& $OUTDIR/$OUTFILE
+  echo file ADP.DAT saved as $OUTDIR/"$FILEPREFIX".adp
+ endif
+ if(-e CONFIGURATIONS.DAT && ! -z CONFIGURATIONS.DAT ) then
+  cp CONFIGURATIONS.DAT $OUTDIR//"$FILEPREFIX".configurations
+  echo file CONFIGURATIONS.DAT saved as $OUTDIR/"$FILEPREFIX".configurations >>& $OUTDIR/$OUTFILE
+  echo file CONFIGURATIONS.DAT saved as $OUTDIR/"$FILEPREFIX".configurations
+ endif 
+ if(-e GEOMETRY.CIF  && ! -z GEOMETRY.CIF ) then
+  cp GEOMETRY.CIF $OUTDIR/"$FILEPREFIX".cif
+  echo file GEOMETRY.CIF saved as $OUTDIR/"$FILEPREFIX".cif >>& $OUTDIR/$OUTFILE
+  echo file GEOMETRY.CIF saved as $OUTDIR/"$FILEPREFIX".cif
+ endif
+ if(-e REFLECTANCE.DAT  && ! -z REFLECTANCE.DAT ) then
+  cp REFLECTANCE.DAT $OUTDIR/"$FILEPREFIX".REFLECTANCE
+  echo file REFLECTANCE.DAT saved as $OUTDIR/"$FILEPREFIX".REFLECTANCE >>& $OUTDIR/$OUTFILE
+  echo file REFLECTANCE.DAT saved as $OUTDIR/"$FILEPREFIX".REFLECTANCE
+ endif
+ if(-e BORN.DAT  && ! -z BORN.DAT ) then
+  cp BORN.DAT $OUTDIR/"$FILEPREFIX".born
+  echo file BORN.DAT saved as $OUTDIR/"$FILEPREFIX".born >>& $OUTDIR/$OUTFILE
+  echo file BORN.DAT saved as $OUTDIR/"$FILEPREFIX".born
+ endif
+ if(-e TENS_IR.DAT  && ! -z TENS_IR.DAT ) then
+  cp TENS_IR.DAT $OUTDIR/"$FILEPREFIX".tensir
+  echo file TENS_IR.DAT saved as $OUTDIR/"$FILEPREFIX".tensir >>& $OUTDIR/$OUTFILE
+  echo file TENS_IR.DAT saved as $OUTDIR/"$FILEPREFIX".tensir
+ endif
+ if(-e TENS_RAMAN.DAT  && ! -z TENS_RAMAN.DAT ) then
+  cp TENS_RAMAN.DAT $OUTDIR/"$FILEPREFIX".tensraman
+  echo file TENS_RAMAN.DAT saved as $OUTDIR/"$FILEPREFIX".tensraman >>& $OUTDIR/$OUTFILE
+  echo file TENS_RAMAN.DAT saved as $OUTDIR/"$FILEPREFIX".tensraman
+ endif
+ if(-e RAMSPEC.DAT  && ! -z RAMSPEC.DAT ) then
+  cp RAMSPEC.DAT $OUTDIR/"$FILEPREFIX".ramanspec
+  echo file RAMSPEC.DAT saved as $OUTDIR/"$FILEPREFIX".ramanspec >>& $OUTDIR/$OUTFILE
+  echo file RAMSPEC.DAT saved as $OUTDIR/"$FILEPREFIX".ramanspec
+ endif
+ if(-e IRSPEC.DAT  && ! -z IRSPEC.DAT ) then
+  cp IRSPEC.DAT $OUTDIR/"$FILEPREFIX".irspec
+  echo file IRSPEC.DAT saved as $OUTDIR/"$FILEPREFIX".irspec >>& $OUTDIR/$OUTFILE
+  echo file IRSPEC.DAT saved as $OUTDIR/"$FILEPREFIX".irspec
+ endif
+ if(-e IRREFR.DAT  && ! -z IRREFR.DAT ) then
+  cp IRREFR.DAT $OUTDIR/"$FILEPREFIX".irrefr
+  echo file IRREFR.DAT saved as $OUTDIR/"$FILEPREFIX".irrefr >>& $OUTDIR/$OUTFILE
+  echo file IRREFR.DAT saved as $OUTDIR/"$FILEPREFIX".irrefr
+ endif
+ if(-e IRDIEL.DAT  && ! -z IRDIEL.DAT ) then
+  cp IRDIEL.DAT $OUTDIR/"$FILEPREFIX".irdiel
+  echo file IRDIEL.DAT saved as $OUTDIR/"$FILEPREFIX".irdiel >>& $OUTDIR/$OUTFILE
+  echo file IRDIEL.DAT saved as $OUTDIR/"$FILEPREFIX".irdiel
+ endif
+ if(-e PHONBANDS.DAT  && ! -z PHONBANDS.DAT ) then
+  cp PHONBANDS.DAT $OUTDIR/"$FILEPREFIX".phonbands
+  echo file PHONBANDS.DAT saved as $OUTDIR/"$FILEPREFIX".phonbands >>& $OUTDIR/$OUTFILE
+  echo file PHONBANDS.DAT saved as $OUTDIR/"$FILEPREFIX".phonbands
+ endif
+ if(-e fort.13  && ! -z fort.13 ) then
+  cp fort.13 $OUTDIR/"$FILEPREFIX".f13
+  echo file fort.13 saved as $OUTDIR/"$FILEPREFIX".f13 >>& $OUTDIR/$OUTFILE
+  echo file fort.13 saved as $OUTDIR/"$FILEPREFIX".f13
+ endif
+ if(-e fort.28  && ! -z fort.28 ) then
+  cp fort.28 $OUTDIR/"$FILEPREFIX".f28
+  echo file fort.28 saved as $OUTDIR/"$FILEPREFIX".f28 >>& $OUTDIR/$OUTFILE
+  echo file fort.28 saved as $OUTDIR/"$FILEPREFIX".f28
+ endif
+ if(-e fort.20  && ! -z fort.20 ) then
+  cp fort.20 $OUTDIR/"$FILEPREFIX".f20
+  echo file fort.20 saved as $OUTDIR/"$FILEPREFIX".f20 >>& $OUTDIR/$OUTFILE
+  echo file fort.20 saved as $OUTDIR/"$FILEPREFIX".f20
+ endif
+ if(-e fort.32  && ! -z fort.32 ) then
+  cp fort.32 $OUTDIR/"$FILEPREFIX".f32
+  echo file fort.32 saved as $OUTDIR/"$FILEPREFIX".f32 >>& $OUTDIR/$OUTFILE
+  echo file fort.32 saved as $OUTDIR/"$FILEPREFIX".f32
+ endif
+ if(-e fort.80  && ! -z fort.80 ) then
+  cp fort.80 $OUTDIR/"$FILEPREFIX".f80
+  echo file fort.80 saved as $OUTDIR/"$FILEPREFIX".f80 >>& $OUTDIR/$OUTFILE
+  echo file fort.80 saved as $OUTDIR/"$FILEPREFIX".f80
+ endif
+ if(-e fort.33  && ! -z fort.33 ) then
+  cp fort.33 $OUTDIR/"$FILEPREFIX".xyz
+  echo file fort.33 saved as $OUTDIR/"$FILEPREFIX".xyz >>& $OUTDIR/$OUTFILE
+  echo file fort.33 saved as $OUTDIR/"$FILEPREFIX".xyz
+ endif
+ if(-e fort.34  && ! -z fort.34 ) then
+  cp fort.34 $OUTDIR/"$FILEPREFIX".gui
+  echo geometry input file fort.34 saved as $OUTDIR/"$FILEPREFIX".gui >>& $OUTDIR/$OUTFILE
+  echo geometry input file fort.34 saved as $OUTDIR/"$FILEPREFIX".gui
+ endif
+ if(-e fort.78  && ! -z fort.78 ) then
+  cp fort.78 $OUTDIR/"$FILEPREFIX".f78
+  echo file fort.78 saved as $OUTDIR/"$FILEPREFIX".f78 >>& $OUTDIR/$OUTFILE
+  echo file fort.78 saved as $OUTDIR/"$FILEPREFIX".f78
+ endif
+ if(-e PPAN.DAT  && ! -z PPAN.DAT ) then
+  cp PPAN.DAT $OUTDIR/"$FILEPREFIX".ppan
+  echo file PPAN.DAT saved as $OUTDIR/"$FILEPREFIX".ppan >>& $OUTDIR/$OUTFILE
+  echo file PPAN.DAT saved as $OUTDIR/"$FILEPREFIX".ppan
+ endif
+ if(-e fort.25  && ! -z fort.25 ) then
+  cp fort.25 $OUTDIR/"$FILEPREFIX".f25
+  echo file fort.25 saved as $OUTDIR/"$FILEPREFIX".f25 >>& $OUTDIR/$OUTFILE
+  echo file fort.25 saved as $OUTDIR/"$FILEPREFIX".f25
+ endif
+#
+ mv fort.9 save_fort.9
+ rm -f fort*
+ mv save_fort.9 fort.9
+#
+ if(-e $INPDIR/"$FILEPREFIX".d3 && ! -z $INPDIR/"$FILEPREFIX".d3 ) then
+  echo properties input data in $INPDIR/"$FILEPREFIX".d3 >>& $OUTDIR/$OUTFILE
+  echo properties input data in $INPDIR/"$FILEPREFIX".d3
+  cat $INPDIR/"$FILEPREFIX".d3 >>& $OUTDIR/$OUTFILE
+  if (-e fort.9  && ! -z fort.9  ) then
+   echo properties job running in $TMPDIR ...
+   ${XDIR}/properties < $INPDIR/"$FILEPREFIX".d3 >> $OUTDIR/$OUTFILE
+   date >>& $OUTDIR/$OUTFILE
+   echo Contents of temporary directory: >>& $OUTDIR/$OUTFILE
+   ls -l >>& $OUTDIR/$OUTFILE
+  else
+   echo file fort.9 not found or empty - properties not executed >>& $OUTDIR/$OUTFILE
+   echo file fort.9 not found or empty - properties not executed
+  endif
+ else
+  if(-e $INPDIR/properties.d3 && ! -z $INPDIR/properties.d3 ) then
+   echo properties input data in $INPDIR/properties.d3 >>& $OUTDIR/$OUTFILE
+   echo properties input data in $INPDIR/properties.d3
+   cat $INPDIR/properties.d3 >>& $OUTDIR/$OUTFILE
+   if (-e fort.9  && ! -z fort.9  ) then
+    echo properties job running in $TMPDIR ...
+    ${XDIR}/properties < $INPDIR/properties.d3 >> $OUTDIR/$OUTFILE
+    date >>& $OUTDIR/$OUTFILE
+    echo Contents of temporary directory: >>& $OUTDIR/$OUTFILE
+    ls -l >>& $OUTDIR/$OUTFILE
+   else
+    echo file fort.9 not found or empty - properties not executed >>& $OUTDIR/$OUTFILE
+    echo file fort.9 not found or empty - properties not executed
+   endif
+  endif
+ endif
+#
+#
+ if(-e fort.13  && ! -z fort.13 ) then
+  cp fort.13 $OUTDIR/"$FILEPREFIX".f13
+  echo file fort.13 saved as $OUTDIR/"$FILEPREFIX".f13 >>& $OUTDIR/$OUTFILE
+  echo file fort.13 saved as $OUTDIR/"$FILEPREFIX".f13
+ endif
+ if(-e fort.27  && ! -z fort.27 ) then
+  cp fort.27 $OUTDIR/"$FILEPREFIX".pol
+  echo file fort.27 saved as $OUTDIR/"$FILEPREFIX".pol >>& $OUTDIR/$OUTFILE
+  echo file fort.27 saved as $OUTDIR/"$FILEPREFIX".pol
+ endif
+ if(-e fort.37  && ! -z fort.37 ) then
+  cp fort.37 $OUTDIR/"$FILEPREFIX".loc
+  echo file fort.37 saved as $OUTDIR/"$FILEPREFIX".loc >>& $OUTDIR/$OUTFILE
+  echo file fort.37 saved as $OUTDIR/"$FILEPREFIX".loc
+ endif
+#
+ if(-e fort.33  && ! -z fort.33 ) then
+  cp fort.33 $OUTDIR/"$FILEPREFIX".xyz
+  echo file fort.33 saved as $OUTDIR/"$FILEPREFIX".xyz >>& $OUTDIR/$OUTFILE
+  echo file fort.33 saved as $OUTDIR/"$FILEPREFIX".xyz
+ endif
+ if(-e fort.34  && ! -z fort.34 ) then
+  cp fort.34 $OUTDIR/"$FILEPREFIX".gui
+  echo geometry input file fort.34 saved as $OUTDIR/"$FILEPREFIX".gui >>& $OUTDIR/$OUTFILE
+  echo geometry input file fort.34 saved as $OUTDIR/"$FILEPREFIX".gui
+ endif
+ if(-e PPAN.DAT  && ! -z PPAN.DAT ) then
+  cp PPAN.DAT $OUTDIR/"$FILEPREFIX".ppan
+  echo file PPAN.DAT saved as $OUTDIR/"$FILEPREFIX".ppan >>& $OUTDIR/$OUTFILE
+  echo file PPAN.DAT saved as $OUTDIR/"$FILEPREFIX".ppan
+ endif
+#
+ if(-e fort.25  && ! -z fort.25 ) then
+  cp fort.25 $OUTDIR/"$FILEPREFIX".f25
+  echo file fort.25 saved as $OUTDIR/"$FILEPREFIX".f25 >>& $OUTDIR/$OUTFILE
+  echo file fort.25 saved as $OUTDIR/"$FILEPREFIX".f25
+ endif
+ if(-e BAND.DAT  && ! -z BAND.DAT ) then
+  cp BAND.DAT $OUTDIR/"$FILEPREFIX"_dat.BAND
+  echo file BAND.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.BAND >>& $OUTDIR/$OUTFILE
+  echo file BAND.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.BAND
+ endif
+ if(-e DIEL.DAT  && ! -z DIEL.DAT ) then
+  cp DIEL.DAT $OUTDIR/"$FILEPREFIX"_dat.DIEL
+  echo file DIEL.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.DIEL >>& $OUTDIR/$OUTFILE
+  echo file DIEL.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.DIEL
+ endif
+ if(-e DOSS.DAT  && ! -z DOSS.DAT ) then
+  cp DOSS.DAT $OUTDIR/"$FILEPREFIX"_dat.DOSS
+  echo file DOSS.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.DOSS >>& $OUTDIR/$OUTFILE
+  echo file DOSS.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.DOSS
+ endif
+ if(-e RHOLINE.DAT  && ! -z RHOLINE.DAT ) then
+  cp RHOLINE.DAT $OUTDIR/"$FILEPREFIX"_dat.RHOLINE
+  echo file RHOLINE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.RHOLINE >>& $OUTDIR/$OUTFILE
+  echo file RHOLINE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.RHOLINE
+ endif
+ if(-e fort.31  && ! -z fort.31 ) then
+  cp fort.31 $OUTDIR/"$FILEPREFIX"_dat.prop3d
+  echo file fort.31 saved as $OUTDIR/"$FILEPREFIX"_dat.prop3d >>& $OUTDIR/$OUTFILE
+  echo file fort.31 saved as $OUTDIR/"$FILEPREFIX"_dat.prop3d
+ endif
+ if(-e fort.32  && ! -z fort.32 ) then
+  cp fort.32 $OUTDIR/"$FILEPREFIX"_dat.info3d
+  echo file fort.32 saved as $OUTDIR/"$FILEPREFIX"_dat.info3d >>& $OUTDIR/$OUTFILE
+  echo file fort.32 saved as $OUTDIR/"$FILEPREFIX"_dat.info3d
+ endif
+ if(-e SPIN_CUBE.DAT  && ! -z SPIN_CUBE.DAT ) then
+  cp SPIN_CUBE.DAT $OUTDIR/"$FILEPREFIX"_dat.SPIN_CUBE
+  echo file SPIN_CUBE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.SPIN_CUBE >>& $OUTDIR/$OUTFILE
+  echo file SPIN_CUBE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.SPIN_CUBE
+ endif
+ if(-e DENS_CUBE.DAT  && ! -z DENS_CUBE.DAT ) then
+  cp DENS_CUBE.DAT $OUTDIR/"$FILEPREFIX"_dat.DENS_CUBE
+  echo file DENS_CUBE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.DENS_CUBE >>& $OUTDIR/$OUTFILE
+  echo file DENS_CUBE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.DENS_CUBE
+ endif
+ if(-e POT_CUBE.DAT  && ! -z POT_CUBE.DAT ) then
+  cp POT_CUBE.DAT $OUTDIR/"$FILEPREFIX"_dat.POT_CUBE
+  echo file POT_CUBE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.POT_CUBE >>& $OUTDIR/$OUTFILE
+  echo file POT_CUBE.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.POT_CUBE
+ endif
+ if(-e EMDLM.DAT  && ! -z EMDLM.DAT ) then
+  cp EMDLM.DAT $OUTDIR/"$FILEPREFIX"_dat.EMDLM
+  echo file EMDLM.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.EMDLM >>& $OUTDIR/$OUTFILE
+  echo file EMDLM.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.EMDLM
+ endif
+ if(-e 3DEMDTOTAL.DAT  && ! -z 3DEMDTOTAL.DAT ) then
+  cp 3DEMDTOTAL.DAT $OUTDIR/"$FILEPREFIX"_dat.3DEMDTOTAL
+  echo file 3DEMDTOTAL.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.3DEMDTOTAL >>& $OUTDIR/$OUTFILE
+  echo file 3DEMDTOTAL.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.3DEMDTOTAL
+ endif
+ if(-e 3DEMDANISO.DAT  && ! -z 3DEMDANISO.DAT ) then
+  cp 3DEMDANISO.DAT $OUTDIR/"$FILEPREFIX"_dat.3DEMDANISO
+  echo file 3DEMDANISO.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.3DEMDANISO >>& $OUTDIR/$OUTFILE
+  echo file 3DEMDANISO.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.3DEMDANISO
+ endif
+ if(-e WFEMD.DAT  && ! -z WFEMD.DAT ) then
+  cp WFEMD.DAT $OUTDIR/"$FILEPREFIX"_dat.WFEMD
+  echo file WFEMD.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.WFEMD >>& $OUTDIR/$OUTFILE
+  echo file WFEMD.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.WFEMD
+ endif
+ if(-e CP.DAT  && ! -z CP.DAT ) then
+  cp CP.DAT $OUTDIR/"$FILEPREFIX"_dat.CP
+  echo file CP.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.CP >>& $OUTDIR/$OUTFILE
+  echo file CP.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.CP
+ endif
+ if(-e ADP.DAT  && ! -z ADP.DAT ) then
+  cp ADP.DAT $OUTDIR/"$FILEPREFIX".adp
+  echo file ADP.DAT saved as $OUTDIR/"$FILEPREFIX".adp >>& $OUTDIR/$OUTFILE
+  echo file ADP.DAT saved as $OUTDIR/"$FILEPREFIX".adp
+ endif
+ if(-e LINEA.DAT  && ! -z LINEA.DAT ) then
+  cp LINEA.DAT $OUTDIR/"$FILEPREFIX"_dat.LINEA
+  echo file LINEA.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.LINEA >>& $OUTDIR/$OUTFILE
+  echo file LINEA.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.LINEA
+ endif
+ if(-e POTC.DAT  && ! -z POTC.DAT ) then
+  cp POTC.DAT $OUTDIR/"$FILEPREFIX"_dat.POTC
+  echo file POTC.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.POTC >>& $OUTDIR/$OUTFILE
+  echo file POTC.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.POTC
+ endif
+ if(-e PROF.DAT  && ! -z PROF.DAT ) then
+  cp PROF.DAT $OUTDIR/"$FILEPREFIX"_dat.PROF
+  echo file PROF.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.PROF >>& $OUTDIR/$OUTFILE
+  echo file PROF.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.PROF
+ endif
+#
+ if(-e KRED.DAT  && ! -z KRED.DAT ) then
+  cp KRED.DAT $OUTDIR/"$FILEPREFIX"_dat.KRED
+  echo file KRED.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.KRED >>& $OUTDIR/$OUTFILE
+  echo file KRED.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.KRED
+ endif
+ if(-e GRED.DAT  && ! -z GRED.DAT ) then
+  cp GRED.DAT $OUTDIR/"$FILEPREFIX"_dat.GRED
+  echo file GRED.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.GRED >>& $OUTDIR/$OUTFILE
+  echo file GRED.DAT saved as $OUTDIR/"$FILEPREFIX"_dat.GRED
+ endif
+ if(-e MOLDRAW.DAT  && ! -z MOLDRAW.DAT ) then
+  cp MOLDRAW.DAT $OUTDIR/"$FILEPREFIX".mol
+  echo file MOLDRAW.DAT saved as $OUTDIR/"$FILEPREFIX".mol >>& $OUTDIR/$OUTFILE
+  echo file MOLDRAW.DAT saved as $OUTDIR/"$FILEPREFIX".mol
+ endif
+ if(-e fort.92  && ! -z fort.92 ) then
+  cp fort.92 $OUTDIR/"$FILEPREFIX".com
+  echo file fort.92 saved as $OUTDIR/"$FILEPREFIX".com >>& $OUTDIR/$OUTFILE
+  echo file fort.92 saved as $OUTDIR/"$FILEPREFIX".com
+ endif
+#
+ cd $OUTDIR
+ if(-e "$FILEPREFIX".f25  && ! -z "$FILEPREFIX".f25 ) then
+  date >& $OUTDIR/"$OUTFILE"g
+  echo output of Crgra in file $OUTDIR/"$OUTFILE"g >>& $OUTDIR/$OUTFILE
+  echo output of Crgra in file $OUTDIR/"$OUTFILE"g
+  $CRY2K6_GRA/maps06 "$FILEPREFIX" >>& $OUTDIR/"$OUTFILE"g
+  if(-e "$FILEPREFIX"_maps06.ps  && ! -z "$FILEPREFIX"_maps06.ps) then
+   echo contour maps postscript file $OUTDIR/"$FILEPREFIX"_maps06.ps  >>& $OUTDIR/"$OUTFILE"g
+   echo contour maps postscript file $OUTDIR/"$FILEPREFIX"_maps06.ps  >>& $OUTDIR/$OUTFILE
+   echo contour maps postscript file $OUTDIR/"$FILEPREFIX"_maps06.ps  
+  endif
+  if (-el mptparam.dat) then
+   rm mptparam.dat
+  endif
+  if (-el defps.dat) then
+   rm defps.dat
+  endif
+  $CRY2K6_GRA/doss06 "$FILEPREFIX" >>& $OUTDIR/"$OUTFILE"g
+  if(-e "$FILEPREFIX"_doss06.ps  && ! -z "$FILEPREFIX".doss06) then
+   echo doss postscript file $OUTDIR/"$FILEPREFIX"_doss06.ps >>& $OUTDIR/"$OUTFILE"g
+   echo doss postscript file $OUTDIR/"$FILEPREFIX"_doss06.ps >>& $OUTDIR/$OUTFILE
+   echo doss postscript file $OUTDIR/"$FILEPREFIX"_doss06.ps
+  endif
+  $CRY2K6_GRA/band06 "$FILEPREFIX" >>& $OUTDIR/"$OUTFILE"g
+  if(-e "$FILEPREFIX"_band06.ps  && ! -z "$FILEPREFIX"_band06.ps) then
+   echo band postscript file $OUTDIR/"$FILEPREFIX"_band06.ps >>& $OUTDIR/"$OUTFILE"g
+   echo band postscript file $OUTDIR/"$FILEPREFIX"_band06.ps >>& $OUTDIR/$OUTFILE
+   echo band postscript file $OUTDIR/"$FILEPREFIX"_band06.ps
+  endif
+ endif
+#
+ echo temporary directory $TMPDIR removed >>& $OUTDIR/$OUTFILE
+ echo temporary directory $TMPDIR removed
+ rm -R -f $TMPDIR
+ exit
+#
