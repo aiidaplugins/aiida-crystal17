@@ -19,8 +19,8 @@ env:
 - TEST_AIIDA_BACKEND=django
 - TEST_AIIDA_BACKEND=sqlalchemy
 
-before_script:
-- reentry scan
+#before_script:
+#- reentry scan
 
 script:
 - pytest -v #--doctest-modules --ignore=setup.py --ignore=examples
