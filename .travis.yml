@@ -24,16 +24,17 @@ before_script:
 - reentry scan
 
 script:
-- |
+- >
+  if [[ "$TEST_TYPE" == "pre-commit" ]];
+    pre-commit run --all-files || ( git status --short ; git diff ; exit 1 );
+  fi
+- >
   if [[ "$TEST_TYPE" == "pre-commit" ]]
-    pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
+    python .travis-data/check_version.py;
   fi
-- |
-  if [[ "$TEST_TYPE" == "pre-commit" ]]
-    python .travis-data/check_version.py
+- >
+  if [[ "$TEST_TYPE" != "pre-commit" ]];
+    pytest -v;
   fi
-- |
-  if [[ "$TEST_TYPE" != "pre-commit" ]]
-    pytest -v #--doctest-modules --ignore=setup.py --ignore=examples
-  fi
+#--doctest-modules --ignore=setup.py --ignore=examples
 
