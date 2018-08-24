@@ -8,7 +8,7 @@ from aiida.parsers.parser import Parser
 from aiida.parsers.exceptions import OutputParsingError
 
 from aiida.orm import CalculationFactory
-DiffCalculation = CalculationFactory('crystal17')
+DiffCalculation = CalculationFactory('diff')
 
 
 class DiffParser(Parser):
@@ -54,7 +54,7 @@ class DiffParser(Parser):
         # Check the folder content is as expected
         list_of_files = out_folder.get_folder_list()
         output_files = [self._calc._OUTPUT_FILE_NAME]
-        output_links = ['crystal17']
+        output_links = ['diff']
         # Note: set(A) <= set(B) checks whether A is a subset
         if set(output_files) <= set(list_of_files):
             pass

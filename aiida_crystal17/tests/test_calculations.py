@@ -20,11 +20,11 @@ def test_submit(test_data):
     from aiida.orm.data.singlefile import SinglefileData
 
     code = tests.get_code(
-        entry_point='crystal17')  # TODO this should go in setup
+        entry_point='diff')  # TODO this should go in setup
 
     # Prepare input parameters
     from aiida.orm import DataFactory
-    DiffParameters = DataFactory('crystal17')
+    DiffParameters = DataFactory('diff')
     parameters = DiffParameters({'ignore-case': True})
 
     file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file1.txt'))

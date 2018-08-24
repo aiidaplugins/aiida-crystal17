@@ -11,7 +11,7 @@ import tempfile
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 executables = {
-    'crystal17': 'diff',
+    'diff': 'diff',
 }
 
 

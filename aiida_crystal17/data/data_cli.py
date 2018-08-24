@@ -5,7 +5,7 @@ from aiida.cmdline.dbenv_lazyloading import load_dbenv_if_not_loaded
 
 
 # See aiida.cmdline.data entry point in setup.json
-@data_cmd.group('crystal17')
+@data_cmd.group('diff')
 def cli():
     """Command line interface for aiida-crystal17"""
     pass
@@ -21,7 +21,7 @@ def list_():  # pylint: disable=redefined-builtin
 
     from aiida.orm.querybuilder import QueryBuilder
     from aiida.orm import DataFactory
-    DiffParameters = DataFactory('crystal17')
+    DiffParameters = DataFactory('diff')
 
     qb = QueryBuilder()
     qb.append(DiffParameters)
