@@ -11,7 +11,6 @@ import pytest
 @pytest.fixture(scope='session')
 def aiida_profile():
     with fixture_manager() as fixture_mgr:
-        # fixture_mgr.create_profile()
         yield fixture_mgr
 
 
@@ -24,9 +23,11 @@ def test_data(aiida_profile):
 
 def test_submit(test_data):
     """Test submitting a calculation"""
+    print("{}".format(test_data))  # for pylint test to parse
     from aiida.orm.data.singlefile import SinglefileData
 
-    code = tests.get_code(entry_point='crystal17')  # TODO this should go in setup
+    code = tests.get_code(
+        entry_point='crystal17')  # TODO this should go in setup
 
     # Prepare input parameters
     from aiida.orm import DataFactory
@@ -50,4 +51,5 @@ def test_submit(test_data):
 
     calc.store_all()
     calc.submit()
-    print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(calc.uuid, calc.dbnode.pk))
+    print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
+        calc.uuid, calc.dbnode.pk))
