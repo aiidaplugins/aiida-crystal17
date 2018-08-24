@@ -17,6 +17,7 @@ def test_data(aiida_profile):
 def test_submit(test_data):
     """Test submitting a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
+    from aiida.work.run import submit, run
 
     code = tests.get_code(
         entry_point='diff')  # TODO this should go in setup
@@ -42,7 +43,15 @@ def test_submit(test_data):
     calc.use_file2(file2)
 
     calc.store_all()
-    calc.submit()
-    print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
-        calc.uuid, calc.dbnode.pk))
+    # calc.submit()
+    # print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
+    #     calc.uuid, calc.dbnode.pk))
+    inputs = {"_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
+                          "withmpi": False, "max_wallclock_seconds": False},
+              "_label": "aiida_crystal17 test",
+              "_description": "Test job submission with the aiida_crystal17 plugin",
+              "file1": file1, "file2": file2, "parameters": parameters,
+              "code": code}
+
+    run(calc.__class__.process(), **inputs)
 
