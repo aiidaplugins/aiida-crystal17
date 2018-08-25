@@ -1,11 +1,13 @@
 """
 Plugin to create a CRYSTAL17 output file from a supplied input file.
 """
+import os
+
+from aiida.common.datastructures import (CalcInfo, CodeInfo)
+from aiida.common.exceptions import (InputValidationError, ValidationError)
+from aiida.common.utils import classproperty
 from aiida.orm.calculation.job import JobCalculation
 from aiida.orm.data.singlefile import SinglefileData
-from aiida.common.utils import classproperty
-from aiida.common.exceptions import (InputValidationError, ValidationError)
-from aiida.common.datastructures import (CalcInfo, CodeInfo)
 
 
 class CryBasicCalculation(JobCalculation):
@@ -13,7 +15,8 @@ class CryBasicCalculation(JobCalculation):
     AiiDA calculation plugin wrapping the runcry17 executable.
 
     """
-    _OUTPUT_FILE_NAME = 'main.out'
+    _DEFAULT_INPUT_FILE = 'main.d12'
+    _DEFAULT_OUTPUT_FILE = 'main.out'
 
     def _init_internal_params(self):  # pylint: disable=useless-super-delegation
         """
@@ -23,7 +26,7 @@ class CryBasicCalculation(JobCalculation):
         super(CryBasicCalculation, self)._init_internal_params()
 
         # parser entry point defined in setup.json
-        # self._default_parser = 'crystal17.main'
+        self._default_parser = 'crystal17.basic'
 
     @classproperty
     def _use_methods(cls):
@@ -76,15 +79,17 @@ class CryBasicCalculation(JobCalculation):
         # Prepare CodeInfo object for aiida
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = ["main"]
-        codeinfo.stdout_name = self._OUTPUT_FILE_NAME
+        codeinfo.cmdline_params = [os.path.splitext(self._DEFAULT_INPUT_FILE)[0]]
+        codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE
+        # codeinfo.withmpi does this need to be set?
 
         # Prepare CalcInfo object for aiida
         calcinfo = CalcInfo()
         calcinfo.uuid = self.uuid
         calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = [infile.get_file_abs_path(), "main.d12"]
+        calcinfo.local_copy_list = [infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]
         calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [self._OUTPUT_FILE_NAME]
+        calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
+        # NB could also use calcinfo.retrieve_singlefile_list to store this as a SinglefileData node
 
         return calcinfo

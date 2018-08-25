@@ -105,7 +105,6 @@ def get_code(entry_point, computer_name='localhost'):
     else:
         exec_lookup = executables
 
-
     try:
         executable = exec_lookup[entry_point]
     except KeyError:

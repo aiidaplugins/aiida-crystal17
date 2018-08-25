@@ -21,7 +21,8 @@
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation"
         ],
         "aiida.parsers": [
-            "diff = aiida_crystal17.parsers.diffparser:DiffParser"
+            "diff = aiida_crystal17.parsers.diffparser:DiffParser",
+            "crystal17.basic = aiida_crystal17.parsers.cry_basic:CryBasicParser"
         ],
         "aiida.cmdline.data": [
             "diff = aiida_crystal17.data.data_cli:cli"

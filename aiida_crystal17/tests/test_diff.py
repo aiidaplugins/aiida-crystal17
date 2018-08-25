@@ -43,15 +43,18 @@ def test_submit(test_data):
     calc.use_file2(file2)
 
     calc.store_all()
-    # calc.submit()
-    # print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
-    #     calc.uuid, calc.dbnode.pk))
-    inputs = {"_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
-                          "withmpi": False, "max_wallclock_seconds": False},
-              "_label": "aiida_crystal17 test",
-              "_description": "Test job submission with the aiida_crystal17 plugin",
-              "file1": file1, "file2": file2, "parameters": parameters,
-              "code": code}
+    calc.submit()
+    print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
+        calc.uuid, calc.dbnode.pk))
 
-    run(calc.__class__.process(), **inputs)
+    # TODO test that calculation completed successfully
+
+    # inputs = {"_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
+    #                       "withmpi": False, "max_wallclock_seconds": False},
+    #           "_label": "aiida_crystal17 test",
+    #           "_description": "Test job submission with the aiida_crystal17 plugin",
+    #           "file1": file1, "file2": file2, "parameters": parameters,
+    #           "code": code}
+    #
+    # run(calc.__class__.process(), **inputs)
 

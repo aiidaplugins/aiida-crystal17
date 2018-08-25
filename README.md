@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/chrisjsewell/aiida-crystal17.svg?branch=master)](https://travis-ci.org/chrisjsewell/aiida-crystal17)
+
 # aiida-crystal17
 
 AiiDA plugin for running the [CRYSTAL17](http://www.crystal.unito.it/) code
@@ -56,6 +58,12 @@ To set up local version of CRYSTAL17 on a mac (after downloading a copy from the
 3. Define environmental variables in `~/.bashrc`, as detailed in `cry17_scripts/cry17.bashrc`
 4. Copy or symlink the `cry17_scripts/runcry17` script into `/usr/local/bin/`
 
+## Coding Style
+
+The code style is tested using [prospector](https://prospector.readthedocs.io/en/master/),
+with the configuration set in `.prospector.yaml`.
+
+Editors like PyCharm have automatic code reformat utilities, which should adhere to this standard.
 
 # License
 
