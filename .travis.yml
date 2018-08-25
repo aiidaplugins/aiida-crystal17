@@ -10,16 +10,20 @@ services:
 addons:
   postgresql: "9.5"
 
-install:
-# Upgrade pip setuptools and wheel
-- pip install -U pip wheel setuptools
-- pip install .[pre-commit,testing]
-
 env:
 - TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true
 - TEST_AIIDA_BACKEND=sqlalchemy TEST_TYPE="tests" MOCK_EXECUTABLES=true
 - TEST_TYPE="version"
 - TEST_TYPE="style"
+- TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
+
+allow_failures:
+- env: TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
+
+install:
+# Upgrade pip setuptools and wheel
+- pip install -U pip wheel setuptools
+- pip install .[pre-commit,testing]
 
 before_script:
 - reentry scan
