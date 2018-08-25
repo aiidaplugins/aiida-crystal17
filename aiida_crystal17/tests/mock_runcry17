@@ -16,12 +16,14 @@ if __name__ == "__main__":
 
     script_path = os.path.dirname(os.path.realpath(__file__))
     input_path = sys.argv[1]
+    # CRYSTAL17 requires input file name without extension
+    input_path += ".d12"
 
     with open(input_path, "rb") as f:
         hashkey = hashlib.md5(f.read()).digest()
 
     if hashkey not in outfiles:
-        raise IOError("caontents of {0} not in hash list".format(os.path.basename(input_path)))
+        raise IOError("contents of {0} not in hash list".format(os.path.basename(input_path)))
 
     outpath = os.path.join(script_path, "output_files", outfiles[hashkey])
     with open(outpath) as f:

@@ -8,6 +8,7 @@ import os
 import tempfile
 import stat
 import subprocess
+import sys
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -48,6 +49,12 @@ def get_path_to_executable(executable):
     # pylint issue https://github.com/PyCQA/pylint/issues/73
     import distutils.spawn  # pylint: disable=no-name-in-module,import-error
     path = distutils.spawn.find_executable(executable)
+    if path is None:
+        # distutils cannot find scripts within the python path (i.e. those created by pip install)
+        script_path = os.path.join(os.path.dirname(sys.executable), executable)
+        if os.path.exists(script_path):
+            path = script_path
+
     if path is None:
         raise ValueError("{} executable not found in PATH.".format(executable))
 
