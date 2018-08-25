@@ -13,7 +13,8 @@ if __name__ == '__main__':
         packages=find_packages(),
         # this doesn't work when placed in setup.json (something to do with str type)
         package_data={
-            "tests": ["input_files/*", "output_files/*"]
+            "tests.input_files": ["*"],
+            "tests.outptut_files": ["*"],
         },
         # version=import_module('aiida_crystal17').__version__,
         long_description=open('README.md').read(),
