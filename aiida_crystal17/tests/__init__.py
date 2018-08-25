@@ -46,6 +46,8 @@ def get_path_to_executable(executable):
     :return: path to executable
     :rtype: str
     """
+    path = None
+    
     # issue with distutils finding scripts within the python path (i.e. those created by pip install)
     script_path = os.path.join(os.path.dirname(sys.executable), executable)
     if os.path.exists(script_path):
