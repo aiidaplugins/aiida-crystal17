@@ -6,6 +6,7 @@ which compares an input file to a hash and writes an appropriate outputfile st s
 import sys
 import os
 import hashlib
+import aiida_crystal17.tests as tests
 
 outfiles = {
     '\xf6\t\x0e\x9f\r\xa6\t\x8ea,\xd2l\xb2\xf1\x16 ': "mgo_sto3g.out"
@@ -14,7 +15,8 @@ outfiles = {
 
 if __name__ == "__main__":
 
-    script_path = os.path.dirname(os.path.realpath(__file__))
+    # script_path = os.path.dirname(os.path.realpath(__file__))
+    test_path = os.path.dirname(tests.__file__)
     input_path = sys.argv[1]
     # CRYSTAL17 requires input file name without extension
     input_path += ".d12"
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     if hashkey not in outfiles:
         raise IOError("contents of {0} not in hash list".format(os.path.basename(input_path)))
 
-    outpath = os.path.join(script_path, "output_files", outfiles[hashkey])
+    outpath = os.path.join(test_path, "output_files", outfiles[hashkey])
     with open(outpath) as f:
         sys.stdout.write(f.read())
 
