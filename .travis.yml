@@ -24,6 +24,13 @@ matrix:
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
+- >
+  if [[ "AIIDA_BRANCH" == "develop" ]]; then
+  git clone https://github.com/aiidateam/aiida_core.git;
+  cd aiida_core;
+  pip install .[testing];
+  cd ..;
+  fi
 - pip install .[pre-commit,testing]
 
 before_script:
