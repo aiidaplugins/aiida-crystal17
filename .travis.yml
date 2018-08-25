@@ -17,8 +17,9 @@ env:
 - TEST_TYPE="style"
 - TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
 
-allow_failures:
-- env: TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
+matrix:
+  allow_failures:
+  - env: TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
 
 install:
 # Upgrade pip setuptools and wheel
