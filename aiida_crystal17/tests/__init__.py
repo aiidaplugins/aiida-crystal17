@@ -3,10 +3,11 @@
 Use the aiida.utils.fixtures.PluginTestCase class for convenient
 testing that does not pollute your profiles/databases.
 """
-
 # Helper functions for tests
 import os
 import tempfile
+import stat
+import subprocess
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -15,7 +16,7 @@ executables = {
     'crystal17.basic': 'runcry17',
 }
 
-MOCK_GLOBAL_VAR = "MOCK_CRY_EXECUTABLES"
+MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
 
 mock_executables = {
     'diff': 'diff',
@@ -123,3 +124,32 @@ def get_code(entry_point, computer_name='localhost'):
         code.store()
 
     return code
+
+
+def test_calculation_execution(calc, allowed_returncodes=(0,)):
+    """test that a calculation executes successfully"""
+    from aiida.common.folders import SandboxFolder
+
+    # output input files and scripts to temporary folder
+    with SandboxFolder() as folder:
+
+        subfolder, script_filename = calc.submit_test(folder=folder)
+        print("inputs created at {}".format(subfolder.abspath))
+
+        script_path = os.path.join(subfolder.abspath, script_filename)
+        # we first need to make sure the script is executable
+        st = os.stat(script_path)
+        os.chmod(script_path, st.st_mode | stat.S_IEXEC)
+        # now call script, NB: bash -l -c is required to access global variable loaded in .bash_profile
+
+        returncode = subprocess.call(["bash", "-l", "-c", script_path], cwd=subfolder.abspath)
+
+        if returncode not in allowed_returncodes:
+            # the script reroutes stderr to _scheduler-stderr.txt (at least in v0.12)
+            err_msg = "process failed (and couldn't find _scheduler-stderr.txt)"
+            stderr_path = os.path.join(subfolder.abspath, "_scheduler-stderr.txt")
+            if os.path.exists(stderr_path):
+                with open(stderr_path) as f:
+                    err_msg = "Process failed with stderr:\n{}".format(f.read())
+            raise RuntimeError(err_msg)
+        print("calculation completed execution")

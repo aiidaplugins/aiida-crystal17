@@ -34,7 +34,7 @@ Therefore, a mock executable (`mock_runcry17`) has been created for testing purp
 This executable computes the md5 hash of the supplied input file and tries to match it against a dictionary of 
 precomputed hashes. If found, the executable will write the matching output (from `test/output_files`) to stdout.
 
-To use this mock executable when running tests, set the global variable `MOCK_CRY_EXECUTABLES=true`.
+To use this mock executable when running tests, set the global variable `MOCK_EXECUTABLES=true`.
 
 ## Setting up CRYSTAL17 locally
 

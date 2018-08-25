@@ -15,8 +15,6 @@ class CryBasicCalculation(JobCalculation):
     AiiDA calculation plugin wrapping the runcry17 executable.
 
     """
-    _DEFAULT_INPUT_FILE = 'main.d12'
-    _DEFAULT_OUTPUT_FILE = 'main.out'
 
     def _init_internal_params(self):  # pylint: disable=useless-super-delegation
         """
@@ -24,6 +22,9 @@ class CryBasicCalculation(JobCalculation):
         """
         # reuse base class function
         super(CryBasicCalculation, self)._init_internal_params()
+
+        self._DEFAULT_INPUT_FILE = 'main.d12'
+        self._DEFAULT_OUTPUT_FILE = 'main.out'
 
         # parser entry point defined in setup.json
         self._default_parser = 'crystal17.basic'
@@ -87,7 +88,7 @@ class CryBasicCalculation(JobCalculation):
         calcinfo = CalcInfo()
         calcinfo.uuid = self.uuid
         calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = [infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]
+        calcinfo.local_copy_list = [[infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]]
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
         # NB could also use calcinfo.retrieve_singlefile_list to store this as a SinglefileData node
