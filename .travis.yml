@@ -13,9 +13,7 @@ addons:
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
-- pip install .[precommit,testing]
-# the above command does not appear to install pre-commit requirements
-- pip install prospector
+- pip install .[pre-commit,testing]
 
 env:
 - TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true
