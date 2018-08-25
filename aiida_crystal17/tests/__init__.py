@@ -46,19 +46,20 @@ def get_path_to_executable(executable):
     :return: path to executable
     :rtype: str
     """
-    # pylint issue https://github.com/PyCQA/pylint/issues/73
-    import distutils.spawn  # pylint: disable=no-name-in-module,import-error
-    path = distutils.spawn.find_executable(executable)
+    # issue with distutils finding scripts within the python path (i.e. those created by pip install)
+    script_path = os.path.join(os.path.dirname(sys.executable), executable)
+    if os.path.exists(script_path):
+        path = script_path
+
     if path is None:
-        # distutils cannot find scripts within the python path (i.e. those created by pip install)
-        script_path = os.path.join(os.path.dirname(sys.executable), executable)
-        if os.path.exists(script_path):
-            path = script_path
+        # pylint issue https://github.com/PyCQA/pylint/issues/73
+        import distutils.spawn  # pylint: disable=no-name-in-module,import-error
+        path = distutils.spawn.find_executable(executable)
 
     if path is None:
         raise ValueError("{} executable not found in PATH.".format(executable))
 
-    return path
+    return os.path.abspath(path)
 
 
 def get_computer(name='localhost'):
@@ -144,6 +145,8 @@ def test_calculation_execution(calc, allowed_returncodes=(0,)):
         print("inputs created at {}".format(subfolder.abspath))
 
         script_path = os.path.join(subfolder.abspath, script_filename)
+        scheduler_stderr = calc._SCHED_ERROR_FILE
+
         # we first need to make sure the script is executable
         st = os.stat(script_path)
         os.chmod(script_path, st.st_mode | stat.S_IEXEC)
@@ -152,9 +155,9 @@ def test_calculation_execution(calc, allowed_returncodes=(0,)):
         returncode = subprocess.call(["bash", "-l", "-c", script_path], cwd=subfolder.abspath)
 
         if returncode not in allowed_returncodes:
-            # the script reroutes stderr to _scheduler-stderr.txt (at least in v0.12)
-            err_msg = "process failed (and couldn't find _scheduler-stderr.txt)"
-            stderr_path = os.path.join(subfolder.abspath, "_scheduler-stderr.txt")
+
+            err_msg = "process failed (and couldn't find stderr file: {})".format(scheduler_stderr)
+            stderr_path = os.path.join(subfolder.abspath, scheduler_stderr)
             if os.path.exists(stderr_path):
                 with open(stderr_path) as f:
                     err_msg = "Process failed with stderr:\n{}".format(f.read())

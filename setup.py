@@ -14,8 +14,9 @@ if __name__ == '__main__':
         # this doesn't work when placed in setup.json (something to do with str type)
         package_data={
             "": ["*"],
-            "tests.input_files": ["*"],
-            "tests.outptut_files": ["*"],
+            # TODO be more specific with package data (but the lines below aren't working)
+            # "tests.input_files": ["*"],
+            # "tests.outptut_files": ["*"],
         },
         # version=import_module('aiida_crystal17').__version__,
         long_description=open('README.md').read(),

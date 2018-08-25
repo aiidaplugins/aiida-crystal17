@@ -11,14 +11,13 @@ git clone https://github.com/chrisjsewell/aiida-crystal17 .
 cd aiida-crystal17
 pip install -e .  # also installs aiida, if missing (but not postgres)
 #pip install -e .[precommit,testing] # install extras for more features
-verdi quicksetup  # better to set up a new profile
-verdi calculation plugins  # should now show your calclulation plugins
+verdi quicksetup  # set up a new profile
+verdi calculation plugins  # should now show the calclulation plugins (with prefix crystal17.)
 ```
 
 # Usage
 
-Here goes a complete example of how to submit a test calculation using this plugin.
-
+TODO Here goes a complete example of how to submit a test calculation using this plugin.
 
 # Development and Testing Notes
 
@@ -64,6 +63,33 @@ The code style is tested using [prospector](https://prospector.readthedocs.io/en
 with the configuration set in `.prospector.yaml`.
 
 Editors like PyCharm have automatic code reformat utilities, which should adhere to this standard.
+
+## Current Development Status
+
+### Basic Crystal Calculation
+
+This plugin set is the first to be developed. 
+It provides a basic calculation functionality by:
+ 
+1. Accepting a (pre-written) input file *via* a `SinglefileData` node
+2. Initiating a crystal run *via* the `crystal17.basic` calculation plugin.
+3. Parsing the stdout file into:
+
+   1. an output a `SinglefileData` node
+   2. an output `ParameterData` node, holding key data, *via* the `crystal17.basic` parser plugin.
+
+## Future Development
+
+Future development will then focus on:
+ 
+1. Creation of the input file,  *via* input of 
+    1. a `StructureData` node
+    2. a main `ParamaterData` node.
+    3. `ParamaterData` nodes for each atomic basis set
+2. Additional output nodes (e.g. `StructureData` and `TrajectoryData`) 
+and extending the data held in the `ParamaterData` node.
+3. Parsing of input files to the input nodes described in (1), 
+for migration of existing computations
 
 # License
 

@@ -23,6 +23,7 @@ class CryBasicCalculation(JobCalculation):
         # reuse base class function
         super(CryBasicCalculation, self)._init_internal_params()
 
+        # default input and output files
         self._DEFAULT_INPUT_FILE = 'main.d12'
         self._DEFAULT_OUTPUT_FILE = 'main.out'
 
@@ -45,7 +46,7 @@ class CryBasicCalculation(JobCalculation):
                 'valid_types': SinglefileData,
                 'additional_parameter': None,
                 'linkname': 'input_file',
-                'docstring': ("the input .d12 file.")
+                'docstring': "the input .d12 file content."
             },
         })
 
@@ -59,8 +60,14 @@ class CryBasicCalculation(JobCalculation):
                 the plugin should put all its files.
             :param inputdict: dictionary of the input nodes as they would
                 be returned by get_inputs_dict
+
+        See https://aiida-core.readthedocs.io/en/latest/
+        developer_guide/devel_tutorial/code_plugin_qe.html#step-3-prepare-a-text-input
+        for a description of its finction and inputs
         """
         # read inputs
+        # we expect "code" and "input_file"
+
         try:
             code = inputdict.pop(self.get_linkname('code'))
         except KeyError:
@@ -77,12 +84,12 @@ class CryBasicCalculation(JobCalculation):
         if inputdict:
             raise ValidationError("Unknown additional inputs: {}".format(inputdict))
 
-        # Prepare CodeInfo object for aiida
+        # Prepare CodeInfo object for aiida, describes how a code has to be executed
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
         codeinfo.cmdline_params = [os.path.splitext(self._DEFAULT_INPUT_FILE)[0]]
         codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE
-        # codeinfo.withmpi does this need to be set?
+        codeinfo.withmpi = self.get_withmpi()
 
         # Prepare CalcInfo object for aiida
         calcinfo = CalcInfo()
@@ -91,6 +98,9 @@ class CryBasicCalculation(JobCalculation):
         calcinfo.local_copy_list = [[infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]]
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
-        # NB could also use calcinfo.retrieve_singlefile_list to store this as a SinglefileData node
+        calcinfo.retrieve_singlefile_list = [('output_file', 'singlefile', self._DEFAULT_OUTPUT_FILE)]
+
+        # TODO set hpc options (i.e. calcinfo.num_machines, etc)?
+        # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
 
         return calcinfo
