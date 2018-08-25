@@ -64,7 +64,7 @@ def test_process(new_database):
     calc.store_all()
 
     # test process execution
-    tests.test_calculation_execution(calc)
+    tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE])
 
 
 # TODO test that calculation completed successfully

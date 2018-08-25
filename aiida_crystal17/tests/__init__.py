@@ -47,7 +47,7 @@ def get_path_to_executable(executable):
     :rtype: str
     """
     path = None
-    
+
     # issue with distutils finding scripts within the python path (i.e. those created by pip install)
     script_path = os.path.join(os.path.dirname(sys.executable), executable)
     if os.path.exists(script_path):
@@ -86,7 +86,7 @@ def get_computer(name='localhost'):
             name=name,
             description='localhost computer set up by aiida_crystal17 tests',
             hostname='localhost',
-            workdir=tempfile.mkdtemp(),
+            workdir=tempfile.mkdtemp(),  # TODO this appear to be making a temp directory without deleting it
             transport_type='local',
             scheduler_type='direct',
             enabled_state=True)
@@ -136,8 +136,14 @@ def get_code(entry_point, computer_name='localhost'):
     return code
 
 
-def test_calculation_execution(calc, allowed_returncodes=(0,)):
-    """test that a calculation executes successfully"""
+def test_calculation_execution(calc, allowed_returncodes=(0,), check_paths=None):
+    """ test that a calculation executes successfully
+
+    :param calc: the calculation
+    :param allowed_returncodes: raise RunTimeError if return code is not in allowed_returncodes
+    :param check_paths: raise OSError if these relative paths are not in the folder after execution
+    :return:
+    """
     from aiida.common.folders import SandboxFolder
 
     # output input files and scripts to temporary folder
@@ -164,4 +170,9 @@ def test_calculation_execution(calc, allowed_returncodes=(0,)):
                 with open(stderr_path) as f:
                     err_msg = "Process failed with stderr:\n{}".format(f.read())
             raise RuntimeError(err_msg)
+
+        if check_paths is not None:
+            for outpath in check_paths:
+                subfolder.get_abs_path(outpath, check_existence=True)
+
         print("calculation completed execution")
