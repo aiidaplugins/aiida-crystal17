@@ -81,7 +81,7 @@ def test_process(new_database):
 
     # test process execution
     # for diff 0=no differences, 1=differences, >1=error
-    tests.test_calculation_execution(calc, allowed_returncodes=(1,))
+    tests.test_calculation_execution(calc, allowed_returncodes=(1,), check_paths=[calc._OUTPUT_FILE_NAME])
 
     # TODO test that calculation completed successfully
 
