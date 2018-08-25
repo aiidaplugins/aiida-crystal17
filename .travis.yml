@@ -26,14 +26,18 @@ install:
 - pip install -U pip wheel setuptools
 - >
   if [[ "$AIIDA_BRANCH" == "develop" ]]; then
-  cur_path="$(pwd)";
-  cd ..;
-  git clone --branch=develop https://github.com/aiidateam/aiida_core.git;
-  cd aiida_core;
-  pip install .[testing];
-  cd "$cur_path";
+    cur_path="$(pwd)";
+    cd ..;
+    git clone --branch=develop https://github.com/aiidateam/aiida_core.git;
+    cd aiida_core;
+    pip install .[testing];
+    cd "$cur_path";
+    pip install --no-deps .
   fi
-- pip install .[pre-commit,testing]
+- >
+  if [[ "$AIIDA_BRANCH" != "develop" ]]; then
+    pip install .[pre-commit,testing];
+  fi
 
 before_script:
 - reentry scan
