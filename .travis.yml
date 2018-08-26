@@ -15,11 +15,12 @@ env:
 - TEST_AIIDA_BACKEND=sqlalchemy TEST_TYPE="tests" MOCK_EXECUTABLES=true
 - TEST_TYPE="version"
 - TEST_TYPE="style"
-- TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
-
-matrix:
-  allow_failures:
-  - env: TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
+# TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
+#- TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
+#
+#matrix:
+#  allow_failures:
+#  - env: TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
 
 install:
 # Upgrade pip setuptools and wheel

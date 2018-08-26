@@ -3,6 +3,7 @@ A parser to read the main output (stdout) of a standard CRYSTAL17 run
 """
 from aiida.parsers.parser import Parser
 from aiida.parsers.exceptions import OutputParsingError
+from aiida.common.datastructures import calc_states
 
 from aiida.orm import CalculationFactory
 CryBasicCalculation = CalculationFactory('crystal17.basic')
@@ -16,11 +17,27 @@ class CryBasicParser(Parser):
         """
         Initialize Parser instance
         """
-        super(CryBasicParser, self).__init__(calculation)
-
         # check for valid input
         if not isinstance(calculation, CryBasicCalculation):
             raise OutputParsingError("Can only parse CryBasicCalculation")
+
+        super(CryBasicParser, self).__init__(calculation)
+
+    # pylint: disable=protected-access
+    def check_state(self):
+        """Log an error if the calculation being parsed is not in PARSING state."""
+        if self._calc.get_state() != calc_states.PARSING:
+            self.logger.error('Calculation not in parsing state')
+
+    # pylint: disable=protected-access
+    def get_folder(self, retrieved):
+        """Convenient access to the retrieved folder."""
+        try:
+            out_folder = retrieved[self._calc._get_linkname_retrieved()]
+            return out_folder
+        except KeyError:
+            self.logger.error('No retrieved folder found')
+            return None
 
     # pylint: disable=protected-access
     def parse_with_retrieved(self, retrieved):
@@ -36,34 +53,44 @@ class CryBasicParser(Parser):
           * ``node_list``: list of new nodes to be stored in the db
             (as a list of tuples ``(link_name, node)``)
         """
-        from aiida.orm.data.singlefile import SinglefileData
+        from aiida.orm import DataFactory
+        from ejplugins.crystal import CrystalOutputPlugin
+
         success = False
         node_list = []
 
+        # check calc in parsing state
+        self.check_state()
+
         # Check that the retrieved folder is there
-        try:
-            out_folder = retrieved[self._calc._get_linkname_retrieved()]
-        except KeyError:
-            self.logger.error("No retrieved folder found")
+        out_folder = self.get_folder(retrieved)
+        if not out_folder:
             return success, node_list
 
-        # Check the folder content is as expected
         list_of_files = out_folder.get_folder_list()
+
+        # Check the folder content is as expected
         output_files = [self._calc._DEFAULT_OUTPUT_FILE]
-        output_links = ['crystal17.basic']
-        # Note: set(A) <= set(B) checks whether A is a subset
-        if set(output_files) <= set(list_of_files):
+        output_links = ['outfile']
+        if set(output_files).issubset(list_of_files):
             pass
         else:
             self.logger.error(
                 "Not all expected output files {} were found".format(
                     output_files))
+            return success, node_list
 
-        # Use something like this to loop over multiple output files
-        for fname, link in list(zip(output_files, output_links)):
+        # store the main output file
+        node = DataFactory("singlefile")(file=out_folder.get_abs_path(output_files[0]))
+        node_list.append((output_links[0], node))
 
-            node = SinglefileData(file=out_folder.get_abs_path(fname))
-            node_list.append((link, node))
+        cryparse = CrystalOutputPlugin()
+        with open(out_folder.get_abs_path(output_files[0])) as f:
+            data = cryparse.read_file(f)
+
+        params = DataFactory("parameter")()
+        params.set_dict(data)
+        node_list.append(("parameters", params))
 
         success = True
         return success, node_list

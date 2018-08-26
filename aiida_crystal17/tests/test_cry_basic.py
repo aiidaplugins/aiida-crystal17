@@ -5,7 +5,6 @@ import os
 
 import aiida_crystal17.tests as tests
 import pytest
-# from aiida_crystal17.calculations.cry_basic import CryBasicCalculation
 
 
 def test_submit(new_database):
@@ -65,6 +64,45 @@ def test_process(new_database):
 
     # test process execution
     tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE])
+
+
+def test_parser(new_database):
+    """ Test the parser
+
+    """
+    from aiida.parsers import ParserFactory
+    from aiida.common.datastructures import calc_states
+    from aiida.common.folders import SandboxFolder
+    from aiida.orm import DataFactory
+
+    code = tests.get_code(
+        entry_point='crystal17.basic')
+    calc = code.new_calc()
+    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+
+    calc.store_all()
+    calc._set_state(calc_states.PARSING)
+
+    parser_cls = ParserFactory("crystal17.basic")
+    parser = parser_cls(calc)
+
+    with SandboxFolder() as folder:
+
+        main_out_path = os.path.join(os.path.dirname(tests.__file__), "output_files", "mgo_sto3g.out")
+        with open(main_out_path) as f:
+            folder.create_file_from_filelike(f, "main.out")
+
+        fdata = DataFactory("folder")()
+        fdata.replace_with_folder(folder.abspath)
+
+        mock_retrieved = {
+            calc._get_linkname_retrieved(): fdata
+        }
+        success, node_list = parser.parse_with_retrieved(mock_retrieved)
+
+    assert success
+
+    assert set(["outfile", "parameters"]) == set([name for name, node in node_list])
 
 
 # TODO test that calculation completed successfully

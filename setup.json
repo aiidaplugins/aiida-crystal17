@@ -36,7 +36,8 @@
     "setup_requires": ["reentry"],
     "reentry_register": true,
     "install_requires": [
-        "aiida >= 0.12"
+        "aiida >= 0.12",
+        "ejplugins"
     ],
     "extras_require": {
         "testing": [

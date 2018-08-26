@@ -98,7 +98,8 @@ class CryBasicCalculation(JobCalculation):
         calcinfo.local_copy_list = [[infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]]
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
-        calcinfo.retrieve_singlefile_list = [('output_file', 'singlefile', self._DEFAULT_OUTPUT_FILE)]
+        # delegate this to the parser
+        # calcinfo.retrieve_singlefile_list = [('output_file', 'singlefile', self._DEFAULT_OUTPUT_FILE)]
 
         # TODO set hpc options (i.e. calcinfo.num_machines, etc)?
         # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
