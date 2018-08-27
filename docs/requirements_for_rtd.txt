@@ -1,3 +1,1 @@
-ase==3.12.0 # otherwise get:
-# error: ase 3.16.2 is installed but ase==3.12.0; extra == "atomic_tools" is required by set(['aiida-core'])
 -e .[docs]
