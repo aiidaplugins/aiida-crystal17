@@ -43,7 +43,7 @@ install:
   fi
 - >
   if [[ "$AIIDA_BRANCH" != "develop" ]]; then
-    pip install .[pre-commit,testing];
+    pip install .[pre-commit,testing,docs];
   fi
 
 before_script:
