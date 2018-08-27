@@ -29,18 +29,17 @@ env:
       MOCK_EXECUTABLES: true
 
   allow_failures:
-  - env:
-      - TEST_TYPE: tests
-        AIIDA_BRANCH: develop
-        TEST_AIIDA_BACKEND: django
-        MOCK_EXECUTABLES: true
+    - TEST_TYPE: tests
+      AIIDA_BRANCH: develop
+      TEST_AIIDA_BACKEND: django
+      MOCK_EXECUTABLES: true
 
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
 - pip install .[pre-commit,testing,docs]
 - >
-  if [[ -z "${AIIDA_BRANCH}" ]]; then
+  if [[ ! -z "${AIIDA_BRANCH}" ]]; then
     cur_path="$(pwd)";
     cd ..;
     git clone --branch=${AIIDA_BRANCH} https://github.com/aiidateam/aiida_core.git;
