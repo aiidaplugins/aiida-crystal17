@@ -146,8 +146,12 @@ def test_parser_scf(new_database):
                    'species': [{'element': 'O', 'occu': 1.0}],
                    'xyz': [2.105, 2.105, 2.105]}]}
 
-    assert edict.diff(node_dict['output_structure'].get_pymatgen_structure().as_dict(),
-                      expected_struct, np_allclose=True) == {}
+    output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
+    # in later version of pymatgen
+    if "charge" in output_struct:
+        output_struct.pop("charge")
+
+    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
 def test_parser_opt(new_database):
@@ -229,8 +233,12 @@ def test_parser_opt(new_database):
                    'species': [{'element': 'O', 'occu': 1.0}],
                    'xyz': [1.942180612737, 1.942180612737, 1.942180612737]}]}
 
-    assert edict.diff(node_dict['output_structure'].get_pymatgen_structure().as_dict(),
-                      expected_struct, np_allclose=True) == {}
+    output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
+    # in later version of pymatgen
+    if "charge" in output_struct:
+        output_struct.pop("charge")
+
+    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
 # TODO test that the calculation completed successfully
