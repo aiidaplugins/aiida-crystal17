@@ -23,10 +23,7 @@ env:
     - TEST_TYPE: docs
       READTHEDOCS: 'True'
 # TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
-    - TEST_TYPE: tests
-      AIIDA_BRANCH: develop
-      TEST_AIIDA_BACKEND: django
-      MOCK_EXECUTABLES: true
+    - TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
 
 allow_failures:
   - env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
