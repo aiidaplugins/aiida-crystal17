@@ -28,10 +28,9 @@ env:
       TEST_AIIDA_BACKEND: django
       MOCK_EXECUTABLES: true
 
-
 allow_failures:
   env:
-  - TEST_TYPE: tests
+    TEST_TYPE: tests
     AIIDA_BRANCH: develop
     TEST_AIIDA_BACKEND: django
     MOCK_EXECUTABLES: true
