@@ -42,7 +42,8 @@
         "testing": [
             "aiida-core[testing]",
             "jsonextended",
-            "wheel>=0.31"
+            "wheel>=0.31",
+            "pgtest"
         ],
         "pre-commit": [
             "pre-commit",
