@@ -125,6 +125,9 @@ class CryBasicCalculation(JobCalculation):
             calcinfo.local_copy_list.append([ingui.get_file_abs_path(), self._DEFAULT_EXTERNAL_FILE])
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
+        # TODO .gui won't be available for scf runs, will the computation fail if it can't find a file in retrieve list?
+        # calcinfo.retrieve_list.append(self._DEFAULT_EXTERNAL_FILE)
+        calcinfo.retrieve_temporary_list = []
 
         # TODO set hpc options (i.e. calcinfo.num_machines, etc)? Doesn't seem required looking at aiida-quantumespresso
         # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)

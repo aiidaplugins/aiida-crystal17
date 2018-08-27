@@ -11,14 +11,20 @@ addons:
   postgresql: "9.5"
 
 env:
-- TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true
-- TEST_AIIDA_BACKEND=sqlalchemy TEST_TYPE="tests" MOCK_EXECUTABLES=true
-- TEST_TYPE="version"
-- TEST_TYPE="style"
+  matrix:
+    - TEST_TYPE: tests
+      TEST_AIIDA_BACKEND: django
+      MOCK_EXECUTABLES: true
+    - TEST_TYPE: tests
+      TEST_AIIDA_BACKEND: sqlalchemy
+      MOCK_EXECUTABLES: true
+    - TEST_TYPE: version
+    - TEST_TYPE: style
+    - TEST_TYPE: docs
+      READTHEDOCS: 'True'
 # TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
-#- TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
+#   - TEST_AIIDA_BACKEND: django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
 #
-#matrix:
 #  allow_failures:
 #  - env: TEST_AIIDA_BACKEND=django TEST_TYPE="tests" MOCK_EXECUTABLES=true AIIDA_BRANCH="develop"
 
@@ -47,5 +53,6 @@ script:
 - if [[ "$TEST_TYPE" == "tests" ]]; then pytest -v; fi
 - if [[ "$TEST_TYPE" == "version" ]]; then python .travis-data/check_version.py; fi
 - if [[ "$TEST_TYPE" == "style" ]]; then prospector ; fi
+- if [[ "$TEST_TYPE" == "docs" ]]; then cd docs; make; fi
 #--doctest-modules --ignore=setup.py --ignore=examples
 

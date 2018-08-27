@@ -35,9 +35,9 @@ if __name__ == "__main__":
         raise IOError("contents of {0} not in hash list, hashkey: {1}".format(
             os.path.basename(input_path), str(hashkey)))
 
-    for fname in additional_files.get(hashkey, []):
-        src = os.path.join(test_path, "output_files", fname)
-        dst = os.path.join(".", fname)
+    for inname, outname in additional_files.get(hashkey, []):
+        src = os.path.join(test_path, "output_files", inname)
+        dst = os.path.join(".", outname)
         copyfile(src, dst)
 
     outpath = os.path.join(test_path, "output_files", stdoutfiles[hashkey])

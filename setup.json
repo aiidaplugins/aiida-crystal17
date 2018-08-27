@@ -29,7 +29,6 @@
         ]
     },
     "scripts": [
-        "examples/cli.py",
         "aiida_crystal17/tests/mock_runcry17"
     ],
     "include_package_data": true,
