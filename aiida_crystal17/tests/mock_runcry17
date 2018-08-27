@@ -6,11 +6,18 @@ which compares an input file to a hash and writes an appropriate outputfile st s
 import sys
 import os
 import hashlib
+from shutil import copyfile
 import aiida_crystal17.tests as tests
 
-outfiles = {
-    '\xf6\t\x0e\x9f\r\xa6\t\x8ea,\xd2l\xb2\xf1\x16 ': "mgo_sto3g_scf.crystal.out"
+stdoutfiles = {
+    '\xf6\t\x0e\x9f\r\xa6\t\x8ea,\xd2l\xb2\xf1\x16 ': "mgo_sto3g_scf.crystal.out",
+    '\xcexw\x0e\x91\x86i\xd0V\x13\xf4(\xfcsy\x1a': 'mgo_sto3g_external.crystal.out',
 
+}
+
+additional_files = {
+    '\xf6\t\x0e\x9f\r\xa6\t\x8ea,\xd2l\xb2\xf1\x16 ': [],
+    '\xcexw\x0e\x91\x86i\xd0V\x13\xf4(\xfcsy\x1a': []
 }
 
 if __name__ == "__main__":
@@ -24,10 +31,16 @@ if __name__ == "__main__":
     with open(input_path, "rb") as f:
         hashkey = hashlib.md5(f.read()).digest()
 
-    if hashkey not in outfiles:
-        raise IOError("contents of {0} not in hash list".format(os.path.basename(input_path)))
+    if hashkey not in stdoutfiles:
+        raise IOError("contents of {0} not in hash list, hashkey: {1}".format(
+            os.path.basename(input_path), str(hashkey)))
 
-    outpath = os.path.join(test_path, "output_files", outfiles[hashkey])
+    for fname in additional_files.get(hashkey, []):
+        src = os.path.join(test_path, "output_files", fname)
+        dst = os.path.join(".", fname)
+        copyfile(src, dst)
+
+    outpath = os.path.join(test_path, "output_files", stdoutfiles[hashkey])
     with open(outpath) as f:
         sys.stdout.write(f.read())
 

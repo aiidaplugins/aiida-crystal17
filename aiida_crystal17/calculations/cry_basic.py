@@ -55,6 +55,15 @@ class CryBasicCalculation(JobCalculation):
                 'linkname': 'input_external',
                 'docstring': "optional input .gui (fort.34) file content (for use with EXTERNAL keyword)."
             },
+            # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
+            # "parent_folder": {
+            #     'valid_types': RemoteData,
+            #     'additional_parameter': None,
+            #     'linkname': 'parent_calc_folder',
+            #     'docstring': ("Use a remote folder as parent folder (for "
+            #                   "restarts and similar"),
+            # },
+
         })
 
         return use_dict
@@ -117,7 +126,7 @@ class CryBasicCalculation(JobCalculation):
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
 
-        # TODO set hpc options (i.e. calcinfo.num_machines, etc)?
+        # TODO set hpc options (i.e. calcinfo.num_machines, etc)? Doesn't seem required looking at aiida-quantumespresso
         # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
 
         return calcinfo
