@@ -45,7 +45,7 @@ def test_submit(new_database):
 @pytest.mark.process_execution
 def test_process(new_database):
     """Test running a calculation
-    note this does not test that the expected outputs are created of output parsing"""
+    note this does not test parsing of the output"""
     from aiida.orm.data.singlefile import SinglefileData
 
     # get code
@@ -69,6 +69,37 @@ def test_process(new_database):
 
     # test process execution
     tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE])
+
+
+@pytest.mark.process_execution
+def test_process_with_external(new_database):
+    """Test running a calculation
+    note this does not test parsing of the output"""
+    from aiida.orm.data.singlefile import SinglefileData
+
+    # get code
+    code = tests.get_code(
+        entry_point='crystal17.basic')
+
+    # Prepare input parameters
+    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.d12'))
+    ingui = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.gui'))
+
+    # set up calculation
+    calc = code.new_calc()
+    # calc.label = "aiida_crystal17 test"
+    # calc.description = "Test job submission with the aiida_crystal17 plugin"
+    # calc.set_max_wallclock_seconds(30)
+    calc.set_withmpi(False)
+    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+
+    calc.use_input_file(infile)
+    calc.use_input_external(ingui)
+
+    calc.store_all()
+
+    # test process execution
+    tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
 
 
 def test_parser_scf(new_database):
@@ -147,7 +178,7 @@ def test_parser_scf(new_database):
                    'xyz': [2.105, 2.105, 2.105]}]}
 
     output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
-    # in later version of pymatgen
+    # in later version of pymatgen only
     if "charge" in output_struct:
         output_struct.pop("charge")
 
@@ -234,14 +265,14 @@ def test_parser_opt(new_database):
                    'xyz': [1.942180612737, 1.942180612737, 1.942180612737]}]}
 
     output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
-    # in later version of pymatgen
+    # in later version of pymatgen only
     if "charge" in output_struct:
         output_struct.pop("charge")
 
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
-# TODO test that the calculation completed successfully
+# TODO test that the calculation completed successfully (the code below doesn't work)
 
 # def test_output(test_data):
 #     """Test submitting a calculation"""

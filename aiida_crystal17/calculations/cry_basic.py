@@ -25,6 +25,7 @@ class CryBasicCalculation(JobCalculation):
 
         # default input and output files
         self._DEFAULT_INPUT_FILE = 'main.d12'
+        self._DEFAULT_EXTERNAL_FILE = 'main.gui'
         self._DEFAULT_OUTPUT_FILE = 'main.out'
 
         # parser entry point defined in setup.json
@@ -47,6 +48,12 @@ class CryBasicCalculation(JobCalculation):
                 'additional_parameter': None,
                 'linkname': 'input_file',
                 'docstring': "the input .d12 file content."
+            },
+            "input_external": {
+                'valid_types': SinglefileData,
+                'additional_parameter': None,
+                'linkname': 'input_external',
+                'docstring': "optional input .gui (fort.34) file content (for use with EXTERNAL keyword)."
             },
         })
 
@@ -81,6 +88,15 @@ class CryBasicCalculation(JobCalculation):
         if not isinstance(infile, SinglefileData):
             raise InputValidationError("input_file not of type SinglefileData")
 
+        try:
+            ingui = inputdict.pop(self.get_linkname('input_external'))
+            external_geom = True
+        except KeyError:
+            ingui = None
+            external_geom = False
+        if external_geom and not isinstance(ingui, SinglefileData):
+            raise InputValidationError("input_external not of type SinglefileData")
+
         if inputdict:
             raise ValidationError("Unknown additional inputs: {}".format(inputdict))
 
@@ -96,10 +112,10 @@ class CryBasicCalculation(JobCalculation):
         calcinfo.uuid = self.uuid
         calcinfo.codes_info = [codeinfo]
         calcinfo.local_copy_list = [[infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]]
+        if external_geom:
+            calcinfo.local_copy_list.append([ingui.get_file_abs_path(), self._DEFAULT_EXTERNAL_FILE])
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
-        # delegate this to the parser
-        # calcinfo.retrieve_singlefile_list = [('output_file', 'singlefile', self._DEFAULT_OUTPUT_FILE)]
 
         # TODO set hpc options (i.e. calcinfo.num_machines, etc)?
         # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
