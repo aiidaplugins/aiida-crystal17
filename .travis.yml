@@ -28,11 +28,13 @@ env:
       TEST_AIIDA_BACKEND: django
       MOCK_EXECUTABLES: true
 
-  allow_failures:
-    - TEST_TYPE: tests
-      AIIDA_BRANCH: develop
-      TEST_AIIDA_BACKEND: django
-      MOCK_EXECUTABLES: true
+
+allow_failures:
+  env:
+  - TEST_TYPE: tests
+    AIIDA_BRANCH: develop
+    TEST_AIIDA_BACKEND: django
+    MOCK_EXECUTABLES: true
 
 install:
 # Upgrade pip setuptools and wheel
