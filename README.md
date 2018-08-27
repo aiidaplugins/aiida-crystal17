@@ -1,8 +1,11 @@
 [![Build Status](https://travis-ci.org/chrisjsewell/aiida-crystal17.svg?branch=master)](https://travis-ci.org/chrisjsewell/aiida-crystal17)
 
+
 # aiida-crystal17
 
-AiiDA plugin for running the [CRYSTAL17](http://www.crystal.unito.it/) code
+AiiDA plugin for running the [CRYSTAL17](http://www.crystal.unito.it/) code. 
+The code is principally tested against CRYSTAL17, 
+but the output parsing has also been tested against CRYSTAL14.
 
 ## Installation
 
@@ -19,13 +22,15 @@ verdi calculation plugins  # should now show the calclulation plugins (with pref
 
 ### Basic Calculation
 
-The `crystal17.basic` is the simplest calculation plugin, which takes the full .d12 file as input. 
+The `crystal17.basic` is the simplest calculation plugin. 
+It takes a pre-written .d12 file as input 
+and (optionally) a .gui file with geometry, for .d12 inputs containing the `EXTERNAL` keyword.
 Assuming AiiDA is configured and your database is running:
 
 ```shell
 >> verdi daemon start         # make sure the daemon is running
 >> cd examples
->> verdi run submit_basic.py        # submit test calculation
+>> verdi run test_submit_basic.py       # submit test calculation
 submitted calculation; calc=Calculation(PK=5)
 >> verdi calculation list -a  # check status of calculation
   PK  Creation    State           Sched. state    Computer    Type
@@ -36,6 +41,8 @@ submitted calculation; calc=Calculation(PK=5)
 ----  ----------  --------------  -------------  ----------  ---------------------------
 5     1m ago      FINISHED        DONE           localhost   crystal17.basic
 ```
+
+Once the calculation has run, it will be linked to the input nodes and a number of output nodes:
 
 ```shell
 verdi calculation show 2267
@@ -51,9 +58,10 @@ computer     [2] localhost
 code         runcry17
 -----------  ---------------------------------------------------
 ##### INPUTS:
-Link label      PK  Type
-------------  ----  --------------
-input_file    4     SinglefileData
+Link label       PK    Type
+---------------  ----  --------------
+input_external   3     SinglefileData
+input_file       4     SinglefileData
 ##### OUTPUTS:
 Link label           PK  Type
 -----------------  ----  -------------
@@ -67,7 +75,14 @@ Run 'verdi calculation logshow 5' to see them
 
 ```
 
-Paramaters are named with the same convention as `aiida-quantumespresso`:
+The outputs represent:
+
+- `remote_folder` provides a symbolic link to the work directory where the computation was run.
+- `retrieved` stores a folder containing the full stdout of `runcry17` (as main.out)
+- `output_parameters` stores a dictionary of key parameters in the database, for later querying.
+- `output_structure` stores the final geometry from the calculation
+
+For compatibility, parameters are named with the same convention as `aiida-quantumespresso`:
 
 ```shell
 >> verdi data parameter show 8
@@ -90,12 +105,11 @@ Paramaters are named with the same convention as `aiida-quantumespresso`:
 }
 ```
 
-The final structure can be directly opened by a number of different programs (assuming the executables are available):
+The final structure can be directly viewed by a number of different programs (assuming the executables are available):
 
 ```shell
 >> verdi data structure show --format xcrysden 9
 ```
-
 
 ## Tests
 
@@ -186,7 +200,7 @@ Future development will then focus on:
     1. a `StructureData` node
     2. a main `ParamaterData` node.
     3. `ParamaterData` nodes for each atomic basis set
-2. Additional output nodes (e.g. `StructureData` and `TrajectoryData`) 
+2. Additional output nodes (e.g. `TrajectoryData`) 
 and extending the data held in the `ParamaterData` node.
 3. Parsing of input files to the input nodes described in (1), 
 for migration of existing computations
