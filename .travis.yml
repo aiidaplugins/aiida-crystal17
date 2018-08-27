@@ -45,6 +45,7 @@ install:
   if [[ "$AIIDA_BRANCH" != "develop" ]]; then
     pip install .[pre-commit,testing,docs];
   fi
+# TODO limit installation for docs?
 
 before_script:
 - reentry scan

@@ -17,7 +17,14 @@ verdi calculation plugins  # should now show the calclulation plugins (with pref
 
 ## Usage
 
-TODO Here goes a complete example of how to submit a test calculation using this plugin.
+A quick demo of how to submit a calculation:
+
+```shell
+verdi daemon start         # make sure the daemon is running
+cd examples
+verdi run submit.py        # submit test calculation
+verdi calculation list -a  # check status of calculation
+```
 
 ## Tests
 

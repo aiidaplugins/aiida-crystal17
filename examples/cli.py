@@ -1,7 +1,7 @@
 #!/usr/bin/env runaiida
 # -*- coding: utf-8 -*-
-import sys
 import os
+
 import click
 
 
@@ -40,8 +40,8 @@ def main(codelabel, submit):
     if submit:
         calc.store_all()
         calc.submit()
-        print("submitted calculation; calc=Calculation(uuid='{}') # ID={}"\
-                .format(calc.uuid,calc.dbnode.pk))
+        print("submitted calculation; calc=Calculation(uuid='{}') # ID={}" \
+              .format(calc.uuid, calc.dbnode.pk))
     else:
         subfolder, script_filename = calc.submit_test()
         path = os.path.relpath(subfolder.abspath)

@@ -8,16 +8,15 @@ Note: This script assumes you have set up computer and code as in README.md.
 import os
 
 import aiida_crystal17.tests as tests
-from aiida.orm.data.singlefile import SinglefileData
+from aiida.orm import DataFactory
 
 code = tests.get_code(entry_point='diff')
 
 # Prepare input parameters
-from aiida.orm import DataFactory
-
 DiffParameters = DataFactory('diff')
 parameters = DiffParameters({'ignore-case': True})
 
+SinglefileData = DataFactory('singlefile')
 file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file1.txt'))
 file2 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file2.txt'))
 
