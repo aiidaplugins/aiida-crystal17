@@ -86,11 +86,13 @@ def get_computer(name='localhost'):
             name=name,
             description='localhost computer set up by aiida_crystal17 tests',
             hostname='localhost',
-            workdir=tempfile.mkdtemp(),  # TODO this appear to be making a temp directory without deleting it
+            workdir=tempfile.mkdtemp(),  # TODO should really delete the temp directory at the end of testing
             transport_type='local',
             scheduler_type='direct',
             enabled_state=True)
         computer.store()
+
+        # TODO configure computer for user, see aiida_core.aiida.cmdline.commands.computer.Computer.computer_configure
 
     return computer
 
@@ -110,6 +112,8 @@ def get_code(entry_point, computer_name='localhost'):
     from aiida.common.exceptions import NotExistent
 
     computer = get_computer(computer_name)
+    # TODO move this outside function (input computer object),
+    # so we can create computer for duration of testing session and delete its work dir at the end
 
     if os.environ.get(MOCK_GLOBAL_VAR, False):
         exec_lookup = mock_executables
