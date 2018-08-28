@@ -40,9 +40,7 @@ install:
     cd aiida_core;
     pip install -U .[testing];
     cd "$cur_path";
-    pip install -U pytest==3.6.3
   fi
-# TODO remove pytest update, once https://github.com/aiidateam/aiida_core/issues/1911 is fixed
 
 before_script:
 - reentry scan
