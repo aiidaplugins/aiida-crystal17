@@ -93,6 +93,14 @@ For compatibility, parameters are named with the same convention as `aiida-quant
   "energy": -7380.22160519032, 
   "energy_units": "eV", 
   "errors": [], 
+  "mulliken_charges": [
+    0.776999999999999, 
+    -0.776999999999999
+  ], 
+  "mulliken_electrons": [
+    11.223, 
+    8.777
+  ], 
   "number_of_assymetric": 2, 
   "number_of_atoms": 2, 
   "parser_class": "CryBasicParser", 

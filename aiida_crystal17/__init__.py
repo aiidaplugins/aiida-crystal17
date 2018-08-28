@@ -4,7 +4,7 @@ aiida_crystal17
 AiiDA plugin for running the CRYSTAL17 code
 """
 
-__version__ = "0.1.0a0"
+__version__ = "0.2.0a0"
 
 # TODO delete all the template files (and remove from entry_points and scripts):
 # aiida_crystal17/

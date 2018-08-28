@@ -94,24 +94,33 @@ For compatibility, parameters are named with the same convention as
 
 .. code:: shell
 
-   >> verdi data parameter show 8
-   {
-     "calculation_spin": false,
-     "calculation_type": "restricted closed shell",
-     "ejplugins_version": "0.9.6",
-     "energy": -7380.22160519032,
-     "energy_units": "eV",
-     "errors": [],
-     "number_of_assymetric": 2,
-     "number_of_atoms": 2,
-     "parser_class": "CryBasicParser",
-     "parser_version": "0.1.0a0",
-     "parser_warnings": [],
-     "scf_iterations": 7,
-     "volume": 18.65461525,
-     "wall_time_seconds": 4,
-     "warnings": []
-   }
+    >> verdi data parameter show 8
+    {
+      "calculation_spin": false,
+      "calculation_type": "restricted closed shell",
+      "ejplugins_version": "0.9.6",
+      "energy": -7380.22160519032,
+      "energy_units": "eV",
+      "errors": [],
+      "mulliken_charges": [
+        0.776999999999999,
+        -0.776999999999999
+      ],
+      "mulliken_electrons": [
+        11.223,
+        8.777
+      ],
+      "number_of_assymetric": 2,
+      "number_of_atoms": 2,
+      "parser_class": "CryBasicParser",
+      "parser_version": "0.1.0a0",
+      "parser_warnings": [],
+      "scf_iterations": 7,
+      "volume": 18.65461525,
+      "wall_time_seconds": 4,
+      "warnings": []
+    }
+
 
 The final structure can be directly viewed by a number of different
 programs (assuming the executables are available):

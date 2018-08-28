@@ -153,7 +153,7 @@ class CryBasicParser(Parser):
         cell_vectors = []
         for n in "a b c".split():
             assert cell_data["cell_vectors"][n]["units"] == "angstrom"
-            cell_vectors.append(cell_data["cell_vectors"][n]["magnitude"] )
+            cell_vectors.append(cell_data["cell_vectors"][n]["magnitude"])
         ccoords = cell_data["ccoords"]["magnitude"]
 
         struct_data = {
