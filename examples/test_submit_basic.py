@@ -12,6 +12,10 @@ import aiida_crystal17.tests as tests
 def test_example(new_database):
 
     from aiida.orm import DataFactory
+    # try:
+    #     from aiida.work import submit  # for aiida<1.0
+    # except ImportError:
+    #     from aiida.work.launch import submit  # for aiida>=1.0
 
     # get code
     code = tests.get_code(
@@ -37,8 +41,9 @@ def test_example(new_database):
 
     calc.store_all()
 
-    calc.submit()
-    print("submitted calculation; calc=Calculation(PK={})".format(calc.dbnode.pk))
+    # calc.submit()
+    #
+    # print("submitted calculation; calc=Calculation(PK={})".format(calc.dbnode.pk))
 
 if __name__ == "__main__":
 
