@@ -6,7 +6,6 @@ Usage: verdi run submit.py
 Note: This script assumes you have set up computer and code as in README.md.
 """
 import os
-import aiida_crystal17
 import aiida_crystal17.tests as tests
 
 

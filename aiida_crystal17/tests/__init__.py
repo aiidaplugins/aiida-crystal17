@@ -5,12 +5,12 @@ testing that does not pollute your profiles/databases.
 """
 # Helper functions for tests
 import os
-import tempfile
 import stat
 import subprocess
 import sys
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+TEST_COMPUTER = 'localhost-test'
 
 executables = {
     'diff': 'diff',
@@ -64,7 +64,7 @@ def get_path_to_executable(executable):
     return os.path.abspath(path)
 
 
-def get_computer(name='localhost', workdir=None):
+def get_computer(name=TEST_COMPUTER, workdir=None):
     """Get local computer.
 
     Sets up local computer with 'name' or reads it from database,
@@ -89,7 +89,7 @@ def get_computer(name='localhost', workdir=None):
         computer = Computer(
             name=name,
             description='localhost computer set up by aiida_crystal17 tests',
-            hostname='localhost',
+            hostname=name,
             workdir=workdir,
             transport_type='local',
             scheduler_type='direct',
@@ -163,7 +163,6 @@ def test_calculation_execution(calc, allowed_returncodes=(0,), check_paths=None)
         st = os.stat(script_path)
         os.chmod(script_path, st.st_mode | stat.S_IEXEC)
         # now call script, NB: bash -l -c is required to access global variable loaded in .bash_profile
-
         returncode = subprocess.call(["bash", "-l", "-c", script_path], cwd=subfolder.abspath)
 
         if returncode not in allowed_returncodes:

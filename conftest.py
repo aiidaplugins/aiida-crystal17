@@ -28,4 +28,3 @@ def new_workdir():
     dirpath = tempfile.mkdtemp()
     yield dirpath
     shutil.rmtree(dirpath)
-
