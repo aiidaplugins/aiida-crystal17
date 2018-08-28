@@ -14,7 +14,7 @@
   hooks:
   - id: prospector
     language: system
-    exclude: '^(tests/)|(examples/)'
+    exclude: '^(aiida_crystal17/tests/)|(examples/)'
 
 
 - repo: local
