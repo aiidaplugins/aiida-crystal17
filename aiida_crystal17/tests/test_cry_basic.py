@@ -192,6 +192,91 @@ def test_parser_scf(new_database, new_workdir):
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
+def test_parser_external(new_database, new_workdir):
+    """ Test the parser
+
+    """
+    from aiida.parsers import ParserFactory
+    from aiida.common.datastructures import calc_states
+    from aiida.common.folders import SandboxFolder
+    from aiida.orm import DataFactory
+
+    code = get_basic_code(new_workdir)
+
+    calc = code.new_calc()
+    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+
+    calc.store_all()
+    calc._set_state(calc_states.PARSING)
+
+    parser_cls = ParserFactory("crystal17.basic")
+    parser = parser_cls(calc)
+
+    with SandboxFolder() as folder:
+        main_out_path = os.path.join(os.path.dirname(tests.__file__), "output_files", "mgo_sto3g_external.crystal.out")
+        with open(main_out_path) as f:
+            folder.create_file_from_filelike(f, "main.out")
+
+        fdata = DataFactory("folder")()
+        fdata.replace_with_folder(folder.abspath)
+
+        mock_retrieved = {
+            calc._get_linkname_retrieved(): fdata
+        }
+        success, node_list = parser.parse_with_retrieved(mock_retrieved)
+
+    assert success
+
+    node_dict = dict(node_list)
+    assert set(['output_parameters', 'output_structure']) == set(node_dict.keys())
+
+    expected_params = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'parser_class': 'CryBasicParser',
+        'parser_warnings': [], 'errors': [], 'warnings': [],
+        'energy': -2.7121814374931E+02 * 27.21138602, 'energy_units': 'eV',  # hartree to eV
+        'calculation_type': 'restricted closed shell',
+        'calculation_spin': False,
+        'wall_time_seconds': 3,
+        'number_of_atoms': 2,
+        'number_of_assymetric': 2,
+        'scf_iterations': 7,
+        'volume': 18.65461527264623,
+        'mulliken_electrons': [11.223, 8.777],
+        'mulliken_charges': [0.777, -0.777]
+    }
+
+    assert edict.diff(node_dict['output_parameters'].get_dict(), expected_params, np_allclose=True) == {}
+
+    expected_struct = {
+        '@class': 'Structure',
+        '@module': 'pymatgen.core.structure',
+        'lattice': {'a': 2.9769195487953652,
+                    'alpha': 60.00000000000001,
+                    'b': 2.9769195487953652,
+                    'beta': 60.00000000000001,
+                    'c': 2.9769195487953652,
+                    'gamma': 60.00000000000001,
+                    'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105], [2.105, 2.105, 0.0]],
+                    'volume': 18.65461525},
+        'sites': [{'abc': [0.0, 0.0, 0.0],
+                   'label': 'Mg',
+                   'species': [{'element': 'Mg', 'occu': 1.0}],
+                   'xyz': [0.0, 0.0, 0.0]},
+                  {'abc': [0.5, 0.5, 0.5],
+                   'label': 'O',
+                   'species': [{'element': 'O', 'occu': 1.0}],
+                   'xyz': [2.105, 2.105, 2.105]}]}
+
+    output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
+    # in later version of pymatgen only
+    if "charge" in output_struct:
+        output_struct.pop("charge")
+
+    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
+
+
 def test_parser_opt(new_database, new_workdir):
     """ Test the parser
 

@@ -1,13 +1,13 @@
-date Mon 27 Aug 2018 10:09:49 BST
+date Tue 28 Aug 2018 13:12:46 BST
 hostname ph-tsm15-025
 system Darwin ph-tsm15-025 14.5.0 Darwin Kernel Version 14.5.0: Sun Jun 4 21:40:08 PDT 2017; root:xnu-2782.70.3~1/RELEASE_X86_64 x86_64
 user cjs14
-output data in /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.out
+output data in /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.out
 crystal executable in /Users/cjs14/crystal_dft/MacOsx-gfortran/std
-input data in /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.d12
-temporary directory /Users/cjs14/tmp/tmp10410_cjs14
-external geometry input from /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.gui
-external geometry input saved in /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external_inp.gui
+input data in /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.d12
+temporary directory /Users/cjs14/tmp/tmp44125_cjs14
+external geometry input from /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.gui
+external geometry input saved in /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal_inp.gui
 MgO bulk
 EXTERNAL
 END
@@ -22,6 +22,7 @@ END
 END
 SHRINK
 8 8
+PPAN
 END
          
  *******************************************************************************
@@ -67,7 +68,7 @@ END
  *(18) CAMBRIDGE UNIVERSITY - CAMBRIDGE (UK)                                   *
  *                                                                             *
  *******************************************************************************
- EEEEEEEEEE STARTING  DATE 27 08 2018 TIME 10:09:49.2
+ EEEEEEEEEE STARTING  DATE 28 08 2018 TIME 13:12:46.9
  MgO bulk                                                                        
 
  GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)
@@ -252,6 +253,7 @@ END
  INFORMATION **** READM2 **** NEW DEFAULT: FULL DIRECT SCF MODE
  INFORMATION **** READM2 **** NEW DEFAULT: COULOMB BIPOLAR BUFFER SET TO 32 Mb
  INFORMATION **** READM2 **** NEW DEFAULT: EXCHANGE BIPOLAR BUFFER SET TO 32 Mb
+ INFORMATION **** PPAN ****  MULLIKEN POPULATION ANALYSIS AT THE END OF SCF
  *******************************************************************************
  N. OF ATOMS PER CELL         2  COULOMB OVERLAP TOL         (T1) 10**   -6
  NUMBER OF SHELLS             5  COULOMB PENETRATION TOL     (T2) 10**   -6
@@ -290,12 +292,12 @@ END
  DISK SPACE FOR EIGENVECTORS (FTN 10)       10780 REALS
 
  SYMMETRY ADAPTION OF THE BLOCH FUNCTIONS ENABLED
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        0.06 TCPU        0.01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        0.02 TCPU        0.01
 
  MATRIX SIZE: P(G)   13898, F(G)    2820, P(G) IRR     666, F(G) IRR     346
  MAX G-VECTOR INDEX FOR 1- AND 2-ELECTRON INTEGRALS 319
 
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INPUT       TELAPSE        0.06 TCPU        0.01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INPUT       TELAPSE        0.02 TCPU        0.01
 
  NEIGHBORS OF THE NON-EQUIVALENT ATOMS
 
@@ -359,11 +361,11 @@ END
 
 
  THERE ARE NO SYMMETRY ALLOWED DIRECTIONS
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SYMM        TELAPSE        0.07 TCPU        0.02
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INT_SCREEN  TELAPSE        0.07 TCPU        0.02
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SYMM        TELAPSE        0.02 TCPU        0.01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INT_SCREEN  TELAPSE        0.03 TCPU        0.01
  INFORMATION **** EXCBUF **** EXCH. BIPO BUFFER: WORDS USED =       97362
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INT_CALC    TELAPSE        0.10 TCPU        0.05
- EEEEEEEEEE INT_CALC TERMINATION  DATE 27 08 2018 TIME 10:09:49.3
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INT_CALC    TELAPSE        0.04 TCPU        0.03
+ EEEEEEEEEE INT_CALC TERMINATION  DATE 28 08 2018 TIME 13:12:46.9
 
  *******************************************************************************
  MgO bulk                                                                        
@@ -372,7 +374,7 @@ END
 
  CAPPA:IS1  8;IS2  8;IS3  8; K PTS MONK NET  29; SYMMOPS:K SPACE  48;G SPACE  48
 
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SDIK        TELAPSE        0.10 TCPU        0.05
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SDIK        TELAPSE        0.04 TCPU        0.03
 
  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
          ATOMIC WAVEFUNCTION(S)
@@ -401,119 +403,119 @@ END
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   12.0000000   8.0000000
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        0.12 TCPU        0.06
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        1.04 TCPU        0.65
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.05 TCPU        0.66
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        0.05 TCPU        0.03
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        0.52 TCPU        0.49
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        0.53 TCPU        0.49
  CYC   0 ETOT(AU) -2.706739657077E+02 DETOT -2.71E+02 tst  0.00E+00 PX  1.00E+00
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        1.05 TCPU        0.66
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.05 TCPU        0.66
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        0.53 TCPU        0.49
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        0.54 TCPU        0.50
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   12; EIG -2.0823120E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -2.0986026E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG -2.0214157E-02 AU
  INDIRECT ENERGY BAND GAP:   5.1162 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.06 TCPU        0.67
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        0.55 TCPU        0.51
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   10.9720640   9.0279360
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.07 TCPU        0.68
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        1.60 TCPU        1.18
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.61 TCPU        1.19
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        0.55 TCPU        0.51
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        1.00 TCPU        0.95
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.01 TCPU        0.96
  CYC   1 ETOT(AU) -2.711666822111E+02 DETOT -4.93E-01 tst  0.00E+00 PX  1.00E+00
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        1.61 TCPU        1.19
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        1.01 TCPU        0.96
  DIIS TEST: 0.12746E-01 AT SCF   CYCLE   1 - MIX   30 %
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.62 TCPU        1.19
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.01 TCPU        0.96
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   12; EIG -1.0524839E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -1.1016867E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  2.1942560E-01 AU
  INDIRECT ENERGY BAND GAP:   8.8348 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.63 TCPU        1.21
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.02 TCPU        0.97
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   11.2090834   8.7909166
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.64 TCPU        1.21
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        2.27 TCPU        1.75
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.28 TCPU        1.75
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.03 TCPU        0.97
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        1.49 TCPU        1.42
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.49 TCPU        1.42
  CYC   2 ETOT(AU) -2.712134676811E+02 DETOT -4.68E-02 tst  1.11E-02 PX  9.32E-02
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        2.28 TCPU        1.75
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        1.49 TCPU        1.42
  DIIS TEST: 0.58118E-02 AT SCF   CYCLE   2 - DIIS ACTIVE - HISTORY:     2 CYCLES
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.28 TCPU        1.76
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.49 TCPU        1.42
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   11; EIG -2.0429822E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -2.1633598E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  2.8787468E-01 AU
  INDIRECT ENERGY BAND GAP:  13.3927 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.29 TCPU        1.77
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.50 TCPU        1.43
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   11.1679370   8.8320630
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.30 TCPU        1.77
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        2.98 TCPU        2.36
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.99 TCPU        2.37
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.51 TCPU        1.44
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        1.96 TCPU        1.88
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.97 TCPU        1.88
  CYC   3 ETOT(AU) -2.712170056968E+02 DETOT -3.54E-03 tst  4.65E-03 PX  8.92E-02
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        2.99 TCPU        2.37
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        1.97 TCPU        1.89
  DIIS TEST: 0.69057E-03 AT SCF   CYCLE   3 - DIIS ACTIVE - HISTORY:     3 CYCLES
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.99 TCPU        2.37
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.97 TCPU        1.89
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   11; EIG -1.4947469E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -1.6248424E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  3.1693762E-01 AU
  INDIRECT ENERGY BAND GAP:  12.6917 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.01 TCPU        2.39
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.98 TCPU        1.90
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   11.2219078   8.7780922
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.01 TCPU        2.39
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        3.59 TCPU        2.92
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.60 TCPU        2.93
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.98 TCPU        1.90
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        2.44 TCPU        2.34
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.44 TCPU        2.35
  CYC   4 ETOT(AU) -2.712181418677E+02 DETOT -1.14E-03 tst  1.59E-04 PX  1.94E-02
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        3.60 TCPU        2.93
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        2.45 TCPU        2.35
  DIIS TEST: 0.89943E-06 AT SCF   CYCLE   4 - DIIS ACTIVE - HISTORY:     4 CYCLES
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.60 TCPU        2.93
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.45 TCPU        2.35
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   11; EIG -1.4752094E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -1.6061459E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  3.1851036E-01 AU
  INDIRECT ENERGY BAND GAP:  12.6814 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.61 TCPU        2.95
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.46 TCPU        2.36
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   11.2227030   8.7772970
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.62 TCPU        2.95
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        4.19 TCPU        3.49
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        4.20 TCPU        3.49
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.47 TCPU        2.36
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        2.93 TCPU        2.82
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.93 TCPU        2.83
  CYC   5 ETOT(AU) -2.712181436129E+02 DETOT -1.75E-06 tst  3.11E-07 PX  9.45E-04
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        4.20 TCPU        3.50
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        2.93 TCPU        2.83
  DIIS TEST: 0.12498E-07 AT SCF   CYCLE   5 - DIIS ACTIVE - HISTORY:     5 CYCLES
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        4.20 TCPU        3.50
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.93 TCPU        2.83
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   11; EIG -1.4737594E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -1.6053472E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  3.1899343E-01 AU
  INDIRECT ENERGY BAND GAP:  12.6906 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        4.22 TCPU        3.51
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.94 TCPU        2.84
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   11.2227556   8.7772444
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        4.22 TCPU        3.51
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        4.74 TCPU        4.01
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        4.74 TCPU        4.01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.95 TCPU        2.84
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        3.39 TCPU        3.28
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.40 TCPU        3.29
  CYC   6 ETOT(AU) -2.712181437444E+02 DETOT -1.32E-07 tst  1.15E-07 PX  3.62E-04
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        4.74 TCPU        4.01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DIIS        TELAPSE        3.40 TCPU        3.29
  DIIS TEST: 0.97378E-09 AT SCF   CYCLE   6 - DIIS ACTIVE - HISTORY:     6 CYCLES
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        4.75 TCPU        4.02
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.40 TCPU        3.29
  INSULATING STATE
  TOP OF VALENCE BANDS -    BAND     10; K   11; EIG -1.4743064E-01 AU
  TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -1.6059321E-01 AU
  BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  3.1898111E-01 AU
  INDIRECT ENERGY BAND GAP:  12.6917 eV
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        4.76 TCPU        4.03
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.41 TCPU        3.30
  CHARGE NORMALIZATION FACTOR   1.00000000
  TOTAL ATOMIC CHARGES:
   11.2227092   8.7772908
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        4.76 TCPU        4.03
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        5.33 TCPU        4.54
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.41 TCPU        3.30
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLXN     TELAPSE        3.86 TCPU        3.74
  +++ ENERGIES IN A.U. +++
  ::: EXT EL-POLE                                  -4.6909151211863E+02
  ::: EXT EL-SPHEROPOLE                             3.9644228426853E+00
@@ -524,32 +526,130 @@ END
  ::: KINETIC ENERGY                                2.6712907389490E+02
  ::: TOTAL   ENERGY                               -2.7121814374931E+02
  ::: VIRIAL COEFFICIENT                            9.9240440050511E-01
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        5.34 TCPU        4.55
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.86 TCPU        3.75
  CYC   7 ETOT(AU) -2.712181437493E+02 DETOT -4.92E-09 tst  3.48E-10 PX  3.62E-04
 
  == SCF ENDED - CONVERGENCE ON ENERGY      E(AU) -2.7121814374931E+02 CYCLES   7
 
  TOTAL ENERGY(HF)(AU)(   7) -2.7121814374931E+02 DE-4.9E-09 tst 3.5E-10 PX 3.6E-04
+
+ NEIGHBORS OF THE NON-EQUIVALENT ATOMS
+
+ N = NUMBER OF NEIGHBORS AT DISTANCE R
+    ATOM  N     R/ANG      R/AU   NEIGHBORS (ATOM LABELS AND CELL INDICES)
+   1 MG   6     2.1050     3.9779    2 O   -1 0 0    2 O    0-1 0    2 O    0 0-1
+                                     2 O   -1-1 0    2 O   -1 0-1    2 O    0-1-1
+   1 MG  12     2.9769     5.6256    1 MG  -1 0 0    1 MG   1 0 0    1 MG  -1 0 1
+                                     1 MG   1 0-1    1 MG  -1 1 0    1 MG   1-1 0
+                                     1 MG   0-1 0    1 MG   0 1 0    1 MG   0-1 1
+                                     1 MG   0 1-1    1 MG   0 0-1    1 MG   0 0 1
+   1 MG   8     3.6460     6.8899    2 O    0 0 0    2 O   -1-1 1    2 O   -1 1-1
+                                     2 O    1-1-1    2 O   -2 0 0    2 O    0-2 0
+                                     2 O    0 0-2    2 O   -1-1-1
+   1 MG   6     4.2100     7.9557    1 MG  -1-1 1    1 MG   1 1-1    1 MG  -1 1-1
+                                     1 MG   1-1 1    1 MG  -1 1 1    1 MG   1-1-1
+   1 MG  24     4.7069     8.8948    2 O    1 0-1    2 O   -1 0 1    2 O    1-1 0
+                                     2 O   -1 1 0    2 O    0 1-1    2 O    0-1 1
+                                     2 O   -2 0 1    2 O   -2 1 0    2 O    1 0-2
+                                     2 O    1-2 0    2 O    0-2 1    2 O    0 1-2
+                                     2 O   -2-1 1    2 O   -2 1-1    2 O   -1-2 1
+                                     2 O   -1 1-2    2 O    1-1-2    2 O    1-2-1
+                                     2 O   -2-1 0    2 O   -2 0-1    2 O   -1-2 0
+                                     2 O   -1 0-2    2 O    0-2-1    2 O    0-1-2
+   1 MG  24     5.1562     9.7438    1 MG  -2 0 1    1 MG   2 0-1    1 MG  -2 1 0
+                                     1 MG   2-1 0    1 MG  -2 1 1    1 MG   2-1-1
+                                     1 MG  -1-1 0    1 MG   1 1 0    1 MG  -1-1 2
+                                     1 MG   1 1-2    1 MG  -1 0-1    1 MG   1 0 1
+                                     1 MG  -1 0 2    1 MG   1 0-2    1 MG  -1 2-1
+                                     1 MG   1-2 1    1 MG  -1 2 0    1 MG   1-2 0
+                                     1 MG   0-2 1    1 MG   0 2-1    1 MG   0-1-1
+                                     1 MG   0 1 1    1 MG   0-1 2    1 MG   0 1-2
+
+   2 O    6     2.1050     3.9779    1 MG   1 0 0    1 MG   0 1 0    1 MG   0 0 1
+                                     1 MG   1 1 0    1 MG   1 0 1    1 MG   0 1 1
+   2 O   12     2.9769     5.6256    2 O   -1 0 0    2 O    1 0 0    2 O   -1 0 1
+                                     2 O    1 0-1    2 O   -1 1 0    2 O    1-1 0
+                                     2 O    0-1 0    2 O    0 1 0    2 O    0-1 1
+                                     2 O    0 1-1    2 O    0 0-1    2 O    0 0 1
+   2 O    8     3.6460     6.8899    1 MG   0 0 0    1 MG   1 1-1    1 MG   1-1 1
+                                     1 MG  -1 1 1    1 MG   2 0 0    1 MG   0 2 0
+                                     1 MG   0 0 2    1 MG   1 1 1
+   2 O    6     4.2100     7.9557    2 O   -1-1 1    2 O    1 1-1    2 O   -1 1-1
+                                     2 O    1-1 1    2 O   -1 1 1    2 O    1-1-1
+   2 O   24     4.7069     8.8948    1 MG  -1 0 1    1 MG   1 0-1    1 MG  -1 1 0
+                                     1 MG   1-1 0    1 MG   0-1 1    1 MG   0 1-1
+                                     1 MG   2 0-1    1 MG   2-1 0    1 MG  -1 0 2
+                                     1 MG  -1 2 0    1 MG   0 2-1    1 MG   0-1 2
+                                     1 MG   2 1-1    1 MG   2-1 1    1 MG   1 2-1
+                                     1 MG   1-1 2    1 MG  -1 1 2    1 MG  -1 2 1
+                                     1 MG   2 1 0    1 MG   2 0 1    1 MG   1 2 0
+                                     1 MG   1 0 2    1 MG   0 2 1    1 MG   0 1 2
+   2 O   24     5.1562     9.7438    2 O   -2 0 1    2 O    2 0-1    2 O   -2 1 0
+                                     2 O    2-1 0    2 O   -2 1 1    2 O    2-1-1
+                                     2 O   -1-1 0    2 O    1 1 0    2 O   -1-1 2
+                                     2 O    1 1-2    2 O   -1 0-1    2 O    1 0 1
+                                     2 O   -1 0 2    2 O    1 0-2    2 O   -1 2-1
+                                     2 O    1-2 1    2 O   -1 2 0    2 O    1-2 0
+                                     2 O    0-2 1    2 O    0 2-1    2 O    0-1-1
+                                     2 O    0 1 1    2 O    0-1 2    2 O    0 1-2
+
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT AFTER FIRST TELAPSE        3.86 TCPU        3.75
+ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+     ALPHA+BETA ELECTRONS
+ MULLIKEN POPULATION ANALYSIS - NO. OF ELECTRONS   20.000000
+
+  ATOM    Z CHARGE  A.O. POPULATION
+
+   1 MG  12 11.223  1.999  1.961  1.887  1.887  1.887  0.549  0.351  0.351
+                    0.351
+   2 O    8  8.777  1.998  1.867  1.637  1.637  1.637
+
+  ATOM    Z CHARGE  SHELL POPULATION
+
+   1 MG  12 11.223  1.999  7.622  1.602
+   2 O    8  8.777  1.998  6.779
+
+ OVERLAP POPULATION CONDENSED TO ATOMS FOR FIRST   6 NEIGHBORS
+
+ ATOM A   1 MG   ATOM B     CELL      R(AB)/AU R(AB)/ANG    OVPOP(AB)
+                  2 O    ( -1  0  0)     3.978     2.105     0.087
+                  1 MG   ( -1  0  0)     5.626     2.977     0.003
+                  2 O    (  0  0  0)     6.890     3.646    -0.000
+                  1 MG   ( -1 -1  1)     7.956     4.210    -0.002
+                  2 O    (  1  0 -1)     8.895     4.707     0.000
+                  1 MG   ( -2  0  1)     9.744     5.156     0.000
+
+ ATOM A   2 O    ATOM B     CELL      R(AB)/AU R(AB)/ANG    OVPOP(AB)
+                  1 MG   (  1  0  0)     3.978     2.105     0.087
+                  2 O    ( -1  0  0)     5.626     2.977    -0.001
+                  1 MG   (  0  0  0)     6.890     3.646    -0.000
+                  2 O    ( -1 -1  1)     7.956     4.210     0.000
+                  1 MG   ( -1  0  1)     8.895     4.707     0.000
+                  2 O    ( -2  0  1)     9.744     5.156     0.000
  EIGENVECTORS IN FORTRAN UNIT 10
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE        5.34 TCPU        4.55
- EEEEEEEEEE TERMINATION  DATE 27 08 2018 TIME 10:09:54.6
-Mon 27 Aug 2018 10:09:54 BST
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE        3.87 TCPU        3.75
+ EEEEEEEEEE TERMINATION  DATE 28 08 2018 TIME 13:12:50.7
+Tue 28 Aug 2018 13:12:50 BST
 Contents of temporary directory:
-total 1152
--rw-r--r--  1 cjs14  1335817362   19432 27 Aug 10:09 diis_Fg
--rw-r--r--  1 cjs14  1335817362    1728 27 Aug 10:09 diis_Fia1
--rw-r--r--  1 cjs14  1335817362    1440 27 Aug 10:09 diis_Fia2
--rw-r--r--  1 cjs14  1335817362       0 27 Aug 10:09 diis_Sk
--rw-r--r--  1 cjs14  1335817362   47136 27 Aug 10:09 fort.10
--rw-r--r--  1 cjs14  1335817362    2776 27 Aug 10:09 fort.11
--rw-r--r--@ 1 cjs14  1335817362   12063 27 Aug 10:09 fort.34
--rw-r--r--  1 cjs14  1335817362   23496 27 Aug 10:09 fort.61
--rw-r--r--  1 cjs14  1335817362   15184 27 Aug 10:09 fort.62
--rw-r--r--  1 cjs14  1335817362   47136 27 Aug 10:09 fort.8
--rw-r--r--  1 cjs14  1335817362  110776 27 Aug 10:09 fort.9
--rw-r--r--  1 cjs14  1335817362    6752 27 Aug 10:09 fort.95
--rw-r--r--  1 cjs14  1335817362  280488 27 Aug 10:09 fort.98
-wave function binary file /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.f9
-file fort.98 saved as /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.f98
-geometry input file fort.34 saved as /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.gui
-temporary directory /Users/cjs14/tmp/tmp10410_cjs14 removed
+total 1208
+-rw-r--r--  1 cjs14  1335817362     485 28 Aug 13:12 PPAN.DAT
+-rw-r--r--  1 cjs14  1335817362   19432 28 Aug 13:12 diis_Fg
+-rw-r--r--  1 cjs14  1335817362    1728 28 Aug 13:12 diis_Fia1
+-rw-r--r--  1 cjs14  1335817362    1440 28 Aug 13:12 diis_Fia2
+-rw-r--r--  1 cjs14  1335817362       0 28 Aug 13:12 diis_Sk
+-rw-r--r--  1 cjs14  1335817362   47136 28 Aug 13:12 fort.10
+-rw-r--r--  1 cjs14  1335817362    2776 28 Aug 13:12 fort.11
+-rw-r--r--  1 cjs14  1335817362   22568 28 Aug 13:12 fort.3
+-rw-r--r--  1 cjs14  1335817362   12063 28 Aug 13:12 fort.34
+-rw-r--r--  1 cjs14  1335817362   23496 28 Aug 13:12 fort.61
+-rw-r--r--  1 cjs14  1335817362   15184 28 Aug 13:12 fort.62
+-rw-r--r--  1 cjs14  1335817362   47136 28 Aug 13:12 fort.8
+-rw-r--r--  1 cjs14  1335817362  110776 28 Aug 13:12 fort.9
+-rw-r--r--  1 cjs14  1335817362    6752 28 Aug 13:12 fort.95
+-rw-r--r--  1 cjs14  1335817362  280488 28 Aug 13:12 fort.98
+wave function binary file /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.f9
+file fort.98 saved as /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.f98
+geometry input file fort.34 saved as /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.gui
+file PPAN.DAT saved as /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.ppan
+file PPAN.DAT saved as /Users/cjs14/crystal_dft/runs/external_geom_test/mgo_sto3g_external.crystal.ppan
+temporary directory /Users/cjs14/tmp/tmp44125_cjs14 removed

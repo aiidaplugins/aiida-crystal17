@@ -172,6 +172,16 @@ class CryBasicParser(Parser):
                       cell=cell_vectors)
         out_data["volume"] = atoms.get_volume()
 
+        if data.get("mulliken", False):
+            if "alpha+beta_electrons" in data["mulliken"]:
+                electrons = data["mulliken"]["alpha+beta_electrons"]["charges"]
+                anum = data["mulliken"]["alpha+beta_electrons"]["atomic_numbers"]
+                out_data["mulliken_electrons"] = electrons
+                out_data["mulliken_charges"] = [a-e for a, e in zip(anum, electrons)]
+            if "alpha-beta_electrons" in data["mulliken"]:
+                out_data["mulliken_spins"] = data["mulliken"]["alpha-beta_electrons"]["charges"]
+                out_data["mulliken_spin_total"] = sum(out_data["mulliken_spins"])
+
         # TODO only save StructureData if cell has changed?
 
         # add the version and class of parser
