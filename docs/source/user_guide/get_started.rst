@@ -89,7 +89,7 @@ The outputs represent:
 -  ``output_parameters`` stores a dictionary of key parameters in the
    database, for later querying.
 -  ``output_arrays`` stores keys in the database to array data stored on file
-(such as symmetry operations and mulliken charges).
+   (such as symmetry operations and mulliken charges).
 -  ``output_structure`` stores the final geometry from the calculation
 
 For compatibility, parameters are named with the same convention as
