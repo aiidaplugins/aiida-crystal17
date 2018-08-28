@@ -16,8 +16,7 @@ def get_basic_code(workdir):
     """get the crystal17.basic code """
     computer = tests.get_computer(workdir=workdir)
     # get code
-    code = tests.get_code(
-        entry_point='crystal17.basic', computer=computer)
+    code = tests.get_code(entry_point='crystal17.basic', computer=computer)
 
     return code
 
@@ -31,7 +30,9 @@ def test_submit(new_database, new_workdir):
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
-    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_scf.crystal.d12'))
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
     calc = code.new_calc()
@@ -61,7 +62,9 @@ def test_process(new_database, new_workdir):
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
-    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_scf.crystal.d12'))
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
     calc = code.new_calc()
@@ -76,7 +79,8 @@ def test_process(new_database, new_workdir):
     calc.store_all()
 
     # test process execution
-    tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE])
+    tests.test_calculation_execution(
+        calc, check_paths=[calc._DEFAULT_OUTPUT_FILE])
 
 
 @pytest.mark.process_execution
@@ -89,8 +93,12 @@ def test_process_with_external(new_database, new_workdir):
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
-    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.d12'))
-    ingui = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.gui'))
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_external.crystal.d12'))
+    ingui = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation
     calc = code.new_calc()
@@ -106,7 +114,9 @@ def test_process_with_external(new_database, new_workdir):
     calc.store_all()
 
     # test process execution
-    tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
+    tests.test_calculation_execution(
+        calc,
+        check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
 
 
 def test_parser_scf(new_database, new_workdir):
@@ -130,29 +140,33 @@ def test_parser_scf(new_database, new_workdir):
     parser = parser_cls(calc)
 
     with SandboxFolder() as folder:
-        main_out_path = os.path.join(os.path.dirname(tests.__file__), "output_files", "mgo_sto3g_scf.crystal.out")
+        main_out_path = os.path.join(
+            os.path.dirname(tests.__file__), "output_files",
+            "mgo_sto3g_scf.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
 
         fdata = DataFactory("folder")()
         fdata.replace_with_folder(folder.abspath)
 
-        mock_retrieved = {
-            calc._get_linkname_retrieved(): fdata
-        }
+        mock_retrieved = {calc._get_linkname_retrieved(): fdata}
         success, node_list = parser.parse_with_retrieved(mock_retrieved)
 
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_structure']) == set(node_dict.keys())
+    assert set(['output_parameters',
+                'output_structure']) == set(node_dict.keys())
 
     expected_params = {
         'parser_version': str(aiida_crystal17.__version__),
         'ejplugins_version': str(ejplugins.__version__),
         'parser_class': 'CryBasicParser',
-        'parser_warnings': [], 'errors': [], 'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602, 'energy_units': 'eV',  # hartree to eV
+        'parser_warnings': [],
+        'errors': [],
+        'warnings': [],
+        'energy': -2.7121814374931E+02 * 27.21138602,
+        'energy_units': 'eV',  # hartree to eV
         'calculation_type': 'restricted closed shell',
         'calculation_spin': False,
         'wall_time_seconds': 3,
@@ -162,29 +176,55 @@ def test_parser_scf(new_database, new_workdir):
         'volume': 18.65461527264623,
     }
 
-    assert edict.diff(node_dict['output_parameters'].get_dict(), expected_params, np_allclose=True) == {}
+    assert edict.diff(
+        node_dict['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}
 
     expected_struct = {
-        '@class': 'Structure',
-        '@module': 'pymatgen.core.structure',
-        'lattice': {'a': 2.9769195487953652,
-                    'alpha': 60.00000000000001,
-                    'b': 2.9769195487953652,
-                    'beta': 60.00000000000001,
-                    'c': 2.9769195487953652,
-                    'gamma': 60.00000000000001,
-                    'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105], [2.105, 2.105, 0.0]],
-                    'volume': 18.65461525},
-        'sites': [{'abc': [0.0, 0.0, 0.0],
-                   'label': 'Mg',
-                   'species': [{'element': 'Mg', 'occu': 1.0}],
-                   'xyz': [0.0, 0.0, 0.0]},
-                  {'abc': [0.5, 0.5, 0.5],
-                   'label': 'O',
-                   'species': [{'element': 'O', 'occu': 1.0}],
-                   'xyz': [2.105, 2.105, 2.105]}]}
+        '@class':
+        'Structure',
+        '@module':
+        'pymatgen.core.structure',
+        'lattice': {
+            'a':
+            2.9769195487953652,
+            'alpha':
+            60.00000000000001,
+            'b':
+            2.9769195487953652,
+            'beta':
+            60.00000000000001,
+            'c':
+            2.9769195487953652,
+            'gamma':
+            60.00000000000001,
+            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
+                       [2.105, 2.105, 0.0]],
+            'volume':
+            18.65461525
+        },
+        'sites': [{
+            'abc': [0.0, 0.0, 0.0],
+            'label': 'Mg',
+            'species': [{
+                'element': 'Mg',
+                'occu': 1.0
+            }],
+            'xyz': [0.0, 0.0, 0.0]
+        }, {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [2.105, 2.105, 2.105]
+        }]
+    }
 
-    output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
+    output_struct = node_dict[
+        'output_structure'].get_pymatgen_structure().as_dict()
     # in later version of pymatgen only
     if "charge" in output_struct:
         output_struct.pop("charge")
@@ -213,29 +253,33 @@ def test_parser_external(new_database, new_workdir):
     parser = parser_cls(calc)
 
     with SandboxFolder() as folder:
-        main_out_path = os.path.join(os.path.dirname(tests.__file__), "output_files", "mgo_sto3g_external.crystal.out")
+        main_out_path = os.path.join(
+            os.path.dirname(tests.__file__), "output_files",
+            "mgo_sto3g_external.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
 
         fdata = DataFactory("folder")()
         fdata.replace_with_folder(folder.abspath)
 
-        mock_retrieved = {
-            calc._get_linkname_retrieved(): fdata
-        }
+        mock_retrieved = {calc._get_linkname_retrieved(): fdata}
         success, node_list = parser.parse_with_retrieved(mock_retrieved)
 
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_structure']) == set(node_dict.keys())
+    assert set(['output_parameters',
+                'output_structure']) == set(node_dict.keys())
 
     expected_params = {
         'parser_version': str(aiida_crystal17.__version__),
         'ejplugins_version': str(ejplugins.__version__),
         'parser_class': 'CryBasicParser',
-        'parser_warnings': [], 'errors': [], 'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602, 'energy_units': 'eV',  # hartree to eV
+        'parser_warnings': [],
+        'errors': [],
+        'warnings': [],
+        'energy': -2.7121814374931E+02 * 27.21138602,
+        'energy_units': 'eV',  # hartree to eV
         'calculation_type': 'restricted closed shell',
         'calculation_spin': False,
         'wall_time_seconds': 3,
@@ -247,29 +291,55 @@ def test_parser_external(new_database, new_workdir):
         'mulliken_charges': [0.777, -0.777]
     }
 
-    assert edict.diff(node_dict['output_parameters'].get_dict(), expected_params, np_allclose=True) == {}
+    assert edict.diff(
+        node_dict['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}
 
     expected_struct = {
-        '@class': 'Structure',
-        '@module': 'pymatgen.core.structure',
-        'lattice': {'a': 2.9769195487953652,
-                    'alpha': 60.00000000000001,
-                    'b': 2.9769195487953652,
-                    'beta': 60.00000000000001,
-                    'c': 2.9769195487953652,
-                    'gamma': 60.00000000000001,
-                    'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105], [2.105, 2.105, 0.0]],
-                    'volume': 18.65461525},
-        'sites': [{'abc': [0.0, 0.0, 0.0],
-                   'label': 'Mg',
-                   'species': [{'element': 'Mg', 'occu': 1.0}],
-                   'xyz': [0.0, 0.0, 0.0]},
-                  {'abc': [0.5, 0.5, 0.5],
-                   'label': 'O',
-                   'species': [{'element': 'O', 'occu': 1.0}],
-                   'xyz': [2.105, 2.105, 2.105]}]}
+        '@class':
+        'Structure',
+        '@module':
+        'pymatgen.core.structure',
+        'lattice': {
+            'a':
+            2.9769195487953652,
+            'alpha':
+            60.00000000000001,
+            'b':
+            2.9769195487953652,
+            'beta':
+            60.00000000000001,
+            'c':
+            2.9769195487953652,
+            'gamma':
+            60.00000000000001,
+            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
+                       [2.105, 2.105, 0.0]],
+            'volume':
+            18.65461525
+        },
+        'sites': [{
+            'abc': [0.0, 0.0, 0.0],
+            'label': 'Mg',
+            'species': [{
+                'element': 'Mg',
+                'occu': 1.0
+            }],
+            'xyz': [0.0, 0.0, 0.0]
+        }, {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [2.105, 2.105, 2.105]
+        }]
+    }
 
-    output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
+    output_struct = node_dict[
+        'output_structure'].get_pymatgen_structure().as_dict()
     # in later version of pymatgen only
     if "charge" in output_struct:
         output_struct.pop("charge")
@@ -298,65 +368,107 @@ def test_parser_opt(new_database, new_workdir):
     parser = parser_cls(calc)
 
     with SandboxFolder() as folder:
-        main_out_path = os.path.join(os.path.dirname(tests.__file__), "output_files", "mgo_sto3g_opt.crystal.out")
+        main_out_path = os.path.join(
+            os.path.dirname(tests.__file__), "output_files",
+            "mgo_sto3g_opt.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
 
         fdata = DataFactory("folder")()
         fdata.replace_with_folder(folder.abspath)
 
-        mock_retrieved = {
-            calc._get_linkname_retrieved(): fdata
-        }
+        mock_retrieved = {calc._get_linkname_retrieved(): fdata}
         success, node_list = parser.parse_with_retrieved(mock_retrieved)
 
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_structure']) == set(node_dict.keys())
+    assert set(['output_parameters',
+                'output_structure']) == set(node_dict.keys())
 
     expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'parser_class': 'CryBasicParser',
-        'parser_warnings': [], 'errors': [],
-        'warnings': ['WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY'],
-        'energy': -2.712596206888E+02 * 27.21138602, 'energy_units': 'eV',  # hartree to eV
-        'calculation_type': 'restricted closed shell',
-        'calculation_spin': False,
-        'wall_time_seconds': 102,
-        'number_of_atoms': 2,
-        'number_of_assymetric': 2,
-        'scf_iterations': 8,
-        'opt_iterations': 6,
-        'volume': 14.652065094424696,
+        'parser_version':
+        str(aiida_crystal17.__version__),
+        'ejplugins_version':
+        str(ejplugins.__version__),
+        'parser_class':
+        'CryBasicParser',
+        'parser_warnings': [],
+        'errors': [],
+        'warnings':
+        ['WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY'],
+        'energy':
+        -2.712596206888E+02 * 27.21138602,
+        'energy_units':
+        'eV',  # hartree to eV
+        'calculation_type':
+        'restricted closed shell',
+        'calculation_spin':
+        False,
+        'wall_time_seconds':
+        102,
+        'number_of_atoms':
+        2,
+        'number_of_assymetric':
+        2,
+        'scf_iterations':
+        8,
+        'opt_iterations':
+        6,
+        'volume':
+        14.652065094424696,
     }
 
-    assert edict.diff(node_dict['output_parameters'].get_dict(), expected_params, np_allclose=True) == {}
+    assert edict.diff(
+        node_dict['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}
 
     expected_struct = {
-        '@class': 'Structure',
-        '@module': 'pymatgen.core.structure',
-        'lattice': {'a': 2.746658163114996,
-                    'alpha': 60.00000000000001,
-                    'b': 2.746658163114996,
-                    'beta': 60.00000000000001,
-                    'c': 2.746658163114996,
-                    'gamma': 60.00000000000001,
-                    'matrix': [[0.0, 1.94218061274, 1.94218061274],
-                               [1.94218061274, 0.0, 1.94218061274],
-                               [1.94218061274, 1.94218061274, 0.0]],
-                    'volume': 14.652065094424696},
-        'sites': [{'abc': [0.0, 0.0, 0.0],
-                   'label': 'Mg',
-                   'species': [{'element': 'Mg', 'occu': 1.0}],
-                   'xyz': [0.0, 0.0, 0.0]},
-                  {'abc': [0.5, 0.5, 0.5],
-                   'label': 'O',
-                   'species': [{'element': 'O', 'occu': 1.0}],
-                   'xyz': [1.942180612737, 1.942180612737, 1.942180612737]}]}
+        '@class':
+        'Structure',
+        '@module':
+        'pymatgen.core.structure',
+        'lattice': {
+            'a':
+            2.746658163114996,
+            'alpha':
+            60.00000000000001,
+            'b':
+            2.746658163114996,
+            'beta':
+            60.00000000000001,
+            'c':
+            2.746658163114996,
+            'gamma':
+            60.00000000000001,
+            'matrix': [[0.0, 1.94218061274,
+                        1.94218061274], [1.94218061274, 0.0, 1.94218061274],
+                       [1.94218061274, 1.94218061274, 0.0]],
+            'volume':
+            14.652065094424696
+        },
+        'sites': [{
+            'abc': [0.0, 0.0, 0.0],
+            'label': 'Mg',
+            'species': [{
+                'element': 'Mg',
+                'occu': 1.0
+            }],
+            'xyz': [0.0, 0.0, 0.0]
+        }, {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [1.942180612737, 1.942180612737, 1.942180612737]
+        }]
+    }
 
-    output_struct = node_dict['output_structure'].get_pymatgen_structure().as_dict()
+    output_struct = node_dict[
+        'output_structure'].get_pymatgen_structure().as_dict()
     # in later version of pymatgen only
     if "charge" in output_struct:
         output_struct.pop("charge")
@@ -402,7 +514,6 @@ def test_parser_opt(new_database, new_workdir):
 #     run(calc.__class__.process(), **inputs)
 #     # print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
 #     #     calc.uuid, calc.dbnode.pk))
-
 
 # def test_output2(test_data):
 #     """Test calculation output"""

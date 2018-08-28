@@ -50,10 +50,14 @@ class CryBasicCalculation(JobCalculation):
                 'docstring': "the input .d12 file content."
             },
             "input_external": {
-                'valid_types': SinglefileData,
-                'additional_parameter': None,
-                'linkname': 'input_external',
-                'docstring': "optional input .gui (fort.34) file content (for use with EXTERNAL keyword)."
+                'valid_types':
+                SinglefileData,
+                'additional_parameter':
+                None,
+                'linkname':
+                'input_external',
+                'docstring':
+                "optional input .gui (fort.34) file content (for use with EXTERNAL keyword)."
             },
             # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
             # "parent_folder": {
@@ -63,7 +67,6 @@ class CryBasicCalculation(JobCalculation):
             #     'docstring': ("Use a remote folder as parent folder (for "
             #                   "restarts and similar"),
             # },
-
         })
 
         return use_dict
@@ -104,15 +107,19 @@ class CryBasicCalculation(JobCalculation):
             ingui = None
             external_geom = False
         if external_geom and not isinstance(ingui, SinglefileData):
-            raise InputValidationError("input_external not of type SinglefileData")
+            raise InputValidationError(
+                "input_external not of type SinglefileData")
 
         if inputdict:
-            raise ValidationError("Unknown additional inputs: {}".format(inputdict))
+            raise ValidationError(
+                "Unknown additional inputs: {}".format(inputdict))
 
         # Prepare CodeInfo object for aiida, describes how a code has to be executed
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = [os.path.splitext(self._DEFAULT_INPUT_FILE)[0]]
+        codeinfo.cmdline_params = [
+            os.path.splitext(self._DEFAULT_INPUT_FILE)[0]
+        ]
         codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE
         codeinfo.withmpi = self.get_withmpi()
 
@@ -120,9 +127,12 @@ class CryBasicCalculation(JobCalculation):
         calcinfo = CalcInfo()
         calcinfo.uuid = self.uuid
         calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = [[infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE]]
+        calcinfo.local_copy_list = [[
+            infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE
+        ]]
         if external_geom:
-            calcinfo.local_copy_list.append([ingui.get_file_abs_path(), self._DEFAULT_EXTERNAL_FILE])
+            calcinfo.local_copy_list.append(
+                [ingui.get_file_abs_path(), self._DEFAULT_EXTERNAL_FILE])
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
         # TODO .gui won't be available for scf runs, will the computation fail if it can't find a file in retrieve list?

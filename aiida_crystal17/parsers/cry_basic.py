@@ -85,7 +85,8 @@ class CryBasicParser(Parser):
         # TODO manage exception
         cryparse = CrystalOutputPlugin()
         if not os.path.exists(abs_path):
-            raise OutputParsingError("The raw data file does not exist: {}".format(abs_path))
+            raise OutputParsingError(
+                "The raw data file does not exist: {}".format(abs_path))
         with open(abs_path) as f:
             try:
                 data = cryparse.read_file(f, log_warnings=False)
@@ -118,7 +119,8 @@ class CryBasicParser(Parser):
         meta_data = data.pop("meta")
         if "elapsed_time" in meta_data:
             h, m, s = meta_data["elapsed_time"].split(':')
-            out_data["wall_time_seconds"] = int(h) * 3600 + int(m) * 60 + int(s)
+            out_data[
+                "wall_time_seconds"] = int(h) * 3600 + int(m) * 60 + int(s)
 
         # get initial data
         initial_data = data.pop("initial")
@@ -132,7 +134,8 @@ class CryBasicParser(Parser):
         # optimisation trajectory data
         opt_data = data.pop("optimisation")
         if opt_data:
-            out_data["opt_iterations"] = len(opt_data) + 1  # the first optimisation step is the initial scf
+            out_data["opt_iterations"] = len(
+                opt_data) + 1  # the first optimisation step is the initial scf
         # TODO create TrajectoryData from optimisation data
 
         final_data = data.pop("final")
@@ -166,21 +169,27 @@ class CryBasicParser(Parser):
         out_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
         out_data["number_of_assymetric"] = sum(cell_data["assymetric"])
 
-        atoms = Atoms(numbers=cell_data["atomic_numbers"],
-                      positions=ccoords,
-                      pbc=cell_data["pbc"],
-                      cell=cell_vectors)
+        atoms = Atoms(
+            numbers=cell_data["atomic_numbers"],
+            positions=ccoords,
+            pbc=cell_data["pbc"],
+            cell=cell_vectors)
         out_data["volume"] = atoms.get_volume()
 
         if data.get("mulliken", False):
             if "alpha+beta_electrons" in data["mulliken"]:
                 electrons = data["mulliken"]["alpha+beta_electrons"]["charges"]
-                anum = data["mulliken"]["alpha+beta_electrons"]["atomic_numbers"]
+                anum = data["mulliken"]["alpha+beta_electrons"][
+                    "atomic_numbers"]
                 out_data["mulliken_electrons"] = electrons
-                out_data["mulliken_charges"] = [a-e for a, e in zip(anum, electrons)]
+                out_data["mulliken_charges"] = [
+                    a - e for a, e in zip(anum, electrons)
+                ]
             if "alpha-beta_electrons" in data["mulliken"]:
-                out_data["mulliken_spins"] = data["mulliken"]["alpha-beta_electrons"]["charges"]
-                out_data["mulliken_spin_total"] = sum(out_data["mulliken_spins"])
+                out_data["mulliken_spins"] = data["mulliken"][
+                    "alpha-beta_electrons"]["charges"]
+                out_data["mulliken_spin_total"] = sum(
+                    out_data["mulliken_spins"])
 
         # TODO only save StructureData if cell has changed?
 
@@ -240,7 +249,8 @@ class CryBasicParser(Parser):
 
         if stdout_file not in list_of_files:
             self.logger.error(
-                "The standard output file '{}' was not found but is required".format(stdout_file))
+                "The standard output file '{}' was not found but is required".
+                format(stdout_file))
             return False, ()
 
         # store the stdout file as a file node
@@ -248,13 +258,16 @@ class CryBasicParser(Parser):
         # node_list.append(("output_stdout", node))
 
         # parse the stdout file and add nodes
-        paramdict, structdict, psuccess, perrors = self.parse_stdout(out_folder.get_abs_path(stdout_file), parser_opts)
+        paramdict, structdict, psuccess, perrors = self.parse_stdout(
+            out_folder.get_abs_path(stdout_file), parser_opts)
 
         if not psuccess:
             successful = False
 
         if perrors:
-            self.logger.warning("the parser raised the following errors:\n{}".format("\n\t".join(perrors)))
+            self.logger.warning(
+                "the parser raised the following errors:\n{}".format(
+                    "\n\t".join(perrors)))
 
         params = DataFactory("parameter")(dict=paramdict)
         node_list.append((self.get_linkname_outparams(), params))
@@ -263,7 +276,8 @@ class CryBasicParser(Parser):
         # we want to reuse the kinds from the input structure, if available
         if not input_structure:
             struct = StructureData(cell=structdict['cell_vectors'])
-            for symbol, ccoord in zip(structdict['symbols'], structdict['ccoords']):
+            for symbol, ccoord in zip(structdict['symbols'],
+                                      structdict['ccoords']):
                 struct.append_atom(position=ccoord, symbols=symbol)
             struct.set_pbc(structdict["pbc"])
         else:

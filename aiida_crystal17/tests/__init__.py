@@ -84,7 +84,8 @@ def get_computer(name=TEST_COMPUTER, workdir=None):
     except NotExistent:
 
         if workdir is None:
-            raise ValueError("to create a new computer, a work directory must be supplied")
+            raise ValueError(
+                "to create a new computer, a work directory must be supplied")
 
         computer = Computer(
             name=name,
@@ -127,7 +128,8 @@ def get_code(entry_point, computer):
                        .format(entry_point, exec_lookup.keys()))
 
     try:
-        code = Code.get_from_string('{}@{}'.format(executable, computer.get_name()))
+        code = Code.get_from_string('{}@{}'.format(executable,
+                                                   computer.get_name()))
     except NotExistent:
         path = get_path_to_executable(executable)
         code = Code(
@@ -140,7 +142,9 @@ def get_code(entry_point, computer):
     return code
 
 
-def test_calculation_execution(calc, allowed_returncodes=(0,), check_paths=None):
+def test_calculation_execution(calc,
+                               allowed_returncodes=(0, ),
+                               check_paths=None):
     """ test that a calculation executes successfully
 
     :param calc: the calculation
@@ -163,15 +167,18 @@ def test_calculation_execution(calc, allowed_returncodes=(0,), check_paths=None)
         st = os.stat(script_path)
         os.chmod(script_path, st.st_mode | stat.S_IEXEC)
         # now call script, NB: bash -l -c is required to access global variable loaded in .bash_profile
-        returncode = subprocess.call(["bash", "-l", "-c", script_path], cwd=subfolder.abspath)
+        returncode = subprocess.call(
+            ["bash", "-l", "-c", script_path], cwd=subfolder.abspath)
 
         if returncode not in allowed_returncodes:
 
-            err_msg = "process failed (and couldn't find stderr file: {})".format(scheduler_stderr)
+            err_msg = "process failed (and couldn't find stderr file: {})".format(
+                scheduler_stderr)
             stderr_path = os.path.join(subfolder.abspath, scheduler_stderr)
             if os.path.exists(stderr_path):
                 with open(stderr_path) as f:
-                    err_msg = "Process failed with stderr:\n{}".format(f.read())
+                    err_msg = "Process failed with stderr:\n{}".format(
+                        f.read())
             raise RuntimeError(err_msg)
 
         if check_paths is not None:

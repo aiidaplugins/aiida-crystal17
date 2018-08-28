@@ -13,8 +13,7 @@ def get_basic_code(workdir):
     """get the crystal17.basic code """
     computer = tests.get_computer(workdir=workdir)
     # get code
-    code = tests.get_code(
-        entry_point='crystal17.basic', computer=computer)
+    code = tests.get_code(entry_point='crystal17.basic', computer=computer)
 
     return code
 
@@ -33,9 +32,13 @@ def test_example(new_database, new_workdir):
     # Prepare input parameters
     SinglefileData = DataFactory("singlefile")
     # main .d12 file
-    infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.d12'))
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_external.crystal.d12'))
     # optional .gui file (for use with EXTERNAL)
-    ingeom = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.gui'))
+    ingeom = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation
     calc = code.new_calc()
@@ -52,7 +55,9 @@ def test_example(new_database, new_workdir):
 
     calc.submit()  # TODO this hangs when using aiida develop branch on travis
 
-    print("submitted calculation; calc=Calculation(PK={})".format(calc.dbnode.pk))
+    print("submitted calculation; calc=Calculation(PK={})".format(
+        calc.dbnode.pk))
+
 
 if __name__ == "__main__":
 
