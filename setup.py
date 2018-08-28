@@ -13,7 +13,7 @@ if __name__ == '__main__':
         packages=find_packages(),
         # this doesn't work when placed in setup.json (something to do with str type)
         package_data={
-            "tests": ["*"],
+            "": ["*"],
             # TODO be more specific with package data (but the lines below aren't working)
             # "tests.input_files": ["*"],
             # "tests.outptut_files": ["*"],
