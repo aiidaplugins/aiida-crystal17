@@ -6,10 +6,21 @@ Usage: verdi run submit.py
 Note: This script assumes you have set up computer and code as in README.md.
 """
 import os
+import aiida_crystal17
 import aiida_crystal17.tests as tests
 
 
-def test_example(new_database):
+def get_basic_code(workdir):
+    """get the crystal17.basic code """
+    computer = tests.get_computer(workdir=workdir)
+    # get code
+    code = tests.get_code(
+        entry_point='crystal17.basic', computer=computer)
+
+    return code
+
+
+def test_example(new_database, new_workdir):
 
     from aiida.orm import DataFactory
     # try:
@@ -18,8 +29,7 @@ def test_example(new_database):
     #     from aiida.work.launch import submit  # for aiida>=1.0
 
     # get code
-    code = tests.get_code(
-        entry_point='crystal17.basic')
+    code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     SinglefileData = DataFactory("singlefile")
@@ -41,10 +51,14 @@ def test_example(new_database):
 
     calc.store_all()
 
-    # calc.submit()
-    #
-    # print("submitted calculation; calc=Calculation(PK={})".format(calc.dbnode.pk))
+    calc.submit()  # TODO this hangs when using aiida develop branch on travis
+
+    print("submitted calculation; calc=Calculation(PK={})".format(calc.dbnode.pk))
 
 if __name__ == "__main__":
 
-    test_example(None)
+    wrkdir = "./aiida_workdir"
+    if not os.path.exists(wrkdir):
+        os.makedirs("./aiida_workdir")
+
+    test_example(None, "./aiida_workdir")

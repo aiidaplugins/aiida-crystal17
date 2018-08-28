@@ -12,14 +12,23 @@ from jsonextended import edict
 # TODO parameterize tests
 
 
-def test_submit(new_database):
+def get_basic_code(workdir):
+    """get the crystal17.basic code """
+    computer = tests.get_computer(workdir=workdir)
+    # get code
+    code = tests.get_code(
+        entry_point='crystal17.basic', computer=computer)
+
+    return code
+
+
+def test_submit(new_database, new_workdir):
     """Test submitting a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
     from aiida.common.folders import SandboxFolder
 
     # get code
-    code = tests.get_code(
-        entry_point='crystal17.basic')
+    code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_scf.crystal.d12'))
@@ -43,14 +52,13 @@ def test_submit(new_database):
 
 
 @pytest.mark.process_execution
-def test_process(new_database):
+def test_process(new_database, new_workdir):
     """Test running a calculation
     note this does not test parsing of the output"""
     from aiida.orm.data.singlefile import SinglefileData
 
     # get code
-    code = tests.get_code(
-        entry_point='crystal17.basic')
+    code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_scf.crystal.d12'))
@@ -72,14 +80,13 @@ def test_process(new_database):
 
 
 @pytest.mark.process_execution
-def test_process_with_external(new_database):
+def test_process_with_external(new_database, new_workdir):
     """Test running a calculation
     note this does not test parsing of the output"""
     from aiida.orm.data.singlefile import SinglefileData
 
     # get code
-    code = tests.get_code(
-        entry_point='crystal17.basic')
+    code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g_external.crystal.d12'))
@@ -102,7 +109,7 @@ def test_process_with_external(new_database):
     tests.test_calculation_execution(calc, check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
 
 
-def test_parser_scf(new_database):
+def test_parser_scf(new_database, new_workdir):
     """ Test the parser
 
     """
@@ -111,8 +118,8 @@ def test_parser_scf(new_database):
     from aiida.common.folders import SandboxFolder
     from aiida.orm import DataFactory
 
-    code = tests.get_code(
-        entry_point='crystal17.basic')
+    code = get_basic_code(new_workdir)
+
     calc = code.new_calc()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
@@ -185,7 +192,7 @@ def test_parser_scf(new_database):
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
-def test_parser_opt(new_database):
+def test_parser_opt(new_database, new_workdir):
     """ Test the parser
 
     """
@@ -194,8 +201,8 @@ def test_parser_opt(new_database):
     from aiida.common.folders import SandboxFolder
     from aiida.orm import DataFactory
 
-    code = tests.get_code(
-        entry_point='crystal17.basic')
+    code = get_basic_code(new_workdir)
+
     calc = code.new_calc()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 

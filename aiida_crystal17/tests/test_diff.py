@@ -7,14 +7,23 @@ import aiida_crystal17.tests as tests
 import pytest
 
 
-def test_submit(new_database):
+def get_diff_code(workdir):
+    """get the diff code """
+    computer = tests.get_computer(workdir=workdir)
+    # get code
+    code = tests.get_code(
+        entry_point='diff', computer=computer)
+
+    return code
+
+
+def test_submit(new_database, new_workdir):
     """Test submitting a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
     from aiida.common.folders import SandboxFolder
 
     # get code
-    code = tests.get_code(
-        entry_point='diff')  # TODO this should go in setup
+    code = get_diff_code(new_workdir)
 
     # Prepare input parameters
     from aiida.orm import DataFactory
@@ -43,19 +52,15 @@ def test_submit(new_database):
         subfolder, script_filename = calc.submit_test(folder=folder)
         print("inputs created successfully at {}".format(subfolder.abspath))
 
-    # print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
-    #     calc.uuid, calc.dbnode.pk))
-
 
 @pytest.mark.process_execution
-def test_process(new_database):
+def test_process(new_database, new_workdir):
     """Test running a calculation
     note this does not test that the expected outputs are created of output parsing"""
     from aiida.orm.data.singlefile import SinglefileData
 
     # get code
-    code = tests.get_code(
-        entry_point='diff')  # TODO this should go in setup
+    code = get_diff_code(new_workdir)
 
     # Prepare input parameters
     from aiida.orm import DataFactory

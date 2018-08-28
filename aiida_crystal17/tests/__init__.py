@@ -64,13 +64,14 @@ def get_path_to_executable(executable):
     return os.path.abspath(path)
 
 
-def get_computer(name='localhost'):
+def get_computer(name='localhost', workdir=None):
     """Get local computer.
 
     Sets up local computer with 'name' or reads it from database,
     if it exists.
     
     :param name: Name of local computer
+    :param workdir: path to work directory (required if creating a new computer)
 
     :return: The computer node 
     :rtype: :py:class:`aiida.orm.Computer` 
@@ -82,11 +83,14 @@ def get_computer(name='localhost'):
         computer = Computer.get(name)
     except NotExistent:
 
+        if workdir is None:
+            raise ValueError("to create a new computer, a work directory must be supplied")
+
         computer = Computer(
             name=name,
             description='localhost computer set up by aiida_crystal17 tests',
             hostname='localhost',
-            workdir=tempfile.mkdtemp(),  # TODO should really delete the temp directory at the end of testing
+            workdir=workdir,
             transport_type='local',
             scheduler_type='direct',
             enabled_state=True)
@@ -97,23 +101,19 @@ def get_computer(name='localhost'):
     return computer
 
 
-def get_code(entry_point, computer_name='localhost'):
+def get_code(entry_point, computer):
     """Get local code.
 
     Sets up code for given entry point on given computer.
     
     :param entry_point: Entry point of calculation plugin
-    :param computer_name: Name of (local) computer
+    :param computer: computer
 
     :return: The code node 
     :rtype: :py:class:`aiida.orm.Code` 
     """
     from aiida.orm import Code
     from aiida.common.exceptions import NotExistent
-
-    computer = get_computer(computer_name)
-    # TODO move this outside function (input computer object),
-    # so we can create computer for duration of testing session and delete its work dir at the end
 
     if os.environ.get(MOCK_GLOBAL_VAR, False):
         exec_lookup = mock_executables
@@ -127,7 +127,7 @@ def get_code(entry_point, computer_name='localhost'):
                        .format(entry_point, exec_lookup.keys()))
 
     try:
-        code = Code.get_from_string('{}@{}'.format(executable, computer_name))
+        code = Code.get_from_string('{}@{}'.format(executable, computer.get_name()))
     except NotExistent:
         path = get_path_to_executable(executable)
         code = Code(
