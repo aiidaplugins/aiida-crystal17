@@ -14,18 +14,18 @@
     "version": "0.2.0a0",
     "entry_points": {
         "aiida.data": [
-            "diff = aiida_crystal17.data.diffparams:DiffParameters"
+            "crystal17.diff = aiida_crystal17.data.diffparams:DiffParameters"
         ],
         "aiida.calculations": [
-            "diff = aiida_crystal17.calculations.diffcalc:DiffCalculation",
+            "crystal17.diff = aiida_crystal17.calculations.diffcalc:DiffCalculation",
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation"
         ],
         "aiida.parsers": [
-            "diff = aiida_crystal17.parsers.diffparser:DiffParser",
+            "crystal17.diff = aiida_crystal17.parsers.diffparser:DiffParser",
             "crystal17.basic = aiida_crystal17.parsers.cry_basic:CryBasicParser"
         ],
         "aiida.cmdline.data": [
-            "diff = aiida_crystal17.data.data_cli:cli"
+            "crystal17.diff = aiida_crystal17.data.data_cli:cli"
         ]
     },
     "scripts": [
@@ -40,16 +40,18 @@
     ],
     "extras_require": {
         "testing": [
-            "aiida-core[testing]",
-            "jsonextended",
+            "mock==2.0.0",
+            "pgtest==1.1.0",
+            "sqlalchemy-diff==0.1.3",
+            "pytest==3.6.3",
             "wheel>=0.31",
-            "pgtest"
+            "jsonextended"
         ],
         "pre-commit": [
-            "pre-commit",
-            "yapf",
-            "prospector",
-            "pylint"
+            "pre-commit==1.8.2",
+            "yapf==0.21.0",
+            "prospector==0.12.7",
+            "pylint==1.8.4"
         ],
         "docs": [
             "sphinx"

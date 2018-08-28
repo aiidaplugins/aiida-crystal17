@@ -11,7 +11,7 @@ def get_diff_code(workdir):
     """get the diff code """
     computer = tests.get_computer(workdir=workdir)
     # get code
-    code = tests.get_code(entry_point='diff', computer=computer)
+    code = tests.get_code(entry_point='crystal17.diff', computer=computer)
 
     return code
 
@@ -26,7 +26,7 @@ def test_submit(new_database, new_workdir):
 
     # Prepare input parameters
     from aiida.orm import DataFactory
-    DiffParameters = DataFactory('diff')
+    DiffParameters = DataFactory('crystal17.diff')
     parameters = DiffParameters({'ignore-case': True})
 
     file1 = SinglefileData(
@@ -65,7 +65,7 @@ def test_process(new_database, new_workdir):
 
     # Prepare input parameters
     from aiida.orm import DataFactory
-    DiffParameters = DataFactory('diff')
+    DiffParameters = DataFactory('crystal17.diff')
     parameters = DiffParameters({'ignore-case': True})
 
     file1 = SinglefileData(
@@ -110,7 +110,7 @@ def parser(new_database, new_workdir):
     calc.store_all()
     calc._set_state(calc_states.PARSING)
 
-    parser_cls = ParserFactory("diff")
+    parser_cls = ParserFactory("crystal17.diff")
     parser = parser_cls(calc)
 
     with SandboxFolder() as folder:

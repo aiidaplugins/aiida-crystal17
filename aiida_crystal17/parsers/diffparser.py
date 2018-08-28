@@ -8,7 +8,7 @@ from aiida.parsers.parser import Parser
 from aiida.parsers.exceptions import OutputParsingError
 
 from aiida.orm import CalculationFactory
-DiffCalculation = CalculationFactory('diff')
+DiffCalculation = CalculationFactory('crystal17.diff')
 
 
 class DiffParser(Parser):

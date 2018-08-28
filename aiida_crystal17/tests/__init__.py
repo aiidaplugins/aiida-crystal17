@@ -13,14 +13,14 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 TEST_COMPUTER = 'localhost-test'
 
 executables = {
-    'diff': 'diff',
+    'crystal17.diff': 'diff',
     'crystal17.basic': 'runcry17',
 }
 
 MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
 
 mock_executables = {
-    'diff': 'diff',
+    'crystal17.diff': 'diff',
     'crystal17.basic': 'mock_runcry17',
 }
 

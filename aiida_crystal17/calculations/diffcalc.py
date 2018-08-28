@@ -11,7 +11,7 @@ from aiida.common.exceptions import (InputValidationError, ValidationError)
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.orm import DataFactory
 
-DiffParameters = DataFactory('diff')
+DiffParameters = DataFactory('crystal17.diff')
 
 
 class DiffCalculation(JobCalculation):
@@ -31,7 +31,7 @@ class DiffCalculation(JobCalculation):
         super(DiffCalculation, self)._init_internal_params()
 
         # diff.product entry point defined in setup.json
-        self._default_parser = 'diff'
+        self._default_parser = 'crystal17.diff'
 
     @classproperty
     def _use_methods(cls):
