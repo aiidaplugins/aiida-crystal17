@@ -41,6 +41,7 @@ install:
     cd aiida_core;
     pip install -U .[testing];
     cd "$cur_path";
+    pip install pytest==3.6.3
   fi
 
 # TODO limit installation for docs, etc?
