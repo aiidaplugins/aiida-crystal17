@@ -18,8 +18,7 @@ env:
     - TEST_TYPE: tests
       TEST_AIIDA_BACKEND: sqlalchemy
       MOCK_EXECUTABLES: true
-    - TEST_TYPE: version
-    - TEST_TYPE: style
+    - TEST_TYPE: pre-commit
     - TEST_TYPE: docs
       READTHEDOCS: 'True'
   # TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
@@ -45,15 +44,16 @@ install:
   fi
 # TODO remove pytest update, once https://github.com/aiidateam/aiida_core/issues/1911 is fixed
 
-# TODO limit installation for docs, etc?
-
 before_script:
 - reentry scan
 
 script:
 - if [[ "$TEST_TYPE" == "tests" ]]; then pytest -v; fi
-- if [[ "$TEST_TYPE" == "version" ]]; then python .travis-data/check_version.py; fi
-- if [[ "$TEST_TYPE" == "style" ]]; then prospector ; fi
+- >
+  if [[ "$TEST_TYPE" == "pre-commit" ]]; then
+  pre-commit install;
+  pre-commit run --all-files || ( git status --short; git diff ; exit 1 ) ;
+  fi
 - if [[ "$TEST_TYPE" == "docs" ]]; then cd docs; make; fi
-#--doctest-modules --ignore=setup.py --ignore=examples
+
 
