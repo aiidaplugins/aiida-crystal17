@@ -2,6 +2,8 @@
 Tutorial
 ========
 
+.. todo:: write tutorial
+
 This page can contain a simple tutorial for your code.
 
 What we want to achieve
