@@ -68,6 +68,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinx.ext.todo'
 ]
 
 intersphinx_mapping = {
