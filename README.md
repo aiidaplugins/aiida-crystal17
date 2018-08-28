@@ -147,6 +147,23 @@ The original plugin template was created from the
 [aiida-plugin-cutter
 ](https://github.com/aiidateam/aiida-plugin-cutter/tree/e614256377a4ac0c03f0ffca1dfe7bd9bb618983).
 
+### Coding Style Requirements
+
+The code style is tested using [prospector](https://prospector.readthedocs.io/en/master/),
+with the configuration set in `.prospector.yaml`, and [yapf](https://github.com/google/yapf).
+
+Installing with `aiida-crystal17[pre-commit]` makes the [pre-commit](https://pre-commit.com/)
+package available, which will ensure these tests are passed by reformatting the code 
+and testing for lint errors before submitting a commit.
+It can be setup by:
+
+```shell
+cd aiida-crystal17
+pre-commit install
+```
+
+Editors like PyCharm also have automatic code reformat utilities, which should adhere to this standard.
+
 ### Testing against mock CRYSTAL17 executables
 
 Because CRYSTAL17 is a licensed software, it is not possible to source a copy of the executable on Travis CI.
@@ -178,13 +195,6 @@ To set up local version of CRYSTAL17 on a mac (after downloading a copy from the
     
 3. Define environmental variables in `~/.bashrc`, as detailed in `cry17_scripts/cry17.bashrc`
 4. Copy or symlink the `cry17_scripts/runcry17` script into `/usr/local/bin/`
-
-### Coding Style
-
-The code style is tested using [prospector](https://prospector.readthedocs.io/en/master/),
-with the configuration set in `.prospector.yaml`.
-
-Editors like PyCharm have automatic code reformat utilities, which should adhere to this standard.
 
 ### Current Development Status
 
