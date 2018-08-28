@@ -12,6 +12,7 @@ from aiida.orm import DataFactory
 # TODO remove dependancy on ejplugins?
 import ejplugins
 from ejplugins.crystal import CrystalOutputPlugin
+import numpy as np
 from ase import Atoms
 
 from aiida_crystal17 import __version__ as pkg_version
@@ -63,7 +64,14 @@ class CryBasicParser(Parser):
         """
         return 'output_structure'
 
-    # pylint: disable=too-many-locals
+    def get_linkname_outarrays(self):
+        """
+        Returns the name of the link to the output_structure
+        Node exists if positions or cell changed.
+        """
+        return 'output_arrays'
+
+    # pylint: disable=too-many-locals,too-many-statements
     def parse_stdout(self, abs_path, parser_opts=None):
         """ parse the stdout file to the required nodes
 
@@ -71,6 +79,7 @@ class CryBasicParser(Parser):
         :param parser_opts: dictionary of parser settings
 
         :return param_dict: a dictionary with parsed parameters
+        :return array_data: a dictionary with parser data to be held as arrays
         :return struct_dict: a representation of the output structure
         :return psuccess: a boolean that is False in case of failed calculations
         :return perrors: a list of errors
@@ -80,7 +89,8 @@ class CryBasicParser(Parser):
         parser_opts = {} if parser_opts is None else parser_opts
 
         psuccess = True
-        out_data = {"parser_warnings": []}
+        param_data = {"parser_warnings": []}
+        array_data = {}
 
         # TODO manage exception
         cryparse = CrystalOutputPlugin()
@@ -92,8 +102,8 @@ class CryBasicParser(Parser):
                 data = cryparse.read_file(f, log_warnings=False)
             except IOError as err:
                 error_str = "Error in CRYSTAL 17 run output: {}".format(err)
-                out_data["parser_warnings"].append(error_str)
-                return out_data, psuccess, [error_str]
+                param_data["parser_warnings"].append(error_str)
+                return param_data, psuccess, [error_str]
 
         # data contains the top-level keys:
         # "warnings" (list), "errors" (list), "meta" (dict), "creator" (dict),
@@ -111,37 +121,37 @@ class CryBasicParser(Parser):
         pwarnings = data["warnings"]
         if perrors:
             psuccess = False
-        out_data["errors"] = perrors
+        param_data["errors"] = perrors
         # aiida-quantumespresso only has warnings
-        out_data["warnings"] = perrors + pwarnings
+        param_data["warnings"] = perrors + pwarnings
 
         # get meta data
         meta_data = data.pop("meta")
         if "elapsed_time" in meta_data:
             h, m, s = meta_data["elapsed_time"].split(':')
-            out_data[
+            param_data[
                 "wall_time_seconds"] = int(h) * 3600 + int(m) * 60 + int(s)
 
         # get initial data
         initial_data = data.pop("initial")
         initial_data = {} if not initial_data else initial_data
         for name, val in initial_data.get("calculation", {}).items():
-            out_data["calculation_{}".format(name)] = val
+            param_data["calculation_{}".format(name)] = val
         init_scf_data = initial_data.get("scf", [])
-        out_data["scf_iterations"] = len(init_scf_data)
+        param_data["scf_iterations"] = len(init_scf_data)
         # TODO create TrajectoryData from init_scf_data data
 
         # optimisation trajectory data
         opt_data = data.pop("optimisation")
         if opt_data:
-            out_data["opt_iterations"] = len(
+            param_data["opt_iterations"] = len(
                 opt_data) + 1  # the first optimisation step is the initial scf
         # TODO create TrajectoryData from optimisation data
 
         final_data = data.pop("final")
         energy = final_data["energy"]["total_corrected"]
-        out_data["energy"] = energy["magnitude"]
-        out_data["energy_units"] = energy["units"]
+        param_data["energy"] = energy["magnitude"]
+        param_data["energy_units"] = energy["units"]
 
         # create a StructureData object of final cell
         cell_data = final_data["primitive_cell"]
@@ -166,39 +176,44 @@ class CryBasicParser(Parser):
             "ccoords": ccoords
         }
 
-        out_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
-        out_data["number_of_assymetric"] = sum(cell_data["assymetric"])
+        param_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
+        param_data["number_of_assymetric"] = sum(cell_data["assymetric"])
 
         atoms = Atoms(
             numbers=cell_data["atomic_numbers"],
             positions=ccoords,
             pbc=cell_data["pbc"],
             cell=cell_vectors)
-        out_data["volume"] = atoms.get_volume()
+        param_data["volume"] = atoms.get_volume()
+
+        if "primitive_symmops" in final_data:
+            symm_data = final_data["primitive_symmops"]
+            param_data["number_of_symmops"] = len(symm_data)
+            array_data["primitive_symmops"] = symm_data
 
         if data.get("mulliken", False):
             if "alpha+beta_electrons" in data["mulliken"]:
                 electrons = data["mulliken"]["alpha+beta_electrons"]["charges"]
                 anum = data["mulliken"]["alpha+beta_electrons"][
                     "atomic_numbers"]
-                out_data["mulliken_electrons"] = electrons
-                out_data["mulliken_charges"] = [
+                array_data["mulliken_electrons"] = electrons
+                array_data["mulliken_charges"] = [
                     a - e for a, e in zip(anum, electrons)
                 ]
             if "alpha-beta_electrons" in data["mulliken"]:
-                out_data["mulliken_spins"] = data["mulliken"][
+                param_data["mulliken_spins"] = data["mulliken"][
                     "alpha-beta_electrons"]["charges"]
-                out_data["mulliken_spin_total"] = sum(
-                    out_data["mulliken_spins"])
+                param_data["mulliken_spin_total"] = sum(
+                    param_data["mulliken_spins"])
 
         # TODO only save StructureData if cell has changed?
 
         # add the version and class of parser
-        out_data["parser_version"] = str(pkg_version)
-        out_data["parser_class"] = str(self.__class__.__name__)
-        out_data["ejplugins_version"] = str(ejplugins.__version__)
+        param_data["parser_version"] = str(pkg_version)
+        param_data["parser_class"] = str(self.__class__.__name__)
+        param_data["ejplugins_version"] = str(ejplugins.__version__)
 
-        return out_data, struct_data, psuccess, perrors
+        return param_data, array_data, struct_data, psuccess, perrors
 
     # pylint: disable=too-many-locals
     def parse_with_retrieved(self, retrieved):
@@ -258,7 +273,7 @@ class CryBasicParser(Parser):
         # node_list.append(("output_stdout", node))
 
         # parse the stdout file and add nodes
-        paramdict, structdict, psuccess, perrors = self.parse_stdout(
+        paramdict, arraydict, structdict, psuccess, perrors = self.parse_stdout(
             out_folder.get_abs_path(stdout_file), parser_opts)
 
         if not psuccess:
@@ -271,6 +286,12 @@ class CryBasicParser(Parser):
 
         params = DataFactory("parameter")(dict=paramdict)
         node_list.append((self.get_linkname_outparams(), params))
+
+        if arraydict:
+            arraydata = DataFactory("array")()
+            for name, array in arraydict.items():
+                arraydata.set_array(name, np.array(array))
+            node_list.append((self.get_linkname_outarrays(), arraydata))
 
         StructureData = DataFactory('structure')
         # we want to reuse the kinds from the input structure, if available

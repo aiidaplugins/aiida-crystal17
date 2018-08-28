@@ -68,7 +68,8 @@ Link label           PK  Type
 remote_folder      6     RemoteData
 retrieved          7     FolderData
 output_parameters  8     ParameterData
-output_structure   9     StructureData
+output_arrays      9     ArrayData
+output_structure   10    StructureData
 ##### LOGS:
 There are 1 log messages for this calculation
 Run 'verdi calculation logshow 5' to see them
@@ -80,6 +81,8 @@ The outputs represent:
 - `remote_folder` provides a symbolic link to the work directory where the computation was run.
 - `retrieved` stores a folder containing the full stdout of `runcry17` (as main.out)
 - `output_parameters` stores a dictionary of key parameters in the database, for later querying.
+- `output_arrays` stores keys in the database to array data stored on file 
+(such as symmetry operations and mulliken charges).
 - `output_structure` stores the final geometry from the calculation
 
 For compatibility, parameters are named with the same convention as `aiida-quantumespresso`:
@@ -93,16 +96,9 @@ For compatibility, parameters are named with the same convention as `aiida-quant
   "energy": -7380.22160519032, 
   "energy_units": "eV", 
   "errors": [], 
-  "mulliken_charges": [
-    0.776999999999999, 
-    -0.776999999999999
-  ], 
-  "mulliken_electrons": [
-    11.223, 
-    8.777
-  ], 
   "number_of_assymetric": 2, 
-  "number_of_atoms": 2, 
+  "number_of_atoms": 2,
+  "number_of_symmops": 48,
   "parser_class": "CryBasicParser", 
   "parser_version": "0.1.0a0", 
   "parser_warnings": [], 
@@ -116,7 +112,7 @@ For compatibility, parameters are named with the same convention as `aiida-quant
 The final structure can be directly viewed by a number of different programs (assuming the executables are available):
 
 ```shell
->> verdi data structure show --format xcrysden 9
+>> verdi data structure show --format xcrysden 10
 ```
 
 ## Tests
