@@ -41,6 +41,8 @@ install:
     pip install -U .[testing];
     cd "$cur_path";
   fi
+- pip install coverage
+- pip install coveralls
 
 before_script:
 - reentry scan
@@ -51,7 +53,7 @@ script:
     if [[ ! -z "${AIIDA_BRANCH}" ]]; then
       pytest -v -m 'not develop_fail';
     else
-      pytest -v;
+      pytest -v --cov=. --cov-report=;
     fi
   fi
 - >
@@ -61,4 +63,6 @@ script:
   fi
 - if [[ "$TEST_TYPE" == "docs" ]]; then cd docs; make; fi
 
+after_success:
+- coveralls
 
