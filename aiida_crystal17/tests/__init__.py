@@ -15,6 +15,7 @@ TEST_COMPUTER = 'localhost-test'
 executables = {
     'crystal17.diff': 'diff',
     'crystal17.basic': 'runcry17',
+    'crystal17.main': 'runcry17',
 }
 
 MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
@@ -22,6 +23,7 @@ MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
 mock_executables = {
     'crystal17.diff': 'diff',
     'crystal17.basic': 'mock_runcry17',
+    'crystal17.main': 'mock_runcry17',
 }
 
 

@@ -11,12 +11,12 @@ but the output parsing has also been tested against CRYSTAL14.
 ## Installation
 
 ```shell
-git clone https://github.com/chrisjsewell/aiida-crystal17 .
-cd aiida-crystal17
-pip install -e .  # also installs aiida, if missing (but not postgres)
-#pip install -e .[pre-commit,testing] # install extras for more features
-verdi quicksetup  # set up a new profile
-verdi calculation plugins  # should now show the calclulation plugins (with prefix crystal17.)
+>> git clone https://github.com/chrisjsewell/aiida-crystal17 .
+>> cd aiida-crystal17
+>> pip install -e .  # also installs aiida, if missing (but not postgres)
+>> #pip install -e .[pre-commit,testing] # install extras for more features
+>> verdi quicksetup  # set up a new profile
+>> verdi calculation plugins  # should now show the calclulation plugins (with prefix crystal17.)
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ submitted calculation; calc=Calculation(PK=5)
 Once the calculation has run, it will be linked to the input nodes and a number of output nodes:
 
 ```shell
-verdi calculation show 2267
+>> verdi calculation show 2267
 -----------  ---------------------------------------------------
 type         CryBasicCalculation
 pk           5
@@ -121,21 +121,22 @@ The final structure can be directly viewed by a number of different programs (as
 The following will discover and run all unit test:
 
 ```shell
-pip install -e .[testing]
-pytest -v
+>> pip install -e .[testing]
+>> reentry scan -r aiida
+>> pytest -v
 ```
 
 To omit tests which call `runcry17`:
 
 ```shell
-pytest -v -m "not process_execution"
+>> pytest -v -m "not process_execution"
 ```
 
 or alternatively to call the `mock_runcry17` executable, 
 first set the global environmental variable:
 
 ```shell
-export MOCK_EXECUTABLES=true
+>> export MOCK_EXECUTABLES=true
 ```
 
 ## Development and Testing Notes
@@ -155,8 +156,15 @@ and testing for lint errors before submitting a commit.
 It can be setup by:
 
 ```shell
-cd aiida-crystal17
-pre-commit install
+>> cd aiida-crystal17
+>> pre-commit install
+```
+
+Optionally you can run `yapf` and `prospector` separately:
+
+```shell
+>> yapf -r -i .  # recusivel find and format files in-place
+>> prospector 
 ```
 
 Editors like PyCharm also have automatic code reformat utilities, which should adhere to this standard.
