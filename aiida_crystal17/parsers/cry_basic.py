@@ -155,6 +155,7 @@ class CryBasicParser(Parser):
 
         # create a StructureData object of final cell
         cell_data = final_data["primitive_cell"]
+        # TODO read from .gui file and/or check consistency
 
         # cell_params = []
         # for n in "a b c alpha beta gamma".split():
