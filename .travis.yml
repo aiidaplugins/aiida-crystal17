@@ -41,7 +41,6 @@ install:
     pip install -U .[testing];
     cd "$cur_path";
   fi
-- pip install coverage
 - pip install coveralls
 
 before_script:
