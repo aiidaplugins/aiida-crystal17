@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/chrisjsewell/aiida-crystal17.svg?branch=master)](https://travis-ci.org/chrisjsewell/aiida-crystal17)
+[![Coverage Status](https://coveralls.io/repos/github/chrisjsewell/aiida-crystal17/badge.svg?branch=master)](https://coveralls.io/github/chrisjsewell/aiida-crystal17?branch=master)
 [![Docs status](https://readthedocs.org/projects/aiida-crystal17/badge)](http://aiida-crystal17.readthedocs.io/) 
 
 # aiida-crystal17
