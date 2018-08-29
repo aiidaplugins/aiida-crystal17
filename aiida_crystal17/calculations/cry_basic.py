@@ -7,7 +7,8 @@ from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import (InputValidationError, ValidationError)
 from aiida.common.utils import classproperty
 from aiida.orm.calculation.job import JobCalculation
-from aiida.orm.data.singlefile import SinglefileData
+from aiida.orm import DataFactory
+SinglefileData = DataFactory('singlefile')
 
 
 class CryBasicCalculation(JobCalculation):
@@ -120,7 +121,7 @@ class CryBasicCalculation(JobCalculation):
         codeinfo.cmdline_params = [
             os.path.splitext(self._DEFAULT_INPUT_FILE)[0]
         ]
-        codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE
+        # codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE  # this file doesn't actually come from stdout
         codeinfo.withmpi = self.get_withmpi()
 
         # Prepare CalcInfo object for aiida

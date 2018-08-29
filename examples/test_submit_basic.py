@@ -55,7 +55,9 @@ def test_example(new_database, new_workdir):
 
     calc.store_all()
 
-    calc.submit()  # TODO this hangs when using aiida develop branch on travis
+    calc.submit()
+    # TODO this hangs when using aiida develop branch on travis, try print command either side
+    # also see https://stackoverflow.com/questions/26350911/what-to-do-when-a-py-test-hangs-silently
 
     print("submitted calculation; calc=Calculation(PK={})".format(
         calc.dbnode.pk))
