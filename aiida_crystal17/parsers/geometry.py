@@ -245,25 +245,23 @@ def write_gui_file(structdata,
                    standardize=True,
                    primitive=True,
                    idealize=False,
-                   fpath=None,
                    cryversion=17,
                    symops=None,
-                   crystal_type=1,
-                   origin_setting=1,
+                   crystal_type=None,
+                   origin_setting=None,
                    symprec=0.01,
                    angletol=5):
-    """write CRYSTAL geometry (.gui) file
+    """create the content string for a CRYSTAL geometry (.gui) file
 
-    Structures will first be standardized, to correctly centre it,
+    Structures can first be standardized, to correctly centre them,
     and optionally can be idealized and/or converted to the primitive cell
     see https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell
 
     :param structdata: structure data
     :type structdata: dict containaing "lattice", "atomic_numbers", "ccoords", "pbc" and (optionally) "magmoms"
-    :param primitive: find the primitive structure
+    :param standardize: standardize the structure
+    :param primitive: find the primitive (standardized) structure
     :param idealize: Using obtained symmetry operations, the distortions are removed to idealize the unit cell structure
-    :param fpath: path to file or, if None, return string of file contents
-    :type fpath: None or str or pathlib.Path
     :param cryversion: version of CRYSTAL
     :type cryversion: int
     :param symops: use specific symops array((N, 12)) in cartesian basis or, if None, computed by spglib
@@ -285,6 +283,8 @@ def write_gui_file(structdata,
 
     # set default values
     dimensionality = sum(structdata["pbc"])
+    crystal_type = 1 if crystal_type is None else crystal_type
+    origin_setting = 1 if origin_setting is None else origin_setting
 
     # if the symops are given, we can go straight to writing the file
     if symops is not None:
@@ -312,7 +312,7 @@ def write_gui_file(structdata,
                     structdata["magmoms"])  # Only works with get_symmetry
             cell = tuple(cell)
 
-            if standardize:
+            if standardize or primitive:
                 scell = spglib.standardize_cell(
                     cell,
                     no_idealize=not idealize,
@@ -376,10 +376,7 @@ def write_gui_file(structdata,
             # TODO dimensionality < 2
             raise NotImplementedError("dimensionality other than 3")
 
-    if fpath is None:
-        return gui_str
-
-    return _write_gui(gui_str, fpath)
+    return gui_str
 
 
 # pylint: disable=too-many-arguments
@@ -410,8 +407,35 @@ def _gui_string(dimensionality, origin_setting, crystal_type, lattice,
     return "\n".join(geom_str_list)
 
 
-def _write_gui(gui_str, fpath):
-    """actually write to file"""
-    path = pathlib.Path(fpath)
-    with path.open("w") as f:
-        f.write(gui_str)
+def create_gui_from_struct(struct, settings):
+    """ create the content of the gui file from a structure and settings
+
+    :param struct: the input structure
+    :type struct: StructureData
+    :param settings: dictionary of settings
+    :type settings: dict
+    :return: content of .gui file (as string)
+    """
+    rkeys = [
+        'struct_primitive', 'struct_origin_setting', 'struct_crystal_type',
+        'struct_symops', 'struct_angletol', 'struct_idealize',
+        'struct_symprec', 'struct_standardize'
+    ]
+    if not set(settings.keys()).issuperset(rkeys):
+        raise ValueError("settings must contain: {}".format(rkeys))
+
+    atoms = struct.get_ase()
+
+    sdata = {
+        "lattice": atoms.cell,
+        "atomic_numbers": atoms.get_atomic_numbers(),
+        "ccoords": atoms.positions,
+        "pbc": atoms.pbc,
+        "magmoms": atoms.get_tags()
+    }
+    # TODO here we use kind indices as magmoms to reduce symmetry, this should be documented
+    # another option would be to use keywords in CRYSTAL, but this seems more elegant
+
+    kwargs = {k.replace("struct_", ""): settings[k] for k in rkeys}
+
+    return write_gui_file(sdata, **kwargs)

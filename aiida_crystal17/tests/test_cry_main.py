@@ -1,6 +1,7 @@
 """ Tests for basic CRYSTAL17 calculation
 
 """
+import glob
 import os
 
 import aiida_crystal17
@@ -9,6 +10,7 @@ import ejplugins
 import numpy as np
 import pytest
 from jsonextended import edict
+from ase.spacegroup import crystal
 
 # TODO parameterize tests
 
@@ -36,7 +38,14 @@ def test_submit(new_database, new_workdir):
     infile = SinglefileData(
         file=os.path.join(tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.d12'))
-    instruct = StructureData()
+
+    # MgO
+    atoms = crystal(
+        symbols=[12, 8],
+        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+        spacegroup=225,
+        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
+    instruct = StructureData(ase=atoms)
 
     # set up calculation
     calc = code.new_calc()
@@ -55,3 +64,9 @@ def test_submit(new_database, new_workdir):
     with SandboxFolder() as folder:
         subfolder, script_filename = calc.submit_test(folder=folder)
         print("inputs created successfully at {}".format(subfolder.abspath))
+        print([
+            os.path.basename(p)
+            for p in glob.glob(os.path.join(subfolder.abspath, "*"))
+        ])
+        with open(os.path.join(subfolder.abspath, "main.gui")) as f:
+            print(f.read())

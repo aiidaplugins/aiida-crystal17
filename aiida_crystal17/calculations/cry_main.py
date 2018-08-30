@@ -8,6 +8,8 @@ from aiida.common.exceptions import (InputValidationError, ValidationError)
 from aiida.common.utils import classproperty
 from aiida.orm import DataFactory
 from aiida.orm.calculation.job import JobCalculation
+from aiida_crystal17.parsers.geometry import create_gui_from_struct
+from aiida_crystal17.utils import HelpDict
 
 SinglefileData = DataFactory('singlefile')
 StructureData = DataFactory('structure')
@@ -34,6 +36,39 @@ class CryMainCalculation(JobCalculation):
 
         # parser entry point defined in setup.json
         self._default_parser = 'crystal17.basic'
+
+        self._default_settings = HelpDict({
+            "struct_standardize": (True, 'standardize the structure'),
+            "struct_primitive":
+            (True, 'convert the structure to the primitive (standardized)'),
+            "struct_idealize":
+            (False,
+             'Using obtained symmetry operations, remove distortions of the unit cells atomic positions'
+             ),
+            "struct_symprec":
+            (0.01, 'Tolerance for symmetry finding: '
+             '0.01 is fairly strict and works well for properly refined structures, '
+             'but 0.1 may be required for unrefined structures'),
+            "struct_angletol": (5, 'Angle tolerance for symmetry finding'),
+            "struct_symops":
+            (None, 'use specific symops array((N, 12)) in cartesian basis, '
+             'each row represents a flattened rotation matix and a translation matrix'
+             ),
+            "struct_crystal_type":
+            (1,
+             'the crystal type id to set (1 to 6), if using specific symops'),
+            "struct_origin_setting":
+            (1,
+             'origin setting for primitive to conventional transform, if using specific symops'
+             )
+        })
+
+    def _get_default_settings(self):
+        """get a copy of the default settings"""
+        return self._default_settings.copy()
+
+    default_settings = property(
+        _get_default_settings, doc="the default calculation settings")
 
     @classproperty
     def _use_methods(cls):
@@ -117,19 +152,29 @@ class CryMainCalculation(JobCalculation):
         # Settings can be undefined, and defaults to an empty dictionary
         settings = inputdict.pop(self.get_linkname('settings'), None)
         if settings is None:
-            settings_dict = {}
+            input_settings = {}
         else:
             if not isinstance(settings, ParameterData):
                 raise InputValidationError(
                     "settings, if specified, must be of "
                     "type ParameterData")
+            input_settings = settings.get_dict()
 
         if inputdict:
             raise ValidationError(
                 "Unknown additional inputs: {}".format(inputdict))
 
+        # update default settings
+        setting_dict = self.default_settings
+        setting_dict.update(input_settings)
+
         # create .gui external geometry file and place it in tempfolder
-        gui_filecontent = ""  # TODO create .gui content
+        try:
+            gui_filecontent = create_gui_from_struct(instruct, setting_dict)
+        except (ValueError, NotImplementedError) as err:
+            raise InputValidationError(
+                "an input file could not be created from the structure: {}".
+                format(err))
         gui_filename = tempfolder.get_abs_path(self._DEFAULT_EXTERNAL_FILE)
         with open(gui_filename, 'w') as gfile:
             gfile.write(gui_filecontent)
