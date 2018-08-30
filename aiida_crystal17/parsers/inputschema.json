@@ -153,6 +153,9 @@
       "title": "Block 3",
       "description": "Single particle Hamiltonian and SCF control",
       "type": "object",
+      "required": [
+        "k_points"
+      ],
       "additionalProperties": false,
       "dependencies": {
         "single": {
@@ -171,6 +174,15 @@
         }
       },
       "properties": {
+        "k_points": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
         "single": {
           "type": "string",
           "enum": [
@@ -182,9 +194,12 @@
         "dft": {
           "description": "the exchange-correlation functional to use",
           "type": "object",
+          "required": [
+            "xc"
+          ],
           "additionalProperties": false,
           "properties": {
-            "spin": {
+            "SPIN": {
               "description": "whether to use spin polarisation",
               "type": "boolean"
             },
@@ -261,35 +276,37 @@
                   ]
                 },
                 {
-                  "type": "array",
-                  "additionalItems": false,
-                  "minItems": 4,
-                  "items": [
-                    {
-                      "type": "string",
-                      "enum": [
-                        "LSRSH-PBE"
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "maxProperties": 1,
+                  "properties": {
+                    "LSRSH-PBE": {
+                      "type": "array",
+                      "additionalItems": false,
+                      "minItems": 3,
+                      "items": [
+                        {
+                          "description": "value of the length scale separation, w",
+                          "type": "number",
+                          "minimum": 0,
+                          "exclusiveMinimum": true
+                        },
+                        {
+                          "description": "value of the coefficient for the SR-HF exchange term",
+                          "type": "number",
+                          "minimum": 0,
+                          "exclusiveMinimum": true
+                        },
+                        {
+                          "description": "value of the coefficient for the LR-HF exchange term",
+                          "type": "number",
+                          "minimum": 0,
+                          "exclusiveMinimum": true
+                        }
                       ]
-                    },
-                    {
-                      "description": "value of the length scale separation, w",
-                      "type": "number",
-                      "minimum": 0,
-                      "exclusiveMinimum": true
-                    },
-                    {
-                      "description": "value of the coefficient for the SR-HF exchange term",
-                      "type": "number",
-                      "minimum": 0,
-                      "exclusiveMinimum": true
-                    },
-                    {
-                      "description": "value of the coefficient for the LR-HF exchange term",
-                      "type": "number",
-                      "minimum": 0,
-                      "exclusiveMinimum": true
                     }
-                  ]
+                  }
                 }
               ]
             },
@@ -409,7 +426,7 @@
               "description": "Bipolar expansion approximation control",
               "type": "array",
               "minItems": 5,
-              "maxitems": 5,
+              "maxItems": 5,
               "items": {
                 "type": "integer",
                 "minimum": 0,
@@ -490,61 +507,77 @@
               ]
             },
             {
-              "type": "array",
-              "minItems": 4,
-              "maxitems": 4,
-              "items": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "BROYDEN"
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "maxProperties": 1,
+              "properties": {
+                "BROYDEN": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxitems": 3,
+                  "items": [
+                    {
+                      "description": "W0 parameter in Anderson’s paper",
+                      "type": "number",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    {
+                      "description": "percent of Fock/KS matrices mixing when Broyden method is switched on",
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    {
+                      "description": "SCf iteration after which Broyden method is active",
+                      "type": "integer",
+                      "minimum": 2
+                    }
                   ]
-                },
-                {
-                  "description": "W0 parameter in Anderson’s paper",
-                  "type": "number",
-                  "minimum": 0,
-                  "exclusiveMinimum": true
-                },
-                {
-                  "description": "percent of Fock/KS matrices mixing when Broyden method is switched on",
-                  "type": "integer",
-                  "minimum": 0,
-                  "exclusiveMinimum": true
-                },
-                {
-                  "description": "SCf iteration after which Broyden method is active",
-                  "type": "integer",
-                  "minimum": 2
                 }
-              ]
+              }
             }
           ]
         },
         "spinlock": {
           "description": "the difference between alpha and beta electrons is fixed for initial scf cycles",
           "type": "object",
-          "required": [
-            "type",
-            "value",
-            "cycles"
-          ],
           "additionalProperties": false,
+          "minProperties": 1,
+          "maxProperties": 1,
           "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "SPINLOCK",
-                "SPINLOC2",
-                "BETALOCK"
+            "SPINLOCK": {
+              "description": "shift the eigenvalues in order to lock the system in a specific spin state [nalpha-nbeta, ncycles]",
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "integer"
+              }
+            },
+            "SPINLOC2": {
+              "description": "fills separately the alpha and beta bands with the appropriate # of electrons [nalpha-nbeta, ncycles]",
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "integer"
+                }
               ]
             },
-            "value": {
-              "type": "integer"
-            },
-            "cycles": {
-              "description": "number of cycles the difference is maintained or energy thereshold",
-              "type": "integer"
+            "BETALOCK": {
+              "description": "lock the number of beta electrons [nbeta, ncycles]",
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "integer"
+              }
             }
           }
         },

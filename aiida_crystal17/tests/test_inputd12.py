@@ -1,31 +1,9 @@
-"""
-test input schema
-"""
-import pytest
-from aiida_crystal17.parsers import validate_cryinput
-from jsonschema import ValidationError
+from aiida_crystal17.parsers.inputd12 import write_input
 
 
-def test_toplevel_fail():
-    data = {"a": 1}
-    with pytest.raises(ValidationError):
-        validate_cryinput(data)
+def test_input_full():
 
-
-def test_toplevel_pass():
-    data = {
-        "title": "a title",
-        "geometry": {},
-        "basis_set": {},
-        "scf": {
-            "k_points": [8, 8]
-        }
-    }
-    validate_cryinput(data)
-
-
-def test_full_pass():
-    data = {
+    indict = {
         "title": "a title",
         "geometry": {
             "info_print": ["ATOMSYMM", "SYMMOPS"],
@@ -49,11 +27,13 @@ def test_full_pass():
         },
         "scf": {
             "dft": {
-                "xc": ["LDA", "PZ"],
+                # "xc": ["LDA", "PZ"],
                 # or
                 # "xc": "HSE06",
                 # or
-                # "xc": {"LSRSH-PBE": [0.11, 0.25, 0.00001]},
+                "xc": {
+                    "LSRSH-PBE": [0.11, 0.25, 0.00001]
+                },
                 "SPIN": True,
                 "grid": "XLGRID",
                 "grid_weights": "BECKE",
@@ -70,7 +50,7 @@ def test_full_pass():
                 "BIPOLAR": [18, 14],
                 "BIPOSIZE": 4000000,
                 "EXCHSIZE": 4000000,
-                "EXCHPERM": False,
+                "EXCHPERM": True,
                 "ILASIZE": 6000,
                 "INTGPACK": 0,
                 "MADELIND": 50,
@@ -88,11 +68,93 @@ def test_full_pass():
             },
             "fock_mixing": "DIIS",
             # or
-            # "fock_mixing": {"BROYDEN": [0.0001, 50, 2]},
+            # "fock_mixing": ["BROYDEN", 0.0001, 50, 2],
             "spinlock": {
                 "SPINLOCK": [1, 10]
             },
             "post_scf": ["GRADCAL", "PPAN"]
         }
     }
-    validate_cryinput(data)
+
+    outstr = write_input(indict, ["basis_set1", "basis_set2"])
+
+    expected = """a title
+EXTERNAL
+ATOMSYMM
+SYMMOPS
+STRUCPRT
+OPTGEOM
+FULLOPTG
+HESSIDEN
+NUMGRATO
+PRINTOPT
+PRINTFORCES
+MAXCYCLE
+50
+TOLDEX
+0.0012
+FINALRUN
+4
+TOLDEG
+0.0003
+TOLDEE
+7
+END
+END
+basis_set1
+basis_set2
+99 0
+END
+DFT
+LSRSH-PBE
+0.11 0.25 1e-05
+SPIN
+XLGRID
+BECKE
+TOLLDENS
+6
+LIMBEK
+400
+TOLLGRID
+14
+END
+SHRINK
+8 8
+INTGPACK
+0
+FMIXING
+0
+EXCHPERM
+SMEAR
+0.1
+TOLPSEUD
+6
+POLEORDR
+4
+EXCHSIZE
+4000000
+ILASIZE
+6000
+MAXCYCLE
+50
+BIPOLAR
+18 14
+MADELIND
+50
+TOLINTEG
+6 6 6 6 12
+BIPOSIZE
+4000000
+LEVSHIFT
+2 1
+TOLDEE
+6
+DIIS
+SPINLOCK
+1 10
+GRADCAL
+PPAN
+END
+"""
+
+    assert outstr == expected
