@@ -2,26 +2,27 @@
 test input schema
 """
 import pytest
-from aiida_crystal17.parsers import validate_cryinput
+from aiida_crystal17.parsers import validate_dict
 from jsonschema import ValidationError
 
 
 def test_toplevel_fail():
-    data = {"a": 1}
     with pytest.raises(ValidationError):
-        validate_cryinput(data)
+        validate_dict({})
+    with pytest.raises(ValidationError):
+        validate_dict({"a": 1})
 
 
 def test_toplevel_pass():
     data = {
-        "title": "a title",
-        "geometry": {},
-        "basis_set": {},
+        # "title": "a title",
+        # "geometry": {},
+        # "basis_set": {},
         "scf": {
             "k_points": [8, 8]
         }
     }
-    validate_cryinput(data)
+    validate_dict(data)
 
 
 def test_full_pass():
@@ -95,4 +96,4 @@ def test_full_pass():
             "post_scf": ["GRADCAL", "PPAN"]
         }
     }
-    validate_cryinput(data)
+    validate_dict(data)

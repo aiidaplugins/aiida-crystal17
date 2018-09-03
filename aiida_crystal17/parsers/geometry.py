@@ -21,6 +21,7 @@ space_group_int_num num_symm_ops
 
 """
 import numpy as np
+from aiida_crystal17.parsers import validate_dict
 from spglib import spglib
 
 # python 3 to 2 compatibility
@@ -240,17 +241,8 @@ def cart2frac(lattice, ccoords):
 
 
 # TODO split this up into func where all data supplied and one where we calc sym
-# pylint: disable=too-many-arguments,too-many-locals
-def write_gui_file(structdata,
-                   standardize=True,
-                   primitive=True,
-                   idealize=False,
-                   cryversion=17,
-                   symops=None,
-                   crystal_type=None,
-                   origin_setting=None,
-                   symprec=0.01,
-                   angletol=5):
+# pylint: disable=too-many-locals
+def write_gui_file(structdata, settings, cryversion=17):
     """create the content string for a CRYSTAL geometry (.gui) file
 
     Structures can first be standardized, to correctly centre them,
@@ -259,36 +251,41 @@ def write_gui_file(structdata,
 
     :param structdata: structure data
     :type structdata: dict containaing "lattice", "atomic_numbers", "ccoords", "pbc" and (optionally) "magmoms"
-    :param standardize: standardize the structure
-    :param primitive: find the primitive (standardized) structure
-    :param idealize: Using obtained symmetry operations, the distortions are removed to idealize the unit cell structure
+    :param settings: Settings for initial manipulation of structures and conversion to .gui (fort.34) input file,
+    as mandated by the settings.schema.json
+    :type settings: dict
     :param cryversion: version of CRYSTAL
     :type cryversion: int
-    :param symops: use specific symops array((N, 12)) in cartesian basis or, if None, computed by spglib
-    :param crystal_type: the crystal type id (1 to 6)
-    :param origin_setting: origin setting for primitive to conventional transform
-    :param symprec: Tolerance for symmetry finding
-                    0.01 is fairly strict and works well for properly refined structures
-                    0.1 (the value used in Materials Project) may be needed for relaxed structures
-    :param angletol: Angle tolerance for symmetry finding
     :return:
 
     """
     if cryversion != 17:
         raise NotImplementedError("CRYSTAL versions other than 17")
 
+    # validation of inputs
+    validate_dict(settings, "settings")
+
+    standardize = settings["3d"]["standardize"]  # True
+    primitive = settings["3d"]["primitive"]  # True,
+    idealize = settings["3d"]["idealize"]  # False,
+    symprec = settings["symmetry"]["symprec"]  # 0.01,
+    angletol = settings["symmetry"]["angletol"]  # -1
+    angletol = -1 if angletol is None else angletol
+    symops = settings["symmetry"]["operations"]  # None,
+    crystal_type = {v: k
+                    for k, v in _CRYSTAL_TYPE.items()
+                    }[settings["crystal"]["system"]]  # 1
+    origin_setting = settings["crystal"]["transform"]  # 1
+    origin_setting = 1 if origin_setting is None else origin_setting
+
     rkeys = ["lattice", "atomic_numbers", "ccoords", "pbc"]
     if not set(rkeys).issubset(structdata.keys()):
         raise ValueError("stuctdata must contain: {}".format(rkeys))
 
-    # set default values
     dimensionality = sum(structdata["pbc"])
-    crystal_type = 1 if crystal_type is None else crystal_type
-    origin_setting = 1 if origin_setting is None else origin_setting
 
     # if the symops are given, we can go straight to writing the file
     if symops is not None:
-        num_symops = len(symops)
         sym_data = []
         for symop in symops:
             sym_data.append(symop[0:3])
@@ -296,7 +293,7 @@ def write_gui_file(structdata,
             sym_data.append(symop[6:9])
             sym_data.append(symop[9:12])
         gui_str = _gui_string(dimensionality, origin_setting, crystal_type,
-                              structdata["lattice"], num_symops, sym_data,
+                              structdata["lattice"], len(symops), sym_data,
                               structdata["atomic_numbers"],
                               structdata["ccoords"], 1)
     else:
@@ -416,14 +413,6 @@ def create_gui_from_struct(struct, settings):
     :type settings: dict
     :return: content of .gui file (as string)
     """
-    rkeys = [
-        'struct_primitive', 'struct_origin_setting', 'struct_crystal_type',
-        'struct_symops', 'struct_angletol', 'struct_idealize',
-        'struct_symprec', 'struct_standardize'
-    ]
-    if not set(settings.keys()).issuperset(rkeys):
-        raise ValueError("settings must contain: {}".format(rkeys))
-
     atoms = struct.get_ase()
 
     sdata = {
@@ -436,6 +425,4 @@ def create_gui_from_struct(struct, settings):
     # TODO here we use kind indices as magmoms to reduce symmetry, this should be documented
     # another option would be to use keywords in CRYSTAL, but this seems more elegant
 
-    kwargs = {k.replace("struct_", ""): settings[k] for k in rkeys}
-
-    return write_gui_file(sdata, **kwargs)
+    return write_gui_file(sdata, settings)

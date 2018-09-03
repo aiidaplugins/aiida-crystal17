@@ -2,12 +2,21 @@
 helpful code
 """
 import collections
+from jsonextended import edict
 
 # python 3 to 2 compatibility
 try:
     basestring
 except NameError:
     basestring = str  # pylint: disable=redefined-builtin
+
+
+def unflatten_dict(indict, delimiter="."):
+    return edict.unflatten(indict, key_as_tuple=False, delim=delimiter)
+
+
+def flatten_dict(indict, delimiter="."):
+    return edict.flatten(indict, key_as_tuple=False, sep=delimiter)
 
 
 class HelpDict(collections.MutableMapping):

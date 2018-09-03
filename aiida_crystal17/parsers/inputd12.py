@@ -1,7 +1,7 @@
 """
 module to read and write CRYSTAL17 .d12 files
 """
-from aiida_crystal17.parsers import validate_cryinput
+from aiida_crystal17.parsers import validate_dict
 
 # TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
@@ -55,7 +55,7 @@ def format_value(dct, keys):
 def write_input(indict, basis_sets):
     """write input of a validated input dictionay"""
 
-    validate_cryinput(indict)
+    validate_dict(indict)
 
     outstr = ""
 

@@ -3,6 +3,9 @@
   "title": "CRYSTAL17 Input",
   "description": "Allowed Inputs For CRYSTAL17 .d12 file",
   "type": "object",
+  "required": [
+    "scf"
+  ],
   "additionalProperties": false,
   "properties": {
     "title": {

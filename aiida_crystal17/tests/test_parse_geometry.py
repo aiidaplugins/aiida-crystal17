@@ -5,10 +5,30 @@ for EXTERNAL keyword use
 import os
 
 import aiida_crystal17.tests as tests
+import pytest
 from aiida_crystal17.parsers.geometry import read_gui_file, write_gui_file, get_centering_code, get_crystal_system
 from ase.spacegroup import crystal
 from jsonextended import edict
-import pytest
+
+
+@pytest.fixture(scope="function")
+def default_settings():
+    return {
+        "crystal": {
+            "system": "triclinic",
+            "transform": None,
+        },
+        "symmetry": {
+            "symprec": 0.01,
+            "angletol": None,
+            "operations": None
+        },
+        "3d": {
+            "standardize": True,
+            "primitive": True,
+            "idealize": False
+        }
+    }
 
 
 @pytest.mark.parametrize(
@@ -23,7 +43,6 @@ import pytest
         (227, 'Fd3m', 5, 6)  # greigite
     ])
 def test_get_centering_code(sg_num, sg_symbol, centering, crystal_type):
-
     assert get_crystal_system(sg_num, as_number=True) == crystal_type
     assert get_centering_code(sg_num, sg_symbol) == centering
 
@@ -101,7 +120,7 @@ def test_read_gui_file():
     assert edict.diff(data, expected) == {}
 
 
-def test_write_gui_with_symops():
+def test_write_gui_with_symops(default_settings):
     sdata = {
         "lattice": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
         "ccoords": [[0, 0, 0]],
@@ -110,7 +129,9 @@ def test_write_gui_with_symops():
     }
     symops = [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]]  # i.e. no symmetry
 
-    output = write_gui_file(sdata, symops=symops)
+    default_settings["symmetry"]["operations"] = symops
+
+    output = write_gui_file(sdata, default_settings)
 
     expected = """3 1 1
   1.000000000E+00   0.000000000E+00   0.000000000E+00
@@ -128,7 +149,7 @@ def test_write_gui_with_symops():
     assert output == expected
 
 
-def test_write_gui_without_symops():
+def test_write_gui_without_symops(default_settings):
     sdata = {
         "lattice": [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
         "ccoords": [[1, 1, 1]],
@@ -136,7 +157,7 @@ def test_write_gui_without_symops():
         "pbc": [True, True, True],
     }
 
-    output = write_gui_file(sdata, symops=None)
+    output = write_gui_file(sdata, default_settings)
     # print()
     # print(output)
 
@@ -344,8 +365,7 @@ def test_write_gui_without_symops():
     assert output == expected
 
 
-def test_write_gui_mgo():
-
+def test_write_gui_mgo(default_settings):
     # MgO
     atoms = crystal(
         symbols=[12, 8],
@@ -360,7 +380,7 @@ def test_write_gui_mgo():
         "pbc": atoms.pbc
     }
 
-    output = write_gui_file(sdata)
+    output = write_gui_file(sdata, default_settings)
 
     expected = """3 5 6
   0.000000000E+00  -2.105000000E+00  -2.105000000E+00
@@ -568,7 +588,7 @@ def test_write_gui_mgo():
     assert output == expected
 
 
-def test_write_gui_marcasite():
+def test_write_gui_marcasite(default_settings):
     """has strange order of lengths"""
     atoms = crystal(
         symbols=[26, 16],
@@ -583,7 +603,7 @@ def test_write_gui_marcasite():
         "pbc": atoms.pbc
     }
 
-    output = write_gui_file(sdata)
+    output = write_gui_file(sdata, default_settings)
 
     expected = """3 1 3
   4.570722390E+00   0.000000000E+00   0.000000000E+00

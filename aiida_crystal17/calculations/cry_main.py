@@ -2,14 +2,17 @@
 Plugin to create a CRYSTAL17 output file from input files created via data nodes
 """
 import os
+import copy
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import (InputValidationError, ValidationError)
 from aiida.common.utils import classproperty
 from aiida.orm import DataFactory
 from aiida.orm.calculation.job import JobCalculation
+from aiida_crystal17.parsers import read_schema
 from aiida_crystal17.parsers.geometry import create_gui_from_struct
-from aiida_crystal17.utils import HelpDict
+from aiida_crystal17.utils import unflatten_dict
+from jsonextended import edict
 
 SinglefileData = DataFactory('singlefile')
 StructureData = DataFactory('structure')
@@ -21,6 +24,23 @@ class CryMainCalculation(JobCalculation):
     AiiDA calculation plugin wrapping the runcry17 executable.
 
     """
+
+    _default_settings = {
+        "crystal": {
+            "system": "triclinic",
+            "transform": None,
+        },
+        "symmetry": {
+            "symprec": 0.01,
+            "angletol": None,
+            "operations": None
+        },
+        "3d": {
+            "standardize": True,
+            "primitive": True,
+            "idealize": False
+        }
+    }
 
     def _init_internal_params(self):  # pylint: disable=useless-super-delegation
         """
@@ -37,38 +57,47 @@ class CryMainCalculation(JobCalculation):
         # parser entry point defined in setup.json
         self._default_parser = 'crystal17.basic'
 
-        self._default_settings = HelpDict({
-            "struct_standardize": (True, 'standardize the structure'),
-            "struct_primitive":
-            (True, 'convert the structure to the primitive (standardized)'),
-            "struct_idealize":
-            (False,
-             'Using obtained symmetry operations, remove distortions of the unit cells atomic positions'
-             ),
-            "struct_symprec":
-            (0.01, 'Tolerance for symmetry finding: '
-             '0.01 is fairly strict and works well for properly refined structures, '
-             'but 0.1 may be required for unrefined structures'),
-            "struct_angletol": (5, 'Angle tolerance for symmetry finding'),
-            "struct_symops":
-            (None, 'use specific symops array((N, 12)) in cartesian basis, '
-             'each row represents a flattened rotation matix and a translation matrix'
-             ),
-            "struct_crystal_type":
-            (1,
-             'the crystal type id to set (1 to 6), if using specific symops'),
-            "struct_origin_setting":
-            (1,
-             'origin setting for primitive to conventional transform, if using specific symops'
-             )
-        })
-
-    def _get_default_settings(self):
+    @classmethod
+    def default_settings(cls):
         """get a copy of the default settings"""
-        return self._default_settings.copy()
+        return copy.deepcopy(cls._default_settings)
 
-    default_settings = property(
-        _get_default_settings, doc="the default calculation settings")
+    # default_settings = property(
+    #     _get_default_settings, doc="the default calculation settings")
+
+    @classmethod
+    def settings_schema(cls):
+        """get a copy of the settings schema"""
+        return read_schema("settings")
+
+    @classmethod
+    def input_schema(cls):
+        """get a copy of the settings schema"""
+        return read_schema("inputd12")
+
+    @classmethod
+    def prepare_inputs(cls,
+                       input_dict,
+                       structure,
+                       settings=None,
+                       flattened=False):
+        """ prepare and validate the inputs to the calculation
+
+        :param input: dict giving data to create the input .d12 file
+        :param structure: the StructureData
+        :param settings: ParameterData giving
+        :param flattened: whether the input (and settings) dictionary are flattened
+        :return:
+        """
+        # TODO add validation of input_dict
+        settings = {} if settings is None else settings
+        if flattened:
+            settings = unflatten_dict(settings)
+        setting_dict = edict.merge(
+            [cls._default_settings, settings], overwrite=True)
+        create_gui_from_struct(structure, setting_dict)
+
+        return ParameterData(dict=input_dict), ParameterData(dict=settings)
 
     @classproperty
     def _use_methods(cls):
@@ -95,10 +124,15 @@ class CryMainCalculation(JobCalculation):
                 'docstring': "structure to use."
             },
             "settings": {
-                'valid_types': ParameterData,
-                'additional_parameter': None,
-                'linkname': 'settings',
-                'docstring': "Use an additional node for special settings",
+                'valid_types':
+                ParameterData,
+                'additional_parameter':
+                None,
+                'linkname':
+                'settings',
+                'docstring':
+                "Settings for initial manipulation of structures "
+                "and conversion to .gui (fort.34) input file",
             },
             # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
             # "parent_folder": {
@@ -165,8 +199,8 @@ class CryMainCalculation(JobCalculation):
                 "Unknown additional inputs: {}".format(inputdict))
 
         # update default settings
-        setting_dict = self.default_settings
-        setting_dict.update(input_settings)
+        setting_dict = edict.merge(
+            [self._default_settings, input_settings], overwrite=True)
 
         # create .gui external geometry file and place it in tempfolder
         try:

@@ -12,7 +12,7 @@ import pytest
 from jsonextended import edict
 from ase.spacegroup import crystal
 
-# TODO parameterize tests
+#TODO parameterize tests (how do you parameterize with fixtures?)
 
 
 def get_main_code(workdir):
@@ -22,6 +22,24 @@ def get_main_code(workdir):
     code = tests.get_code(entry_point='crystal17.main', computer=computer)
 
     return code
+
+
+def test_prepare(new_database, new_workdir):
+    """test preparation of inputs"""
+    code = get_main_code(new_workdir)
+
+    from aiida.orm import DataFactory, CalculationFactory
+    StructureData = DataFactory('structure')
+    atoms = crystal(
+        symbols=[12, 8],
+        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+        spacegroup=225,
+        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
+    instruct = StructureData(ase=atoms)
+
+    calc_cls = CalculationFactory('crystal17.main')
+    calc_cls.prepare_inputs(
+        {}, instruct, settings={"crystal.system": "triclinic"}, flattened=True)
 
 
 def test_submit(new_database, new_workdir):
