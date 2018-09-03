@@ -277,11 +277,11 @@ def upload_basisset_family(folder,
         if created:
             basisset.store()
 
-            aiidalogger.debug("New node {0} created for file {1}".format(
-                basisset.uuid, basisset.filename))  # pylint: disable=logging-format-interpolation
+            aiidalogger.debug("New node {0} created for file {1}".format(  # pylint: disable=logging-format-interpolation
+                basisset.uuid, basisset.filename))
         else:
-            aiidalogger.debug("Reusing node {0} for file {1}".format(
-                basisset.uuid, basisset.filename))  # pylint: disable=logging-format-interpolation
+            aiidalogger.debug("Reusing node {0} for file {1}".format(  # pylint: disable=logging-format-interpolation
+                basisset.uuid, basisset.filename))
 
     # Add elements to the group all together
     group.add_nodes(basis for basis, created in basis_and_created)
