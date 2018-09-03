@@ -14,7 +14,8 @@
     "version": "0.2.0a0",
     "entry_points": {
         "aiida.data": [
-            "crystal17.diff = aiida_crystal17.data.diffparams:DiffParameters"
+            "crystal17.diff = aiida_crystal17.data.diffparams:DiffParameters",
+            "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData"
         ],
         "aiida.calculations": [
             "crystal17.diff = aiida_crystal17.calculations.diffcalc:DiffCalculation",

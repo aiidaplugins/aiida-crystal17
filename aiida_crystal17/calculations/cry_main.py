@@ -57,7 +57,7 @@ class CryMainCalculation(JobCalculation):
         # parser entry point defined in setup.json
         self._default_parser = 'crystal17.basic'
 
-    @classmethod
+    @classproperty
     def default_settings(cls):
         """get a copy of the default settings"""
         return copy.deepcopy(cls._default_settings)
@@ -65,12 +65,12 @@ class CryMainCalculation(JobCalculation):
     # default_settings = property(
     #     _get_default_settings, doc="the default calculation settings")
 
-    @classmethod
+    @classproperty
     def settings_schema(cls):
         """get a copy of the settings schema"""
         return read_schema("settings")
 
-    @classmethod
+    @classproperty
     def input_schema(cls):
         """get a copy of the settings schema"""
         return read_schema("inputd12")
