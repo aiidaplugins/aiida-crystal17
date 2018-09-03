@@ -183,12 +183,19 @@ def upload_basisset_family(folder,
         If False, simply adds the existing UPFData node to the group.
     :param extension: the filename extension to look for
     """
-    import aiida.common
     from aiida.common import aiidalogger
     from aiida.orm import Group
     from aiida.common.exceptions import UniquenessError, NotExistent
-    from aiida.backends.utils import get_automatic_user
-    from aiida.orm.querybuilder import QueryBuilder
+
+    # aiida v1 compatibility
+    try:
+        from aiida.backends.utils import get_automatic_user
+        automatic_user = get_automatic_user()
+    except ImportError:
+        from aiida.orm.backend import construct_backend
+        backend = construct_backend()
+        automatic_user = backend.users.get_automatic_user()
+
     if not os.path.isdir(folder):
         raise ValueError("folder must be a directory")
 
@@ -207,12 +214,10 @@ def upload_basisset_family(folder,
         group_created = False
     except NotExistent:
         group = Group(
-            name=group_name,
-            type_string=BASISGROUP_TYPE,
-            user=get_automatic_user())
+            name=group_name, type_string=BASISGROUP_TYPE, user=automatic_user)
         group_created = True
 
-    if group.user != get_automatic_user():
+    if group.user.email != automatic_user.email:
         raise UniquenessError(
             "There is already a BasisFamily group with name {}"
             ", but it belongs to user {}, therefore you "
@@ -223,29 +228,7 @@ def upload_basisset_family(folder,
 
     # NOTE: GROUP SAVED ONLY AFTER CHECKS OF UNICITY
 
-    basis_and_created = []
-
-    for f in files:
-        md5sum = aiida.common.utils.md5_file(f)
-        qb = QueryBuilder()
-        qb.append(BasisSetData, filters={'attributes.md5': {'==': md5sum}})
-        existing_upf = qb.first()
-
-        if existing_upf is None:
-            # return the upfdata instances, not stored
-            basisset, created = BasisSetData.get_or_create(
-                f, use_first=True, store_basis=False)
-            # to check whether only one basis set per element exists
-            # NOTE: actually, created has the meaning of "to_be_created"
-            basis_and_created.append((basisset, created))
-        else:
-            if stop_if_existing:
-                raise ValueError("A UPF with identical MD5 to "
-                                 " {} cannot be added with stop_if_existing"
-                                 "".format(f))
-            existing_upf = existing_upf[0]
-            basis_and_created.append((existing_upf, False))
-
+    basis_and_created = retrieve_basis_sets(files, stop_if_existing)
     # check whether basisset are unique per element
     elements = [(i[0].element, i[0].md5sum) for i in basis_and_created]
     # If group already exists, check also that I am not inserting more than
@@ -289,6 +272,43 @@ def upload_basisset_family(folder,
     nuploaded = len([_ for _, created in basis_and_created if created])
 
     return nfiles, nuploaded
+
+
+def retrieve_basis_sets(files, stop_if_existing):
+    """ get existing basis sets or create if not
+
+    :param files: list of basis set file paths
+    :param stop_if_existing: if True, check for the md5 of the files and,
+        if the file already exists in the DB, raises a MultipleObjectsError.
+        If False, simply adds the existing UPFData node to the group.
+    :return:
+    """
+    import aiida.common
+    from aiida.orm.querybuilder import QueryBuilder
+
+    basis_and_created = []
+    for f in files:
+        md5sum = aiida.common.utils.md5_file(f)
+        qb = QueryBuilder()
+        qb.append(BasisSetData, filters={'attributes.md5': {'==': md5sum}})
+        existing_basis = qb.first()
+
+        if existing_basis is None:
+            # return the basis set data instances, not stored
+            basisset, created = BasisSetData.get_or_create(
+                f, use_first=True, store_basis=False)
+            # to check whether only one basis set per element exists
+            # NOTE: actually, created has the meaning of "to_be_created"
+            basis_and_created.append((basisset, created))
+        else:
+            if stop_if_existing:
+                raise ValueError("A Basis Set with identical MD5 to "
+                                 " {} cannot be added with stop_if_existing"
+                                 "".format(f))
+            existing_basis = existing_basis[0]
+            basis_and_created.append((existing_basis, False))
+
+    return basis_and_created
 
 
 # pylint: disable=too-many-locals
