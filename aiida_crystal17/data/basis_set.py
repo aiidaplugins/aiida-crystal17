@@ -1,10 +1,13 @@
 """
 a data type to store CRYSTAL17 basis sets
 """
+from __future__ import absolute_import
 import os
+
 import yaml
+import six
+
 from aiida.common.utils import classproperty
-# from aiida.orm.data import Data
 from aiida.orm.data.singlefile import SinglefileData
 from aiida_crystal17.utils import flatten_dict, unflatten_dict
 
@@ -650,7 +653,7 @@ class BasisSetData(SinglefileData):
         if user is not None:
             group_query_params['user'] = user
 
-        if isinstance(filter_elements, basestring):
+        if isinstance(filter_elements, six.string_types):
             filter_elements = [filter_elements]
 
         if filter_elements is not None:
