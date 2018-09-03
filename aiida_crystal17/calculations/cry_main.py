@@ -38,6 +38,9 @@ class CryMainCalculation(JobCalculation):
             "angletol": None,
             "operations": None
         },
+        "kinds": {
+            "basis_per": "atomic_number"
+        },
         "3d": {
             "standardize": True,
             "primitive": True,
@@ -188,7 +191,7 @@ class CryMainCalculation(JobCalculation):
                  "an additional parameter ('kind') specifying the "
                  "name of the structure kind (i.e., the name of "
                  "the species) for which you want to use this "
-                 "pseudo. You can pass either a string, or a "
+                 "basis set. You can pass either a string, or a "
                  "list of strings if more than one kind uses the "
                  "same basis set"),
             },
@@ -257,8 +260,8 @@ class CryMainCalculation(JobCalculation):
         """ retrieve BasisSetData objects from the inputdict, associate them with a kind
         and validate a 1-to-1 mapping between the two
 
-        :param inputdict:
-        :param instruct:
+        :param inputdict: dictionary of inputs
+        :param instruct: input StructureData
         :return: basissets dict {kind: BasisSetData}
         """
         basissets = {}

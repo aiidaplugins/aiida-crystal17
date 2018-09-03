@@ -6,6 +6,7 @@
   "required": [
     "crystal",
     "symmetry",
+    "kinds",
     "3d"
   ],
   "additionalProperties": false,
@@ -82,6 +83,24 @@
               "type": "number"
             }
           }
+        }
+      }
+    },
+    "kinds": {
+      "description": "settings for each species kind",
+      "type": "object",
+      "required": [
+        "basis_per"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "basis_per": {
+          "description": "whether to set a basis for each kind or atomic number",
+          "type": "string",
+          "enum": [
+            "kind",
+            "atomic_number"
+          ]
         }
       }
     },

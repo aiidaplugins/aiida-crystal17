@@ -371,7 +371,7 @@ def write_gui_file(structdata, settings, cryversion=17):
             raise NotImplementedError("dimensionality other than 3")
         else:
             # TODO dimensionality < 2
-            raise NotImplementedError("dimensionality other than 3")
+            raise NotImplementedError("dimensionality than less than 2")
 
     return gui_str
 

@@ -346,8 +346,10 @@ def _parse_first_line(line, fname):
         basis_type = "all-electron"
 
     elif 200 < anumber < 999:
-        atomic_number = anumber % 100
-        basis_type = "valence-electron"
+        raise NotImplementedError("valence electron basis sets not currently supported")
+        # TODO support valence electron basis sets not currently supported (ECP must also be defined)
+        # atomic_number = anumber % 100
+        # basis_type = "valence-electron"
 
     elif anumber > 1000:
         atomic_number = anumber % 100
