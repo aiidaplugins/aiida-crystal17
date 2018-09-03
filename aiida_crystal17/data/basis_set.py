@@ -453,13 +453,14 @@ def parse_basis(fname):
     return meta_data, "".join(content)
 
 
-def md5_from_string(string):
+def md5_from_string(string, encoding='utf-8'):
     """ return md5 hash of string
 
-    :param string:
+    :param string: the string to hash
+    :param encoding: the encoding to use
     :return:
     """
-    md5 = hashlib.md5(string.encode())
+    md5 = hashlib.md5(string.encode(encoding))
     return md5.hexdigest()
 
 

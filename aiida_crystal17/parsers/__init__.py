@@ -30,7 +30,5 @@ def validate_dict(data, name="inputd12"):
     # )
     validator = jsonschema.Draft4Validator
 
-    validator(schema).validate(data)
-
     # by default, only validates lists
-    # validator(schema, types={"array": (list, tuple)}).validate(data)
+    validator(schema, types={"array": (list, tuple)}).validate(data)

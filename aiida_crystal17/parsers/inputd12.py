@@ -1,6 +1,7 @@
 """
 module to read and write CRYSTAL17 .d12 files
 """
+import six
 from aiida_crystal17.parsers import validate_dict
 
 # TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
@@ -60,7 +61,7 @@ def write_input(indict, basis_sets):
     outstr = ""
 
     # Title
-    title = get_keys(indict, ["title"], "")
+    title = get_keys(indict, ["title"], "CRYSTAL run")
     outstr += "{}\n".format(" ".join(title.splitlines()))  # must be one line
 
     # Geometry
@@ -72,7 +73,7 @@ def write_input(indict, basis_sets):
     for keyword in get_keys(indict, ["geometry", "info_external"], []):
         outstr += "{}\n".format(keyword)
 
-    if "optimise" in indict["geometry"]:
+    if "optimise" in indict.get("geometry", {}):
         outstr += "OPTGEOM\n"
         outstr += format_value(indict, ["geometry", "optimise", "type"])
         outstr += format_value(indict, ["geometry", "optimise", "hessian"])
@@ -87,9 +88,14 @@ def write_input(indict, basis_sets):
     outstr += "END\n"
 
     # Basis Sets
-    for basis_set in basis_sets:
-        outstr += "{}\n".format(basis_set.strip())
-    outstr += "99 0\n"
+    if not basis_sets:
+        raise ValueError("there must be at least one basis set")
+    if isinstance(basis_sets[0], six.string_types):
+        outstr += "\n".join([basis_set.strip() for basis_set in basis_sets])
+    else:
+        outstr += "\n".join(
+            [basis_set.content.strip() for basis_set in basis_sets])
+    outstr += "\n99 0\n"
 
     # Basis Sets Optional Keywords
     outstr += format_value(indict, ["basis_set"])
