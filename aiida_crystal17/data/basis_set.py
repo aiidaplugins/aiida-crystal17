@@ -3,12 +3,14 @@ a data type to store CRYSTAL17 basis sets
 """
 from __future__ import absolute_import
 import os
+import hashlib
+import tempfile
 
 import yaml
 import six
 
 from aiida.common.utils import classproperty
-from aiida.orm.data.singlefile import SinglefileData
+from aiida.orm.data import Data
 from aiida_crystal17.utils import flatten_dict, unflatten_dict
 
 BASISGROUP_TYPE = 'data.basisset.family'
@@ -133,10 +135,10 @@ def get_basissets_from_structure(structure, family_name):
     return basis_list
 
 
-def get_basisset_dict(structure, family_name):
+def get_basissets_by_kind(structure, family_name):
     """
     Get a dictionary of {kind: basis} for all the elements within the given
-    structure using a the given basis set family name.
+    structure using the given basis set family name.
 
     :param structure: The structure that will be used.
     :param family_name: the name of the group containing the basis sets
@@ -283,15 +285,15 @@ def retrieve_basis_sets(files, stop_if_existing):
     :param files: list of basis set file paths
     :param stop_if_existing: if True, check for the md5 of the files and,
         if the file already exists in the DB, raises a MultipleObjectsError.
-        If False, simply adds the existing UPFData node to the group.
+        If False, simply adds the existing BasisSetData node to the group.
     :return:
     """
-    import aiida.common
     from aiida.orm.querybuilder import QueryBuilder
 
     basis_and_created = []
     for f in files:
-        md5sum = aiida.common.utils.md5_file(f)
+        _, content = parse_basis(f)
+        md5sum = md5_from_string(content)
         qb = QueryBuilder()
         qb.append(BasisSetData, filters={'attributes.md5': {'==': md5sum}})
         existing_basis = qb.first()
@@ -314,15 +316,70 @@ def retrieve_basis_sets(files, stop_if_existing):
     return basis_and_created
 
 
-# pylint: disable=too-many-locals
+def _parse_first_line(line, fname):
+    """ parse the first line of the basis set
+
+    :param line: the line string
+    :param fname: the filename string
+    :return: (atomic_number, basis_type, num_shells)
+    """
+    from aiida.common.exceptions import ParsingError
+
+    # first line should contain the atomic number as the first argument
+    first_line = line.strip().split()
+    if not len(first_line) == 2:
+        raise ParsingError(
+            "The first line should contain only two fields: '{}' for file {}".
+            format(line, fname))
+
+    atomic_number_str = first_line[0]
+
+    if not atomic_number_str.isdigit():
+        raise ParsingError(
+            "The first field should be the atomic number '{}' for file {}".
+            format(line, fname))
+    anumber = int(atomic_number_str)
+    atomic_number = None
+    basis_type = None
+    if anumber < 99:
+        atomic_number = anumber
+        basis_type = "all-electron"
+
+    elif 200 < anumber < 999:
+        atomic_number = anumber % 100
+        basis_type = "valence-electron"
+
+    elif anumber > 1000:
+        atomic_number = anumber % 100
+        basis_type = "all-electron"
+
+    if atomic_number is None:
+        raise ParsingError("Illegal atomic number {} for file {}".format(
+            anumber, fname))
+
+    num_shells_str = first_line[1]
+    if not num_shells_str.isdigit():
+        raise ParsingError(
+            "The second field should be the number of shells {} for file {}".
+            format(line, fname))
+    num_shells = int(num_shells_str)
+
+    # we would deal with different numbering at .d12 creation time
+    newline = "{0} {1}\n".format(
+        atomic_number
+        if basis_type == "all-electron" else 200 + atomic_number, num_shells)
+
+    return atomic_number, basis_type, num_shells, newline
+
+
 def parse_basis(fname):
     """get relevant information from the basis file
 
     :param fname: the file path
-    :return: the parsed data
+    :return: (metadata_dict, content_str)
 
     - The basis file must contain one basis set in the CRYSTAL17 format
-    - lines beginning # will be ignored
+    - blank lines and lines beginning '#' will be ignored
     - the file can also start with a fenced (with ---), yaml formatted header section
         - Note keys should not contain '.'s
 
@@ -339,16 +396,19 @@ def parse_basis(fname):
     
     """
     from aiida.common.exceptions import ParsingError
-    parsed_data = {}
+    meta_data = {}
 
     in_yaml = False
     yaml_lines = []
-    used_keys = ["atomic_number", "num_shells", "element", "basis_type"]
+    protected_keys = [
+        "atomic_number", "num_shells", "element", "basis_type", "content"
+    ]
     parsing_data = False
+    content = []
     with open(fname) as f:
         for line in f:
-            # ignore commented lines
-            if line.strip().startswith("#"):
+            # ignore commented and blank lines
+            if line.strip().startswith("#") or not line.strip():
                 continue
             if line.strip() == "---" and not parsing_data:
                 if not in_yaml:
@@ -361,71 +421,58 @@ def parse_basis(fname):
                         raise ParsingError(
                             "the header data could not be read for file: {}".
                             format(fname))
-                    if set(head_data.keys()).intersection(used_keys):
+                    if set(head_data.keys()).intersection(protected_keys):
                         raise ParsingError(
                             "the header data contained a forbidden key(s) {} for file: {}".
-                            format(used_keys, fname))
-                    parsed_data = head_data
+                            format(protected_keys, fname))
+                    meta_data = head_data
                     in_yaml = False
                     parsing_data = True
                     continue
             if in_yaml:
                 yaml_lines.append(line)
                 continue
-            # parsing_data = True
-            # first line should contain the atomic number as the first argument
-            first_line = line.strip().split()
-            if not len(first_line) == 2:
-                raise ParsingError(
-                    "The first line should contain only two fields: '{}' for file {}".
-                    format(line, fname))
 
-            atomic_number_str = first_line[0]
-            if not atomic_number_str.isdigit():
-                raise ParsingError(
-                    "The first field should be the atomic number '{}' for file {}".
-                    format(line, fname))
-            anumber = int(atomic_number_str)
-            atomic_number = None
-            if anumber < 99:
-                atomic_number = anumber
-                basis_type = "all-electron"
+            parsing_data = True
 
-            elif 200 < anumber < 999:
-                atomic_number = anumber % 100
-                basis_type = "valence-electron"
+            if not content:
+                atomic_number, basis_type, num_shells, line = _parse_first_line(
+                    line, fname)
 
-            elif anumber > 1000:
-                atomic_number = anumber % 100
-                basis_type = "all-electron"
+                meta_data["atomic_number"] = atomic_number
+                meta_data["element"] = _ATOMIC_SYMBOLS[atomic_number]
+                meta_data["basis_type"] = basis_type
+                meta_data["num_shells"] = num_shells
 
-            if anumber is None:
-                raise ParsingError(
-                    "Illegal atomic number {} for file {}".format(
-                        anumber, fname))
+            content.append(line)
 
-            num_shells_str = first_line[0]
-            if not num_shells_str.isdigit():
-                raise ParsingError(
-                    "The second field should be the number of shells {} for file {}".
-                    format(line, fname))
-            num_shells = int(num_shells_str)
+    if not content:
+        raise ParsingError(
+            "The basis set file contains no content: {}".format(fname))
 
-            parsed_data["atomic_number"] = atomic_number
-            parsed_data["element"] = _ATOMIC_SYMBOLS[atomic_number]
-            parsed_data["basis_type"] = basis_type
-            parsed_data["num_shells"] = num_shells
-
-            break
-
-    return parsed_data
+    return meta_data, "".join(content)
 
 
-class BasisSetData(SinglefileData):
+def md5_from_string(string):
+    """ return md5 hash of string
+
+    :param string:
+    :return:
+    """
+    md5 = hashlib.md5(string.encode())
+    return md5.hexdigest()
+
+
+class BasisSetData(Data):
     """
     a data type to store CRYSTAL17 basis sets
     it is intended to work much like the UpfData type
 
+    - The basis file must contain one basis set in the CRYSTAL17 format
+    - lines beginning # will be ignored
+    - the file can also start with a fenced, yaml formatted header section (starting/ending '---')
+        - Note keys should not contain '.'s
+    - only the actual basis data (not commented lines or the header section) will be stored as a file and hashed
 
     Example file:
 
@@ -440,15 +487,74 @@ class BasisSetData(SinglefileData):
 
     """
 
+    @property
+    def filename(self):
+        """
+        Returns the name of the file stored
+        """
+        return self.get_attr('filename')
+
+    def get_file_abs_path(self):
+        """
+        Return the absolute path to the file in the repository
+        """
+        return os.path.join(self._get_folder_pathsubfolder.abspath,
+                            self.filename)
+
+    @property
+    def md5sum(self):
+        """ return the md5 hash of the basis set
+
+        :return:
+        """
+        return self.get_attr('md5', None)
+
     @classmethod
-    def get_or_create(cls, filename, use_first=False, store_basis=True):
+    def from_md5(cls, md5):
+        """
+        Return a list of all Basis Sets that match a given MD5 hash.
+
+        Note that the hash has to be stored in a _md5 attribute, otherwise
+        the basis will not be found.
+        """
+        from aiida.orm.querybuilder import QueryBuilder
+        qb = QueryBuilder()
+        qb.append(cls, filters={'attributes.md5': {'==': md5}})
+        return [_ for [_] in qb.all()]
+
+    @property
+    def metadata(self):
+        """return the attribute data as a nested dictionary
+
+        :return: metadata dict
+        """
+        return unflatten_dict({k: v for k, v in self.iterattrs()})
+
+    @property
+    def content(self):
+        """return the content string for insertion into .d12 file
+
+        :return: content_str
+        """
+        # TODO dealing with caching? see get_array in ArrayData, or are we doing this with the md5 hash
+        with open(self.get_file_abs_path()) as f:
+            content = f.read()
+        return content
+
+    @property
+    def element(self):
+        """return the element symbol associated with the basis set"""
+        return self.get_attr('element', None)
+
+    @classmethod
+    def get_or_create(cls, filepath, use_first=False, store_basis=True):
         """
         Pass the same parameter of the init; if a file with the same md5
         is found, that BasisSetData is returned.
 
-        :param filename: an absolute filename on disk
+        :param filepath: an absolute filename on disk
         :param use_first: if False (default), raise an exception if more than \
-                one potential is found.\
+                one basis set is found.\
                 If it is True, instead, use the first available basis set.
         :param bool store_basis: If false, the BasisSetData objects are not stored in
                 the database. default=True.
@@ -456,19 +562,19 @@ class BasisSetData(SinglefileData):
             True if the object was created, or False if the object was retrieved\
             from the DB.
         """
-        import aiida.common.utils
+        if not os.path.isabs(filepath):
+            raise ValueError("filepath must be an absolute path")
 
-        if not os.path.isabs(filename):
-            raise ValueError("filename must be an absolute path")
-        md5 = aiida.common.utils.md5_file(filename)
+        _, content = parse_basis(filepath)
+        md5sum = md5_from_string(content)
 
-        basissets = cls.from_md5(md5)
+        basissets = cls.from_md5(md5sum)
         if not basissets:
             if store_basis:
-                instance = cls(file=filename).store()
+                instance = cls(file=filepath).store()
                 return (instance, True)
 
-            instance = cls(file=filename)
+            instance = cls(file=filepath)
             return (instance, True)
         else:
             if len(basissets) > 1:
@@ -480,10 +586,6 @@ class BasisSetData(SinglefileData):
                                      "DB. pks={}".format(",".join(
                                          [str(i.pk) for i in basissets])))
             return (basissets[0], False)
-
-    @classproperty
-    def basisfamily_type_string(cls):
-        return BASISGROUP_TYPE
 
     def store(self, with_transaction=True, use_cache=None):
         """
@@ -502,104 +604,77 @@ class BasisSetData(SinglefileData):
         :parameter with_transaction: if False, no transaction is used. This
           is meant to be used ONLY if the outer calling function has already
           a transaction open!
-        :parameter use_cache: whether to cache the node
         """
-        from aiida.common.exceptions import ParsingError, ValidationError
-        import aiida.common.utils
+        from aiida.common.exceptions import ValidationError
 
         basis_abspath = self.get_file_abs_path()
         if not basis_abspath:
             raise ValidationError("No valid Basis Set was passed!")
 
-        parsed_data = parse_basis(basis_abspath)
-        md5sum = aiida.common.utils.md5_file(basis_abspath)
+        metadata, content = parse_basis(basis_abspath)
+        md5sum = md5_from_string(content)
 
-        if "element" not in parsed_data:
-            raise ParsingError("No 'element' parsed in the Basis Set file {};"
-                               " unable to store".format(self.filename))
-
-        for key, val in flatten_dict(parsed_data).items():
+        for key, val in flatten_dict(metadata).items():
             self._set_attr(key, val)
         self._set_attr('md5', md5sum)
 
         return super(BasisSetData, self).store(
             with_transaction=with_transaction, use_cache=use_cache)
 
-    @classmethod
-    def from_md5(cls, md5):
+    def set_file(self, filepath):
         """
-        Return a list of all Basis Sets that match a given MD5 hash.
-
-        Note that the hash has to be stored in a _md5 attribute, otherwise
-        the basis will not be found.
+        pre-parse the file to store the attributes and content separately.
         """
-        from aiida.orm.querybuilder import QueryBuilder
-        qb = QueryBuilder()
-        qb.append(cls, filters={'attributes.md5': {'==': md5}})
-        return [_ for [_] in qb.all()]
+        # to keep things simple, we only allow one file to ever be set for one class instance
+        if "filename" in list(self.iterattrs()):
+            raise ValueError(
+                "a file has already been set for this BasisSetData instance")
 
-    def set_file(self, filename):
-        """
-        pre-parse the file to store the attributes.
-        """
-        from aiida.common.exceptions import ParsingError
-        import aiida.common.utils
+        metadata, content = parse_basis(filepath)
+        md5sum = md5_from_string(content)
 
-        parsed_data = parse_basis(filename)
-        md5sum = aiida.common.utils.md5_file(filename)
-
-        if "element" not in parsed_data:
-            raise ParsingError("No 'element' parsed in the Basis Set file {};"
-                               " unable to store".format(self.filename))
-
-        super(BasisSetData, self).set_file(filename)
-
-        for key, val in flatten_dict(parsed_data).items():
+        # store the metadata and md5 in the database
+        for key, val in flatten_dict(metadata).items():
             self._set_attr(key, val)
         self._set_attr('md5', md5sum)
 
-    def get_basis_family_names(self):
-        """
-        Get the list of all basiset family names to which the basis belongs
-        """
-        from aiida.orm import Group
-
-        return [
-            _.name for _ in Group.query(
-                nodes=self, type_string=self.basisfamily_type_string)
-        ]
-
-    @property
-    def element(self):
-        return self.get_attr('element', None)
-
-    @property
-    def md5sum(self):
-        return self.get_attr('md5', None)
-
-    @property
-    def metadata(self):
-        return unflatten_dict({k: v for k, v in self.iterattrs()})
+        # store the rest of the file content as a file in the file repository
+        filename = os.path.basename(filepath)
+        with tempfile.NamedTemporaryFile() as f:
+            with open(f.name, "w") as fobj:
+                fobj.writelines(content)
+            self.add_path(f.name, filename)
+        self._set_attr('filename', filename)
 
     def _validate(self):
         from aiida.common.exceptions import ValidationError, ParsingError
-        import aiida.common.utils
 
         super(BasisSetData, self)._validate()
+
+        try:
+            filename = self.filename
+        except AttributeError:
+            raise ValidationError("attribute 'filename' not set.")
+
+        if [filename] != self.get_folder_list():
+            raise ValidationError("The list of files in the folder does not "
+                                  "match the 'filename' attribute. "
+                                  "_filename='{}', content: {}".format(
+                                      filename, self.get_folder_list()))
 
         basis_abspath = self.get_file_abs_path()
         if not basis_abspath:
             raise ValidationError("No valid Basis Set was passed!")
 
         try:
-            parsed_data = parse_basis(basis_abspath)
+            metadata, content = parse_basis(basis_abspath)
         except ParsingError:
             raise ValidationError("The file '{}' could not be "
                                   "parsed".format(basis_abspath))
-        md5 = aiida.common.utils.md5_file(basis_abspath)
+        md5 = md5_from_string(content)
 
         try:
-            element = parsed_data['element']
+            element = metadata['element']
         except KeyError:
             raise ValidationError("No 'element' could be parsed in the UPF "
                                   "file {}".format(basis_abspath))
@@ -622,6 +697,21 @@ class BasisSetData(SinglefileData):
         if attr_md5 != md5:
             raise ValidationError("Attribute 'md5' says '{}' but '{}' was "
                                   "parsed instead.".format(attr_md5, md5))
+
+    @classproperty
+    def basisfamily_type_string(cls):
+        return BASISGROUP_TYPE
+
+    def get_basis_family_names(self):
+        """
+        Get the list of all basiset family names to which the basis belongs
+        """
+        from aiida.orm import Group
+
+        return [
+            _.name for _ in Group.query(
+                nodes=self, type_string=self.basisfamily_type_string)
+        ]
 
     @classmethod
     def get_basis_group(cls, group_name):
