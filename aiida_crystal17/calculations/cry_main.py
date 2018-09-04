@@ -14,7 +14,7 @@ from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.parsers import read_schema
 from aiida_crystal17.parsers.geometry import create_gui_from_struct
 from aiida_crystal17.parsers.inputd12 import write_input
-from aiida_crystal17.utils import unflatten_dict
+from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
 from jsonextended import edict
 
 StructureData = DataFactory('structure')
@@ -39,7 +39,10 @@ class CryMainCalculation(JobCalculation):
             "operations": None
         },
         "kinds": {
-            "basis_per": "atomic_number"
+            "spin_alpha": [],
+            "spin_beta": [],
+            "fixed": [],
+            "ghosts": []
         },
         "3d": {
             "standardize": True,
@@ -81,30 +84,39 @@ class CryMainCalculation(JobCalculation):
         """get a copy of the settings schema"""
         return read_schema("inputd12")
 
+    # pylint: disable=too-many-arguments
     @classmethod
-    def prepare_inputs(cls,
-                       input_dict,
-                       structure,
-                       settings=None,
-                       flattened=False):
+    def prepare_and_validate(cls,
+                             param_dict,
+                             structure,
+                             settings=None,
+                             basis_family=None,
+                             flattened=False):
         """ prepare and validate the inputs to the calculation
 
         :param input: dict giving data to create the input .d12 file
         :param structure: the StructureData
         :param settings: ParameterData giving
+        :param basis_family: string of the BasisSetFamily to use
         :param flattened: whether the input (and settings) dictionary are flattened
-        :return:
+        :return: (parameters, settings)
         """
         settings = {} if settings is None else settings
         if flattened:
-            input_dict = unflatten_dict(input_dict)
+            param_dict = unflatten_dict(param_dict)
             settings = unflatten_dict(settings)
-        write_input(input_dict, ["test"])
+        # validate parameters
+        write_input(param_dict, ["test"])
+        # validate structure and settings
         setting_dict = edict.merge(
             [cls._default_settings, settings], overwrite=True)
         create_gui_from_struct(structure, setting_dict)
+        # validate basis sets
+        if basis_family:
+            get_basissets_from_structure(
+                structure, basis_family, by_kind=False)
 
-        return ParameterData(dict=input_dict), ParameterData(dict=settings)
+        return ParameterData(dict=param_dict), ParameterData(dict=settings)
 
     @classmethod
     def _get_linkname_basisset_prefix(cls):
@@ -114,30 +126,24 @@ class CryMainCalculation(JobCalculation):
         return "basis_"
 
     @classmethod
-    def _get_linkname_basisset(cls, kind):
+    def _get_linkname_basisset(cls, element):
         """
-        The name of the link used for the basis set for kind 'kind'.
-        It appends the pseudo name to the basisset_prefix, as returned by the
+        The name of the link used for the basis set for atomic element 'element'.
+        It appends the basis name to the basisset_prefix, as returned by the
         _get_linkname_basisset_prefix() method.
 
-        :note: if a list of strings is given, the elements are appended
-          in the same order, separated by underscores
-
-        :param kind: a string (or list of strings) for the atomic kind(s) for
-            which we want to get the link name
+        :param element: a string for the atomic element for which we want to get the link name
         """
-        # If it is a list of strings, and not a single string: join them
-        # by underscore
-        if isinstance(kind, (tuple, list)):
-            suffix_string = "_".join(kind)
-        elif isinstance(kind, six.string_types):
-            suffix_string = kind
-        else:
+        if not isinstance(element, six.string_types):
             raise TypeError(
-                "The parameter 'kind' of _get_linkname_basisset can "
-                "only be a string or a list of strings")
-        return "{}{}".format(cls._get_linkname_basisset_prefix(),
-                             suffix_string)
+                "The parameter 'element' of _get_linkname_basisset can "
+                "only be an string: {}".format(element))
+        if not element in ATOMIC_NUM2SYMBOL.values():
+            raise TypeError(
+                "The parameter 'symbol' of _get_linkname_basisset can "
+                "must be a known atomic element: {}".format(element))
+
+        return "{}{}".format(cls._get_linkname_basisset_prefix(), element)
 
     @classproperty
     def _use_methods(cls):
@@ -182,18 +188,15 @@ class CryMainCalculation(JobCalculation):
                 'valid_types':
                 BasisSetData,
                 'additional_parameter':
-                "kind",
+                "element",
                 'linkname':
                 cls._get_linkname_basisset,
                 'docstring':
                 ("Use a node for the basis set of one of "
                  "the elements in the structure. You have to pass "
-                 "an additional parameter ('kind') specifying the "
-                 "name of the structure kind (i.e., the name of "
-                 "the species) for which you want to use this "
-                 "basis set. You can pass either a string, or a "
-                 "list of strings if more than one kind uses the "
-                 "same basis set"),
+                 "an additional parameter ('element') specifying the "
+                 "atomic element symbol for which you want to use this "
+                 "basis set."),
             },
             # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
             # "parent_folder": {
@@ -209,15 +212,13 @@ class CryMainCalculation(JobCalculation):
 
     def use_basisset_from_family(self, family_name):
         """
-        Set the basis set to use for all atomic kinds, picking basis sets from the
+        Set the basis set to use for all atomic types, picking basis sets from the
         family with name family_name.
 
         :note: The structure must already be set.
 
         :param family_name: the name of the group containing the basis sets
         """
-        from collections import defaultdict
-
         try:
             structure = self._get_reference_structure()
         except AttributeError:
@@ -226,24 +227,12 @@ class CryMainCalculation(JobCalculation):
                 "use_basisset_from_family cannot automatically set "
                 "the basis sets")
 
-        # A dict {kind_name: basisset_object}
-        kind_basis_dict = get_basissets_from_structure(structure, family_name)
+        # A dict {element: basisset_object}
+        element_basis_dict = get_basissets_from_structure(
+            structure, family_name, by_kind=False)
 
-        # We have to group the species by basis, I use the basis PK
-        # basis_dict will just map PK->basis_object
-        basis_dict = {}
-        # Will contain a list of all species of the basis with given PK
-        basis_species = defaultdict(list)
-
-        for kindname, basis in kind_basis_dict.iteritems():
-            basis_dict[basis.pk] = basis
-            basis_species[basis.pk].append(kindname)
-
-        for basis_pk in basis_dict:
-            basis = basis_dict[basis_pk]
-            kinds = basis_species[basis_pk]
-            # I set the basis for all species, sorting alphabetically
-            self.use_basis(basis, sorted(kinds))
+        for element, basis in element_basis_dict.items():
+            self.use_basis(basis, element)
 
     def _get_reference_structure(self):
         """
@@ -257,38 +246,33 @@ class CryMainCalculation(JobCalculation):
         return self.get_inputs_dict()[self.get_linkname('structure')]
 
     def _retrieve_basis_sets(self, inputdict, instruct):
-        """ retrieve BasisSetData objects from the inputdict, associate them with a kind
+        """ retrieve BasisSetData objects from the inputdict, associate them with an atomic element
         and validate a 1-to-1 mapping between the two
 
         :param inputdict: dictionary of inputs
         :param instruct: input StructureData
-        :return: basissets dict {kind: BasisSetData}
+        :return: basissets dict {element: BasisSetData}
         """
         basissets = {}
         # I create here a dictionary that associates each kind name to a basisset
         for link in inputdict.keys():
             if link.startswith(self._get_linkname_basisset_prefix()):
-                kindstring = link[len(self._get_linkname_basisset_prefix()):]
-                kinds = kindstring.split('_')
+                element = link[len(self._get_linkname_basisset_prefix()):]
                 the_basisset = inputdict.pop(link)
                 if not isinstance(the_basisset, BasisSetData):
                     raise InputValidationError(
-                        "basisset for kind(s) {} is not of "
-                        "type BasisSetData".format(",".join(kinds)))
-                for kind in kinds:
-                    if kind in basissets:
-                        raise InputValidationError(
-                            "basisset for kind {} passed "
-                            "more than one time".format(kind))
-                    basissets[kind] = the_basisset
+                        "basisset for element '{}' is not of "
+                        "type BasisSetData".format(element))
+                basissets[element] = the_basisset
 
-        # Check structure, get species, check basissets
-        kindnames = [k.name for k in instruct.kinds]
-        if set(kindnames) != set(basissets.keys()):
+        # Check retrieved elements match the required elements
+        elements_required = [k.symbol for k in instruct.kinds]
+        if set(elements_required) != set(basissets.keys()):
             err_msg = (
                 "Mismatch between the defined basissets and the list of "
-                "kinds of the structure. Basissets: {}; kinds: {}".format(
-                    ",".join(basissets.keys()), ",".join(list(kindnames))))
+                "elements of the structure. Basissets: {}; elements: {}".
+                format(",".join(basissets.keys()), ",".join(
+                    list(elements_required))))
             raise InputValidationError(err_msg)
 
         return basissets
@@ -307,26 +291,58 @@ class CryMainCalculation(JobCalculation):
         """
         # create .gui external geometry file and place it in tempfolder
         try:
-            gui_filecontent = create_gui_from_struct(instruct, setting_dict)
+            gui_content, aid_kname_map = create_gui_from_struct(
+                instruct, setting_dict)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
                 "an input geometry file could not be created from the structure: {}".
                 format(err))
-        gui_filename = tempfolder.get_abs_path(self._DEFAULT_EXTERNAL_FILE)
-        with open(gui_filename, 'w') as gfile:
-            gfile.write(gui_filecontent)
+
+        with open(tempfolder.get_abs_path(self._DEFAULT_EXTERNAL_FILE),
+                  'w') as f:
+            f.write(gui_content)
+
+        # validate that a kind isn't in both spin_alpha and spin_beta
+        spin = setting_dict.get("spin_alpha", []) + setting_dict.get(
+            "spin_beta", [])
+        if list(set(spin)) != list(spin):
+            raise InputValidationError(
+                "a kind cannot be in both spin_alpha and spin_beta")
+        # set properties for each atom
+        atom_props = {
+            "spin_alpha": [],
+            "spin_beta": [],
+            "fixed": [],
+            "unfixed": [],
+            "ghosts": []
+        }
+        for i, kindname in aid_kname_map.items():
+            if kindname in setting_dict.get("spin_alpha", []):
+                atom_props["spin_alpha"].append(i)
+            if kindname in setting_dict.get("spin_beta", []):
+                atom_props["spin_beta"].append(i)
+            if kindname in setting_dict.get("fixed", []):
+                atom_props["fixed"].append(i)
+            if kindname not in setting_dict.get("fixed", []):
+                atom_props["unfixed"].append(i)
+            if kindname in setting_dict.get("ghosts", []):
+                atom_props["ghosts"].append(i)
+
+        # we only need unfixed if there are fixed
+        if not atom_props.pop("fixed"):
+            atom_props.pop("unfixed")
 
         # create .d12 input file and place it in tempfolder
         try:
             d12_filecontent = write_input(parameters.get_dict(),
-                                          list(basissets.values()))
+                                          list(basissets.values()), atom_props)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
                 "an input file could not be created from the parameters: {}".
                 format(err))
-        d12_filename = tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE)
-        with open(d12_filename, 'w') as dfile:
-            dfile.write(d12_filecontent)
+
+        with open(tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE), 'w') as f:
+            f.write(d12_filecontent)
 
     def _prepare_for_submission(self, tempfolder, inputdict):
         """

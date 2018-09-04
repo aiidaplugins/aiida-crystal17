@@ -22,6 +22,7 @@ space_group_int_num num_symm_ops
 """
 import numpy as np
 from aiida_crystal17.parsers import validate_dict
+from aiida_crystal17.utils import ATOMIC_SYMBOL2NUM
 from spglib import spglib
 
 # python 3 to 2 compatibility
@@ -240,8 +241,6 @@ def cart2frac(lattice, ccoords):
     return fcoords
 
 
-# TODO split this up into func where all data supplied and one where we calc sym
-# pylint: disable=too-many-locals
 def write_gui_file(structdata, settings, cryversion=17):
     """create the content string for a CRYSTAL geometry (.gui) file
 
@@ -249,131 +248,161 @@ def write_gui_file(structdata, settings, cryversion=17):
     and optionally can be idealized and/or converted to the primitive cell
     see https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell
 
-    :param structdata: structure data
-    :type structdata: dict containaing "lattice", "atomic_numbers", "ccoords", "pbc" and (optionally) "magmoms"
+    :param structdata: structure data as mandated by stucture.schema.json
+    :type structdata: dict
     :param settings: Settings for initial manipulation of structures and conversion to .gui (fort.34) input file,
     as mandated by the settings.schema.json
     :type settings: dict
     :param cryversion: version of CRYSTAL
     :type cryversion: int
-    :return:
+    :return: (gui_string, structdata)
 
     """
     if cryversion != 17:
         raise NotImplementedError("CRYSTAL versions other than 17")
 
     # validation of inputs
+    validate_dict(structdata, "structure")
     validate_dict(settings, "settings")
 
-    standardize = settings["3d"]["standardize"]  # True
-    primitive = settings["3d"]["primitive"]  # True,
-    idealize = settings["3d"]["idealize"]  # False,
-    symprec = settings["symmetry"]["symprec"]  # 0.01,
-    angletol = settings["symmetry"]["angletol"]  # -1
-    angletol = -1 if angletol is None else angletol
-    symops = settings["symmetry"]["operations"]  # None,
-    crystal_type = {v: k
-                    for k, v in _CRYSTAL_TYPE.items()
-                    }[settings["crystal"]["system"]]  # 1
-    origin_setting = settings["crystal"]["transform"]  # 1
-    origin_setting = 1 if origin_setting is None else origin_setting
+    # rkeys = ["lattice", "atomic_numbers", "ccoords", "pbc"]
+    # if not set(rkeys).issubset(structdata.keys()):
+    #     raise ValueError("stuctdata must contain: {}".format(rkeys))
 
-    rkeys = ["lattice", "atomic_numbers", "ccoords", "pbc"]
-    if not set(rkeys).issubset(structdata.keys()):
-        raise ValueError("stuctdata must contain: {}".format(rkeys))
-
+    # inputs to decide on how to manipulate geometry
+    symops = settings["symmetry"]["operations"]
     dimensionality = sum(structdata["pbc"])
 
-    # if the symops are given, we can go straight to writing the file
     if symops is not None:
+        # if the symops are given, we can go straight to writing the file
+        crystal_type = {v: k
+                        for k, v in _CRYSTAL_TYPE.items()
+                        }[settings["crystal"]["system"]]
+        origin_setting = settings["crystal"]["transform"]
+        origin_setting = 1 if origin_setting is None else origin_setting
+
         sym_data = []
         for symop in symops:
             sym_data.append(symop[0:3])
             sym_data.append(symop[3:6])
             sym_data.append(symop[6:9])
             sym_data.append(symop[9:12])
+
         gui_str = _gui_string(dimensionality, origin_setting, crystal_type,
                               structdata["lattice"], len(symops), sym_data,
                               structdata["atomic_numbers"],
                               structdata["ccoords"], 1)
+    elif dimensionality == 3:
+
+        gui_str, structdata = _create_3d_gui_cry17(
+            structdata, settings["3d"]["idealize"],
+            settings["3d"]["primitive"], settings["3d"]["standardize"],
+            settings["symmetry"]["symprec"], settings["symmetry"]["angletol"])
+
+    elif dimensionality == 2:
+        # maximise_orthogonality
+        # get_orthogonal
+        # set cvec as [0., 0., 500.]
+        # TODO dimensionality == 2
+        raise NotImplementedError("dimensionality other than 3")
     else:
-        # we need to work out the symmerty
-        if dimensionality == 3:
+        # TODO dimensionality < 2
+        raise NotImplementedError("dimensionality than less than 2")
 
-            # first create the cell to pass to spglib
-            lattice = structdata["lattice"]
-            fcoords = cart2frac(structdata["lattice"], structdata["ccoords"])
-            cell = [lattice, fcoords, structdata["atomic_numbers"]]
-            if "magmoms" in structdata:
-                cell.append(
-                    structdata["magmoms"])  # Only works with get_symmetry
-            cell = tuple(cell)
+    return gui_str, structdata
 
-            if standardize or primitive:
-                scell = spglib.standardize_cell(
-                    cell,
-                    no_idealize=not idealize,
-                    to_primitive=primitive,
-                    symprec=symprec,
-                    angle_tolerance=angletol)
-                if scell is None:
-                    raise ValueError(
-                        "standardization of cell failed: {}".format(cell))
-                cell = scell
 
-            lattice = cell[0]
-            fcoords = cell[1]
-            ccoords = frac2cart(lattice, fcoords)
-            atomic_numbers = cell[2]
+# pylint: disable=too-many-arguments
+def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
+                         angletol):
+    """ create 3d geometry input for CRYSTAL17
 
-            # find symmetry
-            symm_dataset = spglib.get_symmetry_dataset(
-                cell, symprec=symprec, angle_tolerance=angletol)
-            if symm_dataset is None:
-                # TODO option to use P1 symmetry if can't find symmetry
-                raise ValueError(
-                    "could not find symmetry of cell: {}".format(cell))
+    :param structdata: "lattice", "atomic_numbers", "ccoords", "pbc" and (optionally) "equivalent"
+    :param standardize: whether to standardize the structure
+    :param primitive: whether to create a primitive structure
+    :param idealize: whether to idealize the structure
+    :param symprec: symmetry precision to parse to spglib
+    :param angletol: angletol to parse to spglib
+    :return: (gui_string, structdata)
+    """
+    angletol = -1 if angletol is None else angletol
 
-            sg_num = symm_dataset[
-                'number'] if symm_dataset['number'] is not None else 1
-            crystal_type = get_crystal_system(sg_num, as_number=True)
+    # first create the cell to pass to spglib
+    lattice = structdata["lattice"]
+    ccoords = structdata["ccoords"]
 
-            # fin symops
-            num_symops = len(symm_dataset["rotations"])
-            sym_data = []
-            for rot, trans in zip(symm_dataset["rotations"],
-                                  symm_dataset["translations"]):
-                # fractional to cartesian
-                lattice_tr = np.transpose(lattice)
-                lattice_tr_inv = np.linalg.inv(lattice_tr)
-                rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv))
-                trans = np.dot(trans, lattice)
-                sym_data.extend([rot[0], rot[1], rot[2], trans])
+    # spglib only uses the atomic numbers to demark inequivalent sites
+    inequivalent_sites = (np.array(structdata["atomic_numbers"]) * 1000 +
+                          np.array(structdata["equivalent"])).tolist()
 
-            # find and set centering code
-            # the origin_setting (aka centering code) refers to how to convert conventional to primitive
-            if primitive:
-                origin_setting = get_centering_code(
-                    sg_num, symm_dataset["international"])
+    fcoords = cart2frac(lattice, ccoords)
+    cell = [lattice, fcoords, inequivalent_sites]
+    cell = tuple(cell)
 
-            # from jsonextended import edict
-            # edict.pprint(symm_dataset)
+    if standardize or primitive:
+        scell = spglib.standardize_cell(
+            cell,
+            no_idealize=not idealize,
+            to_primitive=primitive,
+            symprec=symprec,
+            angle_tolerance=angletol)
+        if scell is None:
+            raise ValueError("standardization of cell failed: {}".format(cell))
+        cell = scell
 
-            gui_str = _gui_string(dimensionality, origin_setting, crystal_type,
-                                  lattice, num_symops, sym_data,
-                                  atomic_numbers, ccoords, sg_num)
+        lattice = cell[0].tolist()
+        fcoords = cell[1]
+        ccoords = frac2cart(lattice, fcoords)
+        inequivalent_sites = cell[2].tolist()
 
-        elif dimensionality == 2:
-            # maximise_orthogonality
-            # get_orthogonal
-            # set cvec as [0., 0., 500.]
-            # TODO dimensionality == 2
-            raise NotImplementedError("dimensionality other than 3")
-        else:
-            # TODO dimensionality < 2
-            raise NotImplementedError("dimensionality than less than 2")
+    # find symmetry
+    symm_dataset = spglib.get_symmetry_dataset(
+        cell, symprec=symprec, angle_tolerance=angletol)
+    if symm_dataset is None:
+        # TODO option to use P1 symmetry if can't find symmetry
+        raise ValueError("could not find symmetry of cell: {}".format(cell))
+    sg_num = symm_dataset[
+        'number'] if symm_dataset['number'] is not None else 1
+    crystal_type = get_crystal_system(sg_num, as_number=True)
 
-    return gui_str
+    # format the symmetry operations
+    num_symops = len(symm_dataset["rotations"])
+    sym_data = []
+    for rot, trans in zip(symm_dataset["rotations"],
+                          symm_dataset["translations"]):
+        # fractional to cartesian
+        lattice_tr = np.transpose(lattice)
+        lattice_tr_inv = np.linalg.inv(lattice_tr)
+        rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv))
+        trans = np.dot(trans, lattice)
+        sym_data.extend([rot[0], rot[1], rot[2], trans])
+
+    # find and set centering code
+    # the origin_setting (aka centering code) refers to how to convert conventional to primitive
+    if primitive:
+        origin_setting = get_centering_code(sg_num,
+                                            symm_dataset["international"])
+    else:
+        origin_setting = 1
+
+    equivalent = np.mod(inequivalent_sites, 1000).tolist()
+    atomic_numbers = ((np.array(inequivalent_sites) - np.array(equivalent)) /
+                      1000).astype(int).tolist()
+
+    # from jsonextended import edict
+    # edict.pprint(symm_dataset)
+    gui_str = _gui_string(3, origin_setting, crystal_type, lattice, num_symops,
+                          sym_data, atomic_numbers, ccoords, sg_num)
+
+    structdata = {
+        "lattice": lattice,
+        "ccoords": ccoords,
+        "pbc": [True, True, True],
+        "atomic_numbers": atomic_numbers,
+        "equivalent": equivalent
+    }
+
+    return gui_str, structdata
 
 
 # pylint: disable=too-many-arguments
@@ -404,25 +433,81 @@ def _gui_string(dimensionality, origin_setting, crystal_type, lattice,
     return "\n".join(geom_str_list)
 
 
-def create_gui_from_struct(struct, settings):
-    """ create the content of the gui file from a structure and settings
+def create_gui_from_ase(atoms, settings):
+    """ create the content of the gui file from an ase.Atoms and settings
 
-    :param struct: the input structure
-    :type struct: StructureData
+    Symmetry is restricted by atoms.tags
+
+    :param structure: the input structure
+    :type structure: ase.Atoms
     :param settings: dictionary of settings
     :type settings: dict
-    :return: content of .gui file (as string)
+    :return: content of .gui file (as string), new Atoms instance
     """
-    atoms = struct.get_ase()
+    import ase
 
     sdata = {
-        "lattice": atoms.cell,
-        "atomic_numbers": atoms.get_atomic_numbers(),
-        "ccoords": atoms.positions,
-        "pbc": atoms.pbc,
-        "magmoms": atoms.get_tags()
+        "lattice": atoms.cell.tolist(),
+        "ccoords": atoms.positions.tolist(),
+        "atomic_numbers": atoms.get_atomic_numbers().tolist(),
+        "pbc": atoms.pbc.tolist(),
+        "equivalent": atoms.get_tags().tolist()
     }
-    # TODO here we use kind indices as magmoms to reduce symmetry, this should be documented
-    # another option would be to use keywords in CRYSTAL, but this seems more elegant
 
-    return write_gui_file(sdata, settings)
+    guistr, data = write_gui_file(sdata, settings)
+
+    newatoms = ase.Atoms(
+        cell=data["lattice"],
+        numbers=data["atomic_numbers"],
+        pbc=data["pbc"],
+        positions=data["ccoords"],
+        tags=data["equivalent"])
+
+    return guistr, newatoms
+
+
+def create_gui_from_struct(structure, settings):
+    """ create the content of the gui file from a AiiDa structure and settings
+
+    Symmetry is restricted by atom kinds
+
+    :param structure: the input structure
+    :type structure: StructureData
+    :param settings: dictionary of settings
+    :type settings: dict
+    :return: content of .gui file (as string), mapping of atom id to kind
+    """
+    from aiida.common.exceptions import InputValidationError
+
+    for kind in structure.kinds:
+        if kind.is_alloy():
+            raise InputValidationError(
+                "Kind '{}' is an alloy. This is not allowed for CRYSTAL input structures."
+                "".format(kind.name))
+        if kind.has_vacancies():
+            raise InputValidationError(
+                "Kind '{}' has vacancies. This is not allowed for CRYSTAL input structures."
+                "".format(kind.name))
+
+    kind_symbol_map = {kind.name: kind.symbols[0] for kind in structure.kinds}
+    kind_id_map = {kind.name: i for i, kind in enumerate(structure.kinds)}
+    id_kind_map = {i: kind.name for i, kind in enumerate(structure.kinds)}
+    kind_names = [site.kind_name for site in structure.sites]
+    symbols = [kind_symbol_map[name] for name in kind_names]
+    equivalent = [kind_id_map[name] for name in kind_names]
+
+    sdata = {
+        "lattice": structure.cell,
+        "atomic_numbers": [ATOMIC_SYMBOL2NUM[sym] for sym in symbols],
+        "ccoords": [site.position for site in structure.sites],
+        "pbc": structure.pbc,
+        "equivalent": equivalent
+    }
+
+    guistr, newsdata = write_gui_file(sdata, settings)
+
+    # mapping from atom number to kind name
+    return guistr, {
+        i + 1: id_kind_map[e]
+        for i, e in enumerate(newsdata["equivalent"])
+    }

@@ -53,10 +53,31 @@ def format_value(dct, keys):
     return "{}\n".format(value)
 
 
-def write_input(indict, basis_sets):
-    """write input of a validated input dictionay"""
+# pylint: disable=too-many-branches
+def write_input(indict, basis_sets, atom_props=None):
+    """write input of a validated input dictionary
 
+    :param indict: dictionary of input
+    :param basis_sets: list of basis set strings or objects with `content` property
+    :param atom_props: dictionary of atom specific properties ("spin_alpha", "spin_beta", "unfixed", "ghosts")
+    :return:
+    """
+    # validation
     validate_dict(indict)
+    if not basis_sets:
+        raise ValueError("there must be at least one basis set")
+    elif not (all([isinstance(b, six.string_types) for b in basis_sets])
+              or all([hasattr(b, "content") for b in basis_sets])):
+        raise ValueError(
+            "basis_sets must be either all strings or all objects with a `content` property"
+        )
+    if atom_props is None:
+        atom_props = {}
+    if not set(atom_props.keys()).issubset(
+        ["spin_alpha", "spin_beta", "unfixed", "ghosts"]):
+        raise ValueError(
+            "atom_props should only contain: 'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
+        )
 
     outstr = ""
 
@@ -88,8 +109,6 @@ def write_input(indict, basis_sets):
     outstr += "END\n"
 
     # Basis Sets
-    if not basis_sets:
-        raise ValueError("there must be at least one basis set")
     if isinstance(basis_sets[0], six.string_types):
         outstr += "\n".join([basis_set.strip() for basis_set in basis_sets])
     else:

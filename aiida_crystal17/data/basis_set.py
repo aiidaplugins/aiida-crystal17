@@ -2,108 +2,25 @@
 a data type to store CRYSTAL17 basis sets
 """
 from __future__ import absolute_import
-import os
+
 import hashlib
+import os
 import tempfile
 
-import yaml
 import six
-
+import yaml
 from aiida.common.utils import classproperty
 from aiida.orm.data import Data
-from aiida_crystal17.utils import flatten_dict, unflatten_dict
+from aiida_crystal17.utils import flatten_dict, unflatten_dict, ATOMIC_NUM2SYMBOL
 
 BASISGROUP_TYPE = 'data.basisset.family'
 
-_ATOMIC_SYMBOLS = {
-    1: 'H',
-    2: 'He',
-    3: 'Li',
-    4: 'Be',
-    5: 'B',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    10: 'Ne',
-    11: 'Na',
-    12: 'Mg',
-    13: 'Al',
-    14: 'Si',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-    18: 'Ar',
-    19: 'k',
-    20: 'Ca',
-    21: 'Sc',
-    22: 'Ti',
-    23: 'v',
-    24: 'Cr',
-    25: 'Mn',
-    26: 'Fe',
-    27: 'Co',
-    28: 'Ni',
-    29: 'Cu',
-    30: 'Zn',
-    31: 'Ga',
-    32: 'Ge',
-    33: 'As',
-    34: 'Se',
-    35: 'Br',
-    36: 'Kr',
-    37: 'Rb',
-    38: 'Sr',
-    39: 'Y',
-    40: 'Zr',
-    41: 'Nb',
-    42: 'Mo',
-    43: 'Tc',
-    45: 'Ru',
-    46: 'Pd',
-    47: 'Ag',
-    48: 'Cd',
-    49: 'In',
-    50: 'Sn',
-    51: 'Sb',
-    52: 'Te',
-    53: 'I',
-    54: 'Xe',
-    55: 'Cs',
-    56: 'Ba',
-    57: 'La',
-    72: 'Hf',
-    73: 'Ta',
-    74: 'W',
-    75: 'Re',
-    76: 'Os',
-    77: 'Ir',
-    78: 'Pt',
-    79: 'Au',
-    80: 'Hg',
-    81: 'Tl',
-    82: 'Pb',
-    83: 'Bi',
-    84: 'Po',
-    85: 'At',
-    86: 'Rn',
-    87: 'Fr',
-    88: 'Ra',
-    89: 'Ac',
-    104: 'Rf',
-    105: 'Db',
-    106: 'Sg',
-    107: 'Bh',
-    108: 'Hs',
-    109: 'Mt'
-}
 
-
-def get_basissets_from_structure(structure, family_name):
+def get_basissets_from_structure(structure, family_name, by_kind=True):
     """
     Given a family name (a BasisSetFamily group in the DB) and an AiiDA
-    structure, return a dictionary associating each kind name with its
-    BasisSetData object.
+    structure, return a dictionary associating each element or kind name (if by_kind=True)
+    with its BasisSetData object.
 
     :raise MultipleObjectsError: if more than one Basis Set for the same element is
        found in the group.
@@ -125,19 +42,21 @@ def get_basissets_from_structure(structure, family_name):
     basis_list = {}
     for kind in structure.kinds:
         symbol = kind.symbol
-        try:
-            basis_list[kind.name] = family_bases[symbol]
-        except KeyError:
+        if symbol not in family_bases:
             raise NotExistent(
                 "No BasisSetData for element {} found in family {}".format(
                     symbol, family_name))
+        if by_kind:
+            basis_list[kind.name] = family_bases[symbol]
+        else:
+            basis_list[symbol] = family_bases[symbol]
 
     return basis_list
 
 
 def get_basissets_by_kind(structure, family_name):
     """
-    Get a dictionary of {kind: basis} for all the elements within the given
+    Get a dictionary of {kind: basis} for all the kinds within the given
     structure using the given basis set family name.
 
     :param structure: The structure that will be used.
@@ -146,7 +65,8 @@ def get_basissets_by_kind(structure, family_name):
     from collections import defaultdict
 
     # A dict {kind_name: basis_object}
-    kind_basis_dict = get_basissets_from_structure(structure, family_name)
+    kind_basis_dict = get_basissets_from_structure(
+        structure, family_name, by_kind=True)
 
     # We have to group the species by basis, I use the basis PK
     # basis_dict will just map PK->basis_object
@@ -166,6 +86,18 @@ def get_basissets_by_kind(structure, family_name):
             bases[kind] = basis
 
     return bases
+
+
+def get_basissets_by_element():
+    """
+    Get a dictionary of {element: basis} for all the elements within the given
+    structure using the given basis set family name.
+
+    :param structure: The structure that will be used.
+    :param family_name: the name of the group containing the basis sets
+    """
+
+    pass
 
 
 # pylint: disable=too-many-locals
@@ -233,7 +165,7 @@ def upload_basisset_family(folder,
 
     # NOTE: GROUP SAVED ONLY AFTER CHECKS OF UNICITY
 
-    basis_and_created = retrieve_basis_sets(files, stop_if_existing)
+    basis_and_created = _retrieve_basis_sets(files, stop_if_existing)
     # check whether basisset are unique per element
     elements = [(i[0].element, i[0].md5sum) for i in basis_and_created]
     # If group already exists, check also that I am not inserting more than
@@ -279,7 +211,7 @@ def upload_basisset_family(folder,
     return nfiles, nuploaded
 
 
-def retrieve_basis_sets(files, stop_if_existing):
+def _retrieve_basis_sets(files, stop_if_existing):
     """ get existing basis sets or create if not
 
     :param files: list of basis set file paths
@@ -346,7 +278,8 @@ def _parse_first_line(line, fname):
         basis_type = "all-electron"
 
     elif 200 < anumber < 999:
-        raise NotImplementedError("valence electron basis sets not currently supported")
+        raise NotImplementedError(
+            "valence electron basis sets not currently supported")
         # TODO support valence electron basis sets not currently supported (ECP must also be defined)
         # atomic_number = anumber % 100
         # basis_type = "valence-electron"
@@ -442,7 +375,7 @@ def parse_basis(fname):
                     line, fname)
 
                 meta_data["atomic_number"] = atomic_number
-                meta_data["element"] = _ATOMIC_SYMBOLS[atomic_number]
+                meta_data["element"] = ATOMIC_NUM2SYMBOL[atomic_number]
                 meta_data["basis_type"] = basis_type
                 meta_data["num_shells"] = num_shells
 

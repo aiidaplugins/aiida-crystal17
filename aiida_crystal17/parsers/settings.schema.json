@@ -6,7 +6,6 @@
   "required": [
     "crystal",
     "symmetry",
-    "kinds",
     "3d"
   ],
   "additionalProperties": false,
@@ -87,20 +86,41 @@
       }
     },
     "kinds": {
-      "description": "settings for each species kind",
+      "description": "settings for input properties of each species kind",
       "type": "object",
-      "required": [
-        "basis_per"
-      ],
       "additionalProperties": false,
       "properties": {
-        "basis_per": {
-          "description": "whether to set a basis for each kind or atomic number",
-          "type": "string",
-          "enum": [
-            "kind",
-            "atomic_number"
-          ]
+        "spin_alpha": {
+          "description": "kinds with initial alpha (+1) spin (set by ATOMSPIN)",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "uniqueItems": true
+          }
+        },
+        "spin_beta": {
+          "description": "kinds with initial beta (-1) spin (set by ATOMSPIN)",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "uniqueItems": true
+          }
+        },
+        "fixed": {
+          "description": "kinds with are fixed in position for optimisations (set by FRAGMENT)",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "uniqueItems": true
+          }
+        },
+        "ghosts": {
+          "description": "kinds which will be removed, but their basis set are left (set by GHOSTS)",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "uniqueItems": true
+          }
         }
       }
     },

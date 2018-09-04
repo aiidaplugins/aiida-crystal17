@@ -40,7 +40,7 @@ def test_prepare(new_database, new_workdir):
     instruct = StructureData(ase=atoms)
 
     calc_cls = CalculationFactory('crystal17.main')
-    calc_cls.prepare_inputs(
+    calc_cls.prepare_and_validate(
         inparams,
         instruct,
         settings={"crystal.system": "triclinic"},
