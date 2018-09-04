@@ -105,12 +105,13 @@ class CryMainCalculation(JobCalculation):
         if flattened:
             param_dict = unflatten_dict(param_dict)
             settings = unflatten_dict(settings)
-        # validate parameters
-        write_input(param_dict, ["test"])
         # validate structure and settings
         setting_dict = edict.merge(
             [cls._default_settings, settings], overwrite=True)
-        create_gui_from_struct(structure, setting_dict)
+        _, aid2kname = create_gui_from_struct(structure, setting_dict)
+        # validate parameters
+        atom_props = cls._create_atom_props(aid2kname, setting_dict)
+        write_input(param_dict, ["test_basis"], atom_props)
         # validate basis sets
         if basis_family:
             get_basissets_from_structure(
@@ -302,7 +303,29 @@ class CryMainCalculation(JobCalculation):
                   'w') as f:
             f.write(gui_content)
 
-        # set properties for each atom
+        atom_props = self._create_atom_props(
+            aid_kname_map,
+            setting_dict)  # create .d12 input file and place it in tempfolder
+
+        try:
+            d12_filecontent = write_input(parameters.get_dict(),
+                                          list(basissets.values()), atom_props)
+        except (ValueError, NotImplementedError) as err:
+            raise InputValidationError(
+                "an input file could not be created from the parameters: {}".
+                format(err))
+
+        with open(tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE), 'w') as f:
+            f.write(d12_filecontent)
+
+    @staticmethod
+    def _create_atom_props(aid_kname_map, setting_dict):
+        """ create dict of properties for each atom
+
+        :param aid_kname_map: dict mapping atom id to kind_name
+        :param setting_dict: setting_dict
+        :return:
+        """
         atom_props = {
             "spin_alpha": [],
             "spin_beta": [],
@@ -310,7 +333,6 @@ class CryMainCalculation(JobCalculation):
             "unfixed": [],
             "ghosts": []
         }
-
         if "kinds" in setting_dict:
             for i, kindname in aid_kname_map.items():
                 if kindname in setting_dict["kinds"].get("spin_alpha", []):
@@ -324,24 +346,11 @@ class CryMainCalculation(JobCalculation):
                 if kindname in setting_dict["kinds"].get("ghosts", []):
                     atom_props["ghosts"].append(i)
 
-            print(aid_kname_map)
-            print(atom_props)
-
         # we only need unfixed if there are fixed
         if not atom_props.pop("fixed"):
             atom_props.pop("unfixed")
 
-        # create .d12 input file and place it in tempfolder
-        try:
-            d12_filecontent = write_input(parameters.get_dict(),
-                                          list(basissets.values()), atom_props)
-        except (ValueError, NotImplementedError) as err:
-            raise InputValidationError(
-                "an input file could not be created from the parameters: {}".
-                format(err))
-
-        with open(tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE), 'w') as f:
-            f.write(d12_filecontent)
+        return atom_props
 
     def _prepare_for_submission(self, tempfolder, inputdict):
         """
