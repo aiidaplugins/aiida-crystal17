@@ -2,7 +2,7 @@
 test input schema
 """
 import pytest
-from aiida_crystal17.parsers import validate_dict
+from aiida_crystal17.validation import validate_dict
 from jsonschema import ValidationError
 
 

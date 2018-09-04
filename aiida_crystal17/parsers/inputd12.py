@@ -2,7 +2,8 @@
 module to read and write CRYSTAL17 .d12 files
 """
 import six
-from aiida_crystal17.parsers import validate_dict
+from aiida_crystal17.validation import validate_dict
+
 
 # TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 

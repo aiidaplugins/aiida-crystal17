@@ -21,7 +21,7 @@ space_group_int_num num_symm_ops
 
 """
 import numpy as np
-from aiida_crystal17.parsers import validate_dict
+from aiida_crystal17.validation import validate_dict
 from aiida_crystal17.utils import ATOMIC_SYMBOL2NUM
 from spglib import spglib
 
