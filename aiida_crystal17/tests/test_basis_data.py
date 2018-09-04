@@ -14,7 +14,8 @@ def test_create_single(new_database, new_workdir):
     BasisSetData = DataFactory("crystal17.basisset")
 
     basis = BasisSetData(
-        file=os.path.join(tests.TEST_DIR, "input_files", 'sto3g_Mg.basis'))
+        file=os.path.join(tests.TEST_DIR, "input_files", "sto3g",
+                          'sto3g_Mg.basis'))
 
     expected_meta = {
         'num_shells': 3,
@@ -40,7 +41,8 @@ def test_create_single(new_database, new_workdir):
 
     # try retrieving a pre-existing (stored) basis
     basis, created = BasisSetData.get_or_create(
-        filepath=os.path.join(tests.TEST_DIR, "input_files", 'sto3g_Mg.basis'))
+        filepath=os.path.join(tests.TEST_DIR, "input_files", "sto3g",
+                              'sto3g_Mg.basis'))
     assert not created
 
 
@@ -49,10 +51,10 @@ def test_create_group(new_database, new_workdir):
     from aiida_crystal17.data.basis_set import upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
-        os.path.join(tests.TEST_DIR, "input_files"), "sto3g",
+        os.path.join(tests.TEST_DIR, "input_files", "sto3g"), "sto3g",
         "group of sto3g basis sets")
 
-    assert (nfiles, nuploaded) == (2, 2)
+    assert (nfiles, nuploaded) == (3, 3)
 
     from aiida.orm import DataFactory
     BasisSetData = DataFactory("crystal17.basisset")
@@ -68,17 +70,17 @@ def test_create_group(new_database, new_workdir):
     # try uploading the files to a second group
     with pytest.raises(ValueError):
         upload_basisset_family(
-            os.path.join(tests.TEST_DIR, "input_files"),
+            os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
             "another_sto3g",
             "another group of sto3g basis sets",
             stop_if_existing=True)
 
     nfiles, nuploaded = upload_basisset_family(
-        os.path.join(tests.TEST_DIR, "input_files"),
+        os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
         "another_sto3g",
         "another group of sto3g basis sets",
         stop_if_existing=False)
-    assert (nfiles, nuploaded) == (2, 0)
+    assert (nfiles, nuploaded) == (3, 0)
 
 
 def test_bases_from_struct(new_database, new_workdir):
@@ -87,7 +89,7 @@ def test_bases_from_struct(new_database, new_workdir):
     from aiida_crystal17.data.basis_set import upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
-        os.path.join(tests.TEST_DIR, "input_files"), "sto3g",
+        os.path.join(tests.TEST_DIR, "input_files", "sto3g"), "sto3g",
         "group of sto3g basis sets")
 
     # MgO

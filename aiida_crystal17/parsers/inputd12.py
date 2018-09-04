@@ -14,11 +14,18 @@ from aiida_crystal17.validation import validate_dict
 
 # TODO RESTART (need to provide files from previous remote folder)
 
-# TODO incompatability tests e.g. using ATOMSPIN without SPIN
+# TODO incompatability tests e.g. using ATOMSPIN without SPIN (and spin value of SPINLOCK)
 
 
 def get_keys(dct, keys, default=None, raise_error=False):
-    """retrieve the leaf of a key path from a dictionary"""
+    """retrieve the leaf of a key path from a dictionary
+
+    :param dct: the dict to search
+    :param keys: key path
+    :param default: default value to return
+    :param raise_error: whether to raise an error if the path isn't found
+    :return:
+    """
     subdct = dct
     for i, key in enumerate(keys):
         if key in subdct:

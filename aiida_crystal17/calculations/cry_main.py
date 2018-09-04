@@ -232,7 +232,7 @@ class CryMainCalculation(JobCalculation):
             structure, family_name, by_kind=False)
 
         for element, basis in element_basis_dict.items():
-            self.use_basis(basis, element)
+            self.use_basisset(basis, element)
 
     def _get_reference_structure(self):
         """
@@ -310,17 +310,22 @@ class CryMainCalculation(JobCalculation):
             "unfixed": [],
             "ghosts": []
         }
-        for i, kindname in aid_kname_map.items():
-            if kindname in setting_dict.get("spin_alpha", []):
-                atom_props["spin_alpha"].append(i)
-            if kindname in setting_dict.get("spin_beta", []):
-                atom_props["spin_beta"].append(i)
-            if kindname in setting_dict.get("fixed", []):
-                atom_props["fixed"].append(i)
-            if kindname not in setting_dict.get("fixed", []):
-                atom_props["unfixed"].append(i)
-            if kindname in setting_dict.get("ghosts", []):
-                atom_props["ghosts"].append(i)
+
+        if "kinds" in setting_dict:
+            for i, kindname in aid_kname_map.items():
+                if kindname in setting_dict["kinds"].get("spin_alpha", []):
+                    atom_props["spin_alpha"].append(i)
+                if kindname in setting_dict["kinds"].get("spin_beta", []):
+                    atom_props["spin_beta"].append(i)
+                if kindname in setting_dict["kinds"].get("fixed", []):
+                    atom_props["fixed"].append(i)
+                if kindname not in setting_dict["kinds"].get("fixed", []):
+                    atom_props["unfixed"].append(i)
+                if kindname in setting_dict["kinds"].get("ghosts", []):
+                    atom_props["ghosts"].append(i)
+
+            print(aid_kname_map)
+            print(atom_props)
 
         # we only need unfixed if there are fixed
         if not atom_props.pop("fixed"):
