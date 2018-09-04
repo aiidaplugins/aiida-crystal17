@@ -138,7 +138,7 @@ class CryMainCalculation(JobCalculation):
             raise TypeError(
                 "The parameter 'element' of _get_linkname_basisset can "
                 "only be an string: {}".format(element))
-        if not element in ATOMIC_NUM2SYMBOL.values():
+        if element not in ATOMIC_NUM2SYMBOL.values():
             raise TypeError(
                 "The parameter 'symbol' of _get_linkname_basisset can "
                 "must be a known atomic element: {}".format(element))
