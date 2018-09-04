@@ -2,7 +2,6 @@ from aiida_crystal17.parsers.inputd12 import write_input
 
 
 def test_input_full():
-
     indict = {
         "title": "a title",
         "geometry": {
@@ -99,7 +98,7 @@ TOLDEG
 0.0003
 TOLDEE
 7
-END
+ENDOPT
 END
 basis_set1
 basis_set2
@@ -157,4 +156,54 @@ PPAN
 END
 """
 
+    assert outstr == expected
+
+
+def test_input_with_atom_props():
+    indict = {
+        "scf": {
+            "k_points": [16, 8]
+        },
+        "geometry": {
+            "optimise": {
+                "type": "FULLOPTG"
+            }
+        }
+    }
+
+    atomprops = {
+        "spin_alpha": [1, 3],
+        "spin_beta": [2, 4],
+        "unfixed": [1, 3],
+        "ghosts": [5, 6]
+    }
+
+    outstr = write_input(indict, ["basis_set1", "basis_set2"], atomprops)
+
+    expected = """CRYSTAL run
+EXTERNAL
+OPTGEOM
+FULLOPTG
+FRAGMENT
+2
+1 3 
+ENDOPT
+END
+basis_set1
+basis_set2
+99 0
+GHOSTS
+2
+5 6 
+END
+SHRINK
+16 8
+ATOMSPIN
+4
+1 1
+2 -1
+3 1
+4 -1
+END
+"""
     assert outstr == expected

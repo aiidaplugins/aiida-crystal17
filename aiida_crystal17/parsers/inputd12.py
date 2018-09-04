@@ -4,7 +4,6 @@ module to read and write CRYSTAL17 .d12 files
 import six
 from aiida_crystal17.validation import validate_dict
 
-
 # TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
 # TODO SHRINK where IS=0 and IS1 IS2 IS3 given
@@ -14,8 +13,8 @@ from aiida_crystal17.validation import validate_dict
 # TODO EOS
 
 # TODO RESTART (need to provide files from previous remote folder)
-# TODO fixing atoms (FRAGMENT), could do by kind but I'm not sure how this would play with using kind to reduce symmetry
-# TODO initial spin based on kind
+
+# TODO incompatability tests e.g. using ATOMSPIN without SPIN
 
 
 def get_keys(dct, keys, default=None, raise_error=False):
@@ -54,13 +53,12 @@ def format_value(dct, keys):
     return "{}\n".format(value)
 
 
-# pylint: disable=too-many-branches
 def write_input(indict, basis_sets, atom_props=None):
     """write input of a validated input dictionary
 
     :param indict: dictionary of input
     :param basis_sets: list of basis set strings or objects with `content` property
-    :param atom_props: dictionary of atom specific properties ("spin_alpha", "spin_beta", "unfixed", "ghosts")
+    :param atom_props: dictionary of atom ids with specific properties ("spin_alpha", "spin_beta", "unfixed", "ghosts")
     :return:
     """
     # validation
@@ -79,6 +77,13 @@ def write_input(indict, basis_sets, atom_props=None):
         raise ValueError(
             "atom_props should only contain: 'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
         )
+    # validate that a index isn't in both spin_alpha and spin_beta
+    allspin = atom_props.get("spin_alpha", []) + atom_props.get(
+        "spin_beta", [])
+    if len(set(allspin)) != len(allspin):
+        raise ValueError(
+            "a kind cannot be in both spin_alpha and spin_beta: {}".format(
+                allspin))
 
     outstr = ""
 
@@ -86,43 +91,16 @@ def write_input(indict, basis_sets, atom_props=None):
     title = get_keys(indict, ["title"], "CRYSTAL run")
     outstr += "{}\n".format(" ".join(title.splitlines()))  # must be one line
 
-    # Geometry
-    outstr += "EXTERNAL\n"  # we assume external geometry
+    outstr = _geometry_block(outstr, indict, atom_props)
 
-    # Geometry Optional Keywords (including optimisation)
-    for keyword in get_keys(indict, ["geometry", "info_print"], []):
-        outstr += "{}\n".format(keyword)
-    for keyword in get_keys(indict, ["geometry", "info_external"], []):
-        outstr += "{}\n".format(keyword)
+    outstr = _basis_set_block(outstr, indict, basis_sets, atom_props)
 
-    if "optimise" in indict.get("geometry", {}):
-        outstr += "OPTGEOM\n"
-        outstr += format_value(indict, ["geometry", "optimise", "type"])
-        outstr += format_value(indict, ["geometry", "optimise", "hessian"])
-        outstr += format_value(indict, ["geometry", "optimise", "gradient"])
-        for keyword in get_keys(indict, ["geometry", "optimise", "info_print"],
-                                []):
-            outstr += "{}\n".format(keyword)
-        outstr += format_value(indict, ["geometry", "optimise", "convergence"])
-        outstr += "END\n"
+    outstr = _hamiltonian_block(outstr, indict, atom_props)
 
-    # Geometry End
-    outstr += "END\n"
+    return outstr
 
-    # Basis Sets
-    if isinstance(basis_sets[0], six.string_types):
-        outstr += "\n".join([basis_set.strip() for basis_set in basis_sets])
-    else:
-        outstr += "\n".join(
-            [basis_set.content.strip() for basis_set in basis_sets])
-    outstr += "\n99 0\n"
 
-    # Basis Sets Optional Keywords
-    outstr += format_value(indict, ["basis_set"])
-
-    # Basis Sets End
-    outstr += "END\n"
-
+def _hamiltonian_block(outstr, indict, atom_props):
     # Hamiltonian Optional Keywords
     outstr += format_value(indict, ["scf", "single"])
     # DFT Optional Block
@@ -153,6 +131,17 @@ def write_input(indict, basis_sets, atom_props=None):
     outstr += "SHRINK\n"
     outstr += "{0} {1}\n".format(
         *get_keys(indict, ["scf", "k_points"], raise_error=True))
+    # ATOMSPIN
+    spins = []
+    for anum in atom_props.get("spin_alpha", []):
+        spins.append((anum, 1))
+    for anum in atom_props.get("spin_beta", []):
+        spins.append((anum, -1))
+    if spins:
+        outstr += "ATOMSPIN\n"
+        outstr += "{}\n".format(len(spins))
+        for anum, spin in sorted(spins):
+            outstr += "{0} {1}\n".format(anum, spin)
 
     # SCF/Other Optional Keywords
     outstr += format_value(indict, ["scf", "numerical"])
@@ -163,5 +152,55 @@ def write_input(indict, basis_sets, atom_props=None):
 
     # Hamiltonian and SCF End
     outstr += "END\n"
+    return outstr
 
+
+def _geometry_block(outstr, indict, atom_props):
+    # Geometry
+    outstr += "EXTERNAL\n"  # we assume external geometry
+    # Geometry Optional Keywords (including optimisation)
+    for keyword in get_keys(indict, ["geometry", "info_print"], []):
+        outstr += "{}\n".format(keyword)
+    for keyword in get_keys(indict, ["geometry", "info_external"], []):
+        outstr += "{}\n".format(keyword)
+    if "optimise" in indict.get("geometry", {}):
+        outstr += "OPTGEOM\n"
+        outstr += format_value(indict, ["geometry", "optimise", "type"])
+        unfixed = atom_props.get("unfixed", [])
+        if unfixed:
+            outstr += "FRAGMENT\n"
+            outstr += "{}\n".format(len(unfixed))
+            outstr += " ".join([str(a) for a in sorted(unfixed)]) + " \n"
+        outstr += format_value(indict, ["geometry", "optimise", "hessian"])
+        outstr += format_value(indict, ["geometry", "optimise", "gradient"])
+        for keyword in get_keys(indict, ["geometry", "optimise", "info_print"],
+                                []):
+            outstr += "{}\n".format(keyword)
+        outstr += format_value(indict, ["geometry", "optimise", "convergence"])
+        outstr += "ENDOPT\n"
+
+    # Geometry End
+    outstr += "END\n"
+    return outstr
+
+
+def _basis_set_block(outstr, indict, basis_sets, atom_props):
+    # Basis Sets
+    if isinstance(basis_sets[0], six.string_types):
+        outstr += "\n".join([basis_set.strip() for basis_set in basis_sets])
+    else:
+        outstr += "\n".join(
+            [basis_set.content.strip() for basis_set in basis_sets])
+    outstr += "\n99 0\n"
+    # GHOSTS
+    ghosts = atom_props.get("ghosts", [])
+    if ghosts:
+        outstr += "GHOSTS\n"
+        outstr += "{}\n".format(len(ghosts))
+        outstr += " ".join([str(a) for a in sorted(ghosts)]) + " \n"
+
+    # Basis Sets Optional Keywords
+    outstr += format_value(indict, ["basis_set"])
+    # Basis Sets End
+    outstr += "END\n"
     return outstr

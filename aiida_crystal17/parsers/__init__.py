@@ -1,5 +1,3 @@
 """
 parsers for CRYSTAL17
 """
-
-

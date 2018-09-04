@@ -302,12 +302,6 @@ class CryMainCalculation(JobCalculation):
                   'w') as f:
             f.write(gui_content)
 
-        # validate that a kind isn't in both spin_alpha and spin_beta
-        spin = setting_dict.get("spin_alpha", []) + setting_dict.get(
-            "spin_beta", [])
-        if list(set(spin)) != list(spin):
-            raise InputValidationError(
-                "a kind cannot be in both spin_alpha and spin_beta")
         # set properties for each atom
         atom_props = {
             "spin_alpha": [],
