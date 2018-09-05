@@ -257,8 +257,7 @@ def write_gui_file(structdata, settings, cryversion=17):
 
     :param structdata: structure data as mandated by stucture.schema.json
     :type structdata: dict
-    :param settings: Settings for initial manipulation of structures and conversion to .gui (fort.34) input file,
-    as mandated by the settings.schema.json
+    :param settings: Settings for initial manipulation of structures and conversion to .gui (fort.34) input file, as mandated by the settings.schema.json
     :type settings: dict
     :param cryversion: version of CRYSTAL
     :type cryversion: int
