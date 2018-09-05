@@ -489,12 +489,15 @@ def create_gui_from_struct(structure, settings):
                 "Kind '{}' has vacancies. This is not allowed for CRYSTAL input structures."
                 "".format(kind.name))
 
-    kind_symbol_map = {kind.name: kind.symbols[0] for kind in structure.kinds}
-    kind_id_map = {kind.name: i for i, kind in enumerate(structure.kinds)}
-    id_kind_map = {i: kind.name for i, kind in enumerate(structure.kinds)}
+    kindname_symbol_map = {
+        kind.name: kind.symbols[0]
+        for kind in structure.kinds
+    }
+    kindname_id_map = {kind.name: i for i, kind in enumerate(structure.kinds)}
+    id_kind_map = {i: kind for i, kind in enumerate(structure.kinds)}
     kind_names = [site.kind_name for site in structure.sites]
-    symbols = [kind_symbol_map[name] for name in kind_names]
-    equivalent = [kind_id_map[name] for name in kind_names]
+    symbols = [kindname_symbol_map[name] for name in kind_names]
+    equivalent = [kindname_id_map[name] for name in kind_names]
 
     sdata = {
         "lattice": structure.cell,

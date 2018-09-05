@@ -88,18 +88,6 @@ def get_basissets_by_kind(structure, family_name):
     return bases
 
 
-def get_basissets_by_element():
-    """
-    Get a dictionary of {element: basis} for all the elements within the given
-    structure using the given basis set family name.
-
-    :param structure: The structure that will be used.
-    :param family_name: the name of the group containing the basis sets
-    """
-
-    pass
-
-
 # pylint: disable=too-many-locals
 def upload_basisset_family(folder,
                            group_name,

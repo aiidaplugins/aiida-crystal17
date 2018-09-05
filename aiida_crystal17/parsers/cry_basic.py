@@ -28,9 +28,12 @@ class CryBasicParser(Parser):
         Initialize Parser instance
         """
         CryBasicCalculation = CalculationFactory('crystal17.basic')
+        CryMainCalculation = CalculationFactory('crystal17.main')
         # check for valid input
-        if not isinstance(calculation, CryBasicCalculation):
-            raise OutputParsingError("Can only parse CryBasicCalculation")
+        if not isinstance(calculation,
+                          (CryBasicCalculation, CryMainCalculation)):
+            raise OutputParsingError(
+                "Can only parse CryBasicCalculation or CryMainCalculation")
 
         super(CryBasicParser, self).__init__(calculation)
 
@@ -72,8 +75,8 @@ class CryBasicParser(Parser):
         return 'output_arrays'
 
     # pylint: disable=too-many-locals,too-many-statements
-    def parse_stdout(self, abs_path, parser_opts=None):
-        """ parse the stdout file to the required nodes
+    def parse_mainout(self, abs_path, parser_opts=None):
+        """ parse the main output file to the required nodes
 
         :param abs_path: absolute path of stdout file
         :param parser_opts: dictionary of parser settings
@@ -84,6 +87,8 @@ class CryBasicParser(Parser):
         :return psuccess: a boolean that is False in case of failed calculations
         :return perrors: a list of errors
         """
+        self.logger.info("parsing main out file")
+
         # TODO do we need to use settings for anything, or remove?
 
         parser_opts = {} if parser_opts is None else parser_opts
@@ -112,9 +117,9 @@ class CryBasicParser(Parser):
 
         # TODO could also read .gui file for definitive final (primitive) geometry, with symmetries
         # TODO could also read .SCFLOG, to get scf output for each opt step
-        # TODO could also read files in .optstory folder, to get (primitive) geometrie (+ symmetries) for each opt step
+        # TODO could also read files in .optstory folder, to get (primitive) geometries (+ symmetries) for each opt step
         # Note the above files are only available for optimisation runs
-        # TODO read symmetries (for primitive cell) from stdout
+        # TODO read symmetries (for primitive cell) from main.out
         # TODO read separate energy contributions
 
         perrors = data["errors"]
@@ -247,11 +252,11 @@ class CryBasicParser(Parser):
             settings = {}
             parser_opts = {}
 
-        # Look for optional input structure
-        try:
-            input_structure = self._calc.inp.structure
-        except (AttributeError, KeyError):
-            input_structure = None
+        # Look for optional input structure (we don't use this at present)
+        # try:
+        #     input_structure = self._calc.inp.structure
+        # except (AttributeError, KeyError):
+        #     input_structure = None
 
         # Check that the retrieved folder is there
         out_folder = self.get_folder(retrieved)
@@ -260,13 +265,13 @@ class CryBasicParser(Parser):
 
         list_of_files = out_folder.get_folder_list()
 
-        # Check that the main output flie is present
-        stdout_file = self._calc._DEFAULT_OUTPUT_FILE  # pylint: disable=protected-access
+        # Check that the main output file is present
+        mainout_file = self._calc._DEFAULT_OUTPUT_FILE  # pylint: disable=protected-access
 
-        if stdout_file not in list_of_files:
+        if mainout_file not in list_of_files:
             self.logger.error(
                 "The standard output file '{}' was not found but is required".
-                format(stdout_file))
+                format(mainout_file))
             return False, ()
 
         # store the stdout file as a file node
@@ -274,8 +279,8 @@ class CryBasicParser(Parser):
         # node_list.append(("output_stdout", node))
 
         # parse the stdout file and add nodes
-        paramdict, arraydict, structdict, psuccess, perrors = self.parse_stdout(
-            out_folder.get_abs_path(stdout_file), parser_opts)
+        paramdict, arraydict, structdict, psuccess, perrors = self.parse_mainout(
+            out_folder.get_abs_path(mainout_file), parser_opts)
 
         if not psuccess:
             successful = False
@@ -295,19 +300,25 @@ class CryBasicParser(Parser):
             node_list.append((self.get_linkname_outarrays(), arraydata))
 
         StructureData = DataFactory('structure')
+        struct = StructureData(cell=structdict['cell_vectors'])
+        struct.set_pbc(structdict["pbc"])
+
         # we want to reuse the kinds from the input structure, if available
-        if not input_structure:
-            struct = StructureData(cell=structdict['cell_vectors'])
+        atomid_kind_map = self._calc.get_extra("atomid_kind_map", None)
+        if atomid_kind_map is None:  # pylint: disable=protected-access
+            self.logger.warning(
+                "no atom id to kind map available, creating new kinds")
             for symbol, ccoord in zip(structdict['symbols'],
                                       structdict['ccoords']):
                 struct.append_atom(position=ccoord, symbols=symbol)
-            struct.set_pbc(structdict["pbc"])
         else:
-            # TODO is there any issue with primitive and conventional cells
-            # (we are expecting both input and output to be primitive)
-            struct = input_structure.copy()
-            struct.reset_cell(structdict['cell_vectors'])
-            struct.reset_sites_positions(structdict['ccoords'])
+            from aiida.orm.data.structure import Site, Kind
+            for i, ccoord in enumerate(structdict['ccoords']):
+                kind = Kind(raw=atomid_kind_map[str(i + 1)])
+                if kind.name not in struct.get_site_kindnames():
+                    struct.append_kind(kind)
+                struct.append_site(Site(position=ccoord, kind_name=kind.name))
+
         node_list.append((self.get_linkname_outstructure(), struct))
 
         return successful, node_list

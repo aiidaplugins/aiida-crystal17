@@ -55,7 +55,7 @@ def test_example(new_database, new_workdir):
         os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
         "sto3g",
         "minimal basis sets",
-        stop_if_existing=True,
+        stop_if_existing=False,
         extension=".basis")
 
     # set up calculation

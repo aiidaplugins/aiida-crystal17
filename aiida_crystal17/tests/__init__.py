@@ -119,6 +119,7 @@ def get_code(entry_point, computer):
     from aiida.common.exceptions import NotExistent
 
     if os.environ.get(MOCK_GLOBAL_VAR, False):
+        print("NB: using mock executable")
         exec_lookup = mock_executables
     else:
         exec_lookup = executables
@@ -130,15 +131,15 @@ def get_code(entry_point, computer):
                        .format(entry_point, exec_lookup.keys()))
 
     try:
-        code = Code.get_from_string('{}@{}'.format(executable,
-                                                   computer.get_name()))
+        code = Code.get_from_string('{}-{}@{}'.format(entry_point, executable,
+                                                      computer.get_name()))
     except NotExistent:
         path = get_path_to_executable(executable)
         code = Code(
             input_plugin_name=entry_point,
             remote_computer_exec=[computer, path],
         )
-        code.label = executable
+        code.label = '{}-{}'.format(entry_point, executable)
         code.store()
 
     return code

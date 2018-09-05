@@ -164,7 +164,7 @@ class CryMainCalculation(JobCalculation):
                 'additional_parameter':
                 None,
                 'linkname':
-                'input_file',
+                'parameters',
                 'docstring':
                 "the input parameters to create the .d12 file content."
             },
@@ -288,11 +288,11 @@ class CryMainCalculation(JobCalculation):
         :param parameters:
         :param setting_dict:
         :param tempfolder:
-        :return:
+        :return: atomid_kind_map
         """
         # create .gui external geometry file and place it in tempfolder
         try:
-            gui_content, aid_kname_map = create_gui_from_struct(
+            gui_content, atomid_kind_map = create_gui_from_struct(
                 instruct, setting_dict)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
@@ -303,10 +303,9 @@ class CryMainCalculation(JobCalculation):
                   'w') as f:
             f.write(gui_content)
 
-        atom_props = self._create_atom_props(
-            aid_kname_map,
-            setting_dict)  # create .d12 input file and place it in tempfolder
+        atom_props = self._create_atom_props(atomid_kind_map, setting_dict)
 
+        # create .d12 input file and place it in tempfolder
         try:
             d12_filecontent = write_input(parameters.get_dict(),
                                           list(basissets.values()), atom_props)
@@ -318,11 +317,13 @@ class CryMainCalculation(JobCalculation):
         with open(tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE), 'w') as f:
             f.write(d12_filecontent)
 
+        return atomid_kind_map
+
     @staticmethod
-    def _create_atom_props(aid_kname_map, setting_dict):
+    def _create_atom_props(atomid_kind_map, setting_dict):
         """ create dict of properties for each atom
 
-        :param aid_kname_map: dict mapping atom id to kind_name
+        :param atomid_kind_map: dict mapping atom id to kind
         :param setting_dict: setting_dict
         :return:
         """
@@ -334,16 +335,16 @@ class CryMainCalculation(JobCalculation):
             "ghosts": []
         }
         if "kinds" in setting_dict:
-            for i, kindname in aid_kname_map.items():
-                if kindname in setting_dict["kinds"].get("spin_alpha", []):
+            for i, kind in atomid_kind_map.items():
+                if kind.name in setting_dict["kinds"].get("spin_alpha", []):
                     atom_props["spin_alpha"].append(i)
-                if kindname in setting_dict["kinds"].get("spin_beta", []):
+                if kind.name in setting_dict["kinds"].get("spin_beta", []):
                     atom_props["spin_beta"].append(i)
-                if kindname in setting_dict["kinds"].get("fixed", []):
+                if kind.name in setting_dict["kinds"].get("fixed", []):
                     atom_props["fixed"].append(i)
-                if kindname not in setting_dict["kinds"].get("fixed", []):
+                if kind.name not in setting_dict["kinds"].get("fixed", []):
                     atom_props["unfixed"].append(i)
-                if kindname in setting_dict["kinds"].get("ghosts", []):
+                if kind.name in setting_dict["kinds"].get("ghosts", []):
                     atom_props["ghosts"].append(i)
 
         # we only need unfixed if there are fixed
@@ -380,7 +381,7 @@ class CryMainCalculation(JobCalculation):
         except KeyError:
             raise InputValidationError("Missing parameters")
         if not isinstance(parameters, ParameterData):
-            raise InputValidationError("input_file not of type ParameterData")
+            raise InputValidationError("parameters not of type ParameterData")
 
         try:
             instruct = inputdict.pop(self.get_linkname('structure'))
@@ -410,8 +411,15 @@ class CryMainCalculation(JobCalculation):
         setting_dict = edict.merge(
             [self._default_settings, input_settings], overwrite=True)
 
-        self._create_input_files(basissets, instruct, parameters, setting_dict,
-                                 tempfolder)
+        atomid_kind_map = self._create_input_files(
+            basissets, instruct, parameters, setting_dict, tempfolder)
+
+        # TODO is this the best way to pass data between calculation and parser
+        # it may be better to have a two step workflow: compute geom/symops - run calculation
+        self.set_extra(
+            "atomid_kind_map",
+            {str(i): k.get_raw()
+             for i, k in atomid_kind_map.items()})
 
         # Prepare CodeInfo object for aiida, describes how a code has to be executed
         codeinfo = CodeInfo()
