@@ -6,6 +6,7 @@ User guide
     :maxdepth: 3
 
     get_started
-    tutorial
+    calc_basic
+    calc_main
 
 

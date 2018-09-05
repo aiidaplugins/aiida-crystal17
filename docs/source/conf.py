@@ -24,8 +24,9 @@ import aiida_crystal17
 
 # Enable rtd mode via `export READTHEDOCS=True`
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+on_vscode = os.environ.get('VSCODE_LOGS', None) is not None
 
-if on_rtd:
+if on_rtd or on_vscode:
     # Back-end settings for readthedocs online documentation -
     # we don't want to create a profile there
     # NOTE: There can be no calls to load_dbenv() before this
@@ -71,6 +72,8 @@ extensions = [
 intersphinx_mapping = {
     'python': ('https://docs.python.org/2.7', None),
     'aiida': ('http://aiida-core.readthedocs.io/en/latest/', None),
+    'aiida_quantumespresso':
+    ('http://aiida-quantumespresso.readthedocs.io/en/latest/', None)
 }
 
 nitpick_ignore = [('py:obj', 'module')]
