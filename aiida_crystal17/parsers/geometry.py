@@ -2,22 +2,24 @@
 This module deals with reading/creating .gui files
 for use with the EXTERNAL keyword
 
-File Format:
+File Format
 
-dimesionality origin_setting crystal_type energy(optional)
-    a_x a_y a_z
-    b_x b_y b_z
-    c_x c_y c_z
-num_symm_ops (in cartesian coordinates)
-    op1_rot_00 op1_rot_01 op1_rot_02
-    op1_rot_10 op1_rot_11 op1_rot_12
-    op1_rot_20 op1_rot_21 op1_rot_22
-    op1_trans_0 op1_trans_1 op1_trans_2
-    ...
-num_atoms (if cryversion<17 irreducible atoms only)
-    atomic_number x y z (in cartesian coordinates)
-    ...
-space_group_int_num num_symm_ops
+::
+
+    dimesionality origin_setting crystal_type energy(optional)
+        a_x a_y a_z
+        b_x b_y b_z
+        c_x c_y c_z
+    num_symm_ops (in cartesian coordinates)
+        op1_rot_00 op1_rot_01 op1_rot_02
+        op1_rot_10 op1_rot_11 op1_rot_12
+        op1_rot_20 op1_rot_21 op1_rot_22
+        op1_trans_0 op1_trans_1 op1_trans_2
+        ...
+    num_atoms (if cryversion<17 irreducible atoms only)
+        atomic_number x y z (in cartesian coordinates)
+        ...
+    space_group_int_num num_symm_ops
 
 """
 import numpy as np
@@ -122,12 +124,12 @@ def read_gui_file(fpath, cryversion=17):
 
 
 def get_crystal_system(sg_number, as_number=False):
-    """
-    Get the crystal system for the structure, e.g., (triclinic,
-    orthorhombic, cubic, etc.) from the space group number
+    """Get the crystal system for the structure, e.g.,
+    (triclinic, orthorhombic, cubic, etc.) from the space group number
 
-    Returns:
-        (str): Crystal system for structure or None if system cannot be detected.
+    :param sg_number: the spacegroup number
+    :param as_number: return the system as a number (recognized by CRYSTAL) or a str
+    :return: Crystal system for structure or None if system cannot be detected.
     """
     f = lambda i, j: i <= sg_number <= j
     cs = {
@@ -160,14 +162,14 @@ def get_crystal_system(sg_number, as_number=False):
 
 
 def get_lattice_type(sg_number):
-    """
-    Get the lattice for the structure, e.g., (triclinic,
+    """Get the lattice for the structure, e.g., (triclinic,
     orthorhombic, cubic, etc.).This is the same than the
     crystal system with the exception of the hexagonal/rhombohedral
     lattice
 
-    Returns:
-        (str): Lattice type for structure or None if type cannot be detected.
+    :param sg_number: space group number
+    :return: Lattice type for structure or None if type cannot be detected.
+
     """
     system = get_crystal_system(sg_number)
     if sg_number in [146, 148, 155, 160, 161, 166, 167]:
@@ -179,7 +181,12 @@ def get_lattice_type(sg_number):
 
 
 def get_centering_code(sg_number, sg_symbol):
-    """get crystal centering codes, to convert from primitive to conventional"""
+    """get crystal centering codes, to convert from primitive to conventional
+
+    :param sg_number: the space group number
+    :param sg_symbol: the space group symbol
+    :return: CRYSTAL centering code
+    """
     lattice_type = get_lattice_type(sg_number)
 
     if "P" in sg_symbol or lattice_type == "hexagonal":
@@ -324,6 +331,7 @@ def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
     :param symprec: symmetry precision to parse to spglib
     :param angletol: angletol to parse to spglib
     :return: (gui_string, structdata)
+
     """
     angletol = -1 if angletol is None else angletol
 
@@ -443,6 +451,7 @@ def create_gui_from_ase(atoms, settings):
     :param settings: dictionary of settings
     :type settings: dict
     :return: content of .gui file (as string), new Atoms instance
+
     """
     import ase
 
@@ -476,6 +485,7 @@ def create_gui_from_struct(structure, settings):
     :param settings: dictionary of settings
     :type settings: dict
     :return: content of .gui file (as string), mapping of atom id to kind
+
     """
     from aiida.common.exceptions import InputValidationError
 
