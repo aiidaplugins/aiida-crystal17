@@ -11,7 +11,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    :maxdepth: 2
 
    user_guide/index
-   module_guide/index
+   module_guide/modules
 
 .. If you use this plugin for your research, please cite the following work:
     .. highlights:: Author Name1, Author Name2, *Paper title*, Jornal Name XXX, YYYY (Year).

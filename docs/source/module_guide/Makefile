@@ -1,0 +1,1 @@
+sphinx-apidoc --force --separate -o . ../../../aiida_crystal17/ ../../../aiida_crystal17/tests/
