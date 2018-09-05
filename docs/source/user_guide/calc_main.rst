@@ -100,7 +100,7 @@ The outputs represent:
 -  ``output_structure`` stores the final geometry from the calculation
 
 For compatibility, parameters are named 
-with the same convention as in :py:mod:`aiida_quantumespresso:basicpw`:
+with the same convention as in :ref:`aiida-quantumespresso.pw <my-ref-to-pw-tutorial>` 
 
 .. code:: shell
 
