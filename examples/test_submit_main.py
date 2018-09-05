@@ -66,8 +66,8 @@ def test_example(new_database, new_workdir):
     calc.set_withmpi(False)
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
-    params, settings = calc.prepare_and_validate(params, instruct, settings,
-                                                 "sto3g", True)
+    params, settings = calc.prepare_and_validate(
+        params, instruct, settings, basis_family="sto3g", flattened=True)
 
     calc.use_parameters(params)
     calc.use_structure(instruct)

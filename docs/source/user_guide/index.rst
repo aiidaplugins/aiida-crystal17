@@ -3,7 +3,7 @@ User guide
 ==========
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 4
 
     get_started
     calc_basic

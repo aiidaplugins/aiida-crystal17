@@ -646,15 +646,121 @@ All basis sets in a folder can be read and saved to a named family by:
 
   >>> from aiida_crystal17.data.basis_set import upload_basisset_family
   >>> nfiles, nuploaded = upload_basisset_family(
-          os.path.join(tests.TEST_DIR, "input_files", "sto3g"), 
+          os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
           "sto3g", "group of sto3g basis sets",
           extension=".basis")
 
-The basis sets for a particular structure are then extracted by
+Basis families can be searched (optionally by the elements they contain):
 
-.. note::
+.. code:: python
+
+  >>> from aiida.orm import DataFactory
+  >>> basis_cls = DataFactory('crystal17.basisset')
+  >>> basis_cls.get_basis_groups(["Ni", "O"])
+  [<Group: "sto3g" [type data.basisset.family], of user test@hotmail.com>]
+
+The basis sets for a particular structure
+are then extracted by ``crystal17.main``:
+
+.. code:: python
+
+  >>> from ase.spacegroup import crystal
+
+  >>> atoms = crystal(
+  ...   symbols=[28, 8],
+  ...   basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+  ...   spacegroup=225,
+  ...   cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
+
+  >>> from aiida.orm import DataFactory
+  >>> StructureData = DataFactory('structure')
+
+  >>> structure = StructureData(ase=atoms)
+
+  >>> from aiida_crystal17.data.basis_set import get_basissets_from_structure
+  >>> get_basissets_from_structure(structure, "sto3g", by_kind=False)
+  {'Ni': <BasisSetData: uuid: d1529498-1cc4-48cc-9524-42355e7a6f18 (pk: 2320)>,
+  'O': <BasisSetData: uuid: 67d87176-cb83-4082-be06-8dae80c488c3 (pk: 2321)>}
+
+.. important::
 
   Unlike :ref:`aiida-quantumespresso.pw <my-ref-to-pw-tutorial>`,
-  the basis sets are defined per atomic number only **NOT** per species kind.
+  ``crystal17.main`` uses one basis sets per atomic number only **NOT** per kind.
   This is because, using multiple basis sets per atomic number is rarely used in CRYSTAL17,
   and is limited anyway to only two types per atomic number.
+
+.. todo::
+
+  command line interface
+
+
+Input Preparation and Validation
+--------------------------------
+
+Before creating and submitting the calculation,
+:py:class:`~.CryMainCalculation` provides a helper function,
+to prepare the parameter and settings data
+and validate their content.
+
+.. code:: python
+
+  from aiida.orm import DataFactory, CalculationFactory
+  StructureData = DataFactory('structure')
+  calc_cls = CalculationFactory('crystal17.main')
+
+  atoms = crystal(
+      symbols=[28, 8],
+      basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+      spacegroup=225,
+      cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
+  atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
+  instruct = StructureData(ase=atoms)
+
+  params = {
+      "title": "NiO Bulk with AFM spin",
+      "scf.single": "UHF",
+      "scf.k_points": (8, 8),
+      "scf.spinlock.SPINLOCK": (0, 15),
+      "scf.numerical.FMIXING": 30,
+      "scf.post_scf": ["PPAN"]
+  }
+  settings = {"kinds.spin_alpha": ["Ni1"],
+              "kinds.spin_beta": ["Ni2"]}
+
+  pdata, sdata = calc_cls.prepare_and_validate(params, instruct,
+                                               settings=settings,
+                                               basis_family="sto3g",
+                                               flattened=True)
+
+Creating and Submitting Calculation
+-----------------------------------
+
+As in the AiiDa tutorial :ref:`aiida:setup_code`
+and the :ref:`qe.pw tutorial <my-ref-to-pw-tutorial>`,
+to run the computation on a remote computer,
+you will need to setup ``computer`` and ``code`` nodes.
+Then the code can be submitted using ``verdi run`` or programmatically:
+
+.. code:: python
+
+  from aiida import load_dbenv
+  load_dbenv()
+
+  from aiida.orm import Code
+  code = Code.get_from_string('cry17.2@MyHPC')
+  calc = code.new_calc()
+
+  calc.label = "aiida_crystal17 test"
+  calc.description = "Test job submission with the aiida_crystal17 plugin"
+  calc.set_max_wallclock_seconds(30)
+  calc.set_withmpi(False)
+  calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+
+  calc.use_parameters(pdata)
+  calc.use_structure(instruct)
+  calc.use_settings(sdata)
+  calc.use_basisset_from_family("sto3g")
+
+  calc.store_all()
+
+  calc.submit()
