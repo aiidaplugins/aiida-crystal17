@@ -1,4 +1,4 @@
-.. _main_calculation_plugin 
+.. _main_calculation_plugin:
 
 ========================
 Main Calculation Plugin
@@ -7,20 +7,20 @@ Main Calculation Plugin
 The ``crystal17.main`` plugin is designed with a more programmatic
 input interface. It creates the input ``.d12`` and ``.gui`` files,
 from a set of AiiDa nodes (
-:py:class:`~aiida.orm.data.structure.StructureData` and 
-:py:class:`~aiida.orm.data.parameter.ParameterData`). 
+:py:class:`~aiida.orm.data.structure.StructureData` and
+:py:class:`~aiida.orm.data.parameter.ParameterData`).
 
 .. note::
 
-  The approach mirrors closely that of the ``aiida-quantumespresso.pw`` plugin, 
-  which is discussed in :ref:`this tutorial <my-ref-to-pw-tutorial>` 
+  The approach mirrors closely that of the ``aiida-quantumespresso.pw`` plugin,
+  which is discussed in :ref:`this tutorial <my-ref-to-pw-tutorial>`
 
 This chapter will show how to launch a single CRYSTAL17 calculation.
 We will look at how to run a computation *via* the terminal,
 then how to construct the inputs for a computation in Python.
 It is assumed that you have already performed the installation,
-and that you already set up a computer (with verdi),
-installed CRYSTAL17 and the ``runcry17`` executable on the cluster and in AiiDA.
+and that you already set up a computer (with verdi),installed CRYSTAL17
+and the ``runcry17`` executable on the cluster and in AiiDA.
 Although the code should be quite readable,
 a basic knowledge of Python and object programming is useful.
 
@@ -175,7 +175,8 @@ can be used to create the following CRYSTAL17 input
   PPAN
   END
 
-In the old way, not only you had to prepare 'manually' this file, but also prepare the scheduler submission script, send everything on the cluster, etc.
+In the old way, not only you had to prepare 'manually' this file, but also
+prepare the scheduler submission script, send everything on the cluster, etc.
 We are going instead to prepare everything in a more programmatic way.
 
 We decompose this script into:
@@ -329,15 +330,16 @@ of the keys implemented thus far:
 Structure
 ---------
 
-The ``structure`` refers to a standard :py:class:`~aiida.orm.data.structure.StructureData` node in AiiDa.
-
-We now proceed in setting up the structure. 
+The ``structure`` refers to a standard 
+:py:class:`~aiida.orm.data.structure.StructureData` node in AiiDa.
+We now proceed in setting up the structure.
 
 .. note:: Here we discuss only the main features of structures in AiiDA, needed
     to run a CRYSTAL17 calculation.
 
-    For more detailed information, give a look to the 
-    :ref:`AiiDa Tutorial <structure_tutorial>` or :ref:`QuantumEspresso Tutorial <my-ref-to-pw-tutorial>` 
+    For more detailed information, have a look to the
+    :ref:`AiiDa Tutorial <structure_tutorial>` or
+    :ref:`QuantumEspresso Tutorial <my-ref-to-pw-tutorial>`.
 
 
 Basis Sets
@@ -383,7 +385,7 @@ and (optionally) a yaml style header section, fenced by '---':
     'md5': '0731ecc3339d2b8736e61add113d0c6f'
   }
 
-The attributes of the basis set are stored in the database, 
+The attributes of the basis set are stored in the database,
 and the md5 hash-sum is used to test equivalence of two basis sets.
 
 A simpler way to create and refer to basis sets, is *via* a family group.
@@ -399,7 +401,7 @@ All basis sets in a folder can be read and saved to a named family by:
 
 The basis sets for a particular structure are then extracted by
 
-.. note:: 
+.. note::
 
   Unlike :ref:`aiida-quantumespresso.pw <my-ref-to-pw-tutorial>`,
   the basis sets are defined per atomic number only **NOT** per species kind.
