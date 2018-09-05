@@ -248,8 +248,8 @@ def cart2frac(lattice, ccoords):
     return fcoords
 
 
-def write_gui_file(structdata, settings, cryversion=17):
-    """create the content string for a CRYSTAL geometry (.gui) file
+def compute_symmetry(structdata, settings, cryversion=17):
+    """compute the symmetry and (optionally) modified structure given settings
 
     Structures can first be standardized, to correctly centre them,
     and optionally can be idealized and/or converted to the primitive cell
@@ -261,7 +261,7 @@ def write_gui_file(structdata, settings, cryversion=17):
     :type settings: dict
     :param cryversion: version of CRYSTAL
     :type cryversion: int
-    :return: (gui_string, structdata)
+    :return: (structdata, symmdata)
 
     """
     if cryversion != 17:
@@ -287,20 +287,16 @@ def write_gui_file(structdata, settings, cryversion=17):
         origin_setting = settings["crystal"]["transform"]
         origin_setting = 1 if origin_setting is None else origin_setting
 
-        sym_data = []
-        for symop in symops:
-            sym_data.append(symop[0:3])
-            sym_data.append(symop[3:6])
-            sym_data.append(symop[6:9])
-            sym_data.append(symop[9:12])
+        symmdata = {
+            "sgnum": settings["symmetry"]["sgnum"],
+            "symops": symops,
+            "crystal_type": crystal_type,
+            "centring_code": origin_setting,
+        }
 
-        gui_str = _gui_string(dimensionality, origin_setting, crystal_type,
-                              structdata["lattice"], len(symops), sym_data,
-                              structdata["atomic_numbers"],
-                              structdata["ccoords"], 1)
     elif dimensionality == 3:
 
-        gui_str, structdata = _create_3d_gui_cry17(
+        structdata, symmdata = _compute_symmetry_3d(
             structdata, settings["3d"]["idealize"],
             settings["3d"]["primitive"], settings["3d"]["standardize"],
             settings["symmetry"]["symprec"], settings["symmetry"]["angletol"])
@@ -315,11 +311,11 @@ def write_gui_file(structdata, settings, cryversion=17):
         # TODO dimensionality < 2
         raise NotImplementedError("dimensionality than less than 2")
 
-    return gui_str, structdata
+    return structdata, symmdata
 
 
 # pylint: disable=too-many-arguments
-def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
+def _compute_symmetry_3d(structdata, idealize, primitive, standardize, symprec,
                          angletol):
     """ create 3d geometry input for CRYSTAL17
 
@@ -329,7 +325,7 @@ def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
     :param idealize: whether to idealize the structure
     :param symprec: symmetry precision to parse to spglib
     :param angletol: angletol to parse to spglib
-    :return: (gui_string, structdata)
+    :return: (structdata, symmdata)
 
     """
     angletol = -1 if angletol is None else angletol
@@ -363,6 +359,7 @@ def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
         inequivalent_sites = cell[2].tolist()
 
     # find symmetry
+    # TODO can we get only the symmetry operators accepted by CRYSTAL?
     symm_dataset = spglib.get_symmetry_dataset(
         cell, symprec=symprec, angle_tolerance=angletol)
     if symm_dataset is None:
@@ -372,17 +369,16 @@ def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
         'number'] if symm_dataset['number'] is not None else 1
     crystal_type = get_crystal_system(sg_num, as_number=True)
 
-    # format the symmetry operations
-    num_symops = len(symm_dataset["rotations"])
-    sym_data = []
+    # format the symmetry operations (fractional to cartesian)
+    symops = []
     for rot, trans in zip(symm_dataset["rotations"],
                           symm_dataset["translations"]):
         # fractional to cartesian
         lattice_tr = np.transpose(lattice)
         lattice_tr_inv = np.linalg.inv(lattice_tr)
-        rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv))
-        trans = np.dot(trans, lattice)
-        sym_data.extend([rot[0], rot[1], rot[2], trans])
+        rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv)).tolist()
+        trans = np.dot(trans, lattice).tolist()
+        symops.append(rot[0] + rot[1] + rot[2] + trans)
 
     # find and set centering code
     # the origin_setting (aka centering code) refers to how to convert conventional to primitive
@@ -398,8 +394,6 @@ def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
 
     # from jsonextended import edict
     # edict.pprint(symm_dataset)
-    gui_str = _gui_string(3, origin_setting, crystal_type, lattice, num_symops,
-                          sym_data, atomic_numbers, ccoords, sg_num)
 
     structdata = {
         "lattice": lattice,
@@ -409,13 +403,42 @@ def _create_3d_gui_cry17(structdata, idealize, primitive, standardize, symprec,
         "equivalent": equivalent
     }
 
-    return gui_str, structdata
+    symmdata = {
+        "sgnum": sg_num,
+        "symops": symops,
+        "crystal_type": crystal_type,
+        "centring_code": origin_setting,
+    }
+
+    return structdata, symmdata
 
 
-# pylint: disable=too-many-arguments
-def _gui_string(dimensionality, origin_setting, crystal_type, lattice,
-                num_symops, sym_data, atomic_numbers, ccoords, sg_num):
-    """create string of gui file content (for CRYSTAL17)"""
+def crystal17_gui_string(structdata, symmdata):
+    """create string of gui file content (for CRYSTAL17)
+
+    :param structdata: dictionary of structure data with keys: 'pbc', 'atomic_numbers', 'ccoords', 'lattice'
+    :param symmdata:  dictionary of symmetry data with keys: 'crystal_type', 'centring_code', 'sgnum', 'symops'
+    :return:
+    """
+
+    dimensionality = len(structdata["pbc"])
+    atomic_numbers = structdata["atomic_numbers"]
+    ccoords = structdata["ccoords"]
+    lattice = structdata["lattice"]
+
+    crystal_type = symmdata["crystal_type"]
+    origin_setting = symmdata["centring_code"]
+    sg_num = symmdata["sgnum"]
+    symops = symmdata["symops"]
+
+    num_symops = len(symops)
+    sym_lines = []
+    for symop in symops:
+        sym_lines.append(symop[0:3])
+        sym_lines.append(symop[3:6])
+        sym_lines.append(symop[6:9])
+        sym_lines.append(symop[9:12])
+
     geom_str_list = []
     geom_str_list.append("{0} {1} {2}".format(dimensionality, origin_setting,
                                               crystal_type))
@@ -426,7 +449,7 @@ def _gui_string(dimensionality, origin_setting, crystal_type, lattice,
     geom_str_list.append("{0:17.9E} {1:17.9E} {2:17.9E}".format(*(
         np.round(lattice[2], 9) + 0.)))
     geom_str_list.append(str(num_symops))
-    for sym_line in sym_data:
+    for sym_line in sym_lines:
         geom_str_list.append("{0:17.9E} {1:17.9E} {2:17.9E}".format(*(
             np.round(sym_line, 9) + 0.)))
     geom_str_list.append(str(len(atomic_numbers)))
@@ -438,6 +461,40 @@ def _gui_string(dimensionality, origin_setting, crystal_type, lattice,
     geom_str_list.append("")
 
     return "\n".join(geom_str_list)
+
+
+def compute_symmetry_from_ase(atoms, settings):
+    """ modify an ase.Atoms instance and compute its symmetry, given a settings dictionary
+
+    Symmetry is restricted by atoms.tags
+
+    :param structure: the input structure
+    :type structure: ase.Atoms
+    :param settings: dictionary of settings
+    :type settings: dict
+    :return: (new Atoms instance, symmetry data dictionary)
+
+    """
+    import ase
+
+    sdata = {
+        "lattice": atoms.cell.tolist(),
+        "ccoords": atoms.positions.tolist(),
+        "atomic_numbers": atoms.get_atomic_numbers().tolist(),
+        "pbc": atoms.pbc.tolist(),
+        "equivalent": atoms.get_tags().tolist()
+    }
+
+    structdata, symmdata = compute_symmetry(sdata, settings)
+
+    newatoms = ase.Atoms(
+        cell=structdata["lattice"],
+        numbers=structdata["atomic_numbers"],
+        pbc=structdata["pbc"],
+        positions=structdata["ccoords"],
+        tags=structdata["equivalent"])
+
+    return newatoms, symmdata
 
 
 def create_gui_from_ase(atoms, settings):
@@ -462,16 +519,17 @@ def create_gui_from_ase(atoms, settings):
         "equivalent": atoms.get_tags().tolist()
     }
 
-    guistr, data = write_gui_file(sdata, settings)
+    structdata, symmdata = compute_symmetry(sdata, settings)
+    gui_str = crystal17_gui_string(structdata, symmdata)
 
     newatoms = ase.Atoms(
-        cell=data["lattice"],
-        numbers=data["atomic_numbers"],
-        pbc=data["pbc"],
-        positions=data["ccoords"],
-        tags=data["equivalent"])
+        cell=structdata["lattice"],
+        numbers=structdata["atomic_numbers"],
+        pbc=structdata["pbc"],
+        positions=structdata["ccoords"],
+        tags=structdata["equivalent"])
 
-    return guistr, newatoms
+    return gui_str, newatoms
 
 
 def create_gui_from_struct(structure, settings):
@@ -516,10 +574,11 @@ def create_gui_from_struct(structure, settings):
         "equivalent": equivalent
     }
 
-    guistr, newsdata = write_gui_file(sdata, settings)
+    newsdata, symmdata = compute_symmetry(sdata, settings)
+    gui_str = crystal17_gui_string(newsdata, symmdata)
 
     # mapping from atom number to kind name
-    return guistr, {
+    return gui_str, {
         i + 1: id_kind_map[e]
         for i, e in enumerate(newsdata["equivalent"])
     }

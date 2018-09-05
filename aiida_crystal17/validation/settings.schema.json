@@ -67,6 +67,12 @@
           "minimum": 0,
           "exclusiveMinimum": true
         },
+        "sgnum": {
+          "description": "Space group number (international)",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 230
+        },
         "operations": {
           "description": "(optional) specific operations to use (in the cartesian basis)",
           "type": [

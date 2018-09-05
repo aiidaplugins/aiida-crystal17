@@ -7,8 +7,8 @@ import os
 import aiida_crystal17.tests as tests
 import numpy as np
 import pytest
-from aiida_crystal17.parsers.geometry import read_gui_file, write_gui_file, get_centering_code, get_crystal_system, \
-    create_gui_from_ase
+from aiida_crystal17.parsers.geometry import read_gui_file, compute_symmetry, get_centering_code, get_crystal_system, \
+    create_gui_from_ase, crystal17_gui_string
 from ase.spacegroup import crystal
 from jsonextended import edict
 
@@ -23,7 +23,8 @@ def default_settings():
         "symmetry": {
             "symprec": 0.01,
             "angletol": None,
-            "operations": None
+            "operations": None,
+            "sgnum": 1,
         },
         "3d": {
             "standardize": True,
@@ -134,7 +135,8 @@ def test_write_gui_with_symops(default_settings):
 
     default_settings["symmetry"]["operations"] = symops
 
-    outstr, outsdata = write_gui_file(sdata, default_settings)
+    outsdata, symmdata = compute_symmetry(sdata, default_settings)
+    outstr = crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 1 1
   1.000000000E+00   0.000000000E+00   0.000000000E+00
@@ -162,7 +164,8 @@ def test_write_gui_without_symops(default_settings):
         "equivalent": [0]
     }
 
-    outstr, outsdata = write_gui_file(sdata, default_settings)
+    outsdata, symmdata = compute_symmetry(sdata, default_settings)
+    outstr = crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 1 6
   2.000000000E+00   0.000000000E+00   0.000000000E+00

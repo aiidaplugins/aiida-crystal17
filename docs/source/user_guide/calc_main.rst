@@ -351,14 +351,14 @@ We now proceed in setting up the structure.
 Structures consist of:
 
 - A cell with a basis vectors and whether it is periodic, for each dimension
-- ``Site`` with a cartestian coordinate and reference to a kind
+- ``Site`` with a cartesian coordinate and reference to a kind
 - ``Kind`` which details the species and composition at one or more sites
 
 The simplest way to create a structure is *via* :py:mod:`ase`:
 
 .. code:: python
 
-  from ase.spacegroup import crystal 
+  from ase.spacegroup import crystal
 
   atoms = crystal(
     symbols=[28, 8],
@@ -371,7 +371,7 @@ The simplest way to create a structure is *via* :py:mod:`ase`:
 
   structure = StructureData(ase=atoms)
 
-As default, one kind is created per atomic species 
+As default, one kind is created per atomic species
 (named as the atomic symbol):
 
 .. code:: python
@@ -385,15 +385,16 @@ We can achieve this by tagging the atoms:
 
 .. code:: python
 
-  >>> atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
-  >>> structure = StructureData(ase=atoms)
+  >>> atoms_afm = atoms.copy()
+  >>> atoms_afm.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
+  >>> structure = StructureData(ase=atoms_afm)
   >>> structure.get_site_kindnames()
   ['Ni1', 'Ni1', 'Ni2', 'Ni2', 'O', 'O', 'O', 'O']
 
 Settings
 --------
 
-Since we use **always** use the ``EXTERNAL`` keyword for geometry,
+Since we **always** use the ``EXTERNAL`` keyword for geometry,
 any manipulation to the geometry is undertaken before calling CRYSTAL
 (i.e. we delegate the responsibility for geometry away from CRYSTAL).
 Also, we may want to add atom specific inputs to the ``.d12``
@@ -424,6 +425,7 @@ The ``crystal17.main`` calculation defines a default specification:
       'spin_beta': []
     },
     'symmetry': {
+      'sgnum': 1,
       'operations': None,
       'symprec': 0.01,
       'angletol': None
@@ -442,24 +444,163 @@ The ``crystal17.main`` calculation defines a default specification:
 Properties by Kind
 ..................
 
-a
+The `kinds` lists can be populated by kind names.
+For example, for a stucture with kinds:
+``['Ni1', 'Ni1', 'Ni2', 'Ni2', 'O', 'O', 'O', 'O', 'S']``,
+if the kinds settings are:
+
+.. code:: python
+
+  {
+    'kinds': {
+        'fixed': ['O'],
+        'ghosts': ['S'],
+        'spin_alpha': ['Ni1'],
+        'spin_beta': ['Ni2']
+    }
+  }
+
+Then the ``main.d12`` would contain
+(assuming we do not create a primitive cell);
+
+::
+
+  FRAGMENT
+  8
+  1 2 3 4 5 6 7 8
+
+in the ``OPTGEOM`` block (specifying atoms free to move),
+
+::
+
+  GHOSTS
+  1
+  9
+
+In the ``BASIS SET`` block (specifying atoms which are removed,
+but their basis sets left), and
+
+::
+
+  ATOMSPIN
+  1 1 2 1 3 1 4 1 5 -1 6 -1 7 -1 8 -1
+
+In the ``HAMILTONIAN`` block (specifying initial spin state)
+
 
 Symmetry
 ........
+
+In the ``main.gui`` file,
+as well as using the dimensionality (i.e. periodic boundary conditions),
+basis vectors and atomic positions, provided by the ``structure``,
+we also need to specify the symmetry operators, and (optionally)
+the crystal system and primitive-to-crystallographic transform
+(referred to as the ``CENTRING CODE`` in ``CRYSTAL``).
+
+The first option is to provide them directly:
+
+.. code:: python
+
+  {
+    'symmetry': {
+      'sgnum': 2,
+      'operations': [
+        [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+        [-1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0]
+     ]
+    },
+    'crystal': {
+      'system': 'triclinic',
+      'transform': 1
+    }
+  }
+
+The ``operations`` are given as a flattened version of the rotation matrix,
+followed by the translation vector, in cartesian coordinates.
+
+Alternatively, if ``operations`` is left as ``None``,
+the space group and symmetry operators can be computed internally,
+*via* the `spglib <https://atztogo.github.io/spglib/>`_ library.
 
 .. important::
 
   Symmetry computations are based on atomic number **AND** kind.
 
+So, for example, taking our structure with kinds;
+
+::
+
+  ['Ni', 'Ni', 'Ni', 'Ni', 'O', 'O', 'O', 'O']
+
+.. code:: python
+
+  >>> settings = {'3d': {'idealize': False, 'primitive': False, 'standardize': False},
+  ... 'crystal': {'system': 'triclinic', 'transform': None},
+  ... 'kinds': {'fixed': [], 'ghosts': [], 'spin_alpha': [], 'spin_beta': []},
+  ... 'symmetry': {'angletol': None, 'operations': None, 'symprec': 0.01}}
+
+  >>> from aiida_crystal17.parsers.geometry import compute_symmetry_from_ase
+  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms, settings)
+  >>> len(symdata["symops"])
+  192
+  >>> symdata["sgnum"]
+  225
+
+Whereas, for the structure with multiple Ni kinds;
+
+::
+
+  ['Ni1', 'Ni1', 'Ni2', 'Ni2', 'O', 'O', 'O', 'O']
+
+.. code:: python
+
+  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms_afm, settings)
+  >>> len(symdata["symops"])
+  32
+  >>> symdata["sgnum"]
+  123
+
+Finally, CRYSTAL expects the geometry in a standardized form,
+which minimises the translational symmetry components.
+For 3d structures (2d to come), the structure can be converted to a standardized,
+and (optionally) primitive cell:
+
+.. code:: python
+
+  >>> settings = {'3d': {'idealize': False, 'primitive': True, 'standardize': True},
+  ... 'crystal': {'system': 'triclinic', 'transform': None},
+  ... 'kinds': {'fixed': [], 'ghosts': [], 'spin_alpha': [], 'spin_beta': []},
+  ... 'symmetry': {'angletol': None, 'operations': None, 'symprec': 0.01}}
+
+  >>> from aiida_crystal17.parsers.geometry import compute_symmetry_from_ase
+  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms, settings)
+  >>> new_atoms.get_chemical_formula()
+  'NiO'
+  >>> symdata["centring_code"]
+  5
+
+.. code:: python
+
+  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms_afm, settings)
+  >>> new_atoms.get_chemical_formula()
+  'Ni2O2'
+  >>> symdata["centring_code"]
+  1
+
+The other option is to ``idealize`` the structure, which
+removes distortions of the unit cell's atomic positions,
+compared to the ideal symmetry.
 
 Basis Sets
 ----------
 
 Basis sets are stored as separate :py:class:`~.BasisSetData` nodes,
-in a similar fashion to :py:class:`~aiida.orm.data.upf.UpfData`.
+in a similar fashion to :py:class:`~aiida.orm.data.upf.UpfData`
+(discussed in :ref:`this tutorial <my-ref-to-pseudo-tutorial>` ).
 They are created individually from a text file,
 which contains the content of the basis set
-and (optionally) a yaml style header section, fenced by '---':
+and (optionally) a yaml style header section, fenced by ``---``:
 
 .. code:: text
 

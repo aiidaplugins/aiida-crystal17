@@ -36,7 +36,8 @@ class CryMainCalculation(JobCalculation):
         "symmetry": {
             "symprec": 0.01,
             "angletol": None,
-            "operations": None
+            "operations": None,
+            "sgnum": 1
         },
         "kinds": {
             "spin_alpha": [],
