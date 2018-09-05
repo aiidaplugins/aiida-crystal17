@@ -16,6 +16,8 @@ from aiida_crystal17.validation import validate_dict
 
 # TODO incompatability tests e.g. using ATOMSPIN without SPIN (and spin value of SPINLOCK)
 
+# TODO look at https://gitlab.com/ase/ase/blob/master/ase/calculators/crystal.py to see if anything can be used
+
 
 def get_keys(dct, keys, default=None, raise_error=False):
     """retrieve the leaf of a key path from a dictionary

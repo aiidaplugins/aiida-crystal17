@@ -390,4 +390,5 @@ nitpick_ignore = [
     ('py:obj', 'float'),
     ('py:obj', 'bool'),
     ('py:obj', 'Mapping'),
+    ('py:obj', 'MutableMapping')
 ]
