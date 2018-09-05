@@ -4,7 +4,7 @@ Main Calculation Plugin
 
 The ``crystal17.main`` plugin is designed with a more programmatic
 input interface. It creates the input .d12 and .gui files,
-from a set of AiiDa nodes (``StructureData`` and ``ParameterData``). 
+from a set of AiiDa nodes (:py:class:`~.StructureData` and (:py:class:`~.ParameterData`). 
 
 The structure mirrors closely that of :py:mod:`aiida_quantumespresso.calculations.pw`, 
 which is discussed in `this tutorial <https://aiida-quantumespresso.readthedocs.io/en/latest/user_guide/get_started/examples/pw_tutorial.html>`_. 
@@ -139,7 +139,7 @@ Within this demonstration we will show how to use the input nodes
 can be used to create the following CRYSTAL17 input 
 (and associated external geometry):
 
-.. code:: raw
+::
 
   NiO Bulk with AFM spin
   EXTERNAL
@@ -169,6 +169,9 @@ can be used to create the following CRYSTAL17 input
   PPAN
   END
 
+In the old way, not only you had to prepare 'manually' this file, but also prepare the scheduler submission script, send everything on the cluster, etc.
+We are going instead to prepare everything in a more programmatic way.
+
 We decompose this script into:
 
 1. ``parameters`` containing aspects of the input which are independent of the geometry.
@@ -191,7 +194,7 @@ The ``parameter`` input data defines the content in the
                     'spinlock': {'SPINLOCK': (0, 15)}},
             'title': 'NiO Bulk with AFM spin'}
 
-The only mandated key is ``k_points`` (also known as ``SHRINK`` ), 
+The only mandated key is ``k_points`` (known as ``SHRINK`` in CRYSTAL17), 
 and the full range of allowed keys, and their validation, is available in the
 `inputd12.schema.json <https://github.com/chrisjsewell/aiida-crystal17/tree/master/aiida_crystal17/validation/inputd12.schema.json>`_.
 Which can be used programmatically:
