@@ -4,10 +4,16 @@ Main Calculation Plugin
 
 The ``crystal17.main`` plugin is designed with a more programmatic
 input interface. It creates the input .d12 and .gui files,
-from a set of AiiDa nodes (:py:class:`~.StructureData` and (:py:class:`~.ParameterData`). 
+from a set of AiiDa nodes (
+:py:class:`~aiida.orm.data.structure.StructureData` and 
+:py:class:`~aiida.orm.data.parameter.ParameterData`). 
 
-The structure mirrors closely that of :py:mod:`aiida_quantumespresso.calculations.pw`, 
-which is discussed in `this tutorial <https://aiida-quantumespresso.readthedocs.io/en/latest/user_guide/get_started/examples/pw_tutorial.html>`_. 
+.. note::
+
+  The structure mirrors closely that of :py:mod:`aiida_quantumespresso.calculations.pw`, 
+  which is discussed in `this tutorial <https://aiida-quantumespresso.readthedocs.io/en/latest/user_guide/get_started/examples/pw_tutorial.html>`_. 
+
+  :ref:`my-ref-to-pw-tutorial` 
 
 This chapter will show how to launch a single CRYSTAL17 calculation.
 We will look at how to run a computation *via* the terminal,
@@ -323,7 +329,69 @@ of the keys implemented thus far:
 Structure and Settings
 ----------------------
 
-The ``structure`` refers to a standard :py:class:`~.StructureData` node in AiiDa.
+The ``structure`` refers to a standard :py:class:`~aiida.orm.data.structure.StructureData` node in AiiDa.
+
+We now proceed in setting up the structure. 
+
+.. note:: Here we discuss only the main features of structures in AiiDA, needed
+    to run a Quantum ESPRESSO PW calculation.
+
+    For more detailed information, give a look to the 
+    :ref:`structure_tutorial`.
+
+There are two ways to do that in AiiDA, a first one is to use the AiiDA Structure, which we will explain in the following; the second choice is the `Atomic Simulation Environment (ASE) <http://wiki.fysik.dtu.dk/ase/>`_ which provides excellent tools to manipulate structures (the ASE Atoms object needs to be converted into an AiiDA Structure, see the note at the end of the section).
+
+We first have to load the abstract object class that describes a structure. 
+We do it in the following way: we load the DataFactory, which is a tool to load the classes by their name, and then call StructureData the abstract class that we loaded. 
+(NB: it's not yet a class instance!) 
+(If you are not familiar with the terminology of object programming, we could take `Wikipedia <http://en.wikipedia.org/wiki/Object_(computer_science)>`_ and see their short explanation: in common speech that one refers to *a* file as a class, while *the* file is the object or the class instance. In other words, the class is our definition of the object Structure, while its instance is what will be saved as an object in the database)::
+
+  from aiida.orm import DataFactory
+  StructureData = DataFactory('structure')
+
+We define the cell with a 3x3 matrix (we choose the convention where each ROW represents a lattice vector), which in this case is just a cube of size 4 Angstroms::
+
+  alat = 4. # angstrom
+  cell = [[alat, 0., 0.,],
+          [0., alat, 0.,],
+          [0., 0., alat,],
+         ]
+
+Now, we create the StructureData instance, assigning immediately the cell. 
+Then, we append to the empty crystal cell the atoms, specifying their element name and their positions::
+
+  # BaTiO3 cubic structure
+  s = StructureData(cell=cell)
+  s.append_atom(position=(0.,0.,0.),symbols='Ba')
+  s.append_atom(position=(alat/2.,alat/2.,alat/2.),symbols='Ti')
+  s.append_atom(position=(alat/2.,alat/2.,0.),symbols='O')
+  s.append_atom(position=(alat/2.,0.,alat/2.),symbols='O')
+  s.append_atom(position=(0.,alat/2.,alat/2.),symbols='O')
+
+To see more methods associated to the class StructureData, look at the :ref:`my-ref-to-structure` documentation.
+
+.. note:: When you create a node (in this case a ``StructureData`` node) as 
+  described above, you are just creating it in the computer memory, and not 
+  in the database. This is particularly useful to run tests without filling
+  the AiiDA database with garbage.
+  
+  You will see how to store all the nodes in one shot toward the end of this
+  tutorial; if, however, you want to directly store the structure in the
+  database for later use, you can just call the ``store()`` method of the Node::
+  
+    s.store()
+    
+For an extended tutorial about the creation of Structure objects,
+check :ref:`this tutorial on the AiiDA-core documentation <aiida:structure_tutorial>`.
+
+.. note:: AiiDA supports also ASE structures. Once you created your structure
+  with ASE, in an object instance called say ``ase_s``, you can
+  straightforwardly use it to create the AiiDA StructureData, as::
+
+    s = StructureData(ase=ase_s)
+
+  and then save it ``s.store()``.
+
 
 Basis Sets
 ----------
