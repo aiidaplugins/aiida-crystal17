@@ -138,8 +138,8 @@ programs (assuming the executables are available):
 
    >> verdi data structure show --format xcrysden 11
 
-Input Components Creation
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Creation and Execution Walk-through
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Within this demonstration we will show how to use the input nodes
 can be used to create the following CRYSTAL17 input 
@@ -186,11 +186,11 @@ We decompose this script into:
 3. ``settings`` defining how the geometry is to be modified and species specific data (such as spin)
 4. ``basis_sets`` defining the basis set for each atomic type
 
-Setting the Parameters
-----------------------
+Parameters
+----------
 
 The ``parameter`` input data defines the content in the
-``.d12`` input file, which is independent of the geometry.
+``.d12`` input file, that is **independent of the geometry**.
 It follows the naming convention and structure
 described in the `CRYSTAL17 Manual <http://www.crystal.unito.it/Manuals/crystal17.pdf>`_.
 
@@ -202,6 +202,11 @@ described in the `CRYSTAL17 Manual <http://www.crystal.unito.it/Manuals/crystal1
                     'single': 'UHF',
                     'spinlock': {'SPINLOCK': (0, 15)}},
             'title': 'NiO Bulk with AFM spin'}
+
+  from aiida.orm import DataFactory
+  ParameterData = DataFactory('parameter')
+
+  parameters = ParameterData(dict=params)
 
 The only mandated key is ``k_points`` (known as ``SHRINK`` in CRYSTAL17),
 and the full range of allowed keys, and their validation, is available in the
@@ -343,6 +348,109 @@ We now proceed in setting up the structure.
     :ref:`AiiDa Tutorial <structure_tutorial>` or
     :ref:`QuantumEspresso Tutorial <my-ref-to-pw-tutorial>`.
 
+Structures consist of:
+
+- A cell with a basis vectors and whether it is periodic, for each dimension
+- ``Site`` with a cartestian coordinate and reference to a kind
+- ``Kind`` which details the species and composition at one or more sites
+
+The simplest way to create a structure is *via* :py:mod:`ase`:
+
+.. code:: python
+
+  from ase.spacegroup import crystal 
+
+  atoms = crystal(
+    symbols=[28, 8],
+    basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+    spacegroup=225,
+    cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
+
+  from aiida.orm import DataFactory
+  StructureData = DataFactory('structure')
+
+  structure = StructureData(ase=atoms)
+
+As default, one kind is created per atomic species 
+(named as the atomic symbol):
+
+.. code:: python
+
+  >>> structure.get_site_kindnames()
+  ['Ni', 'Ni', 'Ni', 'Ni', 'O', 'O', 'O', 'O']
+
+However, we may want to specify more than one kind per species
+(for example to setup anti-ferromagnetic spin).
+We can achieve this by tagging the atoms:
+
+.. code:: python
+
+  >>> atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
+  >>> structure = StructureData(ase=atoms)
+  >>> structure.get_site_kindnames()
+  ['Ni1', 'Ni1', 'Ni2', 'Ni2', 'O', 'O', 'O', 'O']
+
+Settings
+--------
+
+Since we use **always** use the ``EXTERNAL`` keyword for geometry,
+any manipulation to the geometry is undertaken before calling CRYSTAL
+(i.e. we delegate the responsibility for geometry away from CRYSTAL).
+Also, we may want to add atom specific inputs to the ``.d12``
+(such as spin).
+
+The ``settings`` parameters are used to define some key aspects
+of the atomic configurations:
+
+1. Properties by ``Kind``
+2. Any pre-processing of the geometry
+3. The input symmetry operations
+
+Available parameters for the settings dictionary are defined
+(and validated by) the
+`settings.schema.json <https://github.com/chrisjsewell/aiida-crystal17/tree/master/aiida_crystal17/validation/settings.schema.json>`_.
+The ``crystal17.main`` calculation defines a default specification:
+
+.. code:: python
+
+  >>> from aiida.orm import CalculationFactory
+  >>> calc_cls = CalculationFactory('crystal17.main')
+  >>> calc_cls.default_settings
+  {
+    'kinds': {
+      'fixed': [],
+      'ghosts': [],
+      'spin_alpha': [],
+      'spin_beta': []
+    },
+    'symmetry': {
+      'operations': None,
+      'symprec': 0.01,
+      'angletol': None
+    },
+    'crystal': {
+      'system': 'triclinic',
+      'transform': None
+    },
+    '3d': {
+      'standardize': True,
+      'primitive': True,
+      'idealize': False
+    }
+  }
+
+Properties by Kind
+..................
+
+a
+
+Symmetry
+........
+
+.. important::
+
+  Symmetry computations are based on atomic number **AND** kind.
+
 
 Basis Sets
 ----------
@@ -407,4 +515,5 @@ The basis sets for a particular structure are then extracted by
 
   Unlike :ref:`aiida-quantumespresso.pw <my-ref-to-pw-tutorial>`,
   the basis sets are defined per atomic number only **NOT** per species kind.
-  This is because, using multiple basis set per atomic number is rarely used in CRYSTAL17.
+  This is because, using multiple basis sets per atomic number is rarely used in CRYSTAL17,
+  and is limited anyway to only two types per atomic number.
