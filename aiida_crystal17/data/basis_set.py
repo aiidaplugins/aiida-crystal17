@@ -22,9 +22,9 @@ def get_basissets_from_structure(structure, family_name, by_kind=True):
     structure, return a dictionary associating each element or kind name (if by_kind=True)
     with its BasisSetData object.
 
-    :raise MultipleObjectsError: if more than one Basis Set for the same element is
+    :raise aiida.common.exceptions.MultipleObjectsError: if more than one Basis Set for the same element is
        found in the group.
-    :raise NotExistent: if no Basis Set for an element in the group is
+    :raise aiida.common.exceptions.NotExistent: if no Basis Set for an element in the group is
        found in the group.
     """
     from aiida.common.exceptions import NotExistent, MultipleObjectsError

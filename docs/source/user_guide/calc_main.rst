@@ -96,11 +96,11 @@ The outputs represent:
 -  ``output_parameters`` stores a dictionary of key parameters in the
    database, for later querying.
 -  ``output_arrays`` stores keys in the database to array data stored on file
-   (such as symmetry operations and mulliken charges).
+   (such as symmetry operations and Mulliken charges).
 -  ``output_structure`` stores the final geometry from the calculation
 
-For compatibility, parameters are named 
-with the same convention as in :ref:`aiida-quantumespresso.pw <my-ref-to-pw-tutorial>` 
+For compatibility, parameters are named
+with the same convention as in :ref:`aiida-quantumespresso.pw <my-ref-to-pw-tutorial>`
 
 .. code:: shell
 
@@ -191,6 +191,8 @@ Setting the Parameters
 
 The ``parameter`` input data defines the content in the
 ``.d12`` input file, which is independent of the geometry.
+It follows the naming convention and structure
+described in the `CRYSTAL17 Manual <http://www.crystal.unito.it/Manuals/crystal17.pdf>`_.
 
 .. code-block:: python
 
@@ -201,10 +203,10 @@ The ``parameter`` input data defines the content in the
                     'spinlock': {'SPINLOCK': (0, 15)}},
             'title': 'NiO Bulk with AFM spin'}
 
-The only mandated key is ``k_points`` (known as ``SHRINK`` in CRYSTAL17), 
+The only mandated key is ``k_points`` (known as ``SHRINK`` in CRYSTAL17),
 and the full range of allowed keys, and their validation, is available in the
-`inputd12.schema.json <https://github.com/chrisjsewell/aiida-crystal17/tree/master/aiida_crystal17/validation/inputd12.schema.json>`_.
-Which can be used programmatically:
+`inputd12.schema.json <https://github.com/chrisjsewell/aiida-crystal17/tree/master/aiida_crystal17/validation/inputd12.schema.json>`_,
+which can be used programmatically:
 
 .. code:: Python
 
@@ -330,7 +332,7 @@ of the keys implemented thus far:
 Structure
 ---------
 
-The ``structure`` refers to a standard 
+The ``structure`` refers to a standard
 :py:class:`~aiida.orm.data.structure.StructureData` node in AiiDa.
 We now proceed in setting up the structure.
 
