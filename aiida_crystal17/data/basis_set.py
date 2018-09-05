@@ -401,7 +401,7 @@ class BasisSetData(Data):
     - only the actual basis data (not commented lines or the header section) will be stored as a file and hashed
 
     Example file
-    
+
     ::
 
         # an ignored comment

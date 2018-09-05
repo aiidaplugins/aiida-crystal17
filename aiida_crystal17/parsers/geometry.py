@@ -480,7 +480,7 @@ def create_gui_from_struct(structure, settings):
     Symmetry is restricted by atom kinds
 
     :param structure: the input structure
-    :type structure: StructureData
+    :type structure: aiida.orm.data.structure.StructureData
     :param settings: dictionary of settings
     :type settings: dict
     :return: content of .gui file (as string), mapping of atom id to kind
