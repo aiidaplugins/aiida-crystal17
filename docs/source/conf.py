@@ -74,7 +74,8 @@ intersphinx_mapping = {
     'aiida': ('http://aiida-core.readthedocs.io/en/latest/', None),
     'aiida_quantumespresso':
     ('http://aiida-quantumespresso.readthedocs.io/en/latest/', None),
-    "ase": ('https://wiki.fysik.dtu.dk/ase/', None)
+    "ase": ('https://wiki.fysik.dtu.dk/ase/', None),
+    "pathlib": ('https://pathlib.readthedocs.io/en/latest/', None)
 }
 
 nitpick_ignore = [('py:obj', 'module')]
