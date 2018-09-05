@@ -306,7 +306,9 @@ def parse_basis(fname):
     - the file can also start with a fenced (with ---), yaml formatted header section
         - Note keys should not contain '.'s
 
-    Example:
+    Example
+
+    ::
 
         # an ignored comment
         ---
@@ -398,7 +400,9 @@ class BasisSetData(Data):
         - Note keys should not contain '.'s
     - only the actual basis data (not commented lines or the header section) will be stored as a file and hashed
 
-    Example file:
+    Example file
+    
+    ::
 
         # an ignored comment
         ---
