@@ -250,6 +250,7 @@ def _read_basis_block(atom_props, basis_sets, lines, output_dict, schema):
                     line = _pop_line(lines)
                     basis_lines.append(line)
         basis_sets.append("\n".join(basis_lines))
+        basis_lines = []
     line = _pop_line(lines)
     while lines[0].strip() != "END":
         line = _pop_line(lines)

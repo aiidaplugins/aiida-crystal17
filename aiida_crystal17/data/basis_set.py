@@ -327,8 +327,8 @@ def validate_basis_string(instr):
 
     if len(lines) > indx + 1:
         raise ValueError(
-            "the basis set string (starting '{}') contains more than one basis set".
-            format(lines[0].strip()))
+            "the basis set string contains more than one basis set or has trailing empty lines:\n{}".
+            format(instr))
 
     return True
 

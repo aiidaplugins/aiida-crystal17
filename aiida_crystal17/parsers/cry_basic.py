@@ -119,7 +119,6 @@ class CryBasicParser(Parser):
         # TODO could also read .SCFLOG, to get scf output for each opt step
         # TODO could also read files in .optstory folder, to get (primitive) geometries (+ symmetries) for each opt step
         # Note the above files are only available for optimisation runs
-        # TODO read symmetries (for primitive cell) from main.out
         # TODO read separate energy contributions
 
         perrors = data["errors"]
