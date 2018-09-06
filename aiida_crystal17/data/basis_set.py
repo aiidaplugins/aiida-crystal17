@@ -295,6 +295,44 @@ def _parse_first_line(line, fname):
     return atomic_number, basis_type, num_shells, newline
 
 
+def validate_basis_string(instr):
+    """ validate that only one basis set is present,
+    in a recognised format
+
+    :param instr: content of basis set
+    :return: passed
+    """
+    lines = instr.strip().splitlines()
+    indx = 0
+
+    try:
+        anum, nshells = lines[indx].strip().split()  # pylint: disable=unused-variable
+        anum, nshells = int(anum), int(nshells)
+    except ValueError:
+        raise ValueError("expected 'anum nshells': {}".format(
+            lines[indx].strip()))
+    for i in range(nshells):
+        indx += 1
+        try:
+            btype, stype, nfuncs, charge, scale = lines[indx].strip().split()
+            btype, stype, nfuncs = [int(i) for i in [btype, stype, nfuncs]]
+            charge, scale = [float(i) for i in [charge, scale]]  # pylint: disable=unused-variable
+        except ValueError:
+            raise ValueError(
+                "expected 'btype, stype, nfuncs, charge, scale': {}".format(
+                    lines[indx].strip()))
+        if btype == 0:
+            for _ in range(nfuncs):
+                indx += 1
+
+    if len(lines) > indx + 1:
+        raise ValueError(
+            "the basis set string (starting '{}') contains more than one basis set".
+            format(lines[0].strip()))
+
+    return True
+
+
 def parse_basis(fname):
     """get relevant information from the basis file
 
@@ -374,6 +412,8 @@ def parse_basis(fname):
     if not content:
         raise ParsingError(
             "The basis set file contains no content: {}".format(fname))
+
+    validate_basis_string("".join(content))
 
     return meta_data, "".join(content)
 
