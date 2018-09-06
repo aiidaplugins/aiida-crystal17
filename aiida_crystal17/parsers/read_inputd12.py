@@ -109,6 +109,9 @@ def extract_data(input_string):
 
 
 def _read_hamiltonian_block(atom_props, lines, output_dict, schema):
+
+    sblock = ["properties", "scf", "properties"]
+
     while lines[0].strip() != "END":
         line = _pop_line(lines)
         if line == "DFT":
@@ -121,46 +124,38 @@ def _read_hamiltonian_block(atom_props, lines, output_dict, schema):
                 kis, kisp = line.split()
                 kis = int(kis)
                 kisp = int(kisp)
-            except:
+            except ValueError:
                 raise IOError(
                     "expecting SHRINK in form 'is isp': {}".format(line))
             output_dict["scf.k_points"] = (kis, kisp)
         elif line in get_keys(
-                schema, ["properties", "scf", "properties", "single", "enum"],
-                raise_error=True):
+                schema, sblock + ["single", "enum"], raise_error=True):
             output_dict["scf.single"] = line
         elif line in get_keys(
-                schema,
-            ["properties", "scf", "properties", "numerical", "properties"],
+                schema, sblock + ["numerical", "properties"],
                 raise_error=True).keys():
             key = line
             if get_keys(
-                    schema, [
-                        "properties", "scf", "properties", "numerical",
-                        "properties", key, "type"
-                    ],
+                    schema,
+                    sblock + ["numerical", "properties", key, "type"],
                     raise_error=True) == "boolean":
                 output_dict["scf.numerical.{}".format(key)] = True
             else:
                 line = _pop_line(lines)
                 output_dict["scf.numerical.{}".format(key)] = _split_line(line)
         elif line in get_keys(
-                schema,
-            ["properties", "scf", "properties", "post_scf", "items", "enum"],
+                schema, sblock + ["post_scf", "items", "enum"],
                 raise_error=True):
             _append_key(output_dict, "scf.post_scf", line)
         elif line in get_keys(
-                schema,
-            ["properties", "scf", "properties", "spinlock", "properties"],
+                schema, sblock + ["spinlock", "properties"],
                 raise_error=True).keys():
             key = line
             line = _pop_line(lines)
             output_dict["scf.spinlock.{}".format(key)] = _split_line(line)
         elif line in get_keys(
-                schema, [
-                    "properties", "scf", "properties", "fock_mixing", "oneOf",
-                    0, "enum"
-                ],
+                schema,
+                sblock + ["fock_mixing", "oneOf", 0, "enum"],
                 raise_error=True):
             output_dict["scf.fock_mixing"] = line
         elif line == "BROYDEN":
