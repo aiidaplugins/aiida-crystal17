@@ -85,7 +85,7 @@ def create_inputs(inpath, outpath):
     return inputs
 
 
-def _create_atoms(data, section="intial"):
+def _create_atoms(data, section="initial"):
     """create ase.Atoms from ejplugins parsed data"""
     cell_data = data[section]["primitive_cell"]
     cell_vectors = []
