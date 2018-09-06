@@ -156,3 +156,25 @@ ATOMIC_NUM2SYMBOL = {
 }
 
 ATOMIC_SYMBOL2NUM = {v: k for k, v in ATOMIC_NUM2SYMBOL.items()}
+
+
+def get_keys(dct, keys, default=None, raise_error=False):
+    """retrieve the leaf of a key path from a dictionary
+
+    :param dct: the dict to search
+    :param keys: key path
+    :param default: default value to return
+    :param raise_error: whether to raise an error if the path isn't found
+    :return:
+    """
+    subdct = dct
+    for i, key in enumerate(keys):
+        try:
+            subdct = subdct[key]
+        except (KeyError, IndexError):
+            if raise_error:
+                raise ValueError("could not find key path: {}".format(
+                    keys[0:i + 1]))
+            else:
+                return default
+    return subdct

@@ -2,6 +2,7 @@
 module to read and write CRYSTAL17 .d12 files
 """
 import six
+from aiida_crystal17.utils import get_keys
 from aiida_crystal17.validation import validate_dict
 
 # TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
@@ -17,27 +18,6 @@ from aiida_crystal17.validation import validate_dict
 # TODO incompatability tests e.g. using ATOMSPIN without SPIN (and spin value of SPINLOCK)
 
 # TODO look at https://gitlab.com/ase/ase/blob/master/ase/calculators/crystal.py to see if anything can be used
-
-
-def get_keys(dct, keys, default=None, raise_error=False):
-    """retrieve the leaf of a key path from a dictionary
-
-    :param dct: the dict to search
-    :param keys: key path
-    :param default: default value to return
-    :param raise_error: whether to raise an error if the path isn't found
-    :return:
-    """
-    subdct = dct
-    for i, key in enumerate(keys):
-        if key in subdct:
-            subdct = subdct[key]
-        elif raise_error:
-            raise ValueError("could not find key path: {}".format(
-                keys[0:i + 1]))
-        else:
-            return default
-    return subdct
 
 
 def format_value(dct, keys):
