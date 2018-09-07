@@ -132,7 +132,6 @@ def configure_computer(computer, user_email=None, authparams=None):
     authparams = {} if authparams is None else authparams
 
     if user_email is None:
-        from aiida.backends.utils import get_automatic_user
         user = get_automatic_user()
     else:
         from aiida.orm.querybuilder import QueryBuilder
