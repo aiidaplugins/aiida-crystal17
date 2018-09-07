@@ -67,7 +67,7 @@ def get_path_to_executable(executable):
     return os.path.abspath(path)
 
 
-def get_computer(name=TEST_COMPUTER, workdir=None):
+def get_computer(name=TEST_COMPUTER, workdir=None, configure=False):
     """Get local computer.
 
     Sets up local computer with 'name' or reads it from database,
@@ -75,6 +75,7 @@ def get_computer(name=TEST_COMPUTER, workdir=None):
     
     :param name: Name of local computer
     :param workdir: path to work directory (required if creating a new computer)
+    :param configure: whether to congfigure a new computer for the user email
 
     :return: The computer node 
     :rtype: :py:class:`aiida.orm.Computer` 
@@ -100,7 +101,8 @@ def get_computer(name=TEST_COMPUTER, workdir=None):
             enabled_state=True)
         computer.store()
 
-        configure_computer(computer)
+        if configure:
+            configure_computer(computer)
 
     return computer
 
@@ -141,6 +143,7 @@ def configure_computer(computer, user_email=None, authparams=None):
         if user is None:
             raise ValueError("user email not found: {}".format(user_email))
 
+    # TODO this doesn't work for aiida version 1'
     BACKEND = get_backend()
     if BACKEND == BACKEND_DJANGO:
         from aiida.backends.djsite.db.models import DbAuthInfo
@@ -160,15 +163,17 @@ def configure_computer(computer, user_email=None, authparams=None):
         from aiida.backends.sqlalchemy import get_scoped_session
 
         session = get_scoped_session()
+        # TODO on travis sqlalchemy get_scoped_session returns None
         if session is not None:
             authinfo = session.query(DbAuthInfo).filter(
                 DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
                     DbAuthInfo.aiidauser == user).first()
         else:
-            from sqlalchemy.orm import Query
-            authinfo = Query(DbAuthInfo).filter(
-                DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
-                DbAuthInfo.aiidauser == user).first()
+            authinfo = None
+            # from sqlalchemy.orm import Query
+            # authinfo = Query(DbAuthInfo).filter(
+            #     DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
+            #     DbAuthInfo.aiidauser == user).first()
 
         if authinfo is None:
             authinfo = DbAuthInfo(
