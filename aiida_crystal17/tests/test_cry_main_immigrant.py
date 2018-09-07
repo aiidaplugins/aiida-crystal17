@@ -18,7 +18,11 @@ def test_full(new_database, new_workdir):
     computer = tests.get_computer(workdir=new_workdir)
     code = tests.get_code(entry_point='crystal17.main', computer=computer)
 
-    tests.configure_computer(computer, user_email=new_database.email)
+    try:
+        from aiida.control.computer import configure_computer
+        configure_computer(computer)
+    except ImportError:
+        tests.configure_computer(computer)#, user_email=new_database.email)
 
     inpath = os.path.join(tests.TEST_DIR, "input_files",
                           'nio_sto3g_afm.crystal.d12')

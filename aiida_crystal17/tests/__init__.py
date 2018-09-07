@@ -121,6 +121,10 @@ def configure_computer(computer, user_email=None, authparams=None):
     from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
     from django.core.exceptions import ObjectDoesNotExist
     from aiida.common.exceptions import ValidationError
+
+    transport = computer.get_transport_class()
+    valid_keys = transport.get_valid_auth_params()
+
     try:
         # v0.12
         from aiida.backends.utils import get_automatic_user
@@ -143,9 +147,9 @@ def configure_computer(computer, user_email=None, authparams=None):
             raise ValueError("user email not found: {}".format(user_email))
         user = user[0]
 
-    # if we search for a uese the wrong user class is returned
-    if hasattr(user, "_dbuser"):
-        user = user._dbuser
+    # if we search for a users the wrong user class is returned
+    # if hasattr(user, "_dbuser"):
+    #     user = user._dbuser
 
     BACKEND = get_backend()
     if BACKEND == BACKEND_DJANGO:
@@ -186,7 +190,6 @@ def configure_computer(computer, user_email=None, authparams=None):
             old_authparams = authinfo.get_auth_params()
     else:
         raise Exception("Unknown backend {}".format(BACKEND))
-    transport = computer.get_transport_class()
 
     # print ("Configuring computer '{}' for the AiiDA user '{}'".format(
     #     computername, user.email))
@@ -205,8 +208,6 @@ def configure_computer(computer, user_email=None, authparams=None):
     # print "** {:66s} **".format(
     #     "  local configuration files, so they may be incorrect.")
     # print "*" * 72
-
-    valid_keys = transport.get_valid_auth_params()
 
     default_authparams = {}
     for k in valid_keys:
