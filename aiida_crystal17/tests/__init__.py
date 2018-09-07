@@ -152,10 +152,12 @@ def configure_computer(computer, user_email=None, authparams=None):
         from aiida.backends.sqlalchemy import get_scoped_session
 
         session = get_scoped_session()
-
-        authinfo = session.query(DbAuthInfo).filter(
-            DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
-                DbAuthInfo.aiidauser == user).first()
+        if session is not None:
+            authinfo = session.query(DbAuthInfo).filter(
+                DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
+                    DbAuthInfo.aiidauser == user).first()
+        else:
+            authinfo = None
         if authinfo is None:
             authinfo = DbAuthInfo(
                 dbcomputer=computer.dbcomputer, aiidauser=user)
