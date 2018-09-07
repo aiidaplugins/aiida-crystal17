@@ -4,6 +4,7 @@ Use the aiida.utils.fixtures.PluginTestCase class for convenient
 testing that does not pollute your profiles/databases.
 """
 # Helper functions for tests
+import inspect
 import os
 import stat
 import subprocess
@@ -99,9 +100,136 @@ def get_computer(name=TEST_COMPUTER, workdir=None):
             enabled_state=True)
         computer.store()
 
-        # TODO configure computer for user, see aiida_core.aiida.cmdline.commands.computer.Computer.computer_configure
+        configure_computer(computer)
 
     return computer
+
+
+def configure_computer(computer, user_email=None, authparams=None):
+    """Configure the authentication information for a given computer
+
+    adapted from:
+    aiida_core.aiida.cmdline.commands.computer.Computer.computer_configure
+
+    :param computer: the computer to authenticate against
+    :param user_email: the user email (otherwise use default)
+    :param authparams: a dictionary of additional authorisation parameters to use (in string format)
+    :return:
+    """
+    from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
+    from django.core.exceptions import ObjectDoesNotExist
+    from aiida.common.exceptions import ValidationError
+
+    authparams = {} if authparams is None else authparams
+
+    if user_email is None:
+        from aiida.backends.utils import get_automatic_user
+        user = get_automatic_user()
+    else:
+        from aiida.orm.querybuilder import QueryBuilder
+        qb = QueryBuilder()
+        qb.append(type="user", filters={'email': user_email})
+        user = qb.first()
+        if user is None:
+            raise ValueError("user email not found: {}".format(user_email))
+
+    BACKEND = get_backend()
+    if BACKEND == BACKEND_DJANGO:
+        from aiida.backends.djsite.db.models import DbAuthInfo
+
+        try:
+            authinfo = DbAuthInfo.objects.get(
+                dbcomputer=computer.dbcomputer, aiidauser=user)
+
+            old_authparams = authinfo.get_auth_params()
+        except ObjectDoesNotExist:
+            authinfo = DbAuthInfo(
+                dbcomputer=computer.dbcomputer, aiidauser=user)
+            old_authparams = {}
+
+    elif BACKEND == BACKEND_SQLA:
+        from aiida.backends.sqlalchemy.models.authinfo import DbAuthInfo
+        from aiida.backends.sqlalchemy import get_scoped_session
+
+        session = get_scoped_session()
+
+        authinfo = session.query(DbAuthInfo).filter(
+            DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
+                DbAuthInfo.aiidauser == user).first()
+        if authinfo is None:
+            authinfo = DbAuthInfo(
+                dbcomputer=computer.dbcomputer, aiidauser=user)
+            old_authparams = {}
+        else:
+            old_authparams = authinfo.get_auth_params()
+    else:
+        raise Exception("Unknown backend {}".format(BACKEND))
+    transport = computer.get_transport_class()
+
+    # print ("Configuring computer '{}' for the AiiDA user '{}'".format(
+    #     computername, user.email))
+    #
+    # print "Computer {} has transport of type {}".format(computername,
+    #                                                     computer.get_transport_type())
+
+    # from aiida.common.utils import get_configured_user_email
+    # if user.email != get_configured_user_email():
+    # print "*" * 72
+    # print "** {:66s} **".format("WARNING!")
+    # print "** {:66s} **".format(
+    #     "  You are configuring a different user.")
+    # print "** {:66s} **".format(
+    #     "  Note that the default suggestions are taken from your")
+    # print "** {:66s} **".format(
+    #     "  local configuration files, so they may be incorrect.")
+    # print "*" * 72
+
+    valid_keys = transport.get_valid_auth_params()
+
+    default_authparams = {}
+    for k in valid_keys:
+        if k in old_authparams:
+            default_authparams[k] = old_authparams.pop(k)
+            if k not in authparams:
+                authparams[k] = default_authparams[k]
+
+    # if old_authparams:
+    #     print ("WARNING: the following keys were previously in the "
+    #            "authorization parameters,")
+    #     print "but have not been recognized and have been deleted:"
+    #     print ", ".join(old_authparams.keys())
+
+    if set(authparams.keys()) != set(valid_keys):
+        raise ValueError(
+            "new_authparams should contain only the keys: {}".format(
+                valid_keys))
+
+    # convert keys from strings
+    transport_members = dict(inspect.getmembers(transport))
+    for k, txtval in authparams.items():
+
+        converter_name = '_convert_{}_fromstring'.format(k)
+        suggester_name = '_get_{}_suggestion_string'.format(k)
+        if converter_name not in transport_members:
+            raise ValueError("No {} defined in Transport {}".format(
+                converter_name, computer.get_transport_type()))
+        converter = transport_members[converter_name]
+
+        suggestion = ""
+        if k in default_authparams:
+            suggestion = default_authparams[k]
+        elif suggester_name in transport_members:
+            suggestion = transport_members[suggester_name](computer)
+
+        try:
+            authparams[k] = converter(txtval)
+        except ValidationError, err:
+            raise ValueError("error in the authparam "
+                             "{0}: {1}, suggested value: {2}".format(
+                                 k, err, suggestion))
+
+    authinfo.set_auth_params(authparams)
+    authinfo.save()
 
 
 def get_code(entry_point, computer):
