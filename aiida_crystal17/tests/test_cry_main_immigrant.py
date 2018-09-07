@@ -51,3 +51,17 @@ def test_full(new_database, new_workdir):
     with transport as open_transport:
         calc.create_input_nodes(open_transport)
         calc.prepare_for_retrieval_and_parsing(open_transport)
+
+    assert set(calc.get_inputs_dict().keys()) == set(['basis_O', 'parameters', 'settings',
+                                                      'basis_Ni', 'code', 'structure'])
+
+    # TODO block until parsed, then test outputs (requires workflow?)
+    # print(calc.get_outputs_dict())
+    # print(calc.has_finished())
+    # print(calc.has_finished_ok())
+    # print(calc.get_state())
+    # print(calc.get_scheduler_error())
+    # print(calc.get_scheduler_output())
+    # from aiida.backends.utils import get_log_messages
+    # print(get_log_messages(calc))
+
