@@ -165,7 +165,11 @@ def configure_computer(computer, user_email=None, authparams=None):
                 DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
                     DbAuthInfo.aiidauser == user).first()
         else:
-            authinfo = None
+            from sqlalchemy.orm import Query
+            authinfo = Query(DbAuthInfo).filter(
+                DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
+                DbAuthInfo.aiidauser == user).first()
+
         if authinfo is None:
             authinfo = DbAuthInfo(
                 dbcomputer=computer.dbcomputer, aiidauser=user)
