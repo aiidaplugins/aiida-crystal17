@@ -121,7 +121,6 @@ def configure_computer(computer, user_email=None, authparams=None):
     from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
     from django.core.exceptions import ObjectDoesNotExist
     from aiida.common.exceptions import ValidationError
-
     try:
         # v0.12
         from aiida.backends.utils import get_automatic_user
@@ -140,10 +139,14 @@ def configure_computer(computer, user_email=None, authparams=None):
         qb = QueryBuilder()
         qb.append(type="user", filters={'email': user_email})
         user = qb.first()
-        if user is None:
+        if not user:
             raise ValueError("user email not found: {}".format(user_email))
+        user = user[0]
 
-    # TODO this doesn't work for aiida version 1'
+    # if we search for a uese the wrong user class is returned
+    if hasattr(user, "_dbuser"):
+        user = user._dbuser
+
     BACKEND = get_backend()
     if BACKEND == BACKEND_DJANGO:
         from aiida.backends.djsite.db.models import DbAuthInfo

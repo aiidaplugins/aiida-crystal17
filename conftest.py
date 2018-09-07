@@ -18,7 +18,7 @@ def aiida_profile():
 @pytest.fixture(scope='function')
 def new_database(aiida_profile):
     """clear the database after each test"""
-    yield
+    yield aiida_profile
     aiida_profile.reset_db()
 
 
