@@ -102,15 +102,20 @@ def get_computer(name=TEST_COMPUTER, workdir=None, configure=False):
         computer.store()
 
         if configure:
-            configure_computer(computer)
+            try:
+                # aiida-core v1
+                from aiida.control.computer import configure_computer
+                configure_computer(computer)
+            except ImportError:
+                configure_computer_v012(computer)
 
     return computer
 
 
-def configure_computer(computer, user_email=None, authparams=None):
+def configure_computer_v012(computer, user_email=None, authparams=None):
     """Configure the authentication information for a given computer
 
-    adapted from:
+    adapted from aiida-core v0.12.2:
     aiida_core.aiida.cmdline.commands.computer.Computer.computer_configure
 
     :param computer: the computer to authenticate against
@@ -118,23 +123,16 @@ def configure_computer(computer, user_email=None, authparams=None):
     :param authparams: a dictionary of additional authorisation parameters to use (in string format)
     :return:
     """
-    from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
-    from django.core.exceptions import ObjectDoesNotExist
     from aiida.common.exceptions import ValidationError
-
-    transport = computer.get_transport_class()
-    valid_keys = transport.get_valid_auth_params()
-
-    try:
-        # v0.12
-        from aiida.backends.utils import get_automatic_user
-    except ImportError:
-        # v1
-        from aiida.orm.backend import construct_backend
-        backend = construct_backend()
-        get_automatic_user = backend.users.get_automatic_user
+    from aiida.backends.utils import get_automatic_user
+    # aiida-core v1
+    # from aiida.orm.backend import construct_backend
+    # backend = construct_backend()
+    # get_automatic_user = backend.users.get_automatic_user
 
     authparams = {} if authparams is None else authparams
+    transport = computer.get_transport_class()
+    valid_keys = transport.get_valid_auth_params()
 
     if user_email is None:
         user = get_automatic_user()
@@ -145,51 +143,9 @@ def configure_computer(computer, user_email=None, authparams=None):
         user = qb.first()
         if not user:
             raise ValueError("user email not found: {}".format(user_email))
-        user = user[0]
+        user = user[0]._dbuser  # for Django, the wrong user class is returned
 
-    # if we search for a users the wrong user class is returned
-    # if hasattr(user, "_dbuser"):
-    #     user = user._dbuser
-
-    BACKEND = get_backend()
-    if BACKEND == BACKEND_DJANGO:
-        from aiida.backends.djsite.db.models import DbAuthInfo
-
-        try:
-            authinfo = DbAuthInfo.objects.get(
-                dbcomputer=computer.dbcomputer, aiidauser=user)
-
-            old_authparams = authinfo.get_auth_params()
-        except ObjectDoesNotExist:
-            authinfo = DbAuthInfo(
-                dbcomputer=computer.dbcomputer, aiidauser=user)
-            old_authparams = {}
-
-    elif BACKEND == BACKEND_SQLA:
-        from aiida.backends.sqlalchemy.models.authinfo import DbAuthInfo
-        from aiida.backends.sqlalchemy import get_scoped_session
-
-        session = get_scoped_session()
-        # TODO on travis sqlalchemy get_scoped_session returns None
-        if session is not None:
-            authinfo = session.query(DbAuthInfo).filter(
-                DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
-                    DbAuthInfo.aiidauser == user).first()
-        else:
-            authinfo = None
-            # from sqlalchemy.orm import Query
-            # authinfo = Query(DbAuthInfo).filter(
-            #     DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
-            #     DbAuthInfo.aiidauser == user).first()
-
-        if authinfo is None:
-            authinfo = DbAuthInfo(
-                dbcomputer=computer.dbcomputer, aiidauser=user)
-            old_authparams = {}
-        else:
-            old_authparams = authinfo.get_auth_params()
-    else:
-        raise Exception("Unknown backend {}".format(BACKEND))
+    authinfo, old_authparams = _get_auth_info(computer, user)
 
     # print ("Configuring computer '{}' for the AiiDA user '{}'".format(
     #     computername, user.email))
@@ -216,11 +172,11 @@ def configure_computer(computer, user_email=None, authparams=None):
             if k not in authparams:
                 authparams[k] = default_authparams[k]
 
-    # if old_authparams:
-    #     print ("WARNING: the following keys were previously in the "
-    #            "authorization parameters,")
-    #     print "but have not been recognized and have been deleted:"
-    #     print ", ".join(old_authparams.keys())
+    if old_authparams:
+        print("WARNING: the following keys were previously in the "
+              "authorization parameters, but have not been recognized "
+              "and have been deleted: {}".format(", ".join(
+                  old_authparams.keys())))
 
     if set(authparams.keys()) != set(valid_keys):
         raise ValueError(
@@ -253,6 +209,46 @@ def configure_computer(computer, user_email=None, authparams=None):
 
     authinfo.set_auth_params(authparams)
     authinfo.save()
+
+
+def _get_auth_info(computer, user):
+    from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
+    from django.core.exceptions import ObjectDoesNotExist
+
+    BACKEND = get_backend()
+    if BACKEND == BACKEND_DJANGO:
+        from aiida.backends.djsite.db.models import DbAuthInfo
+
+        try:
+            authinfo = DbAuthInfo.objects.get(
+                dbcomputer=computer.dbcomputer, aiidauser=user)
+
+            old_authparams = authinfo.get_auth_params()
+        except ObjectDoesNotExist:
+            authinfo = DbAuthInfo(
+                dbcomputer=computer.dbcomputer, aiidauser=user)
+            old_authparams = {}
+
+    elif BACKEND == BACKEND_SQLA:
+        from aiida.backends.sqlalchemy.models.authinfo import DbAuthInfo
+        from aiida.backends.sqlalchemy import get_scoped_session
+
+        session = get_scoped_session()
+        # TODO sqlalchemy get_scoped_session returns None
+        authinfo = session.query(DbAuthInfo).filter(
+            DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
+                DbAuthInfo.aiidauser == user).first()
+
+        if authinfo is None:
+            authinfo = DbAuthInfo(
+                dbcomputer=computer.dbcomputer, aiidauser=user)
+            old_authparams = {}
+        else:
+            old_authparams = authinfo.get_auth_params()
+    else:
+        raise Exception("Unknown backend {}".format(BACKEND))
+
+    return authinfo, old_authparams
 
 
 def get_code(entry_point, computer):

@@ -1,5 +1,6 @@
 import os
 import shutil
+import pytest
 import aiida_crystal17.tests as tests
 
 
@@ -12,17 +13,12 @@ def get_main_code(workdir):
     return code
 
 
+@pytest.mark.master_sqlalchemy_fail
 def test_full(new_database, new_workdir):
     from aiida_crystal17.calculations.cry_main_immigrant import CryMainImmigrantCalculation
 
-    computer = tests.get_computer(workdir=new_workdir)
+    computer = tests.get_computer(workdir=new_workdir, configure=True)
     code = tests.get_code(entry_point='crystal17.main', computer=computer)
-
-    try:
-        from aiida.control.computer import configure_computer
-        configure_computer(computer)
-    except ImportError:
-        tests.configure_computer(computer)#, user_email=new_database.email)
 
     inpath = os.path.join(tests.TEST_DIR, "input_files",
                           'nio_sto3g_afm.crystal.d12')
