@@ -120,6 +120,15 @@ def configure_computer(computer, user_email=None, authparams=None):
     from django.core.exceptions import ObjectDoesNotExist
     from aiida.common.exceptions import ValidationError
 
+    try:
+        # v0.12
+        from aiida.backends.utils import get_automatic_user
+    except ImportError:
+        # v1
+        from aiida.orm.backend import construct_backend
+        backend = construct_backend()
+        get_automatic_user = backend.users.get_automatic_user
+
     authparams = {} if authparams is None else authparams
 
     if user_email is None:
