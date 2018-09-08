@@ -19,7 +19,7 @@ def get_main_code(workdir):
     return code
 
 
-@pytest.mark.develop_fail
+@pytest.mark.timeout(30)
 def test_example(new_database, new_workdir):
 
     from aiida.orm import DataFactory

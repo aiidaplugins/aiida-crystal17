@@ -47,7 +47,6 @@
             "coverage",
             "pytest-cov",
             "pytest-timeout",
-            "pytest-tornado",
             "jsonextended"
         ],
         "pre-commit": [

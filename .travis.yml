@@ -6,7 +6,7 @@ cache: pip
 
 services:
 - postgresql
-- rabbitmq
+- rabbitmq  # required for aiida >= 1.0
 
 addons:
   postgresql: "9.5"

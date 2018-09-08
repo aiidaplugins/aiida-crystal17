@@ -84,9 +84,9 @@ def migrate_as_main(input_path, output_path, resources=None):
             self.calc._updatable_attributes = tuple(
                 list(self.calc._updatable_attributes) +
                 ["jobresource_params", "parser"])
-            self.calc._set_attr("state", calc_states.FINISHED)
-            self.calc._set_attr("jobresource_params", resources)
-            self.calc._set_attr("parser", parser_cls.__name__)
+            self.calc._set_attr("state", calc_states.FINISHED, stored_check=False)
+            self.calc._set_attr("jobresource_params", resources, stored_check=False)
+            self.calc._set_attr("parser", parser_cls.__name__, stored_check=False)
 
     try:
         # aiida version 1
