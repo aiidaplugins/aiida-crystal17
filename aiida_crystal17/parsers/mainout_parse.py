@@ -9,7 +9,6 @@ import ejplugins
 from ejplugins.crystal import CrystalOutputPlugin
 
 from aiida.parsers.exceptions import OutputParsingError
-from aiida.orm import DataFactory
 
 from aiida_crystal17 import __version__ as pkg_version
 
@@ -24,7 +23,7 @@ def parse_mainout(abs_path,
     :param abs_path: absolute path of stdout file
     :param parser_class: a string denoting the parser class
     :param parser_opts: dictionary of parser settings
-    :param atomid_kind_map: a mapping of atom ids to aiida.orm.data.structure.Kind instances
+    :param atomid_kind_map: a mapping of atom ids to aiida.orm.data.structure.Kind instances (or raw dict)
 
     :return param_dict: ParameterData with parsed parameters
     :return array_data: None or ArryayData with parsed arrays
@@ -32,6 +31,7 @@ def parse_mainout(abs_path,
     :return psuccess: a boolean that is False in case of failed calculations
     :return perrors: a list of errors
     """
+    from aiida.orm import DataFactory
     # TODO do we need to use settings for anything, or remove?
     parser_opts = {} if parser_opts is None else parser_opts
 
@@ -39,7 +39,6 @@ def parse_mainout(abs_path,
     param_data = {"parser_warnings": []}
     array_dict = {}
 
-    # TODO manage exception
     cryparse = CrystalOutputPlugin()
     if not os.path.exists(abs_path):
         raise OutputParsingError(
@@ -159,9 +158,10 @@ def create_structure(structdict, atomid_kind_map=None):
     """ create a StructureData from a dictionary and mapping
 
     :param structdict: dict containing 'symbols', 'ccoords', 'pbc', 'cell_vectors'
-    :param atomid_kind_map: dict
+    :param atomid_kind_map: mapping of atom ids to Kind (or raw dict of kind)
     :return:
     """
+    from aiida.orm import DataFactory
     StructureData = DataFactory('structure')
     struct = StructureData(cell=structdict['cell_vectors'])
     struct.set_pbc(structdict["pbc"])
@@ -175,7 +175,16 @@ def create_structure(structdict, atomid_kind_map=None):
     else:
         from aiida.orm.data.structure import Site, Kind
         for i, ccoord in enumerate(structdict['ccoords']):
-            kind = Kind(raw=atomid_kind_map[str(i + 1)])
+            if i + 1 in atomid_kind_map:
+                kind = atomid_kind_map[i + 1]
+            elif str(i + 1) in atomid_kind_map:
+                kind = atomid_kind_map[str(i + 1)]
+            else:
+                raise KeyError(
+                    "could not find atom with id {} in map with ids: {}".
+                    format(i + 1, list(atomid_kind_map.keys())))
+            if not isinstance(kind, Kind):
+                kind = Kind(raw=kind)
             if kind.name not in struct.get_site_kindnames():
                 struct.append_kind(kind)
             struct.append_site(Site(position=ccoord, kind_name=kind.name))

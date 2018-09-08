@@ -118,7 +118,7 @@ class CryMainCalculation(JobCalculation):
             get_basissets_from_structure(
                 structure, basis_family, by_kind=False)
 
-        return ParameterData(dict=param_dict), ParameterData(dict=settings)
+        return ParameterData(dict=param_dict), ParameterData(dict=setting_dict)
 
     @classmethod
     def _get_linkname_basisset_prefix(cls):
@@ -128,7 +128,7 @@ class CryMainCalculation(JobCalculation):
         return "basis_"
 
     @classmethod
-    def _get_linkname_basisset(cls, element):
+    def get_linkname_basisset(cls, element):
         """
         The name of the link used for the basis set for atomic element 'element'.
         It appends the basis name to the basisset_prefix, as returned by the
@@ -192,7 +192,7 @@ class CryMainCalculation(JobCalculation):
                 'additional_parameter':
                 "element",
                 'linkname':
-                cls._get_linkname_basisset,
+                cls.get_linkname_basisset,
                 'docstring':
                 ("Use a node for the basis set of one of "
                  "the elements in the structure. You have to pass "

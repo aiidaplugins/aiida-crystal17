@@ -5,6 +5,7 @@ import os
 import tempfile
 
 import ase
+from aiida.parsers.exceptions import OutputParsingError
 from aiida_crystal17.parsers.inputd12_read import extract_data
 from ejplugins import CrystalOutputPlugin
 
@@ -18,7 +19,7 @@ def create_inputs(inpath, outpath):
 
     :param inpath: path to .d12 file
     :param outpath: path to .out file
-    :return: dictionary of inputs
+    :return: dictionary of inputs, with keys 'structure', 'parameters', 'settings', 'structure', 'basis'
     """
     from aiida.orm import DataFactory, CalculationFactory
     calc_cls = CalculationFactory('crystal17.main')
@@ -33,8 +34,15 @@ def create_inputs(inpath, outpath):
     output_dict, basis_sets, atom_props = extract_data(d12content)
 
     cryparse = CrystalOutputPlugin()
+    if not os.path.exists(outpath):
+        raise OutputParsingError(
+            "The raw data file does not exist: {}".format(outpath))
     with open(outpath) as f:
-        data = cryparse.read_file(f, log_warnings=False)
+        try:
+            data = cryparse.read_file(f, log_warnings=False)
+        except IOError as err:
+            raise OutputParsingError(
+                "Error in CRYSTAL 17 run output: {}".format(err))
 
     # we retrieve the initial primitive geometry and symmetry
     atoms = _create_atoms(data)

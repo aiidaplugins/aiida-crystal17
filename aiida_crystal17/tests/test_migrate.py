@@ -1,10 +1,10 @@
 import os
+
 import aiida_crystal17.tests as tests
 from aiida_crystal17.parsers.migrate import create_inputs
 
 
 def test_create_inputs(new_database):
-
     inpath = os.path.join(tests.TEST_DIR, "input_files",
                           'nio_sto3g_afm.crystal.d12')
     outpath = os.path.join(tests.TEST_DIR, "output_files",
@@ -35,9 +35,15 @@ def test_create_inputs(new_database):
     assert inputs["parameters"].get_dict() == expected_params
 
     expected_settings = {
+        'crystal': {
+            'system': 'triclinic',
+            'transform': None
+        },
         'kinds': {
+            'ghosts': [],
             'spin_alpha': ['Ni'],
-            'spin_beta': ['Ni1']
+            'spin_beta': ['Ni1'],
+            'fixed': []
         },
         'symmetry': {
             'operations':
@@ -56,7 +62,19 @@ def test_create_inputs(new_database):
                  -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0
              ], [0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0], [
                  1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0
-             ], [0.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]]
+             ], [0.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+                 0.0]],
+            'angletol':
+            None,
+            'sgnum':
+            1,
+            'symprec':
+            0.01
+        },
+        '3d': {
+            'primitive': True,
+            'standardize': True,
+            'idealize': False
         }
     }
 

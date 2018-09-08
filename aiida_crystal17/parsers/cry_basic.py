@@ -51,14 +51,16 @@ class CryBasicParser(Parser):
         """
         return 'parser_options'
 
-    def get_linkname_outstructure(self):
+    @classmethod
+    def get_linkname_outstructure(cls):
         """
         Returns the name of the link to the output_structure
         Node exists if positions or cell changed.
         """
         return 'output_structure'
 
-    def get_linkname_outarrays(self):
+    @classmethod
+    def get_linkname_outarrays(cls):
         """
         Returns the name of the link to the output_structure
         Node exists if positions or cell changed.
