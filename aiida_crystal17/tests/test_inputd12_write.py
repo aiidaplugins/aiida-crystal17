@@ -1,4 +1,4 @@
-from aiida_crystal17.parsers.inputd12 import write_input
+from aiida_crystal17.parsers.inputd12_write import write_input
 
 
 def test_input_full():

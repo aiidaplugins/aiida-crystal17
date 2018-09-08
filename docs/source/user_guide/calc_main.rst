@@ -240,7 +240,7 @@ This dictionary is used to create the outline of the .d12 file:
 
 .. code:: Python
 
-  >>> from aiida_crystal17.parsers.inputd12 import write_input
+  >>> from aiida_crystal17.parsers.inputd12_write import write_input
   >>> write_input(params, ["<basis sets>"])
   NiO Bulk with AFM spin
   EXTERNAL

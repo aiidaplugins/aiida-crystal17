@@ -13,7 +13,7 @@ from aiida.orm.calculation.job import JobCalculation
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
 from aiida_crystal17.parsers.geometry import create_gui_from_struct
-from aiida_crystal17.parsers.inputd12 import write_input
+from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
 from jsonextended import edict
 

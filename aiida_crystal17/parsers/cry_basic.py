@@ -1,21 +1,12 @@
 """
 A parser to read output from a standard CRYSTAL17 run
 """
-import os
-
 from aiida.parsers.parser import Parser
 from aiida.parsers.exceptions import OutputParsingError
 from aiida.common.datastructures import calc_states
 from aiida.orm import CalculationFactory
-from aiida.orm import DataFactory
 
-# TODO remove dependancy on ejplugins?
-import ejplugins
-from ejplugins.crystal import CrystalOutputPlugin
-import numpy as np
-from ase import Atoms
-
-from aiida_crystal17 import __version__ as pkg_version
+from aiida_crystal17.parsers.mainout_parse import parse_mainout
 
 
 class CryBasicParser(Parser):
@@ -74,152 +65,6 @@ class CryBasicParser(Parser):
         """
         return 'output_arrays'
 
-    # pylint: disable=too-many-locals,too-many-statements
-    def parse_mainout(self, abs_path, parser_opts=None):
-        """ parse the main output file to the required nodes
-
-        :param abs_path: absolute path of stdout file
-        :param parser_opts: dictionary of parser settings
-
-        :return param_dict: a dictionary with parsed parameters
-        :return array_data: a dictionary with parser data to be held as arrays
-        :return struct_dict: a representation of the output structure
-        :return psuccess: a boolean that is False in case of failed calculations
-        :return perrors: a list of errors
-        """
-        self.logger.info("parsing main out file")
-
-        # TODO do we need to use settings for anything, or remove?
-
-        parser_opts = {} if parser_opts is None else parser_opts
-
-        psuccess = True
-        param_data = {"parser_warnings": []}
-        array_data = {}
-
-        # TODO manage exception
-        cryparse = CrystalOutputPlugin()
-        if not os.path.exists(abs_path):
-            raise OutputParsingError(
-                "The raw data file does not exist: {}".format(abs_path))
-        with open(abs_path) as f:
-            try:
-                data = cryparse.read_file(f, log_warnings=False)
-            except IOError as err:
-                error_str = "Error in CRYSTAL 17 run output: {}".format(err)
-                param_data["parser_warnings"].append(error_str)
-                return param_data, psuccess, [error_str]
-
-        # data contains the top-level keys:
-        # "warnings" (list), "errors" (list), "meta" (dict), "creator" (dict),
-        # "initial" (None or dict), "optimisation" (None or dict), "final" (dict)
-        # "mulliken" (optional dict)
-
-        # TODO could also read .gui file for definitive final (primitive) geometry, with symmetries
-        # TODO could also read .SCFLOG, to get scf output for each opt step
-        # TODO could also read files in .optstory folder, to get (primitive) geometries (+ symmetries) for each opt step
-        # Note the above files are only available for optimisation runs
-        # TODO read separate energy contributions
-
-        perrors = data["errors"]
-        pwarnings = data["warnings"]
-        if perrors:
-            psuccess = False
-        param_data["errors"] = perrors
-        # aiida-quantumespresso only has warnings
-        param_data["warnings"] = perrors + pwarnings
-
-        # get meta data
-        meta_data = data.pop("meta")
-        if "elapsed_time" in meta_data:
-            h, m, s = meta_data["elapsed_time"].split(':')
-            param_data[
-                "wall_time_seconds"] = int(h) * 3600 + int(m) * 60 + int(s)
-
-        # get initial data
-        initial_data = data.pop("initial")
-        initial_data = {} if not initial_data else initial_data
-        for name, val in initial_data.get("calculation", {}).items():
-            param_data["calculation_{}".format(name)] = val
-        init_scf_data = initial_data.get("scf", [])
-        param_data["scf_iterations"] = len(init_scf_data)
-        # TODO create TrajectoryData from init_scf_data data
-
-        # optimisation trajectory data
-        opt_data = data.pop("optimisation")
-        if opt_data:
-            param_data["opt_iterations"] = len(
-                opt_data) + 1  # the first optimisation step is the initial scf
-        # TODO create TrajectoryData from optimisation data
-
-        final_data = data.pop("final")
-        energy = final_data["energy"]["total_corrected"]
-        param_data["energy"] = energy["magnitude"]
-        param_data["energy_units"] = energy["units"]
-
-        # create a StructureData object of final cell
-        cell_data = final_data["primitive_cell"]
-        # TODO read from .gui file and/or check consistency
-
-        # cell_params = []
-        # for n in "a b c alpha beta gamma".split():
-        #     assert cell_data["cell_parameters"][n]["units"] in ["angstrom", "degrees"]
-        #     cell_params.append(cell_data["cell_parameters"][n]["magnitude"] )
-        # fcoords = cell_data["fcoords"]
-
-        # more precise to use cell vectors and ccoords (correct centering for symmetry)
-        cell_vectors = []
-        for n in "a b c".split():
-            assert cell_data["cell_vectors"][n]["units"] == "angstrom"
-            cell_vectors.append(cell_data["cell_vectors"][n]["magnitude"])
-        ccoords = cell_data["ccoords"]["magnitude"]
-
-        struct_data = {
-            "cell_vectors": cell_vectors,
-            "pbc": cell_data["pbc"],
-            "symbols": cell_data["symbols"],
-            "ccoords": ccoords
-        }
-
-        param_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
-        param_data["number_of_assymetric"] = sum(cell_data["assymetric"])
-
-        atoms = Atoms(
-            numbers=cell_data["atomic_numbers"],
-            positions=ccoords,
-            pbc=cell_data["pbc"],
-            cell=cell_vectors)
-        param_data["volume"] = atoms.get_volume()
-
-        if "primitive_symmops" in final_data:
-            symm_data = final_data["primitive_symmops"]
-            param_data["number_of_symmops"] = len(symm_data)
-            array_data["primitive_symmops"] = symm_data
-
-        if data.get("mulliken", False):
-            if "alpha+beta_electrons" in data["mulliken"]:
-                electrons = data["mulliken"]["alpha+beta_electrons"]["charges"]
-                anum = data["mulliken"]["alpha+beta_electrons"][
-                    "atomic_numbers"]
-                array_data["mulliken_electrons"] = electrons
-                array_data["mulliken_charges"] = [
-                    a - e for a, e in zip(anum, electrons)
-                ]
-            if "alpha-beta_electrons" in data["mulliken"]:
-                param_data["mulliken_spins"] = data["mulliken"][
-                    "alpha-beta_electrons"]["charges"]
-                param_data["mulliken_spin_total"] = sum(
-                    param_data["mulliken_spins"])
-
-        # TODO only save StructureData if cell has changed?
-
-        # add the version and class of parser
-        param_data["parser_version"] = str(pkg_version)
-        param_data["parser_class"] = str(self.__class__.__name__)
-        param_data["ejplugins_version"] = str(ejplugins.__version__)
-
-        return param_data, array_data, struct_data, psuccess, perrors
-
     # pylint: disable=too-many-locals
     def parse_with_retrieved(self, retrieved):
         """
@@ -273,13 +118,16 @@ class CryBasicParser(Parser):
                 format(mainout_file))
             return False, ()
 
-        # store the stdout file as a file node
-        # node = DataFactory("singlefile")(file=out_folder.get_abs_path(stdout_file))
-        # node_list.append(("output_stdout", node))
+        # we want to reuse the kinds from the input structure, if available
+        atomid_kind_map = self._calc.get_extra("atomid_kind_map", None)  # pylint: disable=protected-access
 
         # parse the stdout file and add nodes
-        paramdict, arraydict, structdict, psuccess, perrors = self.parse_mainout(
-            out_folder.get_abs_path(mainout_file), parser_opts)
+        self.logger.info("parsing main out file")
+        paramdata, arraydata, structure, psuccess, perrors = parse_mainout(
+            out_folder.get_abs_path(mainout_file),
+            self.__class__.__name__,
+            parser_opts=parser_opts,
+            atomid_kind_map=atomid_kind_map)
 
         if not psuccess:
             successful = False
@@ -289,35 +137,10 @@ class CryBasicParser(Parser):
                 "the parser raised the following errors:\n{}".format(
                     "\n\t".join(perrors)))
 
-        params = DataFactory("parameter")(dict=paramdict)
-        node_list.append((self.get_linkname_outparams(), params))
-
-        if arraydict:
-            arraydata = DataFactory("array")()
-            for name, array in arraydict.items():
-                arraydata.set_array(name, np.array(array))
+        node_list.append((self.get_linkname_outparams(), paramdata))
+        if arraydata:
             node_list.append((self.get_linkname_outarrays(), arraydata))
-
-        StructureData = DataFactory('structure')
-        struct = StructureData(cell=structdict['cell_vectors'])
-        struct.set_pbc(structdict["pbc"])
-
-        # we want to reuse the kinds from the input structure, if available
-        atomid_kind_map = self._calc.get_extra("atomid_kind_map", None)
-        if atomid_kind_map is None:  # pylint: disable=protected-access
-            self.logger.warning(
-                "no atom id to kind map available, creating new kinds")
-            for symbol, ccoord in zip(structdict['symbols'],
-                                      structdict['ccoords']):
-                struct.append_atom(position=ccoord, symbols=symbol)
-        else:
-            from aiida.orm.data.structure import Site, Kind
-            for i, ccoord in enumerate(structdict['ccoords']):
-                kind = Kind(raw=atomid_kind_map[str(i + 1)])
-                if kind.name not in struct.get_site_kindnames():
-                    struct.append_kind(kind)
-                struct.append_site(Site(position=ccoord, kind_name=kind.name))
-
-        node_list.append((self.get_linkname_outstructure(), struct))
+        if structure:
+            node_list.append((self.get_linkname_outstructure(), structure))
 
         return successful, node_list

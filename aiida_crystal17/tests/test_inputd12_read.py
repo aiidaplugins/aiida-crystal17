@@ -1,7 +1,7 @@
 import os
 import pytest
 import aiida_crystal17.tests as tests
-from aiida_crystal17.parsers.read_inputd12 import extract_data
+from aiida_crystal17.parsers.inputd12_read import extract_data
 from jsonextended import edict
 
 

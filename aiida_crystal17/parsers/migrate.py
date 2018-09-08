@@ -5,7 +5,7 @@ import os
 import tempfile
 
 import ase
-from aiida_crystal17.parsers.read_inputd12 import extract_data
+from aiida_crystal17.parsers.inputd12_read import extract_data
 from ejplugins import CrystalOutputPlugin
 
 
