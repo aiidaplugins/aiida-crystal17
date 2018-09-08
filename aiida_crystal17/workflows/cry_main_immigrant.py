@@ -4,7 +4,7 @@ from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 
 from aiida.parsers.exceptions import ParsingError
-from aiida.common.datastructures import calc_states
+# from aiida.common.datastructures import calc_states
 
 
 # pylint: disable=too-many-locals
