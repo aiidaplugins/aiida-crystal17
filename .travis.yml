@@ -6,6 +6,7 @@ cache: pip
 
 services:
 - postgresql
+- rabbitmq
 
 addons:
   postgresql: "9.5"
