@@ -46,6 +46,7 @@
             "wheel>=0.31",
             "coverage",
             "pytest-cov",
+            "pytest-timeout",
             "jsonextended"
         ],
         "pre-commit": [
