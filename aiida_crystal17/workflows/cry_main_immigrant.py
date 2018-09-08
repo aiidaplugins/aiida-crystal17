@@ -80,13 +80,13 @@ def migrate_as_main(input_path, output_path, resources=None):
             for name, data in outputs_dict.items():
                 self.out(name, data)
 
-            # TODO is there a better (more formal) way to set attributes of a WorkCalculation
-            self.calc._updatable_attributes = tuple(
-                list(self.calc._updatable_attributes) +
-                ["jobresource_params", "parser"])
-            self.calc._set_attr("state", calc_states.FINISHED, stored_check=False)
-            self.calc._set_attr("jobresource_params", resources, stored_check=False)
-            self.calc._set_attr("parser", parser_cls.__name__, stored_check=False)
+            # TODO how to to set attributes of a WorkCalculation?
+            # self.calc._updatable_attributes = tuple(
+            #     list(self.calc._updatable_attributes) +
+            #     ["jobresource_params", "parser"])
+            # self.calc._set_attr("state", calc_states.FINISHED, stored_check=False)
+            # self.calc._set_attr("jobresource_params", resources, stored_check=False)
+            # self.calc._set_attr("parser", parser_cls.__name__, stored_check=False)
 
     try:
         # aiida version 1
