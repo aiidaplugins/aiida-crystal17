@@ -1,5 +1,5 @@
 """
-module to read and write CRYSTAL17 .d12 files
+module to write CRYSTAL17 .d12 files
 """
 import six
 from aiida_crystal17.utils import get_keys

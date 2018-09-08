@@ -1,5 +1,5 @@
 """
-read main.d12, for immigration
+module for reading main.d12 (for immigration)
 """
 import numpy as np
 

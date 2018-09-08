@@ -1,7 +1,7 @@
-aiida_crystal17.parsers.mainout_parse module
-============================================
+aiida_crystal17.parsers.inputd12_read module
+=============================================
 
-.. automodule:: aiida_crystal17.parsers.mainout_parse
+.. automodule:: aiida_crystal17.parsers.inputd12_read
     :members:
     :undoc-members:
     :show-inheritance:
