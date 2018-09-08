@@ -3,8 +3,8 @@ import aiida_crystal17.tests as tests
 import pytest
 
 
-@pytest.mark.timeout(60)
-def test_full(new_database):
+@pytest.mark.timeout(30)
+def test_full(new_database, io_loop):
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
     from aiida.common.datastructures import calc_states
 
