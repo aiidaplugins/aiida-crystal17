@@ -44,7 +44,7 @@ def migrate_as_main(work_dir,
     will create a link (via a workcalculation) from the CifNode to the input StructureData
 
     :raise IOError: if the work_dir or files do not exist
-    :raises aiida.parsers.exceptions.ParsingError: if the input parsing fails
+    :raises aiida.common.exceptions.ParsingError: if the input parsing fails
     :raises aiida.parsers.exceptions.OutputParsingError: if the output parsing fails
 
     :return: the calculation node
