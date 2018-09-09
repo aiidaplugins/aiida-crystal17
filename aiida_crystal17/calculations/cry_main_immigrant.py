@@ -190,7 +190,7 @@ class CryMainImmigrantCalculation(CryMainCalculation):
 
         :param open_transport: An open instance of the transport class of the
             calculation's computer. See the tutorial for more information.
-        :type open_transport: aiida.transport.plugins.local.LocalTransport
+            aiida.transport.plugins.local.LocalTransport
             or aiida.transport.plugins.ssh.SshTransport
 
         The next time the daemon updates the status of calculations, it will
