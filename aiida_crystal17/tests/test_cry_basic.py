@@ -120,6 +120,46 @@ def test_process_with_external(new_database, new_workdir):
         check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
 
 
+@pytest.mark.timeout(30)
+@pytest.mark.process_execution
+def test_full_run(new_database, new_workdir):
+    """Test running a calculation"""
+    from aiida.orm.data.singlefile import SinglefileData
+
+    # get code
+    code = get_basic_code(new_workdir)
+
+    # Prepare input parameters
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_scf.crystal.d12'))
+
+    # set up calculation
+    calc = code.new_calc()
+
+    inputs_dict = {
+        "_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
+                    "withmpi": False,
+                    "max_wallclock_seconds": 30},
+        "input_file": infile,
+        "code": code
+    }
+
+    process = calc.process()
+
+    try:
+        from aiida.work.launch import run_get_node
+        _, calcnode = run_get_node(process, **inputs_dict)
+    except ImportError:
+        from aiida.work.run import run
+        # output, pid = run(process, _return_pid=True, **inputs_dict)
+        new_process = process.new_instance(inputs=inputs_dict)
+        new_process.run_until_complete()
+        calcnode = new_process.calc
+
+    print(calcnode)
+
+
 def test_parser_scf(new_database, new_workdir):
     """ Test the parser
 
