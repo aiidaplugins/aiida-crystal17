@@ -13,9 +13,9 @@ from jsonextended import edict
 # TODO parameterize tests
 
 
-def get_basic_code(workdir):
+def get_basic_code(workdir, configure=False):
     """get the crystal17.basic code """
-    computer = tests.get_computer(workdir=workdir)
+    computer = tests.get_computer(workdir=workdir, configure=configure)
     # get code
     code = tests.get_code(entry_point='crystal17.basic', computer=computer)
 
@@ -122,12 +122,13 @@ def test_process_with_external(new_database, new_workdir):
 
 @pytest.mark.timeout(30)
 @pytest.mark.process_execution
+@pytest.mark.master_sqlalchemy_fail
 def test_full_run(new_database, new_workdir):
     """Test running a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
 
     # get code
-    code = get_basic_code(new_workdir)
+    code = get_basic_code(new_workdir, configure=True)
 
     # Prepare input parameters
     infile = SinglefileData(
@@ -149,10 +150,12 @@ def test_full_run(new_database, new_workdir):
     process = calc.process()
 
     try:
+        # aiida v1
         from aiida.work.launch import run_get_node
         inputs_dict["options"] = options
         _, calcnode = run_get_node(process, **inputs_dict)
     except ImportError:
+        # aiida v0.12
         from aiida.work.run import run
         # output, pid = run(process, _return_pid=True, **inputs_dict)
         inputs_dict["_options"] = options
