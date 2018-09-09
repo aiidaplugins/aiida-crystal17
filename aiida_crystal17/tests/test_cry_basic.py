@@ -695,7 +695,7 @@ def test_full_run(new_database, new_workdir):
     }
 
     from aiida.orm.data.base import Bool
-    inputs_dict = {"input_file": infile, "code": code, "_use_cache": Bool(False)}
+    inputs_dict = {"input_file": infile, "code": code}#, "_use_cache": Bool(False)}
 
     process = calc.process()
 
