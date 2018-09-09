@@ -13,6 +13,7 @@ def get_main_code(workdir):
     return code
 
 
+# TODO fails on sqlalchemy for aiida v0.12 because of error in computer config
 @pytest.mark.master_sqlalchemy_fail
 def test_full(new_database, new_workdir):
     from aiida_crystal17.calculations.cry_main_immigrant import CryMainImmigrantCalculation

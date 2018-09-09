@@ -7,7 +7,6 @@ Note: This script assumes you have set up computer and code as in README.md.
 """
 import os
 import aiida_crystal17.tests as tests
-import pytest
 
 
 def get_basic_code(workdir):
@@ -19,7 +18,6 @@ def get_basic_code(workdir):
     return code
 
 
-@pytest.mark.timeout(30)
 def test_example(new_database, new_workdir):
 
     from aiida.orm import DataFactory

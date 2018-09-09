@@ -4,6 +4,8 @@ import os
 
 import click
 
+import aiida_crystal17.tests as tests
+
 
 @click.command('cli')
 @click.argument('codelabel')
@@ -15,15 +17,19 @@ def main(codelabel, submit):
 
     Run './cli.py --help' to see options.
     """
-    code = Code.get_from_string(codelable)
+    from aiida.orm import Code
+    code = Code.get_from_string(codelabel)
 
     # Prepare input parameters
     from aiida.orm import DataFactory
-    DiffParameters = DataFactory('diff')
-    parameters = DiffParameters({'ignore-case': True})
+    SinglefileData = DataFactory('singlefile')
 
-    file1 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file1.txt'))
-    file2 = SinglefileData(file=os.path.join(tests.TEST_DIR, 'file2.txt'))
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'nio_sto3g_afm.crystal.d12'))
+    ingeom = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "output_files",
+                          'nio_sto3g_afm.crystal.out'))
 
     # set up calculation
     calc = code.new_calc()
@@ -33,9 +39,8 @@ def main(codelabel, submit):
     calc.set_withmpi(False)
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
-    calc.use_parameters(parameters)
-    calc.use_file1(file1)
-    calc.use_file2(file2)
+    calc.use_input_file(infile)
+    calc.use_input_external(ingeom)
 
     if submit:
         calc.store_all()

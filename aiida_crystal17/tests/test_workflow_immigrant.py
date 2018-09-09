@@ -6,7 +6,7 @@ import pytest
 @pytest.mark.timeout(30)
 def test_full(new_database):
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
-    from aiida.common.datastructures import calc_states
+    # from aiida.common.datastructures import calc_states
 
     work_dir = tests.TEST_DIR
     inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
