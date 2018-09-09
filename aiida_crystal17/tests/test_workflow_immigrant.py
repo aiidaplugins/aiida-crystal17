@@ -40,4 +40,6 @@ def test_full(new_database):
         'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
     ])
 
+    assert '_aiida_cached_from' not in node.extras()
+
     # assert node.get_attr("state") == calc_states.FINISHED

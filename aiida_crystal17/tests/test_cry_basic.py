@@ -715,6 +715,8 @@ def test_full_run(new_database, new_workdir):
 
     print(calcnode)
 
+    assert '_aiida_cached_from' not in calcnode.extras()
+
     assert calcnode.get_state() == calc_states.FINISHED
 
     assert set(calcnode.get_outputs_dict().keys()).issuperset([
