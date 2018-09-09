@@ -694,7 +694,7 @@ def test_full_run(new_database, new_workdir):
         "max_wallclock_seconds": 30
     }
 
-    inputs_dict = {"input_file": infile, "code": code}
+    inputs_dict = {"input_file": infile, "code": code, "_use_cache": False}
 
     process = calc.process()
 
