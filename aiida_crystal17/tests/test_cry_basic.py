@@ -120,59 +120,6 @@ def test_process_with_external(new_database, new_workdir):
         check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
 
 
-@pytest.mark.timeout(30)
-@pytest.mark.process_execution
-@pytest.mark.master_sqlalchemy_fail
-def test_full_run(new_database, new_workdir):
-    """Test running a calculation"""
-    from aiida.orm.data.singlefile import SinglefileData
-    from aiida.common.datastructures import calc_states
-
-    # get code
-    code = get_basic_code(new_workdir, configure=True)
-
-    # Prepare input parameters
-    infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
-                          'mgo_sto3g_scf.crystal.d12'))
-
-    # set up calculation
-    calc = code.new_calc()
-    options = {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
-                    "withmpi": False,
-                    "max_wallclock_seconds": 30}
-
-
-    inputs_dict = {
-        "input_file": infile,
-        "code": code
-    }
-
-    process = calc.process()
-
-    try:
-        # aiida v1
-        from aiida.work.launch import run_get_node
-        inputs_dict["options"] = options
-        _, calcnode = run_get_node(process, **inputs_dict)
-    except ImportError:
-        # aiida v0.12
-        from aiida.work.run import run
-        # output, pid = run(process, _return_pid=True, **inputs_dict)
-        inputs_dict["_options"] = options
-        new_process = process.new_instance(inputs=inputs_dict)
-        new_process.run_until_complete()
-        calcnode = new_process.calc
-
-    print(calcnode)
-
-    assert calcnode.get_state() == calc_states.FINISHED
-
-    assert set(calcnode.get_outputs_dict().keys()).issuperset([
-        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
-    ])
-
-
 def test_parser_scf(new_database, new_workdir):
     """ Test the parser
 
@@ -720,137 +667,79 @@ def test_parser_with_kindmap(new_database, new_workdir):
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
-# TODO test that the calculation completed successfully (the code below doesn't work)
+@pytest.mark.timeout(30)
+@pytest.mark.process_execution
+@pytest.mark.master_sqlalchemy_fail
+def test_full_run(new_database, new_workdir):
+    """Test running a calculation"""
+    from aiida.orm.data.singlefile import SinglefileData
+    from aiida.common.datastructures import calc_states
 
-# def test_output(test_data):
-#     """Test submitting a calculation"""
-#     from aiida.orm.data.singlefile import SinglefileData
-#     try:
-#         from aiida.work.run import submit, run
-#     except ImportError:
-#         from aiida.work.launch import submit, run
-#
-#     code = tests.get_code(
-#         entry_point='crystal17.basic')
-#
-#     infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g.d12'))
-#
-#     # set up calculation
-#     calc = code.new_calc()
-#     # calc.label = "aiida_crystal17 test"
-#     # calc.description = "Test job submission with the aiida_crystal17 plugin"
-#     # calc.set_max_wallclock_seconds(30)
-#     # calc.set_withmpi(False)
-#     # calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
-#     #
-#     # calc.use_input_file(infile)
-#
-#     # calc.store_all()
-#
-#     inputs = {"_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
-#                           "withmpi": False, "max_wallclock_seconds": False},
-#               "_label": "aiida_crystal17 test",
-#               "_description": "Test job submission with the aiida_crystal17 plugin",
-#               "input_file": infile,
-#               "code": code}
-#
-#     print("running")
-#     run(calc.__class__.process(), **inputs)
-#     # print("submitted calculation; calc=Calculation(uuid='{}') # ID={}".format(
-#     #     calc.uuid, calc.dbnode.pk))
+    # get code
+    code = get_basic_code(new_workdir, configure=True)
 
-# def test_output2(test_data):
-#     """Test calculation output"""
-#     from aiida.orm.data.singlefile import SinglefileData
-#     from aiida.work.workchain import WorkChain, ToContext, append_
-#     from aiida.orm.utils import CalculationFactory
-#     from aiida.common.exceptions import MissingPluginError
-#     from aiida_quantumespresso.utils.mapping import prepare_process_inputs
-#
-#     try:
-#         from aiida.work.run import submit
-#     except ImportError:
-#         from aiida.work.launch import submit
-#
-#     class RetrieveOutput(WorkChain):
-#
-#         @classmethod
-#         def define(cls, spec):
-#             super(RetrieveOutput, cls).define(spec)
-#             spec.input('infile')
-#             spec.outline(
-#                 cls.submit_calc,
-#                 cls.inspect_calc
-#             )
-#
-#         def submit_calc(self):
-#             # set up calculation
-#
-#             code = tests.get_code(
-#                 entry_point='crystal17.basic')
-#             calc = code.new_calc()  # type: CryBasicCalculation
-#
-#             # plugin_name = code.get_input_plugin_name()
-#             # if plugin_name is None:
-#             #     raise ValueError("You did not specify an input plugin "
-#             #                      "for this code")
-#             # try:
-#             #     calc_cls = CalculationFactory(plugin_name)
-#             #
-#             # except MissingPluginError:
-#             #     raise MissingPluginError("The input_plugin name for this code is "
-#             #                              "'{}', but it is not an existing plugin"
-#             #                              "name".format(plugin_name))
-#
-#
-#             calc.label = "aiida_crystal17 test"
-#             calc.description = "Test job submission with the aiida_crystal17 plugin"
-#             calc.set_max_wallclock_seconds(30)
-#             calc.set_withmpi(False)
-#             calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
-#             calc.use_input_file(infile)
-#
-#             # calc.store_all()
-#             #
-#             # inputs = prepare_process_inputs({"_options": {"resources": None}})
-#             # inputs._options.resources = {"num_machines": 1, "num_mpiprocs_per_machine": 1}
-#             #
-#             # print(inputs)
-#
-#
-#             # calc_inputs = {
-#             #     "max_wallclock_seconds": 30,
-#             #     "withmpi": False,
-#             #     "jobresource_params": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
-#             # }
-#             #
-#             # calc_inputs = prepare_process_inputs(calc_inputs)
-#
-#             print(list(calc.attrs()))
-#
-#             # future = submit(calc.process(), inputs)
-#             print(calc.process().spec().get_inputs_template())
-#             inputs = {"_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
-#                                   "withmpi": False, "max_wallclock_seconds": False},
-#                       "_label": "aiida_crystal17 test",
-#                       "_description": "Test job submission with the aiida_crystal17 plugin",
-#                       # "input_file": infile,
-#                       "code": code}
-#
-#             future = submit(calc.process(), **inputs)
-#
-#             return ToContext(calculation=append_(future))
-#
-#             # return self.to_context(calculation=future)
-#
-#         def inspect_calc(self):
-#             assert self.ctx.calculation.is_finished_ok
-#
-#     infile = SinglefileData(file=os.path.join(tests.TEST_DIR, "input_files", 'mgo_sto3g.d12'))
-#
-#     RetrieveOutput.run(infile=infile)
-#
-#
-#
-#
-#
+    # Prepare input parameters
+    infile = SinglefileData(
+        file=os.path.join(tests.TEST_DIR, "input_files",
+                          'mgo_sto3g_scf.crystal.d12'))
+
+    # set up calculation
+    calc = code.new_calc()
+    options = {
+        "resources": {
+            "num_machines": 1,
+            "num_mpiprocs_per_machine": 1
+        },
+        "withmpi": False,
+        "max_wallclock_seconds": 30
+    }
+
+    inputs_dict = {"input_file": infile, "code": code}
+
+    process = calc.process()
+
+    try:
+        # aiida v1
+        from aiida.work.launch import run_get_node
+        inputs_dict["options"] = options
+        _, calcnode = run_get_node(process, **inputs_dict)
+    except ImportError:
+        # aiida v0.12
+        from aiida.work.run import run
+        # output, pid = run(process, _return_pid=True, **inputs_dict)
+        inputs_dict["_options"] = options
+        new_process = process.new_instance(inputs=inputs_dict)
+        new_process.run_until_complete()
+        calcnode = new_process.calc
+
+    print(calcnode)
+
+    assert calcnode.get_state() == calc_states.FINISHED
+
+    assert set(calcnode.get_outputs_dict().keys()).issuperset([
+        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
+    ])
+
+    expected_params = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'parser_class': 'CryBasicParser',
+        'parser_warnings': [],
+        'errors': [],
+        'warnings': [],
+        'energy': -2.7121814374931E+02 * 27.21138602,
+        'energy_units': 'eV',  # hartree to eV
+        'calculation_type': 'restricted closed shell',
+        'calculation_spin': False,
+        'wall_time_seconds': 3,
+        'number_of_atoms': 2,
+        'number_of_assymetric': 2,
+        'number_of_symmops': 48,
+        'scf_iterations': 7,
+        'volume': 18.65461527264623,
+    }
+
+    assert edict.diff(
+        calcnode.get_outputs_dict()['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}

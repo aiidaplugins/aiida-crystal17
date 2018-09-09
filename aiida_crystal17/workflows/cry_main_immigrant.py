@@ -94,7 +94,10 @@ def migrate_as_main(work_dir,
     # create links from existing nodes to inputs
     input_links = {} if not input_links else input_links
     for key, nodes_dict in input_links.items():
-        _run_dummy_workchain(nodes_dict, {key: inputs[key]}, )
+        _run_dummy_workchain(
+            nodes_dict,
+            {key: inputs[key]},
+        )
 
     # assign linknames
     inputs_dict = {
@@ -112,7 +115,8 @@ def migrate_as_main(work_dir,
         outputs_dict[parser_cls.get_linkname_outarrays()] = outarray
     outputs_dict["retrieved"] = folder
 
-    calcnode = _run_dummy_workchain(inputs_dict, outputs_dict, CryMainImmigrant)
+    calcnode = _run_dummy_workchain(inputs_dict, outputs_dict,
+                                    CryMainImmigrant)
 
     calcnode.label = "CryMainImmigrant"
     calcnode.description = "an immigrated CRYSTAL17 calculation into the {} format".format(
