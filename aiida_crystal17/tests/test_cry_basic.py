@@ -136,11 +136,12 @@ def test_full_run(new_database, new_workdir):
 
     # set up calculation
     calc = code.new_calc()
+    options = {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
+                    "withmpi": False,
+                    "max_wallclock_seconds": 30}
+
 
     inputs_dict = {
-        "_options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1},
-                    "withmpi": False,
-                    "max_wallclock_seconds": 30},
         "input_file": infile,
         "code": code
     }
@@ -149,10 +150,12 @@ def test_full_run(new_database, new_workdir):
 
     try:
         from aiida.work.launch import run_get_node
+        inputs_dict["options"] = options
         _, calcnode = run_get_node(process, **inputs_dict)
     except ImportError:
         from aiida.work.run import run
         # output, pid = run(process, _return_pid=True, **inputs_dict)
+        inputs_dict["_options"] = options
         new_process = process.new_instance(inputs=inputs_dict)
         new_process.run_until_complete()
         calcnode = new_process.calc

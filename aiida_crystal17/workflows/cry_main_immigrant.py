@@ -16,7 +16,7 @@ class CryMainImmigrant(WorkChain):
     an immigrant calculation of CryMainCalculation
     """
     pass
-    # TODO how to to set attributes of a WorkCalculation?
+    # TODO how to to set attributes of a WorkCalculation? (below works for v0.12 but not v1)
     # self.calc._updatable_attributes = tuple(
     #     list(self.calc._updatable_attributes) +
     #     ["jobresource_params", "parser"])
@@ -94,7 +94,7 @@ def migrate_as_main(work_dir,
     # create links from existing nodes to inputs
     input_links = {} if not input_links else input_links
     for key, nodes_dict in input_links.items():
-        _create_dummy_calc(WorkChain, nodes_dict, {key: inputs[key]})
+        _run_dummy_workchain(nodes_dict, {key: inputs[key]}, )
 
     # assign linknames
     inputs_dict = {
@@ -112,7 +112,7 @@ def migrate_as_main(work_dir,
         outputs_dict[parser_cls.get_linkname_outarrays()] = outarray
     outputs_dict["retrieved"] = folder
 
-    calcnode = _create_dummy_calc(CryMainImmigrant, inputs_dict, outputs_dict)
+    calcnode = _run_dummy_workchain(inputs_dict, outputs_dict, CryMainImmigrant)
 
     calcnode.label = "CryMainImmigrant"
     calcnode.description = "an immigrated CRYSTAL17 calculation into the {} format".format(
@@ -121,16 +121,17 @@ def migrate_as_main(work_dir,
     return calcnode
 
 
-def _create_dummy_calc(cls, inputs_dict, outputs_dict):
+def _run_dummy_workchain(inputs_dict, outputs_dict, workchain_cls=None):
     """ create a bespoke workchain with the required inputs and outputs
 
-    :param cls: the process class from which to inherit
     :param inputs_dict: dict mapping input node names to the nodes
     :param outputs_dict: dict mapping output node names to the nodes
+    :param workchain_cls: the workchain class from which to inherit
     :return: the calculation node
     """
+    workchain_cls = WorkChain if workchain_cls is None else workchain_cls
 
-    class DummyProcess(cls):
+    class DummyProcess(workchain_cls):
         @classmethod
         def define(cls, spec):
             super(DummyProcess, cls).define(spec)
