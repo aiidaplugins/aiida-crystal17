@@ -126,6 +126,7 @@ def test_process_with_external(new_database, new_workdir):
 def test_full_run(new_database, new_workdir):
     """Test running a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
+    from aiida.common.datastructures import calc_states
 
     # get code
     code = get_basic_code(new_workdir, configure=True)
@@ -164,6 +165,12 @@ def test_full_run(new_database, new_workdir):
         calcnode = new_process.calc
 
     print(calcnode)
+
+    assert calcnode.get_state() == calc_states.FINISHED
+
+    assert set(calcnode.get_outputs_dict().keys()).issuperset([
+        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
+    ])
 
 
 def test_parser_scf(new_database, new_workdir):
