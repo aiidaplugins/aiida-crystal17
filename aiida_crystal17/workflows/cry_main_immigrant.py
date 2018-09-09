@@ -1,32 +1,49 @@
 """a workflow to immigrate previously run CRYSTAL17 computations into Aiida"""
+import os
 from aiida_crystal17.parsers.geometry import create_gui_from_struct
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 
 from aiida.parsers.exceptions import ParsingError
+
 # from aiida.common.datastructures import calc_states
 
 
 # pylint: disable=too-many-locals
-def migrate_as_main(input_path, output_path, resources=None):
+def migrate_as_main(work_dir, input_rel_path, output_rel_path, resources=None):
     """ migrate existing CRYSTAL17 calculation as a WorkCalculation,
     which imitates a ``crystal17.main`` calculation
 
-    :param input_path: path to .d12
-    :param output_path: path to .out
+    :param work_dir: the absolute path to the directory to holding the files
+    :param input_rel_path: relative path (from work_dir) to .d12 file
+    :param output_rel_path: relative path (from work_dir) to .out file
     :param resources: a dict of of job resource parameters
+
+    :raise IOError: if the work_dir or files do not exist
     :raises aiida.parsers.exceptions.ParsingError: if the input parsing fails
     :raises aiida.parsers.exceptions.OutputParsingError: if the output parsing fails
+
     :return: the calculation node
     :rtype: from aiida.orm.WorkCalculation
 
     """
     from aiida.work.workchain import WorkChain
+    from aiida.orm.data.folder import FolderData
     from aiida_crystal17.calculations.cry_main import CryMainCalculation
     from aiida_crystal17.parsers.cry_basic import CryBasicParser
 
     calc = CryMainCalculation()
     parser_cls = CryBasicParser
+
+    # TODO optionally use transport to remote work directory
+    if not os.path.exists(work_dir):
+        raise IOError("work_dir doesn't exist: {}".format(work_dir))
+    input_path = os.path.join(work_dir, input_rel_path)
+    if not os.path.exists(input_path):
+        raise IOError("input_path doesn't exist: {}".format(input_path))
+    output_path = os.path.join(work_dir, output_rel_path)
+    if not os.path.exists(output_path):
+        raise IOError("output_path doesn't exist: {}".format(output_path))
 
     resources = {} if resources is None else resources
 
@@ -53,15 +70,16 @@ def migrate_as_main(input_path, output_path, resources=None):
     for el, basis in inputs["basis"].items():
         inputs_dict[calc.get_linkname_basisset(el)] = basis
 
-    print(inputs_dict)
-
     outputs_dict = {parser_cls.get_linkname_outparams(): outparam}
     if outstructure:
         outputs_dict[parser_cls.get_linkname_outstructure()] = outstructure
     if outarray:
         outputs_dict[parser_cls.get_linkname_outarrays()] = outarray
 
-    # TODO create output Folder containing input & output files (with correct names)
+    folder = FolderData()
+    folder.add_path(input_path, calc._DEFAULT_INPUT_FILE)  # pylint: disable=protected-access
+    folder.add_path(output_path, calc._DEFAULT_OUTPUT_FILE)  # pylint: disable=protected-access
+    outputs_dict["retrieved"] = folder
 
     # we create a bespoke workchain with the required inputs and outputs
     class CryMainImmigrant(WorkChain):
