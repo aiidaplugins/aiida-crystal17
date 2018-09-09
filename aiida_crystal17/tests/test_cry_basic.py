@@ -694,7 +694,8 @@ def test_full_run(new_database, new_workdir):
         "max_wallclock_seconds": 30
     }
 
-    inputs_dict = {"input_file": infile, "code": code, "_use_cache": False}
+    from aiida.orm.data.base import Bool
+    inputs_dict = {"input_file": infile, "code": code, "_use_cache": Bool(False)}
 
     process = calc.process()
 
