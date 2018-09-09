@@ -15,6 +15,12 @@ from a set of AiiDa nodes (
   The approach mirrors closely that of the ``aiida-quantumespresso.pw`` plugin,
   which is discussed in :ref:`this tutorial <my-ref-to-pw-tutorial>`
 
+.. note::
+
+  See :ref:`main_calculation_immigrant` for a method
+  to immigrate existing output/input files as a
+  ``crystal17.main`` calculation.
+
 This chapter will show how to launch a single CRYSTAL17 calculation.
 We will look at how to run a computation *via* the terminal,
 then how to construct the inputs for a computation in Python.

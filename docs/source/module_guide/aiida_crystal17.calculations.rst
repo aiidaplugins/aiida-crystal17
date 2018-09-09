@@ -8,6 +8,7 @@ Submodules
 
    aiida_crystal17.calculations.cry_basic
    aiida_crystal17.calculations.cry_main
+   aiida_crystal17.calculations.cry_main_immigrant
 
 Module contents
 ---------------

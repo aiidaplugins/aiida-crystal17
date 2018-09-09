@@ -9,6 +9,7 @@ Subpackages
     aiida_crystal17.calculations
     aiida_crystal17.data
     aiida_crystal17.parsers
+    aiida_crystal17.workflows
     aiida_crystal17.validation
 
 Submodules

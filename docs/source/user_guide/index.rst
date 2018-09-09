@@ -8,5 +8,7 @@ User guide
     get_started
     calc_basic
     calc_main
+    calc_main_immigrant
+
 
 
