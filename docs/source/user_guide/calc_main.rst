@@ -622,159 +622,9 @@ and (optionally) a yaml style header section, fenced by ``---``:
 
 .. code:: python
 
-import aiida_crystal17.tests.utils  >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(tests.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
-
-  >>> from aiida.orm import DataFactory
-  >>> BasisSetData = DataFactory("crystal17.basisset")
-  >>> bset, created = BasisSetData.get_or_create(fpath)
-  >>> bset.metadata
-  {
-    'num_shells': 3,
-    'author': 'John Smith',
-    'atomic_number': 12,
-    'filename': 'sto3g_Mg.basis',
-    'element': 'Mg',
-    'year': 1999,
-    'basis_type': 'all-electron',
-    'class': 'sto3g',
-    'md5': '0731ecc3339d2b8736e61add113d0c6f'
-  }
-
-The attributes of the basis set are stored in the database,
-and the md5 hash-sum is used to test equivalence of two basis sets.
-
-A simpler way to create and refer to basis sets, is
-
-import aiida_crystal17.tests.utils  >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(tests.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
-
-  >>> from aiida.orm import DataFactory
-  >>> BasisSetData = DataFactory("crystal17.basisset")
-  >>> bset, created = BasisSetData.get_or_create(fpath)
-  >>> bset.metadata
-  {
-    'num_shells': 3,
-    'author': 'John Smith',
-    'atomic_number': 12,
-    'filename': 'sto3g_Mg.basis',
-    'element': 'Mg',
-    'year': 1999,
-    'basis_type': 'all-electron',
-    'class': 'sto3g',
-    'md5': '0731ecc3339d2b8736e61add113d0c6f'
-  }
-
-The attributes of the basis set are stored in the database,
-and the md5 hash-sum is used to test equivalence of two basis sets.
-
-A simpler way to create and refer to basis sets, is
-
-import aiida_crystal17.tests.utils  >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(tests.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
-
-  >>> from aiida.orm import DataFactory
-  >>> BasisSetData = DataFactory("crystal17.basisset")
-  >>> bset, created = BasisSetData.get_or_create(fpath)
-  >>> bset.metadata
-  {
-    'num_shells': 3,
-    'author': 'John Smith',
-    'atomic_number': 12,
-    'filename': 'sto3g_Mg.basis',
-    'element': 'Mg',
-    'year': 1999,
-    'basis_type': 'all-electron',
-    'class': 'sto3g',
-    'md5': '0731ecc3339d2b8736e61add113d0c6f'
-  }
-
-The attributes of the basis set are stored in the database,
-and the md5 hash-sum is used to test equivalence of two basis sets.
-
-A simpler way to create and refer to basis sets, is
-
-import aiida_crystal17.tests.utils  >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(tests.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
-
-  >>> from aiida.orm import DataFactory
-  >>> BasisSetData = DataFactory("crystal17.basisset")
-  >>> bset, created = BasisSetData.get_or_create(fpath)
-  >>> bset.metadata
-  {
-    'num_shells': 3,
-    'author': 'John Smith',
-    'atomic_number': 12,
-    'filename': 'sto3g_Mg.basis',
-    'element': 'Mg',
-    'year': 1999,
-    'basis_type': 'all-electron',
-    'class': 'sto3g',
-    'md5': '0731ecc3339d2b8736e61add113d0c6f'
-  }
-
-The attributes of the basis set are stored in the database,
-and the md5 hash-sum is used to test equivalence of two basis sets.
-
-A simpler way to create and refer to basis sets, is
-
-import aiida_crystal17.tests.utils  >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(aiida_crystal17.tests.utils.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
-
-  >>> from aiida.orm import DataFactory
-  >>> BasisSetData = DataFactory("crystal17.basisset")
-  >>> bset, created = BasisSetData.get_or_create(fpath)
-  >>> bset.metadata
-  {
-    'num_shells': 3,
-    'author': 'John Smith',
-    'atomic_number': 12,
-    'filename': 'sto3g_Mg.basis',
-    'element': 'Mg',
-    'year': 1999,
-    'basis_type': 'all-electron',
-    'class': 'sto3g',
-    'md5': '0731ecc3339d2b8736e61add113d0c6f'
-  }
-
-The attributes of the basis set are stored in the database,
-and the md5 hash-sum is used to test equivalence of two basis sets.
-
-A simpler way to create and refer to basis sets, is
-
-import aiida_crystal17.tests.utils  >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(aiida_crystal17.tests.utils.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
-
-  >>> from aiida.orm import DataFactory
-  >>> BasisSetData = DataFactory("crystal17.basisset")
-  >>> bset, created = BasisSetData.get_or_create(fpath)
-  >>> bset.metadata
-  {
-    'num_shells': 3,
-    'author': 'John Smith',
-    'atomic_number': 12,
-    'filename': 'sto3g_Mg.basis',
-    'element': 'Mg',
-    'year': 1999,
-    'basis_type': 'all-electron',
-    'class': 'sto3g',
-    'md5': '0731ecc3339d2b8736e61add113d0c6f'
-  }
-
-The attributes of the basis set are stored in the database,
-and the md5 hash-sum is used to test equivalence of two basis sets.
-
-A simpler way to create and refer to basis sets, is
-
   >>> import os
-  >>> import aiida_crystal17.tests as tests
-  >>> fpath = os.path.join(tests.TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
+  >>> from aiida_crystal17.tests import TEST_DIR
+  >>> fpath = os.path.join(TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
 
   >>> from aiida.orm import DataFactory
   >>> BasisSetData = DataFactory("crystal17.basisset")
@@ -802,7 +652,7 @@ All basis sets in a folder can be read and saved to a named family by:
 
   >>> from aiida_crystal17.data.basis_set import upload_basisset_family
   >>> nfiles, nuploaded = upload_basisset_family(
-          os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
+          os.path.join(TEST_DIR, "input_files", "sto3g"),
           "sto3g", "group of sto3g basis sets",
           extension=".basis")
 
