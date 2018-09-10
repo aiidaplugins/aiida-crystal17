@@ -1,13 +1,12 @@
 import os
 
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import TEST_DIR
 from aiida_crystal17.parsers.migrate import create_inputs
 
 
 def test_create_inputs(new_database):
-    inpath = os.path.join(tests.TEST_DIR, "input_files",
-                          'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join(tests.TEST_DIR, "output_files",
+    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join(TEST_DIR, "output_files",
                            'nio_sto3g_afm.crystal.out')
 
     inputs = create_inputs(inpath, outpath)

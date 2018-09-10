@@ -4,7 +4,8 @@
 import glob
 import os
 
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import TEST_DIR
+import aiida_crystal17.tests.utils as tests
 from ase.spacegroup import crystal
 
 #TODO parameterize tests (how do you parameterize with fixtures?)
@@ -70,9 +71,9 @@ def test_submit_mgo(new_database, new_workdir):
     instruct = StructureData(ase=atoms)
 
     mg_basis, _ = BasisSetData.get_or_create(
-        os.path.join(tests.TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
     o_basis, _ = BasisSetData.get_or_create(
-        os.path.join(tests.TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
+        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
     # set up calculation
     calc = code.new_calc()
@@ -362,7 +363,7 @@ def test_submit_nio_afm(new_database, new_workdir):
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
     upload_basisset_family(
-        os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
+        os.path.join(TEST_DIR, "input_files", "sto3g"),
         "sto3g",
         "minimal basis sets",
         stop_if_existing=True,

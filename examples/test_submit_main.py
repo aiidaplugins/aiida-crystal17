@@ -6,14 +6,18 @@ Usage: verdi run test_submit_main.py
 Note: This script assumes you have set up computer and code as in README.md.
 """
 import os
+
+import aiida_crystal17.tests
 import aiida_crystal17.tests as tests
+import aiida_crystal17.tests.utils
 
 
 def get_main_code(workdir):
     """get the crystal17.basic code """
-    computer = tests.get_computer(workdir=workdir)
+    computer = aiida_crystal17.tests.utils.get_computer(workdir=workdir)
     # get code
-    code = tests.get_code(entry_point='crystal17.main', computer=computer)
+    code = aiida_crystal17.tests.utils.get_code(
+        entry_point='crystal17.main', computer=computer)
 
     return code
 
@@ -50,7 +54,7 @@ def test_example(new_database, new_workdir):
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
     upload_basisset_family(
-        os.path.join(tests.TEST_DIR, "input_files", "sto3g"),
+        os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files", "sto3g"),
         "sto3g",
         "minimal basis sets",
         stop_if_existing=False,

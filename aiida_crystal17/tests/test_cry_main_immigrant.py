@@ -1,7 +1,9 @@
 import os
 import shutil
+
+from aiida_crystal17.tests import TEST_DIR
+import aiida_crystal17.tests.utils as tests
 import pytest
-import aiida_crystal17.tests as tests
 
 
 def get_main_code(workdir):
@@ -14,16 +16,15 @@ def get_main_code(workdir):
 
 
 # TODO fails on sqlalchemy for aiida v0.12 because of error in computer config
-@pytest.mark.master_sqlalchemy_fail
+@pytest.mark.v12_sqlalchemy_fail
 def test_full(new_database, new_workdir):
     from aiida_crystal17.calculations.cry_main_immigrant import CryMainImmigrantCalculation
 
     computer = tests.get_computer(workdir=new_workdir, configure=True)
     code = tests.get_code(entry_point='crystal17.main', computer=computer)
 
-    inpath = os.path.join(tests.TEST_DIR, "input_files",
-                          'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join(tests.TEST_DIR, "output_files",
+    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join(TEST_DIR, "output_files",
                            'nio_sto3g_afm.crystal.out')
 
     shutil.copy(inpath, new_workdir)

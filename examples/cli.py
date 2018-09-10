@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import os
 
+import aiida_crystal17.tests
+import aiida_crystal17.tests.utils
 import click
 
 import aiida_crystal17.tests as tests
@@ -25,10 +27,10 @@ def main(codelabel, submit):
     SinglefileData = DataFactory('singlefile')
 
     infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'nio_sto3g_afm.crystal.d12'))
     ingeom = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "output_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "output_files",
                           'nio_sto3g_afm.crystal.out'))
 
     # set up calculation

@@ -4,7 +4,7 @@ for EXTERNAL keyword use
 """
 import os
 
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import TEST_DIR
 import numpy as np
 import pytest
 from aiida_crystal17.parsers.geometry import read_gui_file, compute_symmetry, get_centering_code, get_crystal_system, \
@@ -51,7 +51,7 @@ def test_get_centering_code(sg_num, sg_symbol, centering, crystal_type):
 
 
 def test_read_gui_file():
-    inpath = os.path.join(tests.TEST_DIR, "input_files",
+    inpath = os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.gui')
     data = read_gui_file(inpath)
 

@@ -14,6 +14,246 @@ and create the inputs required for ``crystal17.main``:
     >>> import aiida_crystal17.tests as tests
     >>> from aiida_crystal17.parsers.migrate import create_inputs
 
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(aiida_crystal17.tests.utils.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(aiida_crystal17.tests.utils.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(tests.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(aiida_crystal17.tests.utils.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
+import aiida_crystal17.tests.utils    >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
+    ...                       'nio_sto3g_afm.crystal.d12')
+    >>> outpath = os.path.join(aiida_crystal17.tests.utils.TEST_DIR, "output_files",
+    ...                        'nio_sto3g_afm.crystal.out')
+
+    >>> inputs = create_inputs(inpath, outpath)
+
+    >>> print(inputs)
+    {'basis':
+       {'Ni': <BasisSetData: uuid: f5edf8a7-23ca-4383-8aca-07cf22fdfbc4 (unstored)>,
+        'O': <BasisSetData: uuid: 95859f1b-3822-4b60-92b2-238ec5a1931c (unstored)>},
+     'parameters': <ParameterData: uuid: 16d9deb4-150a-455f-9055-cca6b1e0d93d (unstored)>,
+     'structure': <StructureData: uuid: efaff664-41cc-4339-98d7-ea7594dfce52 (unstored)>,
+     'settings': <ParameterData: uuid: 0ef11c68-32a5-4f5b-a783-d2e24da74328 (unstored)>}
+
+This function is used by the :py
+
+    >>> import aiida_crystal17.tests as tests
+    >>> from aiida_crystal17.parsers.migrate import create_inputs
+
     >>> inpath = os.path.join(tests.TEST_DIR, "input_files",
     ...                       'nio_sto3g_afm.crystal.d12')
     >>> outpath = os.path.join(tests.TEST_DIR, "output_files",

@@ -6,14 +6,18 @@ Usage: verdi run submit.py
 Note: This script assumes you have set up computer and code as in README.md.
 """
 import os
+
+import aiida_crystal17.tests
 import aiida_crystal17.tests as tests
+import aiida_crystal17.tests.utils
 
 
 def get_basic_code(workdir):
     """get the crystal17.basic code """
-    computer = tests.get_computer(workdir=workdir)
+    computer = aiida_crystal17.tests.utils.get_computer(workdir=workdir)
     # get code
-    code = tests.get_code(entry_point='crystal17.basic', computer=computer)
+    code = aiida_crystal17.tests.utils.get_code(
+        entry_point='crystal17.basic', computer=computer)
 
     return code
 
@@ -33,11 +37,11 @@ def test_example(new_database, new_workdir):
     SinglefileData = DataFactory("singlefile")
     # main .d12 file
     infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.d12'))
     # optional .gui file (for use with EXTERNAL)
     ingeom = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation

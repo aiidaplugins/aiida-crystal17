@@ -4,7 +4,8 @@
 import os
 
 import aiida_crystal17
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import TEST_DIR
+import aiida_crystal17.tests.utils as tests
 import ejplugins
 import numpy as np
 import pytest
@@ -16,7 +17,6 @@ from jsonextended import edict
 def get_basic_code(workdir, configure=False):
     """get the crystal17.basic code """
     computer = tests.get_computer(workdir=workdir, configure=configure)
-    # get code
     code = tests.get_code(entry_point='crystal17.basic', computer=computer)
 
     return code
@@ -27,12 +27,11 @@ def test_submit(new_database, new_workdir):
     from aiida.orm.data.singlefile import SinglefileData
     from aiida.common.folders import SandboxFolder
 
-    # get code
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
@@ -64,7 +63,7 @@ def test_process(new_database, new_workdir):
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
@@ -95,10 +94,10 @@ def test_process_with_external(new_database, new_workdir):
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.d12'))
     ingui = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation
@@ -669,7 +668,7 @@ def test_parser_with_kindmap(new_database, new_workdir):
 
 @pytest.mark.timeout(30)
 @pytest.mark.process_execution
-@pytest.mark.master_sqlalchemy_fail
+@pytest.mark.v12_known_fail
 def test_full_run(new_database, new_workdir):
     """Test running a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
@@ -680,7 +679,7 @@ def test_full_run(new_database, new_workdir):
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(tests.TEST_DIR, "input_files",
+        file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
