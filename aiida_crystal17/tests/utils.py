@@ -225,10 +225,8 @@ def _get_auth_info(computer, user):
         from aiida.backends.sqlalchemy import get_scoped_session
 
         session = get_scoped_session()
-        # TODO sqlalchemy get_scoped_session returns None
-        if session is None:
-            authinfo = DbAuthInfo(dbcomputer=computer.dbcomputer, aiidauser=user)
-        else:
+        # TODO sqlalchemy get_scoped_session returns None and the alternative (from aiida-vasp) fails
+        if session is not None:
             authinfo = session.query(DbAuthInfo).filter(
                 DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
                     DbAuthInfo.aiidauser == user).first()
