@@ -54,9 +54,7 @@ script:
   if [[ "$TEST_TYPE" == "tests" ]]; then
     if [[ ! -z "${AIIDA_BRANCH}" ]]; then
       pytest -v;
-#    elif [[ "$TEST_AIIDA_BACKEND" == "sqlalchemy" ]]; then
-#      pytest -v -m 'not master_sqlalchemy_fail';
-    else
+§    else
       pytest -v --cov=. --cov-report=;
     fi
   fi
