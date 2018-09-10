@@ -226,9 +226,12 @@ def _get_auth_info(computer, user):
 
         session = get_scoped_session()
         # TODO sqlalchemy get_scoped_session returns None
-        authinfo = session.query(DbAuthInfo).filter(
-            DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
-                DbAuthInfo.aiidauser == user).first()
+        if session is None:
+            authinfo = DbAuthInfo(dbcomputer=computer.dbcomputer, aiidauser=user)
+        else:
+            authinfo = session.query(DbAuthInfo).filter(
+                DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
+                    DbAuthInfo.aiidauser == user).first()
 
         if authinfo is None:
             authinfo = DbAuthInfo(
