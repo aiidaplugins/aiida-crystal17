@@ -3,16 +3,15 @@
 """
 import glob
 import os
-import pytest
 
-from ase.spacegroup import crystal
-
-import ejplugins
-from jsonextended import edict
 import aiida_crystal17
-from aiida_crystal17.tests import TEST_DIR
 import aiida_crystal17.tests.utils as tests
+import ejplugins
+import pytest
+from aiida_crystal17.tests import TEST_DIR
 from aiida_crystal17.utils import aiida_version, cmp_version, run_get_node
+from ase.spacegroup import crystal
+from jsonextended import edict
 
 
 def get_main_code(workdir, configure=False):
@@ -747,24 +746,26 @@ def test_full_run_nio_afm(new_database, new_workdir):
         'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
     ])
 
-    expected_params = {'number_of_atoms': 4,
-                       'parser_version': '0.3.0a0',
-                       'errors': [],
-                       'mulliken_spin_total': 0.0,
-                       'warnings': [],
-                       'energy': -85124.8936673389,
-                       'ejplugins_version': '0.9.7',
-                       'number_of_assymetric': 4,
-                       'number_of_symmops': 16,
-                       'volume': 36.099581472,
-                       'scf_iterations': 13,
-                       'energy_units': 'eV', 
-                       'calculation_type': 'unrestricted open shell',
-                       'parser_warnings': [],
-                       'wall_time_seconds': 187,
-                       'parser_class': 'CryBasicParser',
-                       'calculation_spin': True,
-                       'mulliken_spins': [3.057, -3.057, -0.072, 0.072]}
+    expected_params = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'number_of_atoms': 4,
+        'errors': [],
+        'mulliken_spin_total': 0.0,
+        'warnings': [],
+        'energy': -85124.8936673389,
+        'number_of_assymetric': 4,
+        'number_of_symmops': 16,
+        'volume': 36.099581472,
+        'scf_iterations': 13,
+        'energy_units': 'eV',
+        'calculation_type': 'unrestricted open shell',
+        'parser_warnings': [],
+        'wall_time_seconds': 187,
+        'parser_class': 'CryBasicParser',
+        'calculation_spin': True,
+        'mulliken_spins': [3.057, -3.057, -0.072, 0.072]
+    }
 
     print(calcnode.get_outputs_dict()['output_parameters'].get_dict())
 

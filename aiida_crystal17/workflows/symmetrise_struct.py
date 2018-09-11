@@ -22,17 +22,12 @@ class Symmetrise3DStructure(WorkChain):
     """
 
     _settings_schema = {
-        "$schema":
-        "http://json-schema.org/draft-04/schema#",
-        "title":
-        "CRYSTAL17 structure input settings",
-        "description":
-        "Settings for initial manipulation of structures",
-        "type":
-        "object",
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "CRYSTAL17 structure input settings",
+        "description": "Settings for initial manipulation of structures",
+        "type": "object",
         "required": [],
-        "additionalProperties":
-        False,
+        "additionalProperties": False,
         "properties": {
             "symprec": {
                 "description":
