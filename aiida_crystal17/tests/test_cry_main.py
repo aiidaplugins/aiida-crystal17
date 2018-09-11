@@ -700,8 +700,6 @@ def test_full_run_nio_afm(new_database, new_workdir):
     params, settings = calc.prepare_and_validate(params, instruct, settings,
                                                  "sto3g", True)
 
-    calc.use_basisset_from_family("sto3g")
-
     # set up calculation
     calc = code.new_calc()
 

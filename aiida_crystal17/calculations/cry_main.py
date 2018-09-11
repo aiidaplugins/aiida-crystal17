@@ -240,7 +240,7 @@ class CryMainCalculation(JobCalculation):
         """
         Used to get the reference structure to obtain which
         basis sets to use from a given family using
-        use_basiss_from_family.
+        use_basisset_from_family.
 
         :note: this method can be redefined in a given subclass
                to specify which is the reference structure to consider.
