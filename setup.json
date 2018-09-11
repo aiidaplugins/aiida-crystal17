@@ -14,7 +14,8 @@
     "version": "0.3.0a0",
     "entry_points": {
         "aiida.data": [
-            "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData"
+            "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData",
+            "crystal17.structsettings = aiida_crystal17.data.struct_settings:StructSettingsData"
         ],
         "aiida.calculations": [
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
