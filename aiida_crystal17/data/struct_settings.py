@@ -4,6 +4,7 @@ import tempfile
 import jsonschema
 import numpy as np
 from aiida.common.exceptions import ValidationError
+from aiida.common.extendeddicts import AttributeDict
 from aiida.orm import Data
 
 
@@ -215,13 +216,13 @@ class StructSettingsData(Data):
     @property
     def data(self):
         """
-        Return the data
+        Return the data as an AttributeDict
         """
         data = dict(self.iterattrs())
         if "num_symops" in data:
             data.pop("num_symops")
         data["operations"] = self._get_operations()
-        return data
+        return AttributeDict(data)
 
     def add_path(self, src_abs, dst_path):
         from aiida.common.exceptions import ModificationNotAllowed

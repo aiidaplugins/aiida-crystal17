@@ -660,7 +660,7 @@ def test_full_run_nio_afm(new_database, new_workdir):
     from aiida.orm import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import upload_basisset_family, BasisSetData
+    from aiida_crystal17.data.basis_set import upload_basisset_family, get_basissets_from_structure
 
     # get code
     code = get_main_code(new_workdir)
@@ -692,7 +692,7 @@ def test_full_run_nio_afm(new_database, new_workdir):
         "minimal basis sets",
         stop_if_existing=True,
         extension=".basis")
-    basis_map = BasisSetData.get_basis_group_map("sto3g")
+    # basis_map = BasisSetData.get_basis_group_map("sto3g")
 
     # set up calculation
     calc = code.new_calc()
@@ -707,8 +707,7 @@ def test_full_run_nio_afm(new_database, new_workdir):
         "parameters": params,
         "structure": instruct,
         "settings": settings,
-        "basis_Ni": basis_map["Ni"],
-        "basis_O": basis_map["O"],
+        "basisset": get_basissets_from_structure(instruct, "sto3g", by_kind=False),
         "code": code,
         "options": {
             "resources": {
