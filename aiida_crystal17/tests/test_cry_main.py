@@ -15,9 +15,9 @@ import aiida_crystal17.tests.utils as tests
 from aiida_crystal17.utils import aiida_version, cmp_version, run_get_node
 
 
-def get_main_code(workdir):
+def get_main_code(workdir, configure=False):
     """get the crystal17.basic code """
-    computer = tests.get_computer(workdir=workdir)
+    computer = tests.get_computer(workdir=workdir, configure=configure)
     # get code
     code = tests.get_code(entry_point='crystal17.main', computer=computer)
 
@@ -663,7 +663,7 @@ def test_full_run_nio_afm(new_database, new_workdir):
     from aiida_crystal17.data.basis_set import upload_basisset_family, get_basissets_from_structure
 
     # get code
-    code = get_main_code(new_workdir)
+    code = get_main_code(new_workdir, configure=True)
 
     # Prepare input parameters
     params = {
