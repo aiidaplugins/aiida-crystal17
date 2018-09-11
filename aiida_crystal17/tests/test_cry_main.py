@@ -3,13 +3,16 @@
 """
 import glob
 import os
+import pytest
+
+from ase.spacegroup import crystal
 
 import ejplugins
 from jsonextended import edict
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_DIR
 import aiida_crystal17.tests.utils as tests
-from ase.spacegroup import crystal
+from aiida_crystal17.utils import aiida_version, cmp_version, run_get_node
 
 
 def get_main_code(workdir):
@@ -644,3 +647,117 @@ def test_parser_with_init_struct(new_database, new_workdir):
         output_struct.pop("charge")
 
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
+
+
+@pytest.mark.timeout(30)
+@pytest.mark.process_execution
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1'),
+    reason='process hangs on TOSUBMIT state')
+def test_full_run_nio_afm(new_database, new_workdir):
+    """Test running a calculation"""
+    """Test submitting a calculation"""
+    from aiida.orm import DataFactory
+    from aiida.common.datastructures import calc_states
+    StructureData = DataFactory('structure')
+    from aiida_crystal17.data.basis_set import upload_basisset_family, BasisSetData
+
+    # get code
+    code = get_main_code(new_workdir)
+
+    # Prepare input parameters
+    params = {
+        "title": "NiO Bulk with AFM spin",
+        "scf.single": "UHF",
+        "scf.k_points": (8, 8),
+        "scf.spinlock.SPINLOCK": (0, 15),
+        "scf.numerical.FMIXING": 30,
+        "scf.post_scf": ["PPAN"]
+    }
+
+    # Ni0
+    atoms = crystal(
+        symbols=[28, 8],
+        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+        spacegroup=225,
+        cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
+    atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
+    instruct = StructureData(ase=atoms)
+
+    settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+
+    upload_basisset_family(
+        os.path.join(TEST_DIR, "input_files", "sto3g"),
+        "sto3g",
+        "minimal basis sets",
+        stop_if_existing=True,
+        extension=".basis")
+    basis_map = BasisSetData.get_basis_group_map("sto3g")
+
+    # set up calculation
+    calc = code.new_calc()
+
+    params, settings = calc.prepare_and_validate(params, instruct, settings,
+                                                 "sto3g", True)
+
+    calc.use_basisset_from_family("sto3g")
+
+    # set up calculation
+    calc = code.new_calc()
+
+    inputs_dict = {
+        "parameters": params,
+        "structure": instruct,
+        "settings": settings,
+        "basis_Ni": basis_map["Ni"],
+        "basis_O": basis_map["O"],
+        "code": code,
+        "options": {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 30
+        }
+    }
+
+    process = calc.process()
+
+    calcnode = run_get_node(process, inputs_dict)
+
+    print(calcnode)
+
+    assert '_aiida_cached_from' not in calcnode.extras()
+
+    assert calcnode.get_state() == calc_states.FINISHED
+
+    assert set(calcnode.get_outputs_dict().keys()).issuperset([
+        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
+    ])
+
+    expected_params = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'parser_class': 'CryBasicParser',
+        'parser_warnings': [],
+        'errors': [],
+        'warnings': [],
+        'energy': -2.7121814374931E+02 * 27.21138602,
+        'energy_units': 'eV',  # hartree to eV
+        'calculation_type': 'restricted closed shell',
+        'calculation_spin': False,
+        'wall_time_seconds': 3,
+        'number_of_atoms': 2,
+        'number_of_assymetric': 2,
+        'number_of_symmops': 48,
+        'scf_iterations': 7,
+        'volume': 18.65461527264623,
+    }
+
+    print(calcnode.get_outputs_dict()['output_parameters'].get_dict())
+
+    assert edict.diff(
+        calcnode.get_outputs_dict()['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}

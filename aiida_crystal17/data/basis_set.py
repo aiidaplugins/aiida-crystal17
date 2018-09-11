@@ -16,7 +16,7 @@ from aiida_crystal17.utils import flatten_dict, unflatten_dict, ATOMIC_NUM2SYMBO
 BASISGROUP_TYPE = 'data.basisset.family'
 
 
-def get_basissets_from_structure(structure, family_name, by_kind=True):
+def get_basissets_from_structure(structure, family_name, by_kind=False):
     """
     Given a family name (a BasisSetFamily group in the DB) and an AiiDA
     structure, return a dictionary associating each element or kind name (if by_kind=True)
@@ -27,17 +27,9 @@ def get_basissets_from_structure(structure, family_name, by_kind=True):
     :raise aiida.common.exceptions.NotExistent: if no Basis Set for an element in the group is
        found in the group.
     """
-    from aiida.common.exceptions import NotExistent, MultipleObjectsError
+    from aiida.common.exceptions import NotExistent
 
-    family_bases = {}
-    family = BasisSetData.get_basis_group(family_name)
-    for node in family.nodes:
-        if isinstance(node, BasisSetData):
-            if node.element in family_bases:
-                raise MultipleObjectsError(
-                    "More than one BasisSetData for element {} found in "
-                    "family {}".format(node.element, family_name))
-            family_bases[node.element] = node
+    family_bases = BasisSetData.get_basis_group_map(family_name)
 
     basis_list = {}
     for kind in structure.kinds:
@@ -690,6 +682,23 @@ class BasisSetData(Data):
 
         return Group.get(
             name=group_name, type_string=cls.basisfamily_type_string)
+
+    @classmethod
+    def get_basis_group_map(cls, group_name):
+        """
+        Return an {element: basis} map for the BasisFamily group with the given name.
+        """
+        from aiida.common.exceptions import MultipleObjectsError
+        family_bases = {}
+        family = cls.get_basis_group(group_name)
+        for node in family.nodes:
+            if isinstance(node, cls):
+                if node.element in family_bases:
+                    raise MultipleObjectsError(
+                        "More than one BasisSetData for element {} found in "
+                        "family {}".format(node.element, group_name))
+                family_bases[node.element] = node
+        return family_bases
 
     @classmethod
     def get_basis_groups(cls, filter_elements=None, user=None):
