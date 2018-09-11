@@ -98,11 +98,19 @@ class CryBasicParser(Parser):
             settings = {}
             parser_opts = {}
 
-        # Look for optional input structure (we don't use this at present)
-        # try:
-        #     input_structure = self._calc.inp.structure
-        # except (AttributeError, KeyError):
-        #     input_structure = None
+        # Look for optional input structure
+        try:
+            input_structure = self._calc.inp.structure
+        except (AttributeError, KeyError):
+            input_structure = None
+
+        # we want to reuse the kinds from the input structure, if available
+        atom_kinds = None
+        if input_structure:
+            atom_kinds = [
+                input_structure.get_kind(n)
+                for n in input_structure.get_site_kindnames()
+            ]
 
         # Check that the retrieved folder is there
         out_folder = self.get_folder(retrieved)
@@ -120,16 +128,13 @@ class CryBasicParser(Parser):
                 format(mainout_file))
             return False, ()
 
-        # we want to reuse the kinds from the input structure, if available
-        atomid_kind_map = self._calc.get_extra("atomid_kind_map", None)  # pylint: disable=protected-access
-
         # parse the stdout file and add nodes
         self.logger.info("parsing main out file")
         paramdata, arraydata, structure, psuccess, perrors = parse_mainout(
             out_folder.get_abs_path(mainout_file),
             self.__class__.__name__,
             parser_opts=parser_opts,
-            atomid_kind_map=atomid_kind_map)
+            atom_kinds=atom_kinds)
 
         if not psuccess:
             successful = False

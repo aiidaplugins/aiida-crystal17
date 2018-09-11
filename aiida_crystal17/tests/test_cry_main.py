@@ -4,11 +4,12 @@
 import glob
 import os
 
+import ejplugins
+from jsonextended import edict
+import aiida_crystal17
 from aiida_crystal17.tests import TEST_DIR
 import aiida_crystal17.tests.utils as tests
 from ase.spacegroup import crystal
-
-#TODO parameterize tests (how do you parameterize with fixtures?)
 
 
 def get_main_code(workdir):
@@ -516,3 +517,130 @@ END
 """
 
     assert gui_content == expected_gui
+
+
+def test_parser_with_init_struct(new_database, new_workdir):
+    """ Test the parser
+
+    """
+    from aiida.parsers import ParserFactory
+    from aiida.common.datastructures import calc_states
+    from aiida.common.folders import SandboxFolder
+    from aiida.orm import DataFactory
+    from aiida.orm.data.structure import Kind
+
+    code = get_main_code(new_workdir)
+
+    calc = code.new_calc()
+    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+
+    from aiida.orm.data.structure import StructureData
+    struct = StructureData()
+    struct.append_atom(position=[0, 0, 0], symbols="Mg", name="Mgx")
+    struct.append_atom(position=[0.5, 0.5, 0.5], symbols="O", name="Ox")
+    calc.use_structure(struct)
+
+    calc.store_all()
+    calc._set_state(calc_states.PARSING)
+
+    parser_cls = ParserFactory("crystal17.basic")
+    parser = parser_cls(calc)
+
+    with SandboxFolder() as folder:
+        main_out_path = os.path.join(
+            os.path.dirname(tests.__file__), "output_files",
+            "mgo_sto3g_scf.crystal.out")
+        with open(main_out_path) as f:
+            folder.create_file_from_filelike(f, "main.out")
+
+        fdata = DataFactory("folder")()
+        fdata.replace_with_folder(folder.abspath)
+
+        mock_retrieved = {calc._get_linkname_retrieved(): fdata}
+        success, node_list = parser.parse_with_retrieved(mock_retrieved)
+
+    assert success
+
+    node_dict = dict(node_list)
+    assert set(['output_parameters', 'output_arrays',
+                'output_structure']) == set(node_dict.keys())
+
+    expected_params = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'parser_class': 'CryBasicParser',
+        'parser_warnings': [],
+        'errors': [],
+        'warnings': [],
+        'energy': -2.7121814374931E+02 * 27.21138602,
+        'energy_units': 'eV',  # hartree to eV
+        'calculation_type': 'restricted closed shell',
+        'calculation_spin': False,
+        'wall_time_seconds': 3,
+        'number_of_atoms': 2,
+        'number_of_assymetric': 2,
+        'number_of_symmops': 48,
+        'scf_iterations': 7,
+        'volume': 18.65461527264623,
+    }
+
+    assert edict.diff(
+        node_dict['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}
+
+    expected_struct = {
+        '@class':
+        'Structure',
+        '@module':
+        'pymatgen.core.structure',
+        'lattice': {
+            'a':
+            2.9769195487953652,
+            'alpha':
+            60.00000000000001,
+            'b':
+            2.9769195487953652,
+            'beta':
+            60.00000000000001,
+            'c':
+            2.9769195487953652,
+            'gamma':
+            60.00000000000001,
+            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
+                       [2.105, 2.105, 0.0]],
+            'volume':
+            18.65461525
+        },
+        'sites': [{
+            'abc': [0.0, 0.0, 0.0],
+            'label': 'Mg',
+            'properties': {
+                'kind_name': 'Mgx'
+            },
+            'species': [{
+                'element': 'Mg',
+                'occu': 1.0
+            }],
+            'xyz': [0.0, 0.0, 0.0]
+        }, {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'properties': {
+                'kind_name': 'Ox'
+            },
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [2.105, 2.105, 2.105]
+        }]
+    }
+
+    output_struct = node_dict[
+        'output_structure'].get_pymatgen_structure().as_dict()
+    # in later version of pymatgen only
+    if "charge" in output_struct:
+        output_struct.pop("charge")
+
+    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}

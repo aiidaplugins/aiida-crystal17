@@ -8,7 +8,7 @@ from aiida_crystal17.tests import TEST_DIR
 import numpy as np
 import pytest
 from aiida_crystal17.parsers.geometry import read_gui_file, compute_symmetry, get_centering_code, get_crystal_system, \
-    create_gui_from_ase, crystal17_gui_string
+    crystal17_gui_string, compute_symmetry_from_ase, structdict_to_ase
 from ase.spacegroup import crystal
 from jsonextended import edict
 
@@ -382,7 +382,9 @@ def test_write_gui_mgo_nonprimitive(default_settings):
 
     default_settings["3d"]["primitive"] = False
     default_settings["3d"]["standardize"] = False
-    outstr, outatoms = create_gui_from_ase(atoms, default_settings)
+
+    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
+    outatoms = structdict_to_ase(structdict)
 
     assert np.allclose(atoms.cell, outatoms.cell)
     assert atoms.get_number_of_atoms() == outatoms.get_number_of_atoms()
@@ -396,7 +398,9 @@ def test_write_gui_mgo_primitive(default_settings):
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
 
-    outstr, outatoms = create_gui_from_ase(atoms, default_settings)
+    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
+    outatoms = structdict_to_ase(structdict)
+    outstr = crystal17_gui_string(structdict, symmdata)
 
     expected = """3 5 6
   0.000000000E+00  -2.105000000E+00  -2.105000000E+00
@@ -616,7 +620,9 @@ def test_write_gui_marcasite(default_settings):
         spacegroup=58,
         cellpar=[4.57072239, 5.60859256, 3.50105841, 90, 90, 90])
 
-    outstr, outatoms = create_gui_from_ase(atoms, default_settings)
+    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
+    outatoms = structdict_to_ase(structdict)
+    outstr = crystal17_gui_string(structdict, symmdata)
 
     expected = """3 1 3
   4.570722390E+00   0.000000000E+00   0.000000000E+00
@@ -679,7 +685,9 @@ def test_write_gui_mgo_inequivalent(default_settings):
 
     atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
-    outstr, outatoms = create_gui_from_ase(atoms, default_settings)
+    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
+    outatoms = structdict_to_ase(structdict)
+    outstr = crystal17_gui_string(structdict, symmdata)
 
     print(outstr)
 

@@ -14,16 +14,13 @@ from aiida_crystal17 import __version__ as pkg_version
 
 
 # pylint: disable=too-many-locals,too-many-statements
-def parse_mainout(abs_path,
-                  parser_class,
-                  parser_opts=None,
-                  atomid_kind_map=None):
+def parse_mainout(abs_path, parser_class, parser_opts=None, atom_kinds=None):
     """ parse the main output file and create the required output nodes
 
     :param abs_path: absolute path of stdout file
     :param parser_class: a string denoting the parser class
     :param parser_opts: dictionary of parser settings
-    :param atomid_kind_map: a mapping of atom ids to aiida.orm.data.structure.Kind instances (or raw dict)
+    :param atom_kinds: aiida.orm.data.structure.Kind instances (or raw dict) for each atom
 
     :return param_dict: ParameterData with parsed parameters
     :return array_data: None or ArryayData with parsed arrays
@@ -134,7 +131,7 @@ def parse_mainout(abs_path,
         "pbc": cell_data["pbc"],
         "symbols": cell_data["symbols"],
         "ccoords": cell_data["ccoords"]["magnitude"]
-    }, atomid_kind_map)
+    }, atom_kinds)
     param_data["volume"] = structure.get_cell_volume()
 
     # add the version and class of parser
@@ -154,11 +151,11 @@ def parse_mainout(abs_path,
     return param_data, arraydata, structure, psuccess, perrors
 
 
-def create_structure(structdict, atomid_kind_map=None):
+def create_structure(structdict, atom_kinds=None):
     """ create a StructureData from a dictionary and mapping
 
     :param structdict: dict containing 'symbols', 'ccoords', 'pbc', 'cell_vectors'
-    :param atomid_kind_map: mapping of atom ids to Kind (or raw dict of kind)
+    :param atom_kinds: Kind (or raw dict of kind) for each atom
     :return:
     """
     from aiida.orm import DataFactory
@@ -166,23 +163,19 @@ def create_structure(structdict, atomid_kind_map=None):
     struct = StructureData(cell=structdict['cell_vectors'])
     struct.set_pbc(structdict["pbc"])
 
-    if atomid_kind_map is None:
+    if atom_kinds is None:
         # self.logger.warning(
         #     "no atom id to kind map available, creating new kinds")
         for symbol, ccoord in zip(structdict['symbols'],
                                   structdict['ccoords']):
             struct.append_atom(position=ccoord, symbols=symbol)
     else:
+        if len(atom_kinds) != len(structdict['ccoords']):
+            raise AssertionError(
+                "the length of ccoords and atom_kinds must be the same")
+
         from aiida.orm.data.structure import Site, Kind
-        for i, ccoord in enumerate(structdict['ccoords']):
-            if i + 1 in atomid_kind_map:
-                kind = atomid_kind_map[i + 1]
-            elif str(i + 1) in atomid_kind_map:
-                kind = atomid_kind_map[str(i + 1)]
-            else:
-                raise KeyError(
-                    "could not find atom with id {} in map with ids: {}".
-                    format(i + 1, list(atomid_kind_map.keys())))
+        for kind, ccoord in zip(atom_kinds, structdict['ccoords']):
             if not isinstance(kind, Kind):
                 kind = Kind(raw=kind)
             if kind.name not in struct.get_site_kindnames():

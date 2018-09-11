@@ -12,7 +12,7 @@ from aiida.orm import DataFactory
 from aiida.orm.calculation.job import JobCalculation
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
-from aiida_crystal17.parsers.geometry import create_gui_from_struct
+from aiida_crystal17.parsers.geometry import compute_symmetry_from_structure, crystal17_gui_string
 from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
 from jsonextended import edict
@@ -109,9 +109,9 @@ class CryMainCalculation(JobCalculation):
         # validate structure and settings
         setting_dict = edict.merge(
             [cls._default_settings, settings], overwrite=True)
-        _, aid2kname = create_gui_from_struct(structure, setting_dict)
+        newsdata, _ = compute_symmetry_from_structure(structure, setting_dict)
         # validate parameters
-        atom_props = cls._create_atom_props(aid2kname, setting_dict)
+        atom_props = cls._create_atom_props(newsdata["kinds"], setting_dict)
         write_input(param_dict, ["test_basis"], atom_props)
         # validate basis sets
         if basis_family:
@@ -293,8 +293,9 @@ class CryMainCalculation(JobCalculation):
         """
         # create .gui external geometry file and place it in tempfolder
         try:
-            gui_content, atomid_kind_map = create_gui_from_struct(
+            newsdata, symmdata = compute_symmetry_from_structure(
                 instruct, setting_dict)
+            gui_content = crystal17_gui_string(newsdata, symmdata)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
                 "an input geometry file could not be created from the structure: {}".
@@ -304,7 +305,7 @@ class CryMainCalculation(JobCalculation):
                   'w') as f:
             f.write(gui_content)
 
-        atom_props = self._create_atom_props(atomid_kind_map, setting_dict)
+        atom_props = self._create_atom_props(newsdata["kinds"], setting_dict)
 
         # create .d12 input file and place it in tempfolder
         try:
@@ -318,13 +319,13 @@ class CryMainCalculation(JobCalculation):
         with open(tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE), 'w') as f:
             f.write(d12_filecontent)
 
-        return atomid_kind_map
+        return True
 
     @staticmethod
-    def _create_atom_props(atomid_kind_map, setting_dict):
+    def _create_atom_props(atom_kinds, setting_dict):
         """ create dict of properties for each atom
 
-        :param atomid_kind_map: dict mapping atom id to kind
+        :param atom_kinds: atom kind for each atom
         :param setting_dict: setting_dict
         :return:
         """
@@ -336,17 +337,17 @@ class CryMainCalculation(JobCalculation):
             "ghosts": []
         }
         if "kinds" in setting_dict:
-            for i, kind in atomid_kind_map.items():
+            for i, kind in enumerate(atom_kinds):
                 if kind.name in setting_dict["kinds"].get("spin_alpha", []):
-                    atom_props["spin_alpha"].append(i)
+                    atom_props["spin_alpha"].append(i + 1)
                 if kind.name in setting_dict["kinds"].get("spin_beta", []):
-                    atom_props["spin_beta"].append(i)
+                    atom_props["spin_beta"].append(i + 1)
                 if kind.name in setting_dict["kinds"].get("fixed", []):
-                    atom_props["fixed"].append(i)
+                    atom_props["fixed"].append(i + 1)
                 if kind.name not in setting_dict["kinds"].get("fixed", []):
-                    atom_props["unfixed"].append(i)
+                    atom_props["unfixed"].append(i + 1)
                 if kind.name in setting_dict["kinds"].get("ghosts", []):
-                    atom_props["ghosts"].append(i)
+                    atom_props["ghosts"].append(i + 1)
 
         # we only need unfixed if there are fixed
         if not atom_props.pop("fixed"):
@@ -412,15 +413,8 @@ class CryMainCalculation(JobCalculation):
         setting_dict = edict.merge(
             [self._default_settings, input_settings], overwrite=True)
 
-        atomid_kind_map = self._create_input_files(
-            basissets, instruct, parameters, setting_dict, tempfolder)
-
-        # TODO is this the best way to pass data between calculation and parser
-        # it may be better to have a two step workflow: compute geom/symops - run calculation
-        self.set_extra(
-            "atomid_kind_map",
-            {str(i): k.get_raw()
-             for i, k in atomid_kind_map.items()})
+        self._create_input_files(basissets, instruct, parameters, setting_dict,
+                                 tempfolder)
 
         # Prepare CodeInfo object for aiida, describes how a code has to be executed
         codeinfo = CodeInfo()

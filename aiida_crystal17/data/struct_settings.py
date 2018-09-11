@@ -3,6 +3,7 @@ import tempfile
 
 import jsonschema
 import numpy as np
+from aiida.common.exceptions import ValidationError
 from aiida.orm import Data
 
 
@@ -125,13 +126,21 @@ class StructSettingsData(Data):
         validator = jsonschema.Draft4Validator
 
         # by default, only validates lists
-        validator(
-            self._data_schema, types={
-                "array": (list, tuple)
-            }).validate(data)
+        try:
+            validator(
+                self._data_schema, types={
+                    "array": (list, tuple)
+                }).validate(data)
+        except jsonschema.ValidationError as err:
+            raise ValidationError(err)
 
     def _validate(self):
         super(StructSettingsData, self)._validate()
+
+        fname = self._ops_filename
+        if fname not in self.get_folder_list():
+            raise ValidationError("operations not set")
+
         self._validate_against_schema(self.data)
 
     def set_data(self, data):
@@ -147,6 +156,7 @@ class StructSettingsData(Data):
 
         # store all but the symmetry operations as attributes
         old_dict = copy.deepcopy(dict(self.iterattrs()))
+        attributes_set = False
         try:
             # Delete existing attributes
             self._del_all_attrs()
@@ -155,15 +165,15 @@ class StructSettingsData(Data):
                 {k: v
                  for k, v in data.items() if k != "operations"})
             self._set_attr("num_symops", len(data["operations"]))
-        except ModificationNotAllowed:
-            # I reraise here to avoid to go in the generic 'except' below,
-            # that would raise again the same exception
-            raise
-        except:
-            # Try to restore the old data
-            self._del_all_attrs()
-            self._update_attrs(old_dict)
-            raise
+            attributes_set = True
+        finally:
+            if not attributes_set:
+                try:
+                    # Try to restore the old data
+                    self._del_all_attrs()
+                    self._update_attrs(old_dict)
+                except ModificationNotAllowed:
+                    pass
 
         # store the symmetry operations on file
         self._set_operations(data["operations"])
@@ -195,7 +205,7 @@ class StructSettingsData(Data):
     def _get_operations(self):
         fname = self._ops_filename
         if fname not in self.get_folder_list():
-            raise KeyError("operations not set for node pk= {}".format(
+            raise KeyError("symmetry operations not set for node pk={}".format(
                 self.pk))
 
         array = np.load(self.get_abs_path(fname))

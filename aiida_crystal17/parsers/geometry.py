@@ -33,7 +33,7 @@ try:
 except ImportError:
     import pathlib2 as pathlib
 
-_CRYSTAL_TYPE = {
+CRYSTAL_TYPE_MAP = {
     1: 'triclinic',
     2: 'monoclinic',
     3: 'orthorhombic',
@@ -47,7 +47,7 @@ _DIMENSIONALITY = {
     2: [True, True, False],
     3: [True, True, True]
 }
-_CENTERING_MATRICES = {
+CENTERING_CODE_MAP = {
     2: [[1.0000, 0.0000, 0.0000], [0.0000, 1.0000, 1.0000],
         [0.0000, -1.0000, 1.0000]],  # P_A
     4: [[1.0000, 1.0000, 0.0000], [-1.0000, 1.0000, 0.0000],
@@ -88,10 +88,10 @@ def read_gui_file(fpath, cryversion=17):
         structdata["pbc"] = _DIMENSIONALITY[dimensionality]
         structdata["origin_setting"] = int(init_data[1])
         crystal_type = int(init_data[2])
-        if crystal_type not in _CRYSTAL_TYPE:
+        if crystal_type not in CRYSTAL_TYPE_MAP:
             raise ValueError("crystal_type was not between 1 and 6: {}".format(
                 dimensionality))
-        structdata["crystal_type"] = _CRYSTAL_TYPE[crystal_type]
+        structdata["crystal_type"] = CRYSTAL_TYPE_MAP[crystal_type]
         structdata["lattice"] = [[float(num) for num in l.split()]
                                  for l in lines[1:4]]
         structdata["nsymops"] = nsymops = int(lines[4])
@@ -156,7 +156,7 @@ def get_crystal_system(sg_number, as_number=False):
 
     if as_number:
         crystal_system = {v: k
-                          for k, v in _CRYSTAL_TYPE.items()}[crystal_system]
+                          for k, v in CRYSTAL_TYPE_MAP.items()}[crystal_system]
 
     return crystal_system
 
@@ -282,7 +282,7 @@ def compute_symmetry(structdata, settings, cryversion=17):
     if symops is not None:
         # if the symops are given, we can go straight to writing the file
         crystal_type = {v: k
-                        for k, v in _CRYSTAL_TYPE.items()
+                        for k, v in CRYSTAL_TYPE_MAP.items()
                         }[settings["crystal"]["system"]]
         origin_setting = settings["crystal"]["transform"]
         origin_setting = 1 if origin_setting is None else origin_setting
@@ -472,11 +472,9 @@ def compute_symmetry_from_ase(atoms, settings):
     :type structure: ase.Atoms
     :param settings: dictionary of settings
     :type settings: dict
-    :return: (new Atoms instance, symmetry data dictionary)
+    :return: (structure dictionary, symmetry data dictionary)
 
     """
-    import ase
-
     sdata = {
         "lattice": atoms.cell.tolist(),
         "ccoords": atoms.positions.tolist(),
@@ -487,53 +485,27 @@ def compute_symmetry_from_ase(atoms, settings):
 
     structdata, symmdata = compute_symmetry(sdata, settings)
 
-    newatoms = ase.Atoms(
-        cell=structdata["lattice"],
-        numbers=structdata["atomic_numbers"],
-        pbc=structdata["pbc"],
-        positions=structdata["ccoords"],
-        tags=structdata["equivalent"])
-
-    return newatoms, symmdata
+    return structdata, symmdata
 
 
-def create_gui_from_ase(atoms, settings):
-    """ create the content of the gui file from an ase.Atoms and settings
+def structdict_to_ase(structdict):
+    """convert struct dict to ase.Atoms
 
-    Symmetry is restricted by atoms.tags
-
-    :param structure: the input structure
-    :type structure: ase.Atoms
-    :param settings: dictionary of settings
-    :type settings: dict
-    :return: content of .gui file (as string), new Atoms instance
-
+    :param structdict: dict containing 'lattice', 'atomic_numbers', 'pbc', 'ccoords', 'equivalent'
+    :rtype: ase.Atoms
     """
     import ase
-
-    sdata = {
-        "lattice": atoms.cell.tolist(),
-        "ccoords": atoms.positions.tolist(),
-        "atomic_numbers": atoms.get_atomic_numbers().tolist(),
-        "pbc": atoms.pbc.tolist(),
-        "equivalent": atoms.get_tags().tolist()
-    }
-
-    structdata, symmdata = compute_symmetry(sdata, settings)
-    gui_str = crystal17_gui_string(structdata, symmdata)
-
     newatoms = ase.Atoms(
-        cell=structdata["lattice"],
-        numbers=structdata["atomic_numbers"],
-        pbc=structdata["pbc"],
-        positions=structdata["ccoords"],
-        tags=structdata["equivalent"])
+        cell=structdict["lattice"],
+        numbers=structdict["atomic_numbers"],
+        pbc=structdict["pbc"],
+        positions=structdict["ccoords"],
+        tags=structdict["equivalent"])
+    return newatoms
 
-    return gui_str, newatoms
 
-
-def create_gui_from_struct(structure, settings):
-    """ create the content of the gui file from a AiiDa structure and settings
+def compute_symmetry_from_structure(structure, settings):
+    """modify an AiiDa structure instance and compute its symmetry, given a settings dictionary
 
     Symmetry is restricted by atom kinds
 
@@ -541,7 +513,7 @@ def create_gui_from_struct(structure, settings):
     :type structure: aiida.orm.data.structure.StructureData
     :param settings: dictionary of settings
     :type settings: dict
-    :return: content of .gui file (as string), mapping of atom id to kind
+    :return: (structure dictionary, symmetry data dictionary)
 
     """
     from aiida.common.exceptions import InputValidationError
@@ -571,14 +543,11 @@ def create_gui_from_struct(structure, settings):
         "atomic_numbers": [ATOMIC_SYMBOL2NUM[sym] for sym in symbols],
         "ccoords": [site.position for site in structure.sites],
         "pbc": structure.pbc,
-        "equivalent": equivalent
+        "equivalent": equivalent,
     }
 
     newsdata, symmdata = compute_symmetry(sdata, settings)
-    gui_str = crystal17_gui_string(newsdata, symmdata)
 
-    # mapping from atom number to kind name
-    return gui_str, {
-        i + 1: id_kind_map[e]
-        for i, e in enumerate(newsdata["equivalent"])
-    }
+    newsdata["kinds"] = [id_kind_map[e] for e in newsdata["equivalent"]]
+
+    return newsdata, symmdata

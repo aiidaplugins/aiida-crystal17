@@ -7,6 +7,7 @@ from aiida_crystal17.parsers.geometry import compute_symmetry_from_structure
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 # from aiida.common.datastructures import calc_states
+from aiida_crystal17.utils import run_get_node
 
 
 class CryMainImmigrant(WorkChain):
@@ -72,7 +73,7 @@ def migrate_as_main(work_dir,
 
     inputs = create_inputs(input_path, output_path)
 
-    newsdata, symmdata = compute_symmetry_from_structure(
+    newsdata, _ = compute_symmetry_from_structure(
         inputs['structure'], inputs['settings'].get_dict())
 
     outparam, outarray, outstructure, psuccess, perrors = parse_mainout(
@@ -147,14 +148,6 @@ def _run_dummy_workchain(inputs_dict, outputs_dict, workchain_cls=None):
             for name, data in outputs_dict.items():
                 self.out(name, data)
 
-    try:
-        # aiida version 1
-        from aiida.work.launch import run_get_node
-        _, calcnode = run_get_node(DummyProcess, **inputs_dict)
-    except ImportError:
-        # aiida version 0.12
-        workchain = DummyProcess.new_instance(inputs=inputs_dict)
-        workchain.run_until_complete()
-        calcnode = workchain.calc
+    calcnode = run_get_node(DummyProcess, inputs_dict)
 
     return calcnode

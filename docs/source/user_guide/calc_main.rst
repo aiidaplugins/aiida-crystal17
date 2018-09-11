@@ -547,7 +547,7 @@ So, for example, taking our structure with kinds;
   ... 'symmetry': {'angletol': None, 'operations': None, 'symprec': 0.01}}
 
   >>> from aiida_crystal17.parsers.geometry import compute_symmetry_from_ase
-  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms, settings)
+  >>> structdict, symdata = compute_symmetry_from_ase(atoms, settings)
   >>> len(symdata["symops"])
   192
   >>> symdata["sgnum"]
@@ -561,7 +561,7 @@ Whereas, for the structure with multiple Ni kinds;
 
 .. code:: python
 
-  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms_afm, settings)
+  >>> structdict, symdata = compute_symmetry_from_ase(atoms_afm, settings)
   >>> len(symdata["symops"])
   32
   >>> symdata["sgnum"]
@@ -580,17 +580,17 @@ and (optionally) primitive cell:
   ... 'symmetry': {'angletol': None, 'operations': None, 'symprec': 0.01}}
 
   >>> from aiida_crystal17.parsers.geometry import compute_symmetry_from_ase
-  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms, settings)
-  >>> new_atoms.get_chemical_formula()
-  'NiO'
+  >>> structdict, symdata = compute_symmetry_from_ase(atoms, settings)
+  >>> structdict["atomic_numbers"]
+  [7, 8]
   >>> symdata["centring_code"]
   5
 
 .. code:: python
 
-  >>> new_atoms, symdata = compute_symmetry_from_ase(atoms_afm, settings)
-  >>> new_atoms.get_chemical_formula()
-  'Ni2O2'
+  >>> structdict, symdata = compute_symmetry_from_ase(atoms_afm, settings)
+  >>> structdict["atomic_numbers"]
+  [7, 7, 8, 8]
   >>> symdata["centring_code"]
   1
 
