@@ -154,26 +154,38 @@ def test_parser_scf(new_database, new_workdir):
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_arrays',
+    assert set(['output_parameters', 'output_settings',
                 'output_structure']) == set(node_dict.keys())
 
     expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'parser_class': 'CryBasicParser',
-        'parser_warnings': ["no 'kinds' available, creating new kinds"],
+        'parser_version':
+        str(aiida_crystal17.__version__),
+        'ejplugins_version':
+        str(ejplugins.__version__),
+        'parser_class':
+        'CryBasicParser',
+        'parser_warnings':
+        ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602,
-        'energy_units': 'eV',  # hartree to eV
-        'calculation_type': 'restricted closed shell',
-        'calculation_spin': False,
-        'wall_time_seconds': 3,
-        'number_of_atoms': 2,
-        'number_of_assymetric': 2,
-        'number_of_symmops': 48,
-        'scf_iterations': 7,
-        'volume': 18.65461527264623,
+        'energy':
+        -2.7121814374931E+02 * 27.21138602,
+        'energy_units':
+        'eV',  # hartree to eV
+        'calculation_type':
+        'restricted closed shell',
+        'calculation_spin':
+        False,
+        'wall_time_seconds':
+        3,
+        'number_of_atoms':
+        2,
+        'number_of_assymetric':
+        2,
+        'scf_iterations':
+        7,
+        'volume':
+        18.65461527264623,
     }
 
     assert edict.diff(
@@ -268,26 +280,40 @@ def test_parser_external(new_database, new_workdir):
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_arrays',
+    assert set(['output_parameters', 'output_settings',
                 'output_structure']) == set(node_dict.keys())
 
     expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'parser_class': 'CryBasicParser',
-        'parser_warnings': ["no 'kinds' available, creating new kinds"],
+        'parser_version':
+        str(aiida_crystal17.__version__),
+        'ejplugins_version':
+        str(ejplugins.__version__),
+        'parser_class':
+        'CryBasicParser',
+        'parser_warnings':
+        ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602,
-        'energy_units': 'eV',  # hartree to eV
-        'calculation_type': 'restricted closed shell',
-        'calculation_spin': False,
-        'wall_time_seconds': 3,
-        'number_of_atoms': 2,
-        'number_of_assymetric': 2,
-        'number_of_symmops': 48,
-        'scf_iterations': 7,
-        'volume': 18.65461527264623
+        'energy':
+        -2.7121814374931E+02 * 27.21138602,
+        'energy_units':
+        'eV',  # hartree to eV
+        'calculation_type':
+        'restricted closed shell',
+        'calculation_spin':
+        False,
+        'wall_time_seconds':
+        3,
+        'number_of_atoms':
+        2,
+        'number_of_assymetric':
+        2,
+        'scf_iterations':
+        7,
+        'volume':
+        18.65461527264623,
+        'mulliken_charges': [0.777, -0.777],
+        'mulliken_electrons': [11.223, 8.777],
     }
 
     assert edict.diff(
@@ -295,66 +321,57 @@ def test_parser_external(new_database, new_workdir):
         expected_params,
         np_allclose=True) == {}
 
-    expected_arrays = {
-        'mulliken_charges':
-        np.array([0.777, -0.777]),
-        'mulliken_electrons':
-        np.array([11.223, 8.777]),
-        'primitive_symmops':
-        np.array([[1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0.], [
-            0., 1., 0., 1., 0., 0., -1., -1., -1., 0., 0., 0.
-        ], [-1., -1., -1., 0., 0., 1., 0., 1., 0., 0., 0.,
-            0.], [0., 0., 1., -1., -1., -1., 1., 0., 0., 0., 0., 0.], [
-                0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0.
-            ], [0., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0., 0.], [
-                1., 0., 0., 0., 0., 1., -1., -1., -1., 0., 0., 0.
-            ], [1., 0., 0., -1., -1., -1., 0., 1., 0., 0.,
-                0., 0.], [-1., -1., -1., 0., 1., 0., 1., 0., 0., 0., 0., 0.], [
-                    0., 0., 1., 0., 1., 0., -1., -1., -1., 0., 0., 0.
-                ], [0., 1., 0., -1., -1., -1., 0., 0., 1., 0., 0., 0.], [
-                    -1., -1., -1., 1., 0., 0., 0., 0., 1., 0., 0., 0.
-                ], [0., -1., 0., -1., 0., 0., 0., 0., -1., 0., 0.,
-                    0.], [-1., 0., 0., 0., -1., 0., 1., 1., 1., 0., 0., 0.], [
-                        0., 0., -1., 1., 1., 1., 0., -1., 0., 0., 0., 0.
-                    ], [1., 1., 1., 0., 0., -1., -1., 0., 0., 0., 0., 0.], [
-                        -1., 0., 0., 0., 0., -1., 0., -1., 0., 0., 0., 0.
-                    ], [0., 0., -1., 0., -1., 0., -1., 0., 0., 0., 0., 0.], [
-                        0., 0., -1., -1., 0., 0., 1., 1., 1., 0., 0., 0.
-                    ], [0., -1., 0., 1., 1., 1., -1., 0., 0., 0., 0., 0.], [
-                        1., 1., 1., -1., 0., 0., 0., -1., 0., 0., 0., 0.
-                    ], [0., -1., 0., 0., 0., -1., 1., 1., 1., 0., 0., 0.], [
-                        1., 1., 1., 0., -1., 0., 0., 0., -1., 0., 0., 0.
-                    ], [-1., 0., 0., 1., 1., 1., 0., 0., -1., 0., 0., 0.], [
-                        -1., 0., 0., 0., -1., 0., 0., 0., -1., 0., 0., 0.
-                    ], [0., -1., 0., -1., 0., 0., 1., 1., 1., 0., 0., 0.], [
-                        1., 1., 1., 0., 0., -1., 0., -1., 0., 0., 0., 0.
-                    ], [0., 0., -1., 1., 1., 1., -1., 0., 0., 0., 0., 0.], [
-                        0., 0., -1., -1., 0., 0., 0., -1., 0., 0., 0., 0.
-                    ], [0., -1., 0., 0., 0., -1., -1., 0., 0., 0., 0., 0.], [
-                        -1., 0., 0., 0., 0., -1., 1., 1., 1., 0., 0., 0.
-                    ], [-1., 0., 0., 1., 1., 1., 0., -1., 0., 0., 0., 0.], [
-                        1., 1., 1., 0., -1., 0., -1., 0., 0., 0., 0., 0.
-                    ], [0., 0., -1., 0., -1., 0., 1., 1., 1., 0., 0., 0.], [
-                        0., -1., 0., 1., 1., 1., 0., 0., -1., 0., 0., 0.
-                    ], [1., 1., 1., -1., 0., 0., 0., 0., -1., 0., 0.,
-                        0.], [0., 1., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0.],
-                  [1., 0., 0., 0., 1., 0., -1., -1., -1., 0., 0.,
-                   0.], [0., 0., 1., -1., -1., -1., 0., 1., 0., 0., 0., 0.],
-                  [-1., -1., -1., 0., 0., 1., 1., 0., 0., 0., 0.,
-                   0.], [1., 0., 0., 0., 0., 1., 0., 1., 0., 0., 0.,
-                         0.], [0., 0., 1., 0., 1., 0., 1., 0., 0., 0., 0., 0.],
-                  [0., 0., 1., 1., 0., 0., -1., -1., -1., 0., 0.,
-                   0.], [0., 1., 0., -1., -1., -1., 1., 0., 0., 0., 0., 0.], [
-                       -1., -1., -1., 1., 0., 0., 0., 1., 0., 0., 0., 0.
-                   ], [0., 1., 0., 0., 0., 1., -1., -1., -1., 0., 0., 0.], [
-                       -1., -1., -1., 0., 1., 0., 0., 0., 1., 0., 0., 0.
-                   ], [1., 0., 0., -1., -1., -1., 0., 0., 1., 0., 0., 0.]])
-    }
+    expected_operations = [[1., 0., 0., 0., 1., 0., 0., 0., 1., 0., 0., 0.], [
+        0., 1., 0., 1., 0., 0., -1., -1., -1., 0., 0., 0.
+    ], [-1., -1., -1., 0., 0., 1., 0., 1., 0., 0., 0.,
+        0.], [0., 0., 1., -1., -1., -1., 1., 0., 0., 0., 0.,
+              0.], [0., 0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0.], [
+                  0., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0., 0.
+              ], [1., 0., 0., 0., 0., 1., -1., -1., -1., 0., 0.,
+                  0.], [1., 0., 0., -1., -1., -1., 0., 1., 0., 0., 0., 0.], [
+                      -1., -1., -1., 0., 1., 0., 1., 0., 0., 0., 0., 0.
+                  ], [0., 0., 1., 0., 1., 0., -1., -1., -1., 0., 0., 0.], [
+                      0., 1., 0., -1., -1., -1., 0., 0., 1., 0., 0., 0.
+                  ], [-1., -1., -1., 1., 0., 0., 0., 0., 1., 0., 0., 0.], [
+                      0., -1., 0., -1., 0., 0., 0., 0., -1., 0., 0., 0.
+                  ], [-1., 0., 0., 0., -1., 0., 1., 1., 1., 0., 0., 0.], [
+                      0., 0., -1., 1., 1., 1., 0., -1., 0., 0., 0., 0.
+                  ], [1., 1., 1., 0., 0., -1., -1., 0., 0., 0., 0., 0.], [
+                      -1., 0., 0., 0., 0., -1., 0., -1., 0., 0., 0., 0.
+                  ], [0., 0., -1., 0., -1., 0., -1., 0., 0., 0., 0., 0.], [
+                      0., 0., -1., -1., 0., 0., 1., 1., 1., 0., 0., 0.
+                  ], [0., -1., 0., 1., 1., 1., -1., 0., 0., 0., 0., 0.], [
+                      1., 1., 1., -1., 0., 0., 0., -1., 0., 0., 0., 0.
+                  ], [0., -1., 0., 0., 0., -1., 1., 1., 1., 0., 0., 0.], [
+                      1., 1., 1., 0., -1., 0., 0., 0., -1., 0., 0., 0.
+                  ], [-1., 0., 0., 1., 1., 1., 0., 0., -1., 0., 0., 0.], [
+                      -1., 0., 0., 0., -1., 0., 0., 0., -1., 0., 0., 0.
+                  ], [0., -1., 0., -1., 0., 0., 1., 1., 1., 0., 0., 0.], [
+                      1., 1., 1., 0., 0., -1., 0., -1., 0., 0., 0., 0.
+                  ], [0., 0., -1., 1., 1., 1., -1., 0., 0., 0., 0., 0.], [
+                      0., 0., -1., -1., 0., 0., 0., -1., 0., 0., 0., 0.
+                  ], [0., -1., 0., 0., 0., -1., -1., 0., 0., 0., 0., 0.], [
+                      -1., 0., 0., 0., 0., -1., 1., 1., 1., 0., 0., 0.
+                  ], [-1., 0., 0., 1., 1., 1., 0., -1., 0., 0., 0., 0.], [
+                      1., 1., 1., 0., -1., 0., -1., 0., 0., 0., 0., 0.
+                  ], [0., 0., -1., 0., -1., 0., 1., 1., 1., 0., 0., 0.], [
+                      0., -1., 0., 1., 1., 1., 0., 0., -1., 0., 0., 0.
+                  ], [1., 1., 1., -1., 0., 0., 0., 0., -1., 0., 0., 0.], [
+                      0., 1., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0.
+                  ], [1., 0., 0., 0., 1., 0., -1., -1., -1., 0., 0., 0.], [
+                      0., 0., 1., -1., -1., -1., 0., 1., 0., 0., 0., 0.
+                  ], [-1., -1., -1., 0., 0., 1., 1., 0., 0., 0., 0., 0.], [
+                      1., 0., 0., 0., 0., 1., 0., 1., 0., 0., 0., 0.
+                  ], [0., 0., 1., 0., 1., 0., 1., 0., 0., 0., 0., 0.], [
+                      0., 0., 1., 1., 0., 0., -1., -1., -1., 0., 0., 0.
+                  ], [0., 1., 0., -1., -1., -1., 1., 0., 0., 0., 0., 0.], [
+                      -1., -1., -1., 1., 0., 0., 0., 1., 0., 0., 0., 0.
+                  ], [0., 1., 0., 0., 0., 1., -1., -1., -1., 0., 0., 0.],
+                           [-1., -1., -1., 0., 1., 0., 0., 0., 1., 0., 0., 0.],
+                           [1., 0., 0., -1., -1., -1., 0., 0., 1., 0., 0., 0.]]
 
-    assert edict.diff(
-        dict(node_dict['output_arrays'].iterarrays()),
-        expected_arrays,
-        np_allclose=True) == {}
+    assert np.allclose(node_dict['output_settings'].data.operations,
+                       expected_operations)
 
     expected_struct = {
         '@class':
@@ -443,7 +460,7 @@ def test_parser_opt(new_database, new_workdir):
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_arrays',
+    assert set(['output_parameters', 'output_settings',
                 'output_structure']) == set(node_dict.keys())
 
     expected_params = {
@@ -453,7 +470,8 @@ def test_parser_opt(new_database, new_workdir):
         str(ejplugins.__version__),
         'parser_class':
         'CryBasicParser',
-        'parser_warnings': ["no 'kinds' available, creating new kinds"],
+        'parser_warnings':
+        ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings':
         ['WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY'],
@@ -471,8 +489,6 @@ def test_parser_opt(new_database, new_workdir):
         2,
         'number_of_assymetric':
         2,
-        'number_of_symmops':
-        48,
         'scf_iterations':
         8,
         'opt_iterations':
@@ -538,7 +554,7 @@ def test_parser_opt(new_database, new_workdir):
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 @pytest.mark.process_execution
 @pytest.mark.skipif(
     aiida_version() < cmp_version('1.0.0a1'),
@@ -584,26 +600,38 @@ def test_full_run(new_database, new_workdir):
     assert calcnode.get_state() == calc_states.FINISHED
 
     assert set(calcnode.get_outputs_dict().keys()).issuperset([
-        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
+        'output_structure', 'output_parameters', 'output_settings', 'retrieved'
     ])
 
     expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'parser_class': 'CryBasicParser',
-        'parser_warnings': ["no 'kinds' available, creating new kinds"],
+        'parser_version':
+        str(aiida_crystal17.__version__),
+        'ejplugins_version':
+        str(ejplugins.__version__),
+        'parser_class':
+        'CryBasicParser',
+        'parser_warnings':
+        ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602,
-        'energy_units': 'eV',  # hartree to eV
-        'calculation_type': 'restricted closed shell',
-        'calculation_spin': False,
-        'wall_time_seconds': 3,
-        'number_of_atoms': 2,
-        'number_of_assymetric': 2,
-        'number_of_symmops': 48,
-        'scf_iterations': 7,
-        'volume': 18.65461527264623,
+        'energy':
+        -2.7121814374931E+02 * 27.21138602,
+        'energy_units':
+        'eV',  # hartree to eV
+        'calculation_type':
+        'restricted closed shell',
+        'calculation_spin':
+        False,
+        'wall_time_seconds':
+        3,
+        'number_of_atoms':
+        2,
+        'number_of_assymetric':
+        2,
+        'scf_iterations':
+        7,
+        'volume':
+        18.65461527264623,
     }
 
     assert edict.diff(

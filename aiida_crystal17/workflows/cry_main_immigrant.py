@@ -3,7 +3,6 @@ import os
 
 from aiida.parsers.exceptions import ParsingError
 from aiida.work import WorkChain
-from aiida_crystal17.parsers.geometry import structure_to_dict
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 # from aiida.common.datastructures import calc_states
@@ -73,12 +72,14 @@ def migrate_as_main(work_dir,
 
     inputs = create_inputs(input_path, output_path)
 
-    struct_dict = structure_to_dict(inputs['structure'])
-
-    outparam, outarray, outstructure, psuccess, perrors = parse_mainout(
+    psuccess, output_nodes = parse_mainout(
         output_path,
         parser_class=parser_cls.__name__,
-        atom_kinds=struct_dict["kinds"])
+        init_struct=inputs['structure'],
+        init_settings=inputs['settings'])
+
+    outparams = output_nodes.pop("parameters")
+    perrors = outparams.get_attr("errors")
 
     if perrors or not psuccess:
         raise ParsingError(
@@ -106,11 +107,17 @@ def migrate_as_main(work_dir,
     for el, basis in inputs["basis"].items():
         inputs_dict[calc.get_linkname_basisset(el)] = basis
 
-    outputs_dict = {parser_cls.get_linkname_outparams(): outparam}
-    if outstructure:
-        outputs_dict[parser_cls.get_linkname_outstructure()] = outstructure
-    if outarray:
-        outputs_dict[parser_cls.get_linkname_outarrays()] = outarray
+    outputs_dict = {parser_cls.get_linkname_outparams(): outparams}
+    if "settings" in output_nodes:
+        outputs_dict[parser_cls.get_linkname_outsettings()] = output_nodes.pop(
+            "settings")
+    if "structure" in output_nodes:
+        outputs_dict[parser_cls.get_linkname_outstructure(
+        )] = output_nodes.pop("structure")
+    if output_nodes:
+        raise ParsingError("unknown key(s) in output_nodes: {}".format(
+            list(output_nodes.keys())))
+
     outputs_dict["retrieved"] = folder
 
     calcnode = _run_dummy_workchain(inputs_dict, outputs_dict,

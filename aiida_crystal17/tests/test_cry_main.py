@@ -570,7 +570,7 @@ def test_parser_with_init_struct(new_database, new_workdir):
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_arrays',
+    assert set(['output_parameters', 'output_settings',
                 'output_structure']) == set(node_dict.keys())
 
     expected_params = {
@@ -587,7 +587,6 @@ def test_parser_with_init_struct(new_database, new_workdir):
         'wall_time_seconds': 3,
         'number_of_atoms': 2,
         'number_of_assymetric': 2,
-        'number_of_symmops': 48,
         'scf_iterations': 7,
         'volume': 18.65461527264623,
     }
@@ -742,9 +741,8 @@ def test_full_run_nio_afm(new_database, new_workdir):
 
     assert calcnode.get_state() == calc_states.FINISHED
 
-    assert set(calcnode.get_outputs_dict().keys()).issuperset([
-        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
-    ])
+    assert set(calcnode.get_outputs_dict().keys()).issuperset(
+        ['output_structure', 'output_parameters', 'retrieved'])
 
     expected_params = {
         'parser_version': str(aiida_crystal17.__version__),
@@ -755,7 +753,6 @@ def test_full_run_nio_afm(new_database, new_workdir):
         'warnings': [],
         'energy': -85124.8936673389,
         'number_of_assymetric': 4,
-        'number_of_symmops': 16,
         'volume': 36.099581472,
         'scf_iterations': 13,
         'energy_units': 'eV',

@@ -37,9 +37,8 @@ def test_full(new_database):
 
     print(node.get_outputs_dict())
 
-    assert set(node.get_outputs_dict().keys()).issuperset([
-        'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
-    ])
+    assert set(node.get_outputs_dict().keys()).issuperset(
+        ['output_structure', 'output_parameters', 'retrieved'])
 
     assert '_aiida_cached_from' not in node.extras()
 
