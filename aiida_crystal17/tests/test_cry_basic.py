@@ -9,9 +9,8 @@ import aiida_crystal17.tests.utils as tests
 import ejplugins
 import numpy as np
 import pytest
+from aiida_crystal17.utils import aiida_version, cmp_version
 from jsonextended import edict
-
-# TODO parameterize tests
 
 
 def get_basic_code(workdir, configure=False):
@@ -668,7 +667,9 @@ def test_parser_with_kindmap(new_database, new_workdir):
 
 @pytest.mark.timeout(30)
 @pytest.mark.process_execution
-@pytest.mark.v12_known_fail
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1'),
+    reason='process hangs on TOSUBMIT state')
 def test_full_run(new_database, new_workdir):
     """Test running a calculation"""
     from aiida.orm.data.singlefile import SinglefileData

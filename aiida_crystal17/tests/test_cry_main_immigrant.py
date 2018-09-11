@@ -4,6 +4,7 @@ import shutil
 from aiida_crystal17.tests import TEST_DIR
 import aiida_crystal17.tests.utils as tests
 import pytest
+from aiida_crystal17.utils import aiida_version, cmp_version
 
 
 def get_main_code(workdir):
@@ -16,7 +17,9 @@ def get_main_code(workdir):
 
 
 # TODO fails on sqlalchemy for aiida v0.12 because of error in computer config
-@pytest.mark.v12_sqlalchemy_fail
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
+    reason="Error in obtaining authinfo for computer configuration")
 def test_full(new_database, new_workdir):
     from aiida_crystal17.calculations.cry_main_immigrant import CryMainImmigrantCalculation
 

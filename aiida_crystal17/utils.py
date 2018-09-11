@@ -1,6 +1,7 @@
 """
 helpful code
 """
+from packaging import version
 import collections
 from jsonextended import edict
 
@@ -9,6 +10,20 @@ try:
     basestring
 except NameError:
     basestring = str  # pylint: disable=redefined-builtin
+
+
+def aiida_version():
+    """get the version of aiida in use
+
+    :returns: packaging.version.Version
+    """
+    from aiida import __version__ as aiida_version_
+    return version.parse(aiida_version_)
+
+
+def cmp_version(string):
+    """convert a version string to a packaging.version.Version"""
+    return version.parse(string)
 
 
 def unflatten_dict(indict, delimiter="."):

@@ -7,13 +7,11 @@ import sys
 
 TEST_COMPUTER = 'localhost-test'
 executables = {
-    'crystal17.diff': 'diff',
     'crystal17.basic': 'runcry17',
     'crystal17.main': 'runcry17',
 }
 MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
 mock_executables = {
-    'crystal17.diff': 'diff',
     'crystal17.basic': 'mock_runcry17',
     'crystal17.main': 'mock_runcry17',
 }
@@ -29,6 +27,12 @@ def get_backend():
     if os.environ.get('TEST_AIIDA_BACKEND') == BACKEND_SQLA:
         return BACKEND_SQLA
     return BACKEND_DJANGO
+
+
+def is_sqla_backend():
+    """return True if the backend is sqlalchemy"""
+    from aiida.backends.profile import BACKEND_SQLA
+    return get_backend() == BACKEND_SQLA
 
 
 def get_path_to_executable(executable):
