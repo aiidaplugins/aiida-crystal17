@@ -739,6 +739,11 @@ def test_full_run_nio_afm(new_database, new_workdir):
 
     assert '_aiida_cached_from' not in calcnode.extras()
 
+    try:
+        print(calcnode.out.output_parameters.get_dict())
+    except AttributeError:
+        pass
+
     assert calcnode.get_state() == calc_states.FINISHED
 
     assert set(calcnode.get_outputs_dict().keys()).issuperset(
