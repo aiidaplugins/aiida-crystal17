@@ -367,7 +367,6 @@ def test_submit_nio_afm(new_database, new_workdir):
         cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
     atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
     instruct = StructureData(ase=atoms)
-    from aiida_crystal17.parsers.geometry import structure_to_dict
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
@@ -748,24 +747,24 @@ def test_full_run_nio_afm(new_database, new_workdir):
         'output_structure', 'output_parameters', 'output_arrays', 'retrieved'
     ])
 
-    expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'parser_class': 'CryBasicParser',
-        'parser_warnings': [],
-        'errors': [],
-        'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602,
-        'energy_units': 'eV',  # hartree to eV
-        'calculation_type': 'restricted closed shell',
-        'calculation_spin': False,
-        'wall_time_seconds': 3,
-        'number_of_atoms': 2,
-        'number_of_assymetric': 2,
-        'number_of_symmops': 48,
-        'scf_iterations': 7,
-        'volume': 18.65461527264623,
-    }
+    expected_params = {'number_of_atoms': 4,
+                       'parser_version': '0.3.0a0',
+                       'errors': [],
+                       'mulliken_spin_total': 0.0,
+                       'warnings': [],
+                       'energy': -85124.8936673389,
+                       'ejplugins_version': '0.9.7',
+                       'number_of_assymetric': 4,
+                       'number_of_symmops': 16,
+                       'volume': 36.099581472,
+                       'scf_iterations': 13,
+                       'energy_units': 'eV', 
+                       'calculation_type': 'unrestricted open shell',
+                       'parser_warnings': [],
+                       'wall_time_seconds': 187,
+                       'parser_class': 'CryBasicParser',
+                       'calculation_spin': True,
+                       'mulliken_spins': [3.057, -3.057, -0.072, 0.072]}
 
     print(calcnode.get_outputs_dict()['output_parameters'].get_dict())
 

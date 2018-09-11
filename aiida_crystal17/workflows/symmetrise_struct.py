@@ -113,7 +113,7 @@ class Symmetrise3DStructure(WorkChain):
         # only allow 3d structures
         if not all(self.inputs.structure.pbc):
             raise ValidationError(
-                "the structure must be 3D (have all dimensions pbc=True)")
+                "the structure must be 3D (i.e. have all dimensions pbc=True)")
 
         settings_dict = self.inputs.settings.get_dict(
         ) if "settings" in self.inputs else {}
@@ -146,7 +146,13 @@ class Symmetrise3DStructure(WorkChain):
 
 
 def run_symmetrise_3d_structure(structure, settings=None):
-    """run the Symmetrise3DStructure workchain and return the structure and settings data nodes"""
+    """run the Symmetrise3DStructure workchain and return the structure and settings data nodes,
+    for inputting into ``crystal17.main`` calculation
+
+    :param structure: StructureData
+    :param settings: dict or ParameterData
+    :return: (StructureData, StructSettingsData)
+    """
     if isinstance(settings, dict):
         settings = unflatten_dict(settings)
         settings = ParameterData(dict=settings)
