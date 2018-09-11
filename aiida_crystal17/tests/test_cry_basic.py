@@ -9,7 +9,7 @@ import aiida_crystal17.tests.utils as tests
 import ejplugins
 import numpy as np
 import pytest
-from aiida_crystal17.utils import aiida_version, cmp_version
+from aiida_crystal17.utils import aiida_version, cmp_version, run_get_node
 from jsonextended import edict
 
 
@@ -685,36 +685,24 @@ def test_full_run(new_database, new_workdir):
 
     # set up calculation
     calc = code.new_calc()
-    options = {
-        "resources": {
-            "num_machines": 1,
-            "num_mpiprocs_per_machine": 1
-        },
-        "withmpi": False,
-        "max_wallclock_seconds": 30
-    }
 
     from aiida.orm.data.base import Bool
     inputs_dict = {
         "input_file": infile,
-        "code": code
+        "code": code,
+        "options": {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 30
+        }
     }  #, "_use_cache": Bool(False)}
 
     process = calc.process()
 
-    try:
-        # aiida v1
-        from aiida.work.launch import run_get_node
-        inputs_dict["options"] = options
-        _, calcnode = run_get_node(process, **inputs_dict)
-    except ImportError:
-        # aiida v0.12
-        from aiida.work.run import run
-        # output, pid = run(process, _return_pid=True, **inputs_dict)
-        inputs_dict["_options"] = options
-        new_process = process.new_instance(inputs=inputs_dict)
-        new_process.run_until_complete()
-        calcnode = new_process.calc
+    calcnode = run_get_node(process, inputs_dict)
 
     print(calcnode)
 

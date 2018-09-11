@@ -1,13 +1,11 @@
 """a workflow to immigrate previously run CRYSTAL17 computations into Aiida"""
 import os
 
-from aiida_crystal17.parsers.geometry import create_gui_from_struct
-from aiida_crystal17.parsers.mainout_parse import parse_mainout
-from aiida_crystal17.parsers.migrate import create_inputs
-
 from aiida.parsers.exceptions import ParsingError
 from aiida.work import WorkChain
-
+from aiida_crystal17.parsers.geometry import compute_symmetry_from_structure
+from aiida_crystal17.parsers.mainout_parse import parse_mainout
+from aiida_crystal17.parsers.migrate import create_inputs
 # from aiida.common.datastructures import calc_states
 
 
@@ -74,13 +72,13 @@ def migrate_as_main(work_dir,
 
     inputs = create_inputs(input_path, output_path)
 
-    _, atomid_kind_map = create_gui_from_struct(inputs['structure'],
-                                                inputs['settings'].get_dict())
+    newsdata, symmdata = compute_symmetry_from_structure(
+        inputs['structure'], inputs['settings'].get_dict())
 
     outparam, outarray, outstructure, psuccess, perrors = parse_mainout(
         output_path,
         parser_class=parser_cls.__name__,
-        atomid_kind_map=atomid_kind_map)
+        atom_kinds=newsdata["kinds"])
 
     if perrors or not psuccess:
         raise ParsingError(
