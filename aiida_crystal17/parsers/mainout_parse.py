@@ -6,6 +6,7 @@ import os
 import numpy as np
 # TODO remove dependancy on ejplugins?
 import ejplugins
+from aiida_crystal17.parsers.geometry import dict_to_structure
 from ejplugins.crystal import CrystalOutputPlugin
 
 from aiida.parsers.exceptions import OutputParsingError
@@ -106,19 +107,7 @@ def parse_mainout(abs_path, parser_class, parser_opts=None, atom_kinds=None):
         param_data["number_of_symmops"] = len(symm_data)
         array_dict["primitive_symmops"] = symm_data
 
-    if data.get("mulliken", False):
-        if "alpha+beta_electrons" in data["mulliken"]:
-            electrons = data["mulliken"]["alpha+beta_electrons"]["charges"]
-            anum = data["mulliken"]["alpha+beta_electrons"]["atomic_numbers"]
-            array_dict["mulliken_electrons"] = electrons
-            array_dict["mulliken_charges"] = [
-                a - e for a, e in zip(anum, electrons)
-            ]
-        if "alpha-beta_electrons" in data["mulliken"]:
-            param_data["mulliken_spins"] = data["mulliken"][
-                "alpha-beta_electrons"]["charges"]
-            param_data["mulliken_spin_total"] = sum(
-                param_data["mulliken_spins"])
+    _extract_mulliken(array_dict, data, param_data)
 
     # TODO only save StructureData if cell has changed?
     cell_vectors = []
@@ -126,12 +115,22 @@ def parse_mainout(abs_path, parser_class, parser_opts=None, atom_kinds=None):
         assert cell_data["cell_vectors"][n]["units"] == "angstrom"
         cell_vectors.append(cell_data["cell_vectors"][n]["magnitude"])
 
-    structure = create_structure({
-        "cell_vectors": cell_vectors,
-        "pbc": cell_data["pbc"],
-        "symbols": cell_data["symbols"],
-        "ccoords": cell_data["ccoords"]["magnitude"]
-    }, atom_kinds)
+    if not atom_kinds:
+        param_data["parser_warnings"].append(
+            "no 'kinds' available, creating new kinds")
+
+    structure = dict_to_structure({
+        "lattice":
+        cell_vectors,
+        "pbc":
+        cell_data["pbc"],
+        "symbols":
+        cell_data["symbols"],
+        "ccoords":
+        cell_data["ccoords"]["magnitude"],
+        "kinds":
+        atom_kinds
+    })
     param_data["volume"] = structure.get_cell_volume()
 
     # add the version and class of parser
@@ -151,35 +150,18 @@ def parse_mainout(abs_path, parser_class, parser_opts=None, atom_kinds=None):
     return param_data, arraydata, structure, psuccess, perrors
 
 
-def create_structure(structdict, atom_kinds=None):
-    """ create a StructureData from a dictionary and mapping
-
-    :param structdict: dict containing 'symbols', 'ccoords', 'pbc', 'cell_vectors'
-    :param atom_kinds: Kind (or raw dict of kind) for each atom
-    :return:
-    """
-    from aiida.orm import DataFactory
-    StructureData = DataFactory('structure')
-    struct = StructureData(cell=structdict['cell_vectors'])
-    struct.set_pbc(structdict["pbc"])
-
-    if atom_kinds is None:
-        # self.logger.warning(
-        #     "no atom id to kind map available, creating new kinds")
-        for symbol, ccoord in zip(structdict['symbols'],
-                                  structdict['ccoords']):
-            struct.append_atom(position=ccoord, symbols=symbol)
-    else:
-        if len(atom_kinds) != len(structdict['ccoords']):
-            raise AssertionError(
-                "the length of ccoords and atom_kinds must be the same")
-
-        from aiida.orm.data.structure import Site, Kind
-        for kind, ccoord in zip(atom_kinds, structdict['ccoords']):
-            if not isinstance(kind, Kind):
-                kind = Kind(raw=kind)
-            if kind.name not in struct.get_site_kindnames():
-                struct.append_kind(kind)
-            struct.append_site(Site(position=ccoord, kind_name=kind.name))
-
-    return struct
+def _extract_mulliken(array_dict, data, param_data):
+    """extract mulliken data"""
+    if data.get("mulliken", False):
+        if "alpha+beta_electrons" in data["mulliken"]:
+            electrons = data["mulliken"]["alpha+beta_electrons"]["charges"]
+            anum = data["mulliken"]["alpha+beta_electrons"]["atomic_numbers"]
+            array_dict["mulliken_electrons"] = electrons
+            array_dict["mulliken_charges"] = [
+                a - e for a, e in zip(anum, electrons)
+            ]
+        if "alpha-beta_electrons" in data["mulliken"]:
+            param_data["mulliken_spins"] = data["mulliken"][
+                "alpha-beta_electrons"]["charges"]
+            param_data["mulliken_spin_total"] = sum(
+                param_data["mulliken_spins"])

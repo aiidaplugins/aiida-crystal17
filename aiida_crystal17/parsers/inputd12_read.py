@@ -4,7 +4,7 @@ module for reading main.d12 (for immigration)
 import numpy as np
 
 from aiida_crystal17.utils import get_keys, unflatten_dict
-from aiida_crystal17.validation import read_schema, validate_dict
+from aiida_crystal17.validation import read_schema, validate_with_json
 
 
 def _pop_line(lines, num=1):
@@ -103,7 +103,7 @@ def extract_data(input_string):
     _read_hamiltonian_block(atom_props, lines, output_dict, schema)
 
     output_dict = unflatten_dict(output_dict)
-    validate_dict(output_dict, "inputd12")
+    validate_with_json(output_dict, "inputd12")
 
     return output_dict, basis_sets, atom_props
 

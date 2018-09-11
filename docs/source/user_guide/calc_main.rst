@@ -221,9 +221,9 @@ which can be used programmatically:
 
 .. code:: Python
 
-  from aiida_crystal17.validation import read_schema, validate_dict
+  from aiida_crystal17.validation import read_schema, validate_with_json
   read_schema("inputd12")
-  validate_dict(params, "inputd12")
+  validate_with_json(params, "inputd12")
 
 The dictionary can also be written in a flattened manner, delimited by '.',
 and subsequently converted:

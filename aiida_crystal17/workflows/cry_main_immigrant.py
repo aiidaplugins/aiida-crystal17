@@ -3,7 +3,7 @@ import os
 
 from aiida.parsers.exceptions import ParsingError
 from aiida.work import WorkChain
-from aiida_crystal17.parsers.geometry import compute_symmetry_from_structure
+from aiida_crystal17.parsers.geometry import structure_to_dict
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 # from aiida.common.datastructures import calc_states
@@ -73,13 +73,12 @@ def migrate_as_main(work_dir,
 
     inputs = create_inputs(input_path, output_path)
 
-    newsdata, _ = compute_symmetry_from_structure(
-        inputs['structure'], inputs['settings'].get_dict())
+    struct_dict = structure_to_dict(inputs['structure'])
 
     outparam, outarray, outstructure, psuccess, perrors = parse_mainout(
         output_path,
         parser_class=parser_cls.__name__,
-        atom_kinds=newsdata["kinds"])
+        atom_kinds=struct_dict["kinds"])
 
     if perrors or not psuccess:
         raise ParsingError(

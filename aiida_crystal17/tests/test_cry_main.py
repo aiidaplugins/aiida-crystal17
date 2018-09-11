@@ -24,7 +24,7 @@ def get_main_code(workdir, configure=False):
     return code
 
 
-def test_prepare(new_database, new_workdir):
+def test_prepare_and_validate(new_database, new_workdir):
     """test preparation of inputs"""
     code = get_main_code(new_workdir)
 
@@ -32,6 +32,7 @@ def test_prepare(new_database, new_workdir):
 
     from aiida.orm import DataFactory, CalculationFactory
     StructureData = DataFactory('structure')
+
     atoms = crystal(
         symbols=[12, 8],
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
@@ -39,12 +40,11 @@ def test_prepare(new_database, new_workdir):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
 
+    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    instruct, settings = run_symmetrise_3d_structure(instruct)
+
     calc_cls = CalculationFactory('crystal17.main')
-    calc_cls.prepare_and_validate(
-        inparams,
-        instruct,
-        settings={"crystal.system": "triclinic"},
-        flattened=True)
+    calc_cls.prepare_and_validate(inparams, instruct, settings, flattened=True)
 
 
 def test_submit_mgo(new_database, new_workdir):
@@ -74,6 +74,9 @@ def test_submit_mgo(new_database, new_workdir):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
 
+    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    instruct, settings = run_symmetrise_3d_structure(instruct)
+
     mg_basis, _ = BasisSetData.get_or_create(
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
     o_basis, _ = BasisSetData.get_or_create(
@@ -89,6 +92,7 @@ def test_submit_mgo(new_database, new_workdir):
 
     calc.use_parameters(inparams)
     calc.use_structure(instruct)
+    calc.use_settings(settings)
     calc.use_basisset(mg_basis, "Mg")
     calc.use_basisset(o_basis, "O")
 
@@ -363,8 +367,12 @@ def test_submit_nio_afm(new_database, new_workdir):
         cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
     atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
     instruct = StructureData(ase=atoms)
+    from aiida_crystal17.parsers.geometry import structure_to_dict
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+
+    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    instruct, settings = run_symmetrise_3d_structure(instruct, settings)
 
     upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"),
@@ -381,8 +389,8 @@ def test_submit_nio_afm(new_database, new_workdir):
     calc.set_withmpi(False)
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
-    params, settings = calc.prepare_and_validate(params, instruct, settings,
-                                                 "sto3g", True)
+    params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
+                                       True)
 
     calc.use_parameters(params)
     calc.use_structure(instruct)
@@ -530,7 +538,6 @@ def test_parser_with_init_struct(new_database, new_workdir):
     from aiida.common.datastructures import calc_states
     from aiida.common.folders import SandboxFolder
     from aiida.orm import DataFactory
-    from aiida.orm.data.structure import Kind
 
     code = get_main_code(new_workdir)
 
@@ -686,6 +693,9 @@ def test_full_run_nio_afm(new_database, new_workdir):
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
+    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    instruct, settings = run_symmetrise_3d_structure(instruct, settings)
+
     upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"),
         "sto3g",
@@ -697,18 +707,23 @@ def test_full_run_nio_afm(new_database, new_workdir):
     # set up calculation
     calc = code.new_calc()
 
-    params, settings = calc.prepare_and_validate(params, instruct, settings,
-                                                 "sto3g", True)
+    params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
+                                       True)
 
     # set up calculation
     calc = code.new_calc()
 
     inputs_dict = {
-        "parameters": params,
-        "structure": instruct,
-        "settings": settings,
-        "basisset": get_basissets_from_structure(instruct, "sto3g", by_kind=False),
-        "code": code,
+        "parameters":
+        params,
+        "structure":
+        instruct,
+        "settings":
+        settings,
+        "basisset":
+        get_basissets_from_structure(instruct, "sto3g", by_kind=False),
+        "code":
+        code,
         "options": {
             "resources": {
                 "num_machines": 1,

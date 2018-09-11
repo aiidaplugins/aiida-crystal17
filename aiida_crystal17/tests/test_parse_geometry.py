@@ -7,31 +7,10 @@ import os
 from aiida_crystal17.tests import TEST_DIR
 import numpy as np
 import pytest
-from aiida_crystal17.parsers.geometry import read_gui_file, compute_symmetry, get_centering_code, get_crystal_system, \
-    crystal17_gui_string, compute_symmetry_from_ase, structdict_to_ase
+from aiida_crystal17.parsers.geometry import read_gui_file, get_centering_code, get_crystal_system, \
+    crystal17_gui_string, structdict_to_ase, compute_symmetry_3d, ase_to_structdict
 from ase.spacegroup import crystal
 from jsonextended import edict
-
-
-@pytest.fixture(scope="function")
-def default_settings():
-    return {
-        "crystal": {
-            "system": "triclinic",
-            "transform": None,
-        },
-        "symmetry": {
-            "symprec": 0.01,
-            "angletol": None,
-            "operations": None,
-            "sgnum": 1,
-        },
-        "3d": {
-            "standardize": True,
-            "primitive": True,
-            "idealize": False
-        }
-    }
 
 
 @pytest.mark.parametrize(
@@ -123,7 +102,7 @@ def test_read_gui_file():
     assert edict.diff(data, expected) == {}
 
 
-def test_write_gui_with_symops(default_settings):
+def test_write_gui_with_symops():
     sdata = {
         "lattice": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
         "ccoords": [[0, 0, 0]],
@@ -131,12 +110,14 @@ def test_write_gui_with_symops(default_settings):
         "pbc": [True, True, True],
         "equivalent": [0]
     }
-    symops = [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]]  # i.e. no symmetry
+    symmdata = {
+        "operations": [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]],
+        "space_group": 1,
+        "centring_code": 1,
+        "crystal_type": 1
+    }
 
-    default_settings["symmetry"]["operations"] = symops
-
-    outsdata, symmdata = compute_symmetry(sdata, default_settings)
-    outstr = crystal17_gui_string(outsdata, symmdata)
+    outstr = crystal17_gui_string(sdata, symmdata)
 
     expected = """3 1 1
   1.000000000E+00   0.000000000E+00   0.000000000E+00
@@ -152,10 +133,9 @@ def test_write_gui_with_symops(default_settings):
 1 1
 """
     assert outstr == expected
-    assert outsdata == sdata
 
 
-def test_write_gui_without_symops(default_settings):
+def test_compute_symmetry_3d_primitive():
     sdata = {
         "lattice": [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
         "ccoords": [[1, 1, 1]],
@@ -164,7 +144,14 @@ def test_write_gui_without_symops(default_settings):
         "equivalent": [0]
     }
 
-    outsdata, symmdata = compute_symmetry(sdata, default_settings)
+    outsdata, symmdata = compute_symmetry_3d(
+        sdata,
+        standardize=True,
+        primitive=True,
+        idealize=False,
+        symprec=0.01,
+        angletol=None)
+
     outstr = crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 1 6
@@ -372,7 +359,7 @@ def test_write_gui_without_symops(default_settings):
     assert outstr == expected
 
 
-def test_write_gui_mgo_nonprimitive(default_settings):
+def test_compute_symmetry_3d_mgo_nonprimitive():
     # MgO
     atoms = crystal(
         symbols=[12, 8],
@@ -380,27 +367,41 @@ def test_write_gui_mgo_nonprimitive(default_settings):
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
 
-    default_settings["3d"]["primitive"] = False
-    default_settings["3d"]["standardize"] = False
+    sdata = ase_to_structdict(atoms)
 
-    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
-    outatoms = structdict_to_ase(structdict)
+    outsdata, symmdata = compute_symmetry_3d(
+        sdata,
+        standardize=False,
+        primitive=False,
+        idealize=False,
+        symprec=0.01,
+        angletol=None)
+
+    outatoms = structdict_to_ase(outsdata)
 
     assert np.allclose(atoms.cell, outatoms.cell)
     assert atoms.get_number_of_atoms() == outatoms.get_number_of_atoms()
 
 
-def test_write_gui_mgo_primitive(default_settings):
+def test_compute_symmetry_3d_mgo_primitive():
     # MgO
     atoms = crystal(
         symbols=[12, 8],
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
+    sdata = ase_to_structdict(atoms)
 
-    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
-    outatoms = structdict_to_ase(structdict)
-    outstr = crystal17_gui_string(structdict, symmdata)
+    outsdata, symmdata = compute_symmetry_3d(
+        sdata,
+        standardize=True,
+        primitive=True,
+        idealize=False,
+        symprec=0.01,
+        angletol=None)
+
+    outatoms = structdict_to_ase(outsdata)
+    outstr = crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 5 6
   0.000000000E+00  -2.105000000E+00  -2.105000000E+00
@@ -612,17 +613,25 @@ def test_write_gui_mgo_primitive(default_settings):
     assert outatoms.get_atomic_numbers().tolist() == [12, 8]
 
 
-def test_write_gui_marcasite(default_settings):
+def test_compute_symmetry_3d_marcasite():
     """has irregular order of lengths, primitive == crystallographic"""
     atoms = crystal(
         symbols=[26, 16],
         basis=[[0, 0, 0], [0.20052, 0.37827, 0.0]],
         spacegroup=58,
         cellpar=[4.57072239, 5.60859256, 3.50105841, 90, 90, 90])
+    sdata = ase_to_structdict(atoms)
 
-    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
-    outatoms = structdict_to_ase(structdict)
-    outstr = crystal17_gui_string(structdict, symmdata)
+    outsdata, symmdata = compute_symmetry_3d(
+        sdata,
+        standardize=True,
+        primitive=True,
+        idealize=False,
+        symprec=0.01,
+        angletol=None)
+
+    outatoms = structdict_to_ase(outsdata)
+    outstr = crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 1 3
   4.570722390E+00   0.000000000E+00   0.000000000E+00
@@ -675,7 +684,7 @@ def test_write_gui_marcasite(default_settings):
     assert outstr == expected
 
 
-def test_write_gui_mgo_inequivalent(default_settings):
+def test_compute_symmetry_3d_inequivalent():
     # MgO
     atoms = crystal(
         symbols=[12, 8],
@@ -685,9 +694,18 @@ def test_write_gui_mgo_inequivalent(default_settings):
 
     atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
-    structdict, symmdata = compute_symmetry_from_ase(atoms, default_settings)
-    outatoms = structdict_to_ase(structdict)
-    outstr = crystal17_gui_string(structdict, symmdata)
+    sdata = ase_to_structdict(atoms)
+
+    outsdata, symmdata = compute_symmetry_3d(
+        sdata,
+        standardize=True,
+        primitive=True,
+        idealize=False,
+        symprec=0.01,
+        angletol=None)
+
+    outatoms = structdict_to_ase(outsdata)
+    outstr = crystal17_gui_string(outsdata, symmdata)
 
     print(outstr)
 

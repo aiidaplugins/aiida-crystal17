@@ -59,6 +59,9 @@
         "minimum": 0,
         "maximum": 999
       }
+    },
+    "kinds": {
+      "type": "array"
     }
   }
 }

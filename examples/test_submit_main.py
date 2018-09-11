@@ -28,12 +28,13 @@ def test_example(new_database, new_workdir):
     StructureData = DataFactory('structure')
     from ase.spacegroup import crystal
     from aiida_crystal17.data.basis_set import upload_basisset_family
+    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
 
     # get code
     code = get_main_code(new_workdir)
 
     # Prepare input parameters
-    params = {
+    params_dict = {
         "title": "NiO Bulk with AFM spin",
         "scf.single": "UHF",
         "scf.k_points": (8, 8),
@@ -51,7 +52,8 @@ def test_example(new_database, new_workdir):
     atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
     instruct = StructureData(ase=atoms)
 
-    settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+    settings_dict = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+    instruct, settings = run_symmetrise_3d_structure(instruct, settings_dict)
 
     upload_basisset_family(
         os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files", "sto3g"),
@@ -68,8 +70,8 @@ def test_example(new_database, new_workdir):
     calc.set_withmpi(False)
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
-    params, settings = calc.prepare_and_validate(
-        params, instruct, settings, basis_family="sto3g", flattened=True)
+    params = calc.prepare_and_validate(
+        params_dict, instruct, settings, basis_family="sto3g", flattened=True)
 
     calc.use_parameters(params)
     calc.use_structure(instruct)

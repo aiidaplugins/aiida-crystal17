@@ -12,14 +12,14 @@ from aiida.orm import DataFactory
 from aiida.orm.calculation.job import JobCalculation
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
-from aiida_crystal17.parsers.geometry import compute_symmetry_from_structure, crystal17_gui_string
+from aiida_crystal17.parsers.geometry import crystal17_gui_string, structure_to_dict
 from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
-from jsonextended import edict
 
 StructureData = DataFactory('structure')
 ParameterData = DataFactory('parameter')
 BasisSetData = DataFactory('crystal17.basisset')
+StructSettingsData = DataFactory('crystal17.structsettings')
 
 
 class CryMainCalculation(JobCalculation):
@@ -27,30 +27,6 @@ class CryMainCalculation(JobCalculation):
     AiiDA calculation plugin wrapping the runcry17 executable.
 
     """
-
-    _default_settings = {
-        "crystal": {
-            "system": "triclinic",
-            "transform": None,
-        },
-        "symmetry": {
-            "symprec": 0.01,
-            "angletol": None,
-            "operations": None,
-            "sgnum": 1
-        },
-        "kinds": {
-            "spin_alpha": [],
-            "spin_beta": [],
-            "fixed": [],
-            "ghosts": []
-        },
-        "3d": {
-            "standardize": True,
-            "primitive": True,
-            "idealize": False
-        }
-    }
 
     def _init_internal_params(self):  # pylint: disable=useless-super-delegation
         """
@@ -90,35 +66,32 @@ class CryMainCalculation(JobCalculation):
     def prepare_and_validate(cls,
                              param_dict,
                              structure,
-                             settings=None,
+                             settings,
                              basis_family=None,
                              flattened=False):
         """ prepare and validate the inputs to the calculation
 
         :param input: dict giving data to create the input .d12 file
         :param structure: the StructureData
-        :param settings: ParameterData giving
+        :param settings: StructSettingsData giving symmetry operations, etc
         :param basis_family: string of the BasisSetFamily to use
-        :param flattened: whether the input (and settings) dictionary are flattened
-        :return: (parameters, settings)
+        :param flattened: whether the input dictionary is flattened
+        :return: parameters
         """
-        settings = {} if settings is None else settings
         if flattened:
             param_dict = unflatten_dict(param_dict)
-            settings = unflatten_dict(settings)
         # validate structure and settings
-        setting_dict = edict.merge(
-            [cls._default_settings, settings], overwrite=True)
-        newsdata, _ = compute_symmetry_from_structure(structure, setting_dict)
+        struct_dict = structure_to_dict(structure)
         # validate parameters
-        atom_props = cls._create_atom_props(newsdata["kinds"], setting_dict)
+        atom_props = cls._create_atom_props(struct_dict["kinds"],
+                                            settings.data)
         write_input(param_dict, ["test_basis"], atom_props)
         # validate basis sets
         if basis_family:
             get_basissets_from_structure(
                 structure, basis_family, by_kind=False)
 
-        return ParameterData(dict=param_dict), ParameterData(dict=setting_dict)
+        return ParameterData(dict=param_dict)
 
     @classmethod
     def _get_linkname_basisset_prefix(cls):
@@ -177,14 +150,14 @@ class CryMainCalculation(JobCalculation):
             },
             "settings": {
                 'valid_types':
-                ParameterData,
+                StructSettingsData,
                 'additional_parameter':
                 None,
                 'linkname':
                 'settings',
                 'docstring':
-                "Settings for initial manipulation of structures "
-                "and conversion to .gui (fort.34) input file",
+                "Structure settings for conversion to .gui (fort.34) input file "
+                "defining symmetry operations and kind specific data",
             },
             "basisset": {
                 'valid_types':
@@ -281,7 +254,7 @@ class CryMainCalculation(JobCalculation):
 
     # pylint: disable=too-many-arguments
     def _create_input_files(self, basissets, instruct, parameters,
-                            setting_dict, tempfolder):
+                            settings_dict, tempfolder):
         """ create input files in temporary folder
 
         :param basissets:
@@ -292,20 +265,15 @@ class CryMainCalculation(JobCalculation):
         :return: atomid_kind_map
         """
         # create .gui external geometry file and place it in tempfolder
-        try:
-            newsdata, symmdata = compute_symmetry_from_structure(
-                instruct, setting_dict)
-            gui_content = crystal17_gui_string(newsdata, symmdata)
-        except (ValueError, NotImplementedError) as err:
-            raise InputValidationError(
-                "an input geometry file could not be created from the structure: {}".
-                format(err))
+        struct_dict = structure_to_dict(instruct)
 
+        gui_content = crystal17_gui_string(struct_dict, settings_dict)
         with open(tempfolder.get_abs_path(self._DEFAULT_EXTERNAL_FILE),
                   'w') as f:
             f.write(gui_content)
 
-        atom_props = self._create_atom_props(newsdata["kinds"], setting_dict)
+        atom_props = self._create_atom_props(struct_dict["kinds"],
+                                             settings_dict)
 
         # create .d12 input file and place it in tempfolder
         try:
@@ -336,6 +304,7 @@ class CryMainCalculation(JobCalculation):
             "unfixed": [],
             "ghosts": []
         }
+
         if "kinds" in setting_dict:
             for i, kind in enumerate(atom_kinds):
                 if kind.name in setting_dict["kinds"].get("spin_alpha", []):
@@ -392,29 +361,22 @@ class CryMainCalculation(JobCalculation):
         if not isinstance(instruct, StructureData):
             raise InputValidationError("structure not of type StructureData")
 
-        basissets = self._retrieve_basis_sets(inputdict, instruct)
+        try:
+            settings = inputdict.pop(self.get_linkname('settings'))
+        except KeyError:
+            raise InputValidationError("Missing settings")
+        if not isinstance(settings, StructSettingsData):
+            raise InputValidationError(
+                "settings not of type StructSettingsData")
 
-        # Settings can be undefined, and defaults to an empty dictionary
-        settings = inputdict.pop(self.get_linkname('settings'), None)
-        if settings is None:
-            input_settings = {}
-        else:
-            if not isinstance(settings, ParameterData):
-                raise InputValidationError(
-                    "settings, if specified, must be of "
-                    "type ParameterData")
-            input_settings = settings.get_dict()
+        basissets = self._retrieve_basis_sets(inputdict, instruct)
 
         if inputdict:
             raise ValidationError(
                 "Unknown additional inputs: {}".format(inputdict))
 
-        # update default settings
-        setting_dict = edict.merge(
-            [self._default_settings, input_settings], overwrite=True)
-
-        self._create_input_files(basissets, instruct, parameters, setting_dict,
-                                 tempfolder)
+        self._create_input_files(basissets, instruct, parameters,
+                                 settings.data, tempfolder)
 
         # Prepare CodeInfo object for aiida, describes how a code has to be executed
         codeinfo = CodeInfo()

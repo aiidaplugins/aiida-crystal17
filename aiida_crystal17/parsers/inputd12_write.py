@@ -3,7 +3,7 @@ module to write CRYSTAL17 .d12 files
 """
 import six
 from aiida_crystal17.utils import get_keys
-from aiida_crystal17.validation import validate_dict
+from aiida_crystal17.validation import validate_with_json
 
 # TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
@@ -51,7 +51,7 @@ def write_input(indict, basis_sets, atom_props=None):
     :return:
     """
     # validation
-    validate_dict(indict)
+    validate_with_json(indict)
     if not basis_sets:
         raise ValueError("there must be at least one basis set")
     elif not (all([isinstance(b, six.string_types) for b in basis_sets])

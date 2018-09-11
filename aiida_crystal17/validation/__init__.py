@@ -16,13 +16,28 @@ def read_schema(name="inputd12"):
     return schema
 
 
-def validate_dict(data, name="inputd12"):
+def validate_with_json(data, name="inputd12"):
     """ validate json-type data against a schema
 
     :param data: dictionary
     """
     schema = read_schema(name)
 
+    # validator = jsonschema.validators.extend(
+    #     jsonschema.Draft4Validator,
+    # )
+    validator = jsonschema.Draft4Validator
+
+    # by default, only validates lists
+    validator(schema, types={"array": (list, tuple)}).validate(data)
+
+
+def validate_with_dict(data, schema):
+    """ validate json-type data against a schema
+
+    :param data: dictionary
+    :param schema: dictionary
+    """
     # validator = jsonschema.validators.extend(
     #     jsonschema.Draft4Validator,
     # )

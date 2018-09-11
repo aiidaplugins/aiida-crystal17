@@ -1,11 +1,13 @@
 import copy
 import tempfile
 
-import jsonschema
+from jsonschema import ValidationError as SchemeError
 import numpy as np
 from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
 from aiida.orm import Data
+from aiida_crystal17.parsers.geometry import CRYSTAL_TYPE_MAP, CENTERING_CODE_MAP
+from aiida_crystal17.validation import validate_with_dict
 
 
 class StructSettingsData(Data):
@@ -29,6 +31,26 @@ class StructSettingsData(Data):
         "additionalProperties":
         False,
         "properties": {
+            "symmetry_program": {
+                "description": "the program used to generate the symmetry",
+                "type": "string"
+            },
+            "symmetry_version": {
+                "description":
+                "the version of the program used to generate the symmetry",
+                "type":
+                "string"
+            },
+            "computation_class": {
+                "description": "the class used to compute the settings",
+                "type": "string"
+            },
+            "computation_version": {
+                "description":
+                "the version of the class used to compute the settings",
+                "type":
+                "string"
+            },
             "space_group": {
                 "description": "Space group number (international)",
                 "type": "integer",
@@ -36,13 +58,13 @@ class StructSettingsData(Data):
                 "maximum": 230
             },
             "crystal_type": {
-                "description": "Space group number (international)",
+                "description": "The crystal type, as designated by CRYSTAL17",
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 6
             },
             "centring_code": {
-                "description": "Space group number (international)",
+                "description": "The crystal type, as designated by CRYSTAL17",
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 6
@@ -122,19 +144,6 @@ class StructSettingsData(Data):
     def data_schema(self):
         return copy.deepcopy(self._data_schema)
 
-    def _validate_against_schema(self, data):
-
-        validator = jsonschema.Draft4Validator
-
-        # by default, only validates lists
-        try:
-            validator(
-                self._data_schema, types={
-                    "array": (list, tuple)
-                }).validate(data)
-        except jsonschema.ValidationError as err:
-            raise ValidationError(err)
-
     def _validate(self):
         super(StructSettingsData, self)._validate()
 
@@ -142,7 +151,10 @@ class StructSettingsData(Data):
         if fname not in self.get_folder_list():
             raise ValidationError("operations not set")
 
-        self._validate_against_schema(self.data)
+        try:
+            validate_with_dict(self.data, self._data_schema)
+        except SchemeError as err:
+            raise ValidationError(err)
 
     def set_data(self, data):
         """
@@ -153,7 +165,10 @@ class StructSettingsData(Data):
         from aiida.common.exceptions import ModificationNotAllowed
 
         # first validate the inputs
-        self._validate_against_schema(data)
+        try:
+            validate_with_dict(data, self._data_schema)
+        except SchemeError as err:
+            raise ValidationError(err)
 
         # store all but the symmetry operations as attributes
         old_dict = copy.deepcopy(dict(self.iterattrs()))
@@ -223,6 +238,18 @@ class StructSettingsData(Data):
             data.pop("num_symops")
         data["operations"] = self._get_operations()
         return AttributeDict(data)
+
+    @property
+    def crystal_system(self):
+        """get the string version of the crystal system (e.g. 'triclinic')"""
+        ctype = self.get_attr('crystal_type')
+        return CRYSTAL_TYPE_MAP[ctype]
+
+    @property
+    def crystallographic_transform(self):
+        """get the primitive to crystallographic transformation matrix"""
+        ctype = self.get_attr('centring_code')
+        return CENTERING_CODE_MAP[ctype]
 
     def add_path(self, src_abs, dst_path):
         from aiida.common.exceptions import ModificationNotAllowed

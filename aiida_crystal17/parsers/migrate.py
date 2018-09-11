@@ -25,6 +25,7 @@ def create_inputs(inpath, outpath):
     calc_cls = CalculationFactory('crystal17.main')
     basis_cls = DataFactory('crystal17.basisset')
     struct_cls = DataFactory('structure')
+    structsettings_cls = DataFactory('crystal17.structsettings')
 
     inputs = {}
 
@@ -60,18 +61,21 @@ def create_inputs(inpath, outpath):
     structure = struct_cls(ase=atoms)
     inputs['structure'] = structure
 
-    settings_dict = {"kinds": {}, "symmetry": {}}
+    settings_dict = {"kinds": {}}
     for key, vals in atom_props.items():
         settings_dict["kinds"][key] = [
             structure.sites[i - 1].kind_name for i in vals
         ]
 
-    settings_dict["symmetry"]["operations"] = data["initial"][
-        "primitive_symmops"]
-    # TODO retrieve centering code and crystal system
+    settings_dict["operations"] = data["initial"]["primitive_symmops"]
+    # TODO retrieve centering code, crystal system and spacegroup
+    settings_dict["space_group"] = 1
+    settings_dict["crystal_type"] = 1
+    settings_dict["centring_code"] = 1
+    settings = structsettings_cls(data=settings_dict)
 
-    parameters, settings = calc_cls.prepare_and_validate(
-        output_dict, structure, settings_dict)
+    parameters = calc_cls.prepare_and_validate(output_dict, structure,
+                                               settings)
     inputs['parameters'] = parameters
     inputs['settings'] = settings
 
