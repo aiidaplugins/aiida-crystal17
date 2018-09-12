@@ -5,7 +5,7 @@ import os
 
 # TODO remove dependancy on ejplugins?
 import ejplugins
-from aiida_crystal17.parsers.geometry import dict_to_structure, operation_frac_to_cart
+from aiida_crystal17.parsers.geometry import dict_to_structure
 from ejplugins.crystal import CrystalOutputPlugin
 
 from aiida.parsers.exceptions import OutputParsingError
@@ -100,7 +100,7 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     output_nodes["structure"] = structure
 
     ssuccess = _extract_symmetry(final_data, init_settings, output_nodes,
-                                 param_data, structure.cell)
+                                 param_data)
     psuccess = False if not ssuccess else psuccess
 
     _extract_mulliken(data, param_data)
@@ -122,21 +122,14 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     return psuccess, output_nodes
 
 
-def _extract_symmetry(final_data, init_settings, output_nodes, param_data,
-                      lattice):
+def _extract_symmetry(final_data, init_settings, output_nodes, param_data):
     """extract symmetry operations"""
     psuccess = True
     if "primitive_symmops" in final_data:
 
-        cart_ops = []
-        for op in final_data["primitive_symmops"]:
-            rot = [op[0:3], op[3:6], op[6:9]]
-            trans = op[9:12]
-            rot, trans = operation_frac_to_cart(lattice, rot, trans)
-            cart_ops.append(rot[0] + rot[1] + rot[2] + trans)
-
         if init_settings:
-            differences = init_settings.compare_operations(cart_ops)
+            differences = init_settings.compare_operations(
+                final_data["primitive_symmops"])
             if differences:
                 param_data["parser_warnings"].append(
                     "output symmetry operations were not the same as those input: {}".
@@ -147,7 +140,7 @@ def _extract_symmetry(final_data, init_settings, output_nodes, param_data,
             StructSettings = DataFactory('crystal17.structsettings')
             # TODO retrieve centering code, crystal system and spacegroup
             settings_dict = {
-                "operations": cart_ops,
+                "operations": final_data["primitive_symmops"],
                 "space_group": 1,
                 "crystal_type": 1,
                 "centring_code": 1

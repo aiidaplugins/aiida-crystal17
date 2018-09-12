@@ -115,7 +115,7 @@ def read_gui_file(fpath, cryversion=17):
                      float(values[1]),
                      float(values[2])])
             symops.append(symop)
-        structdata["symops"] = symops
+        structdata["symops"] = ops_cart_to_frac(symops, structdata["lattice"])
         structdata["natoms"] = natoms = int(lines[5 + nsymops * 4])
         structdata["atomic_numbers"] = [
             int(l.split()[0])
@@ -251,6 +251,59 @@ def cart2frac(lattice, ccoords):
         ], [latt_tr[2][0], latt_tr[2][1], i[2]]])) / det_latt_tr
         fcoords.append([a, b, c])
     return fcoords
+
+
+def _operation_frac_to_cart(lattice, rot, trans):
+    """convert symmetry operation from fractional to cartesian
+
+    :param lattice: 3x3 matrix (a, b, c)
+    :param rot: 3x3 rotation matrix
+    :param trans: 3 translation vector
+    :return: (rot, trans)
+    """
+    lattice_tr = np.transpose(lattice)
+    lattice_tr_inv = np.linalg.inv(lattice_tr)
+    rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv)).tolist()
+    trans = np.dot(trans, lattice).tolist()
+    return rot, trans
+
+
+def ops_frac_to_cart(ops_flat, lattice):
+    """convert a list of flattened fractional symmetry operations to cartesian"""
+    cart_ops = []
+    for op in ops_flat:
+        rot = [op[0:3], op[3:6], op[6:9]]
+        trans = op[9:12]
+        rot, trans = _operation_frac_to_cart(lattice, rot, trans)
+        cart_ops.append(rot[0] + rot[1] + rot[2] + trans)
+    return cart_ops
+
+
+def _operation_cart_to_frac(lattice, rot, trans):
+    """convert symmetry operation from cartesian to fractional
+
+    :param lattice: 3x3 matrix (a, b, c)
+    :param rot: 3x3 rotation matrix
+    :param trans: 3 translation vector
+    :return: (rot, trans)
+    """
+    lattice_tr = np.transpose(lattice)
+    lattice_tr_inv = np.linalg.inv(lattice_tr)
+    rot = np.dot(lattice_tr_inv, np.dot(rot, lattice_tr)).tolist()
+    trans = np.dot(trans, np.linalg.inv(lattice)).tolist()
+
+    return rot, trans
+
+
+def ops_cart_to_frac(ops_flat, lattice):
+    """convert a list of flattened cartesian symmetry operations to fractional"""
+    frac_ops = []
+    for op in ops_flat:
+        rot = [op[0:3], op[3:6], op[6:9]]
+        trans = op[9:12]
+        rot, trans = _operation_cart_to_frac(lattice, rot, trans)
+        frac_ops.append(rot[0] + rot[1] + rot[2] + trans)
+    return frac_ops
 
 
 # def compute_symmetry(structdata, settings, cryversion=17):
@@ -389,8 +442,9 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     symops = []
     for rot, trans in zip(symm_dataset["rotations"],
                           symm_dataset["translations"]):
-        rot, trans = operation_frac_to_cart(lattice, rot, trans)
-        symops.append(rot[0] + rot[1] + rot[2] + trans)
+        # rot, trans = operation_frac_to_cart(lattice, rot, trans)
+        symops.append(rot[0].tolist() + rot[1].tolist() + rot[2].tolist() +
+                      trans.tolist())
 
     # find and set centering code
     # the origin_setting (aka centering code) refers to how to convert conventional to primitive
@@ -430,26 +484,12 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     return structdata, symmdata
 
 
-def operation_frac_to_cart(lattice, rot, trans):
-    """convert symmetry operation from fractional to cartesian
-
-    :param lattice: 3x3 matrix (a, b, c)
-    :param rot: 3x3 rotation matrix
-    :param trans: 3 translation vector
-    :return: (rot, trans)
-    """
-    lattice_tr = np.transpose(lattice)
-    lattice_tr_inv = np.linalg.inv(lattice_tr)
-    rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv)).tolist()
-    trans = np.dot(trans, lattice).tolist()
-    return rot, trans
-
-
-def crystal17_gui_string(structdata, symmdata):
+def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
     """create string of gui file content (for CRYSTAL17)
 
     :param structdata: dictionary of structure data with keys: 'pbc', 'atomic_numbers', 'ccoords', 'lattice'
     :param symmdata:  dictionary of symmetry data with keys: 'crystal_type', 'centring_code', 'sgnum', 'symops'
+    :param fractional_ops: whether the symmetry operations are in fractional coordinates
     :return:
     """
 
@@ -462,6 +502,9 @@ def crystal17_gui_string(structdata, symmdata):
     origin_setting = symmdata["centring_code"]
     sg_num = symmdata["space_group"]
     symops = symmdata["operations"]
+
+    if fractional_ops:
+        symops = ops_frac_to_cart(symops, lattice)
 
     num_symops = len(symops)
     sym_lines = []

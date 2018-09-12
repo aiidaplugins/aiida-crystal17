@@ -71,7 +71,7 @@ class StructSettingsData(Data):
             },
             "operations": {
                 "description":
-                "symmetry operations to use (in the cartesian basis)",
+                "symmetry operations to use (in the fractional basis)",
                 "type": ["null", "array"],
                 "items": {
                     "description":
@@ -83,7 +83,9 @@ class StructSettingsData(Data):
                     "maxItems":
                     12,
                     "items": {
-                        "type": "number"
+                        "type": "number",
+                        "minimum": -1,
+                        "maximum": 1
                     }
                 }
             },
