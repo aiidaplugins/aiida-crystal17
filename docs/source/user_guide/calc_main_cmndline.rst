@@ -116,9 +116,9 @@ Both can be viewed at the command line:
         15
       ]
     }
-  }, 
+  },
   "title": "NiO Bulk with AFM spin"
-}
+  }
 
 
 For compatibility, output parameters are named

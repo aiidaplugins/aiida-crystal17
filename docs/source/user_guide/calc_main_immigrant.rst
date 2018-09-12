@@ -68,9 +68,7 @@ In the terminal this then looks like:
     ##### OUTPUTS:
     Link label           PK  Type
     -----------------  ----  -------------
-    output_arrays      2475  ArrayData
     output_parameters  2476  ParameterData
-    output_structure   2477  StructureData
     retrieved          2478  FolderData
 
 .. note::
