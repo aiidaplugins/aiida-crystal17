@@ -93,11 +93,11 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     param_data["energy"] = energy["magnitude"]
     param_data["energy_units"] = energy["units"]
 
-    # TODO only save StructureData if cell has changed
     # TODO read from .gui file and check consistency of final cell/symmops
     structure = _extract_structure(final_data["primitive_cell"], init_struct,
                                    param_data)
-    output_nodes["structure"] = structure
+    if opt_data or not init_struct:
+        output_nodes["structure"] = structure
 
     ssuccess = _extract_symmetry(final_data, init_settings, output_nodes,
                                  param_data)

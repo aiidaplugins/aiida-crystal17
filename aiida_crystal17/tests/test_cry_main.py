@@ -570,8 +570,8 @@ def test_parser_with_init_struct(new_database, new_workdir):
     assert success
 
     node_dict = dict(node_list)
-    assert set(['output_parameters', 'output_settings',
-                'output_structure']) == set(node_dict.keys())
+    assert set(['output_parameters',
+                'output_settings']) == set(node_dict.keys())
 
     expected_params = {
         'parser_version': str(aiida_crystal17.__version__),
@@ -595,62 +595,6 @@ def test_parser_with_init_struct(new_database, new_workdir):
         node_dict['output_parameters'].get_dict(),
         expected_params,
         np_allclose=True) == {}
-
-    expected_struct = {
-        '@class':
-        'Structure',
-        '@module':
-        'pymatgen.core.structure',
-        'lattice': {
-            'a':
-            2.9769195487953652,
-            'alpha':
-            60.00000000000001,
-            'b':
-            2.9769195487953652,
-            'beta':
-            60.00000000000001,
-            'c':
-            2.9769195487953652,
-            'gamma':
-            60.00000000000001,
-            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
-                       [2.105, 2.105, 0.0]],
-            'volume':
-            18.65461525
-        },
-        'sites': [{
-            'abc': [0.0, 0.0, 0.0],
-            'label': 'Mg',
-            'properties': {
-                'kind_name': 'Mgx'
-            },
-            'species': [{
-                'element': 'Mg',
-                'occu': 1.0
-            }],
-            'xyz': [0.0, 0.0, 0.0]
-        }, {
-            'abc': [0.5, 0.5, 0.5],
-            'label': 'O',
-            'properties': {
-                'kind_name': 'Ox'
-            },
-            'species': [{
-                'element': 'O',
-                'occu': 1.0
-            }],
-            'xyz': [2.105, 2.105, 2.105]
-        }]
-    }
-
-    output_struct = node_dict[
-        'output_structure'].get_pymatgen_structure().as_dict()
-    # in later version of pymatgen only
-    if "charge" in output_struct:
-        output_struct.pop("charge")
-
-    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
 @pytest.mark.timeout(30)
@@ -747,7 +691,7 @@ def test_full_run_nio_afm(new_database, new_workdir):
     assert calcnode.get_state() == calc_states.FINISHED
 
     assert set(calcnode.get_outputs_dict().keys()).issuperset(
-        ['output_structure', 'output_parameters', 'retrieved'])
+        ['output_parameters', 'retrieved'])
 
     expected_params = {
         'parser_version': str(aiida_crystal17.__version__),
