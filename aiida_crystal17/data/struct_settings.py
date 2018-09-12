@@ -262,7 +262,7 @@ class StructSettingsData(Data):
 
         :param ops: list of (flattened) symmetry operations
         :param decimal: number of decimal points to round values to
-        :raise aiida.common.exceptions.ValidationError: if not equal
+        :returns: dict of differences
         """
         ops_orig = self._get_operations()
 
@@ -271,10 +271,10 @@ class StructSettingsData(Data):
             [tuple([round(i, decimal) for i in op]) for op in ops_orig])
         ops_new = set([tuple([round(i, decimal) for i in op]) for op in ops])
 
-        missing = ops_orig.difference(ops_new)
-        additional = ops_new.difference(ops_orig)
+        differences = {}
+        if ops_orig.difference(ops_new):
+            differences["missing"] = ops_orig.difference(ops_new)
+        if ops_new.difference(ops_orig):
+            differences["additional"] = ops_new.difference(ops_orig)
 
-        if missing or additional:
-            raise ValidationError(
-                "missing: {0}\nadditional: {1}".format(missing, additional))
-
+        return differences

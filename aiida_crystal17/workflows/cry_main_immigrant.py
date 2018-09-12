@@ -79,7 +79,8 @@ def migrate_as_main(work_dir,
         init_settings=inputs['settings'])
 
     outparams = output_nodes.pop("parameters")
-    perrors = outparams.get_attr("errors")
+    perrors = outparams.get_attr("errors") + outparams.get_attr(
+        "parser_warnings")
 
     if perrors or not psuccess:
         raise ParsingError(

@@ -389,11 +389,7 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     symops = []
     for rot, trans in zip(symm_dataset["rotations"],
                           symm_dataset["translations"]):
-        # fractional to cartesian
-        lattice_tr = np.transpose(lattice)
-        lattice_tr_inv = np.linalg.inv(lattice_tr)
-        rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv)).tolist()
-        trans = np.dot(trans, lattice).tolist()
+        rot, trans = operation_frac_to_cart(lattice, rot, trans)
         symops.append(rot[0] + rot[1] + rot[2] + trans)
 
     # find and set centering code
@@ -432,6 +428,21 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     }
 
     return structdata, symmdata
+
+
+def operation_frac_to_cart(lattice, rot, trans):
+    """convert symmetry operation from fractional to cartesian
+
+    :param lattice: 3x3 matrix (a, b, c)
+    :param rot: 3x3 rotation matrix
+    :param trans: 3 translation vector
+    :return: (rot, trans)
+    """
+    lattice_tr = np.transpose(lattice)
+    lattice_tr_inv = np.linalg.inv(lattice_tr)
+    rot = np.dot(lattice_tr, np.dot(rot, lattice_tr_inv)).tolist()
+    trans = np.dot(trans, lattice).tolist()
+    return rot, trans
 
 
 def crystal17_gui_string(structdata, symmdata):

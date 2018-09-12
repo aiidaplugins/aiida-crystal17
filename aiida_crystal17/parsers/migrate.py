@@ -6,6 +6,7 @@ import tempfile
 
 import ase
 from aiida.parsers.exceptions import OutputParsingError
+from aiida_crystal17.parsers.geometry import operation_frac_to_cart
 from aiida_crystal17.parsers.inputd12_read import extract_data
 from ejplugins import CrystalOutputPlugin
 
@@ -67,7 +68,14 @@ def create_inputs(inpath, outpath):
             structure.sites[i - 1].kind_name for i in vals
         ]
 
-    settings_dict["operations"] = data["initial"]["primitive_symmops"]
+    cart_ops = []
+    for op in data["initial"]["primitive_symmops"]:
+        rot = [op[0:3], op[3:6], op[6:9]]
+        trans = op[9:12]
+        rot, trans = operation_frac_to_cart(structure.cell, rot, trans)
+        cart_ops.append(rot[0] + rot[1] + rot[2] + trans)
+
+    settings_dict["operations"] = cart_ops
     # TODO retrieve centering code, crystal system and spacegroup
     settings_dict["space_group"] = 1
     settings_dict["crystal_type"] = 1

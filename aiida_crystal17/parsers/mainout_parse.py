@@ -3,10 +3,9 @@ parse the main output file and create the required output nodes
 """
 import os
 
-import numpy as np
 # TODO remove dependancy on ejplugins?
 import ejplugins
-from aiida_crystal17.parsers.geometry import dict_to_structure
+from aiida_crystal17.parsers.geometry import dict_to_structure, operation_frac_to_cart
 from ejplugins.crystal import CrystalOutputPlugin
 
 from aiida.parsers.exceptions import OutputParsingError
@@ -94,14 +93,15 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     param_data["energy"] = energy["magnitude"]
     param_data["energy_units"] = energy["units"]
 
-    psuccess = _extract_symmetry(final_data, init_settings, output_nodes,
-                                 param_data, psuccess)
-
     # TODO only save StructureData if cell has changed
     # TODO read from .gui file and check consistency of final cell/symmops
     structure = _extract_structure(final_data["primitive_cell"], init_struct,
                                    param_data)
     output_nodes["structure"] = structure
+
+    ssuccess = _extract_symmetry(final_data, init_settings, output_nodes,
+                                 param_data, structure.cell)
+    psuccess = False if not ssuccess else psuccess
 
     _extract_mulliken(data, param_data)
 
@@ -123,25 +123,31 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
 
 
 def _extract_symmetry(final_data, init_settings, output_nodes, param_data,
-                      psuccess):
+                      lattice):
     """extract symmetry operations"""
-    from aiida.common.exceptions import ValidationError
+    psuccess = True
     if "primitive_symmops" in final_data:
+
+        cart_ops = []
+        for op in final_data["primitive_symmops"]:
+            rot = [op[0:3], op[3:6], op[6:9]]
+            trans = op[9:12]
+            rot, trans = operation_frac_to_cart(lattice, rot, trans)
+            cart_ops.append(rot[0] + rot[1] + rot[2] + trans)
+
         if init_settings:
-            try:
-                init_settings.compare_operations(
-                    final_data["primitive_symmops"])
-            except ValidationError as err:
+            differences = init_settings.compare_operations(cart_ops)
+            if differences:
                 param_data["parser_warnings"].append(
                     "output symmetry operations were not the same as those input: {}".
-                    format(err))
+                    format(differences))
                 psuccess = False
         else:
             from aiida.orm import DataFactory
             StructSettings = DataFactory('crystal17.structsettings')
             # TODO retrieve centering code, crystal system and spacegroup
             settings_dict = {
-                "operations": final_data["primitive_symmops"],
+                "operations": cart_ops,
                 "space_group": 1,
                 "crystal_type": 1,
                 "centring_code": 1
