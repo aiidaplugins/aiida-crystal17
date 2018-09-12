@@ -860,3 +860,54 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
         calcnode.get_outputs_dict()['output_parameters'].get_dict(),
         expected_params,
         np_allclose=True) == {}
+
+    expected_struct = {
+        '@class':
+        'Structure',
+        '@module':
+        'pymatgen.core.structure',
+        'lattice': {
+            'a':
+            2.9769195487953652,
+            'alpha':
+            60.00000000000001,
+            'b':
+            2.9769195487953652,
+            'beta':
+            60.00000000000001,
+            'c':
+            2.9769195487953652,
+            'gamma':
+            60.00000000000001,
+            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
+                       [2.105, 2.105, 0.0]],
+            'volume':
+            18.65461525
+        },
+        'sites': [{
+            'abc': [0.0, 0.0, 0.0],
+            'label': 'Mg',
+            'species': [{
+                'element': 'Mg',
+                'occu': 1.0
+            }],
+            'xyz': [0.0, 0.0, 0.0]
+        }, {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [2.105, 2.105, 2.105]
+        }]
+    }
+
+    output_struct = calcnode.out.output_structure.get_pymatgen_structure().as_dict()
+    # in later version of pymatgen only
+    if "charge" in output_struct:
+        output_struct.pop("charge")
+
+    print(output_struct)
+
+    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
