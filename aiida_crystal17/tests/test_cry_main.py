@@ -777,3 +777,130 @@ def test_full_run_nio_afm(new_database, new_workdir):
         calcnode.get_outputs_dict()['output_parameters'].get_dict(),
         expected_params,
         np_allclose=True) == {}
+
+
+@pytest.mark.timeout(30)
+@pytest.mark.process_execution
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1'),
+    reason='process hangs on TOSUBMIT state')
+def test_full_run_nio_afm_opt(new_database, new_workdir):
+    """Test running a calculation"""
+    """Test submitting a calculation"""
+    from aiida.orm import DataFactory
+    from aiida.common.datastructures import calc_states
+    StructureData = DataFactory('structure')
+    from aiida_crystal17.data.basis_set import upload_basisset_family, get_basissets_from_structure
+
+    # get code
+    code = get_main_code(new_workdir, configure=True)
+
+    # Prepare input parameters
+    params = {
+        "title": "NiO Bulk with AFM spin",
+        "geometry.optimise.type": "FULLOPTG",
+        "scf.single": "UHF",
+        "scf.k_points": (8, 8),
+        "scf.spinlock.SPINLOCK": (0, 15),
+        "scf.numerical.FMIXING": 30,
+        "scf.post_scf": ["PPAN"]
+    }
+
+    # Ni0
+    atoms = crystal(
+        symbols=[28, 8],
+        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+        spacegroup=225,
+        cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
+    atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
+    instruct = StructureData(ase=atoms)
+
+    settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+
+    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+    instruct, settings = run_symmetrise_3d_structure(instruct, settings)
+
+    upload_basisset_family(
+        os.path.join(TEST_DIR, "input_files", "sto3g"),
+        "sto3g",
+        "minimal basis sets",
+        stop_if_existing=True,
+        extension=".basis")
+    # basis_map = BasisSetData.get_basis_group_map("sto3g")
+
+    # set up calculation
+    calc = code.new_calc()
+
+    params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
+                                       True)
+
+    # set up calculation
+    calc = code.new_calc()
+
+    inputs_dict = {
+        "parameters":
+        params,
+        "structure":
+        instruct,
+        "settings":
+        settings,
+        "basisset":
+        get_basissets_from_structure(instruct, "sto3g", by_kind=False),
+        "code":
+        code,
+        "options": {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 30
+        }
+    }
+
+    process = calc.process()
+
+    calcnode = run_get_node(process, inputs_dict)
+
+    print(calcnode)
+
+    assert '_aiida_cached_from' not in calcnode.extras()
+
+    try:
+        print(calcnode.out.output_parameters.get_dict())
+    except AttributeError:
+        pass
+
+    assert calcnode.get_state() == calc_states.FINISHED
+
+    assert set(calcnode.get_outputs_dict().keys()).issuperset(
+        ['output_structure', 'output_parameters', 'retrieved'])
+
+    expected_params = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'number_of_atoms': 4,
+        'errors': [],
+        'warnings': [],
+        'energy': -85124.8936673389,
+        'number_of_assymetric': 4,
+        'volume': 36.099581472,
+        'scf_iterations': 13,
+        'energy_units': 'eV',
+        'calculation_type': 'unrestricted open shell',
+        'parser_warnings': [],
+        'wall_time_seconds': 187,
+        'parser_class': 'CryBasicParser',
+        'calculation_spin': True,
+        'mulliken_spin_total': 0.0,
+        'mulliken_spins': [3.057, -3.057, -0.072, 0.072],
+        'mulliken_electrons': [27.602, 27.603, 8.398, 8.397],
+        'mulliken_charges': [0.398, 0.396999999999998, -0.398, -0.397]
+    }
+
+    print(calcnode.get_outputs_dict()['output_parameters'].get_dict())
+
+    assert edict.diff(
+        calcnode.get_outputs_dict()['output_parameters'].get_dict(),
+        expected_params,
+        np_allclose=True) == {}
