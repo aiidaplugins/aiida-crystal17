@@ -37,7 +37,7 @@ number of output nodes:
 
 .. code:: shell
 
-   verdi calculation show 2267
+   verdi calculation show 5
    -----------  ---------------------------------------------------
    type         CryBasicCalculation
    pk           5
@@ -60,7 +60,7 @@ number of output nodes:
    remote_folder      6     RemoteData
    retrieved          7     FolderData
    output_parameters  8     ParameterData
-   output_arrays      9     ArrayData
+   output_settings    9     StructSettingsData
    output_structure   10    StructureData
    ##### LOGS:
    There are 1 log messages for this calculation
@@ -70,13 +70,13 @@ The outputs represent:
 
 -  ``remote_folder`` provides a symbolic link to the work directory
    where the computation was run.
--  ``retrieved`` stores a folder containing the full stdout of
+-  ``retrieved`` stores a folder containing the full main output of
    ``runcry17`` (as main.out)
 -  ``output_parameters`` stores a dictionary of key parameters in the
    database, for later querying.
--  ``output_arrays`` stores keys in the database to array data stored on file
-   (such as symmetry operations and mulliken charges).
 -  ``output_structure`` stores the final geometry from the calculation
+-  ``output_settings`` stores additional information on the structure,
+    such as the symmetry operations.
 
 For compatibility, parameters are named with the same convention as
 ``aiida-quantumespresso``:
@@ -85,23 +85,43 @@ For compatibility, parameters are named with the same convention as
 
     >> verdi data parameter show 8
     {
-      "calculation_spin": false,
-      "calculation_type": "restricted closed shell",
-      "ejplugins_version": "0.9.6",
-      "energy": -7380.22160519032,
-      "energy_units": "eV",
-      "errors": [],
-      "number_of_assymetric": 2,
-      "number_of_atoms": 2,
-      "number_of_symmops": 48,
-      "parser_class": "CryBasicParser",
-      "parser_version": "0.1.0a0",
-      "parser_warnings": [],
-      "scf_iterations": 7,
-      "volume": 18.65461525,
-      "wall_time_seconds": 4,
+      "calculation_spin": false, 
+      "calculation_type": "restricted closed shell", 
+      "ejplugins_version": "0.9.7", 
+      "energy": -7380.22160519032, 
+      "energy_units": "eV", 
+      "errors": [], 
+      "mulliken_charges": [
+        0.776999999999999, 
+        -0.776999999999999
+      ], 
+      "mulliken_electrons": [
+        11.223, 
+        8.777
+      ], 
+      "number_of_assymetric": 2, 
+      "number_of_atoms": 2, 
+      "parser_class": "CryBasicParser", 
+      "parser_version": "0.3.0a0", 
+      "parser_warnings": [
+        "no initial structure available, creating new kinds for atoms"
+      ], 
+      "scf_iterations": 7, 
+      "volume": 18.65461525, 
+      "wall_time_seconds": 5, 
       "warnings": []
     }
+
+You can view the structure settings content by
+(use ``-c`` to view the symmetry operations):
+
+.. code:: shell
+
+  >> verdi data cry17-settings show 9
+  centring_code: 1
+  crystal_type:  1
+  num_symops:    48
+  space_group:   1
 
 
 The final structure can be directly viewed by a number of different

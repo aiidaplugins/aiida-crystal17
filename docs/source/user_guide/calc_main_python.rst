@@ -45,7 +45,7 @@ We decompose this script into:
 
 1. ``parameters`` containing aspects of the input which are independent of the geometry.
 2. ``structure`` defining the geometry and species of the unit cell
-3. ``settings`` defining how the geometry is to be modified and species specific data (such as spin)
+3. ``settings`` defining additional geometric and species specific data (such as spin)
 4. ``basis_sets`` defining the basis set for each atomic type
 
 Parameters
@@ -249,12 +249,12 @@ We can achieve this by tagging the atoms:
 
   >>> atoms_afm = atoms.copy()
   >>> atoms_afm.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
-  >>> structure = StructureData(ase=atoms_afm)
-  >>> structure.get_site_kindnames()
+  >>> structure_afm = StructureData(ase=atoms_afm)
+  >>> structure_afm.get_site_kindnames()
   ['Ni1', 'Ni1', 'Ni2', 'Ni2', 'O', 'O', 'O', 'O']
 
-Settings
---------
+Structure Settings
+------------------
 
 Since we **always** use the ``EXTERNAL`` keyword for geometry,
 any manipulation to the geometry is undertaken before calling CRYSTAL
@@ -266,42 +266,97 @@ The ``settings`` parameters are used to define some key aspects
 of the atomic configurations:
 
 1. Properties by ``Kind``
-2. Any pre-processing of the geometry
+2. Crystallographic data for the geometry
 3. The input symmetry operations
 
-Available parameters for the settings dictionary are defined
-(and validated by) the
-`settings.schema.json <https://github.com/chrisjsewell/aiida-crystal17/tree/master/aiida_crystal17/validation/settings.schema.json>`_.
-The ``crystal17.main`` calculation defines a default specification:
+Available validation schema for the settings data 
+can be viewed programattically at
+:py:attr:`~.StructSettingsData.data_schema`
 
-.. code:: python
+Or *via* the command line:
 
-  >>> from aiida.orm import CalculationFactory
-  >>> calc_cls = CalculationFactory('crystal17.main')
-  >>> calc_cls.default_settings
-  {
-    'kinds': {
-      'fixed': [],
-      'ghosts': [],
-      'spin_alpha': [],
-      'spin_beta': []
-    },
-    'symmetry': {
-      'sgnum': 1,
-      'operations': None,
-      'symprec': 0.01,
-      'angletol': None
-    },
-    'crystal': {
-      'system': 'triclinic',
-      'transform': None
-    },
-    '3d': {
-      'standardize': True,
-      'primitive': True,
-      'idealize': False
-    }
-  }
+.. code:: shell
+
+  >>> verdi data cry17-settings schema
+  $schema:              http://json-schema.org/draft-04/schema#
+  additionalProperties: False
+  properties:           
+    centring_code: 
+      description: The crystal type, as designated by CRYSTAL17
+      maximum:     6
+      minimum:     1
+      type:        integer
+    computation_class: 
+      description: the class used to compute the settings
+      type:        string
+    computation_version: 
+      description: the version of the class used to compute the settings
+      type:        string
+    crystal_type: 
+      description: The crystal type, as designated by CRYSTAL17
+      maximum:     6
+      minimum:     1
+      type:        integer
+    kinds: 
+      additionalProperties: False
+      description:          settings for input properties of each species kind
+      properties:           
+        fixed: 
+          description: kinds with are fixed in position for optimisations (set by
+                      FRAGMENT)
+          items:       
+            type:        string
+            uniqueItems: True
+          type:        array
+        ghosts: 
+          description: kinds which will be removed, but their basis set are left
+                      (set by GHOSTS)
+          items:       
+            type:        string
+            uniqueItems: True
+          type:        array
+        spin_alpha: 
+          description: kinds with initial alpha (+1) spin (set by ATOMSPIN)
+          items:       
+            type:        string
+            uniqueItems: True
+          type:        array
+        spin_beta: 
+          description: kinds with initial beta (-1) spin (set by ATOMSPIN)
+          items:       
+            type:        string
+            uniqueItems: True
+          type:        array
+      type:                 object
+    operations: 
+      description: symmetry operations to use (in the fractional basis)
+      items:       
+        description: each item should be a list of
+                    [r00,r10,r20,r01,r11,r21,r02,r12,r22,t0,t1,t2]
+        items:       
+          maximum: 1
+          minimum: -1
+          type:    number
+        maxItems:    12
+        minItems:    12
+        type:        array
+      type:        [null, array]
+    space_group: 
+      description: Space group number (international)
+      maximum:     230
+      minimum:     1
+      type:        integer
+    symmetry_program: 
+      description: the program used to generate the symmetry
+      type:        string
+    symmetry_version: 
+      description: the version of the program used to generate the symmetry
+      type:        string
+  required:             [space_group, crystal_type, centring_code, operations]
+  title:                CRYSTAL17 structure symmetry settings
+  type:                 object
+
+
 
 Properties by Kind
 ..................
@@ -356,38 +411,48 @@ Symmetry
 In the ``main.gui`` file,
 as well as using the dimensionality (i.e. periodic boundary conditions),
 basis vectors and atomic positions, provided by the ``structure``,
-we also need to specify the symmetry operators, and (optionally)
+we also need to specify the symmetry operators, and
 the crystal system and primitive-to-crystallographic transform
 (referred to as the ``CENTRING CODE`` in ``CRYSTAL``).
 
-The first option is to provide them directly:
+These are provided by the ``crystal17.structsettings``:
 
 .. code:: python
 
   {
-    'symmetry': {
-      'sgnum': 2,
-      'operations': [
+    'space_group': 2,
+    'operations': [
         [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
         [-1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0]
-     ]
-    },
-    'crystal': {
-      'system': 'triclinic',
-      'transform': 1
-    }
+     ],
+    'crystal_type': 1,
+    'centring_code': 1
   }
 
-The ``operations`` are given as a flattened version of the rotation matrix,
-followed by the translation vector, in cartesian coordinates.
+.. note::
 
-Alternatively, if ``operations`` is left as ``None``,
+  The ``operations`` are given as a flattened version of the rotation matrix,
+  followed by the translation vector, in **fractional** coordinates.
+
+Pre-Processing of the Structure
+-------------------------------
+
+To compute the symmetry operations,
+and optionally convert the structure to a standard primitive,
 the space group and symmetry operators can be computed internally,
-*via* the `spglib <https://atztogo.github.io/spglib/>`_ library.
+a pre-processing workflow has been created
+(currently only for 3D-periodic structures),
+:py:class:`~.Symmetrise3DStructure`,
+which can be run with the helper function
+:py:func:`~.run_symmetrise_3d_structure`.
+
+This uses the `spglib <https://atztogo.github.io/spglib/>`_ library
+to compute symmetries, but with the added constraint that sites
+with the same ``Kind`` must be symmetrically equivalent.
 
 .. important::
 
-  Symmetry computations are based on atomic number **AND** kind.
+  Symmetrical equivalence is based on atomic number **AND** kind.
 
 So, for example, taking our structure with kinds;
 
@@ -397,16 +462,15 @@ So, for example, taking our structure with kinds;
 
 .. code:: python
 
-  >>> settings = {'3d': {'idealize': False, 'primitive': False, 'standardize': False},
-  ... 'crystal': {'system': 'triclinic', 'transform': None},
+  >>> settings_dict = {'primitive': False, 'standardize': False, 'idealize': False,
   ... 'kinds': {'fixed': [], 'ghosts': [], 'spin_alpha': [], 'spin_beta': []},
-  ... 'symmetry': {'angletol': None, 'operations': None, 'symprec': 0.01}}
+  ... 'angletol': None, 'symprec': 0.01}
 
-  >>> from aiida_crystal17.parsers.geometry import compute_symmetry_from_ase
-  >>> structdict, symdata = compute_symmetry_from_ase(atoms, settings)
-  >>> len(symdata["symops"])
+  >>> from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+  >>> newstruct, settings = run_symmetrise_3d_structure(structure, settings_dict)
+  >>> settings.num_symops
   192
-  >>> symdata["sgnum"]
+  >>> settings.space_group
   225
 
 Whereas, for the structure with multiple Ni kinds;
@@ -417,37 +481,35 @@ Whereas, for the structure with multiple Ni kinds;
 
 .. code:: python
 
-  >>> structdict, symdata = compute_symmetry_from_ase(atoms_afm, settings)
-  >>> len(symdata["symops"])
+  >>> newstruct, settings = run_symmetrise_3d_structure(structure_afm, settings_dict)
+  >>> settings.num_symops
   32
-  >>> symdata["sgnum"]
+  >>> settings.space_group
   123
 
-Finally, CRYSTAL expects the geometry in a standardized form,
-which minimises the translational symmetry components.
-For 3d structures (2d to come), the structure can be converted to a standardized,
+Since CRYSTAL17 expects the geometry in a standardized form,
+which minimises the translational symmetry components,
+he structure can be converted to a standardized,
 and (optionally) primitive cell:
 
 .. code:: python
 
-  >>> settings = {'3d': {'idealize': False, 'primitive': True, 'standardize': True},
-  ... 'crystal': {'system': 'triclinic', 'transform': None},
+  >>> settings_dict = {'primitive': True, 'standardize': True, 'idealize': False,
   ... 'kinds': {'fixed': [], 'ghosts': [], 'spin_alpha': [], 'spin_beta': []},
-  ... 'symmetry': {'angletol': None, 'operations': None, 'symprec': 0.01}}
+  ... 'angletol': None, 'symprec': 0.01}
 
-  >>> from aiida_crystal17.parsers.geometry import compute_symmetry_from_ase
-  >>> structdict, symdata = compute_symmetry_from_ase(atoms, settings)
-  >>> structdict["atomic_numbers"]
-  [7, 8]
-  >>> symdata["centring_code"]
+  >>> newstruct, settings = run_symmetrise_3d_structure(structure, settings_dict)
+  >>> newstruct.get_formula()
+  'NiO'
+  >>> settings.data.centring_code
   5
 
 .. code:: python
 
-  >>> structdict, symdata = compute_symmetry_from_ase(atoms_afm, settings)
-  >>> structdict["atomic_numbers"]
-  [7, 7, 8, 8]
-  >>> symdata["centring_code"]
+  >>> newstruct, settings = run_symmetrise_3d_structure(structure_afm, settings_dict)
+  >>> newstruct.get_formula()
+  'Ni2O2'
+  >>> settings.data.centring_code
   1
 
 The other option is to ``idealize`` the structure, which
@@ -553,10 +615,6 @@ are then extracted by ``crystal17.main``:
   This is because, using multiple basis sets per atomic number is rarely used in CRYSTAL17,
   and is limited anyway to only two types per atomic number.
 
-.. todo::
-
-  command line interface
-
 
 Input Preparation and Validation
 --------------------------------
@@ -579,6 +637,9 @@ and validate their content.
       cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
   atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
   instruct = StructureData(ase=atoms)
+  settings_dict = {"kinds.spin_alpha": ["Ni1"],
+                "kinds.spin_beta": ["Ni2"]}
+  newstruct, settings = run_symmetrise_3d_structure(instruct, settings_dict)
 
   params = {
       "title": "NiO Bulk with AFM spin",
@@ -588,13 +649,11 @@ and validate their content.
       "scf.numerical.FMIXING": 30,
       "scf.post_scf": ["PPAN"]
   }
-  settings = {"kinds.spin_alpha": ["Ni1"],
-              "kinds.spin_beta": ["Ni2"]}
 
-  pdata, sdata = calc_cls.prepare_and_validate(params, instruct,
-                                               settings=settings,
-                                               basis_family="sto3g",
-                                               flattened=True)
+  pdata = calc_cls.prepare_and_validate(params, newstruct,
+                                        settings,
+                                        basis_family="sto3g",
+                                        flattened=True)
 
 Creating and Submitting Calculation
 -----------------------------------
@@ -621,8 +680,8 @@ Then the code can be submitted using ``verdi run`` or programmatically:
   calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
   calc.use_parameters(pdata)
-  calc.use_structure(instruct)
-  calc.use_settings(sdata)
+  calc.use_structure(newstruct)
+  calc.use_settings(settings)
   calc.use_basisset_from_family("sto3g")
 
   calc.store_all()

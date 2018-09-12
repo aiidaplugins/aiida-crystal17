@@ -33,3 +33,13 @@ def show(pk, symmetries):
         edict.pprint(node.data, print_func=click.echo, round_floats=5)
     else:
         edict.pprint(dict(node.iterattrs()), print_func=click.echo)
+
+
+@structsettings.command()
+def schema():
+    """view the validation schema"""
+    if not is_dbenv_loaded():
+        load_dbenv()
+    from aiida.orm import DataFactory
+    schema = DataFactory('crystal17.structsettings').data_schema
+    edict.pprint(schema, depth=None, print_func=click.echo)

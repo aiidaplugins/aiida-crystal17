@@ -31,8 +31,9 @@ def show(pk, content):
     if not isinstance(node, get_data_class('crystal17.basisset')):
         click.echo("The node was not of type 'crystal17.basisset'", err=True)
     else:
-        edict.pprint(node.metadata, print_func=click.echo)
+        edict.pprint(node.metadata, depth=None, print_func=click.echo)
         if content:
+            click.echo("---")
             click.echo(node.content)
 
 

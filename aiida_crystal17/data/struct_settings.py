@@ -4,6 +4,7 @@ import tempfile
 import numpy as np
 from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
+from aiida.common.utils import classproperty
 from aiida.orm import Data
 from aiida_crystal17.parsers.geometry import CRYSTAL_TYPE_MAP, CENTERING_CODE_MAP
 from aiida_crystal17.validation import validate_with_dict
@@ -142,9 +143,9 @@ class StructSettingsData(Data):
         }
     }
 
-    @property
-    def data_schema(self):
-        return copy.deepcopy(self._data_schema)
+    @classproperty
+    def data_schema(cls):
+        return copy.deepcopy(cls._data_schema)
 
     def _validate(self):
         super(StructSettingsData, self)._validate()
@@ -240,6 +241,14 @@ class StructSettingsData(Data):
             data.pop("num_symops")
         data["operations"] = self._get_operations()
         return AttributeDict(data)
+
+    @property
+    def num_symops(self):
+        return self.get_attr("num_symops", None)
+
+    @property
+    def space_group(self):
+        return self.get_attr("space_group", None)
 
     @property
     def crystal_system(self):
