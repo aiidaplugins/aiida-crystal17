@@ -5,7 +5,7 @@ import pytest
 from jsonextended import edict
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_full_nio_afm(new_database):
     from aiida.orm import DataFactory
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
@@ -46,7 +46,7 @@ def test_full_nio_afm(new_database):
     # assert node.get_attr("state") == calc_states.FINISHED
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_full_mgo_opt(new_database):
     from aiida.orm import DataFactory
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main

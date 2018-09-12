@@ -558,10 +558,10 @@ def test_parser_opt(new_database, new_workdir):
 
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-@pytest.mark.skipif(
-    aiida_version() < cmp_version('1.0.0a1'),
-    reason='process hangs on TOSUBMIT state')
-def test_full_run(new_database, new_workdir):
+# @pytest.mark.skipif(
+#     aiida_version() < cmp_version('1.0.0a1'),
+#     reason='process hangs on TOSUBMIT state')
+def test_full_run(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     from aiida.orm.data.singlefile import SinglefileData
     from aiida.common.datastructures import calc_states

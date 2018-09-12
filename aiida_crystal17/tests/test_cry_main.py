@@ -600,10 +600,10 @@ def test_parser_with_init_struct(new_database, new_workdir):
 
 @pytest.mark.timeout(30)
 @pytest.mark.process_execution
-@pytest.mark.skipif(
-    aiida_version() < cmp_version('1.0.0a1'),
-    reason='process hangs on TOSUBMIT state')
-def test_full_run_nio_afm(new_database, new_workdir):
+# @pytest.mark.skipif(
+#     aiida_version() < cmp_version('1.0.0a1'),
+#     reason='process hangs on TOSUBMIT state')
+def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     """Test submitting a calculation"""
     from aiida.orm import DataFactory
@@ -726,10 +726,10 @@ def test_full_run_nio_afm(new_database, new_workdir):
 
 @pytest.mark.timeout(30)
 @pytest.mark.process_execution
-@pytest.mark.skipif(
-    aiida_version() < cmp_version('1.0.0a1'),
-    reason='process hangs on TOSUBMIT state')
-def test_full_run_nio_afm_opt(new_database, new_workdir):
+# @pytest.mark.skipif(
+#     aiida_version() < cmp_version('1.0.0a1'),
+#     reason='process hangs on TOSUBMIT state')
+def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     """Test submitting a calculation"""
     from aiida.orm import DataFactory
