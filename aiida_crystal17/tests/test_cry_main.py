@@ -889,7 +889,7 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
             'xyz': [0.0, -2.17339440672, -2.17339440672],
             'label': 'Ni',
             'species': [{
-                'occ': 1.0,
+                'occu': 1.0,
                 'element': 'Ni'
             }]
         }, {
@@ -900,7 +900,7 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
             'xyz': [-2.248921534835, -2.17339440672, 0.0],
             'label': 'Ni',
             'species': [{
-                'occ': 1.0,
+                'occu': 1.0,
                 'element': 'Ni'
             }]
         }, {
@@ -911,7 +911,7 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
             'xyz': [-2.248921534835, -2.17339440672, -2.17339440672],
             'label': 'O',
             'species': [{
-                'occ': 1.0,
+                'occu': 1.0,
                 'element': 'O'
             }]
         }, {
@@ -922,7 +922,7 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
             'xyz': [0.0, -2.17339440672, 0.0],
             'label': 'O',
             'species': [{
-                'occ': 1.0,
+                'occu': 1.0,
                 'element': 'O'
             }]
         }],
