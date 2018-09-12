@@ -771,8 +771,6 @@ def test_full_run_nio_afm(new_database, new_workdir):
         'mulliken_charges': [0.398, 0.396999999999998, -0.398, -0.397]
     }
 
-    print(calcnode.get_outputs_dict()['output_parameters'].get_dict())
-
     assert edict.diff(
         calcnode.get_outputs_dict()['output_parameters'].get_dict(),
         expected_params,
@@ -877,28 +875,42 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
         ['output_structure', 'output_parameters', 'retrieved'])
 
     expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'number_of_atoms': 4,
-        'errors': [],
-        'warnings': [],
-        'energy': -85124.8936673389,
-        'number_of_assymetric': 4,
-        'volume': 36.099581472,
-        'scf_iterations': 13,
-        'energy_units': 'eV',
-        'calculation_type': 'unrestricted open shell',
+        'parser_version':
+        str(aiida_crystal17.__version__),
+        'ejplugins_version':
+        str(ejplugins.__version__),
+        'parser_class':
+        'CryBasicParser',
         'parser_warnings': [],
-        'wall_time_seconds': 187,
-        'parser_class': 'CryBasicParser',
-        'calculation_spin': True,
-        'mulliken_spin_total': 0.0,
-        'mulliken_spins': [3.057, -3.057, -0.072, 0.072],
-        'mulliken_electrons': [27.602, 27.603, 8.398, 8.397],
-        'mulliken_charges': [0.398, 0.396999999999998, -0.398, -0.397]
+        'errors': [],
+        'warnings':
+        ['WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY'],
+        'calculation_type':
+        'unrestricted open shell',
+        'calculation_spin':
+        True,
+        'wall_time_seconds':
+        3018,
+        'scf_iterations':
+        16,
+        'opt_iterations':
+        19,
+        'number_of_atoms':
+        4,
+        'number_of_assymetric':
+        4,
+        'volume':
+        42.4924120856802,
+        'energy':
+        -85125.8766752194,
+        'energy_units':
+        'eV',
+        'mulliken_charges': [0.363, 0.363, -0.363, -0.363],
+        'mulliken_electrons': [27.637, 27.637, 8.363, 8.363],
+        'mulliken_spin_total':
+        0.0,
+        'mulliken_spins': [3.234, -3.234, -0.172, 0.172]
     }
-
-    print(calcnode.get_outputs_dict()['output_parameters'].get_dict())
 
     assert edict.diff(
         calcnode.get_outputs_dict()['output_parameters'].get_dict(),

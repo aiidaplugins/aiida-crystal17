@@ -36,6 +36,7 @@ def test_example(new_database, new_workdir):
     # Prepare input parameters
     params_dict = {
         "title": "NiO Bulk with AFM spin",
+        "geometry.optimise.type": "FULLOPTG",
         "scf.single": "UHF",
         "scf.k_points": (8, 8),
         "scf.spinlock.SPINLOCK": (0, 15),
