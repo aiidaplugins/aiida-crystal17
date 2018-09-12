@@ -30,6 +30,6 @@ def show(pk, symmetries):
         click.echo(
             "The node was not of type 'crystal17.structsettings'", err=True)
     elif symmetries:
-        edict.pprint(node.data, print_func=click.echo)
+        edict.pprint(node.data, print_func=click.echo, round_floats=5)
     else:
         edict.pprint(dict(node.iterattrs()), print_func=click.echo)

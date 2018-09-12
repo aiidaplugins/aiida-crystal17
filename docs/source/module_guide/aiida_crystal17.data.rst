@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    aiida_crystal17.data.basis_set
+   aiida_crystal17.data.struct_settings
 
 Module contents
 ---------------
