@@ -28,7 +28,7 @@ def test_example(new_database, new_workdir):
     StructureData = DataFactory('structure')
     from ase.spacegroup import crystal
     from aiida_crystal17.data.basis_set import upload_basisset_family
-    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
 
     # get code
     code = get_main_code(new_workdir)

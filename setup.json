@@ -25,6 +25,9 @@
         "aiida.parsers": [
             "crystal17.basic = aiida_crystal17.parsers.cry_basic:CryBasicParser"
         ],
+        "'aiida.workflows'": [
+            "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct.py:Symmetrise3DStructure"
+        ],
         "aiida.cmdline.data": [
         ]
     },

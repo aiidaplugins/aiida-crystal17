@@ -39,7 +39,7 @@ def test_prepare_and_validate(new_database, new_workdir):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
 
-    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
     instruct, settings = run_symmetrise_3d_structure(instruct)
 
     calc_cls = CalculationFactory('crystal17.main')
@@ -73,7 +73,7 @@ def test_submit_mgo(new_database, new_workdir):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
 
-    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
     instruct, settings = run_symmetrise_3d_structure(instruct)
 
     mg_basis, _ = BasisSetData.get_or_create(
@@ -369,7 +369,7 @@ def test_submit_nio_afm(new_database, new_workdir):
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
-    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
     instruct, settings = run_symmetrise_3d_structure(instruct, settings)
 
     upload_basisset_family(
@@ -690,7 +690,7 @@ def test_full_run_nio_afm(new_database, new_workdir):
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
-    from aiida_crystal17.workflows.symmetrise_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
     instruct, settings = run_symmetrise_3d_structure(instruct, settings)
 
     upload_basisset_family(
@@ -754,7 +754,6 @@ def test_full_run_nio_afm(new_database, new_workdir):
         'ejplugins_version': str(ejplugins.__version__),
         'number_of_atoms': 4,
         'errors': [],
-        'mulliken_spin_total': 0.0,
         'warnings': [],
         'energy': -85124.8936673389,
         'number_of_assymetric': 4,
@@ -766,7 +765,10 @@ def test_full_run_nio_afm(new_database, new_workdir):
         'wall_time_seconds': 187,
         'parser_class': 'CryBasicParser',
         'calculation_spin': True,
-        'mulliken_spins': [3.057, -3.057, -0.072, 0.072]
+        'mulliken_spin_total': 0.0,
+        'mulliken_spins': [3.057, -3.057, -0.072, 0.072],
+        'mulliken_electrons': [27.602, 27.603, 8.398, 8.397],
+        'mulliken_charges': [0.398, 0.396999999999998, -0.398, -0.397]
     }
 
     print(calcnode.get_outputs_dict()['output_parameters'].get_dict())

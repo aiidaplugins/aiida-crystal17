@@ -1,13 +1,13 @@
 import copy
 import tempfile
 
-from jsonschema import ValidationError as SchemeError
 import numpy as np
 from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
 from aiida.orm import Data
 from aiida_crystal17.parsers.geometry import CRYSTAL_TYPE_MAP, CENTERING_CODE_MAP
 from aiida_crystal17.validation import validate_with_dict
+from jsonschema import ValidationError as SchemeError
 
 
 class StructSettingsData(Data):
@@ -256,3 +256,27 @@ class StructSettingsData(Data):
 
         raise ModificationNotAllowed(
             "Cannot add files or directories to StructSettingsData object")
+
+    def compare_operations(self, ops, decimal=5):
+        """compare operations against stored ones
+
+        :param ops: list of (flattened) symmetry operations
+        :param decimal: number of decimal points to round values to
+        :raise aiida.common.exceptions.ValidationError: if not equal
+        """
+        ops_orig = self._get_operations()
+
+        # create a set for each
+        ops_orig = set(
+            [tuple([round(i, decimal) for i in op]) for op in ops_orig])
+        ops_new = set([tuple([round(i, decimal) for i in op]) for op in ops])
+
+        if ops_orig.difference(ops_new):
+            raise ValidationError(
+                "original has additional operations: {}".format(
+                    ops_orig.difference(ops_new)))
+
+        if ops_new.difference(ops_orig):
+            raise ValidationError(
+                "compared has additional operations: {}".format(
+                    ops_new.difference(ops_orig)))

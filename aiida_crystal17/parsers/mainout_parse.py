@@ -125,18 +125,16 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
 def _extract_symmetry(final_data, init_settings, output_nodes, param_data,
                       psuccess):
     """extract symmetry operations"""
+    from aiida.common.exceptions import ValidationError
     if "primitive_symmops" in final_data:
         if init_settings:
-            original_ops = init_settings.data.operations
-            if not len(original_ops) == len(final_data["primitive_symmops"]):
+            try:
+                init_settings.compare_operations(
+                    final_data["primitive_symmops"])
+            except ValidationError as err:
                 param_data["parser_warnings"].append(
-                    "output symmetry operations were not the same as those input"
-                )
-                psuccess = False
-            if not np.allclose(original_ops, final_data["primitive_symmops"]):
-                param_data["parser_warnings"].append(
-                    "output symmetry operations were not the same as those input"
-                )
+                    "output symmetry operations were not the same as those input: {}".
+                    format(err))
                 psuccess = False
         else:
             from aiida.orm import DataFactory
