@@ -598,11 +598,11 @@ def test_parser_with_init_struct(new_database, new_workdir):
         np_allclose=True) == {}
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 @pytest.mark.process_execution
-# @pytest.mark.skipif(
-#     aiida_version() < cmp_version('1.0.0a1'),
-#     reason='process hangs on TOSUBMIT state')
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
+    reason='Error in obtaining authinfo for computer configuration')
 def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     """Test submitting a calculation"""
@@ -724,11 +724,11 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
         np_allclose=True) == {}
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 @pytest.mark.process_execution
-# @pytest.mark.skipif(
-#     aiida_version() < cmp_version('1.0.0a1'),
-#     reason='process hangs on TOSUBMIT state')
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
+    reason='Error in obtaining authinfo for computer configuration')
 def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     """Test submitting a calculation"""

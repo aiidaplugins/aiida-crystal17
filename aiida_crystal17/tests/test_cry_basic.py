@@ -558,9 +558,9 @@ def test_parser_opt(new_database, new_workdir):
 
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-# @pytest.mark.skipif(
-#     aiida_version() < cmp_version('1.0.0a1'),
-#     reason='process hangs on TOSUBMIT state')
+@pytest.mark.skipif(
+    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
+    reason='Error in obtaining authinfo for computer configuration')
 def test_full_run(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     from aiida.orm.data.singlefile import SinglefileData

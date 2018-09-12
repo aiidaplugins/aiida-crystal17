@@ -234,6 +234,8 @@ def _get_auth_info(computer, user):
             authinfo = session.query(DbAuthInfo).filter(
                 DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
                     DbAuthInfo.aiidauser == user).first()
+        else:
+            authinfo = None
 
         if authinfo is None:
             authinfo = DbAuthInfo(
