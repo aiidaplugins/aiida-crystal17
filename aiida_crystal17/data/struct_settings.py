@@ -271,12 +271,10 @@ class StructSettingsData(Data):
             [tuple([round(i, decimal) for i in op]) for op in ops_orig])
         ops_new = set([tuple([round(i, decimal) for i in op]) for op in ops])
 
-        if ops_orig.difference(ops_new):
-            raise ValidationError(
-                "original has additional operations: {}".format(
-                    ops_orig.difference(ops_new)))
+        missing = ops_orig.difference(ops_new)
+        additional = ops_new.difference(ops_orig)
 
-        if ops_new.difference(ops_orig):
+        if missing or additional:
             raise ValidationError(
-                "compared has additional operations: {}".format(
-                    ops_new.difference(ops_orig)))
+                "missing: {0}\nadditional: {1}".format(missing, additional))
+
