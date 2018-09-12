@@ -862,48 +862,78 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
         np_allclose=True) == {}
 
     expected_struct = {
+        'lattice': {
+            'a':
+            3.073643846369251,
+            'c':
+            4.49784306967,
+            'b':
+            3.073643846369251,
+            'matrix': [[0.0, -2.17339440672,
+                        -2.17339440672], [0.0, -2.17339440672, 2.17339440672],
+                       [-4.49784306967, 0.0, 0.0]],
+            'volume':
+            42.49241208568022,
+            'beta':
+            90.0,
+            'gamma':
+            90.0,
+            'alpha':
+            90.0
+        },
+        'sites': [{
+            'properties': {
+                'kind_name': 'Ni1'
+            },
+            'abc': [1.0, 0.0, 0.0],
+            'xyz': [0.0, -2.17339440672, -2.17339440672],
+            'label': 'Ni',
+            'species': [{
+                'occ': 1.0,
+                'element': 'Ni'
+            }]
+        }, {
+            'properties': {
+                'kind_name': 'Ni2'
+            },
+            'abc': [0.5, 0.5, 0.5],
+            'xyz': [-2.248921534835, -2.17339440672, 0.0],
+            'label': 'Ni',
+            'species': [{
+                'occ': 1.0,
+                'element': 'Ni'
+            }]
+        }, {
+            'properties': {
+                'kind_name': 'O'
+            },
+            'abc': [1.0, 0.0, 0.5],
+            'xyz': [-2.248921534835, -2.17339440672, -2.17339440672],
+            'label': 'O',
+            'species': [{
+                'occ': 1.0,
+                'element': 'O'
+            }]
+        }, {
+            'properties': {
+                'kind_name': 'O'
+            },
+            'abc': [0.5, 0.5, 0.0],
+            'xyz': [0.0, -2.17339440672, 0.0],
+            'label': 'O',
+            'species': [{
+                'occ': 1.0,
+                'element': 'O'
+            }]
+        }],
         '@class':
         'Structure',
         '@module':
-        'pymatgen.core.structure',
-        'lattice': {
-            'a':
-            2.9769195487953652,
-            'alpha':
-            60.00000000000001,
-            'b':
-            2.9769195487953652,
-            'beta':
-            60.00000000000001,
-            'c':
-            2.9769195487953652,
-            'gamma':
-            60.00000000000001,
-            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
-                       [2.105, 2.105, 0.0]],
-            'volume':
-            18.65461525
-        },
-        'sites': [{
-            'abc': [0.0, 0.0, 0.0],
-            'label': 'Mg',
-            'species': [{
-                'element': 'Mg',
-                'occu': 1.0
-            }],
-            'xyz': [0.0, 0.0, 0.0]
-        }, {
-            'abc': [0.5, 0.5, 0.5],
-            'label': 'O',
-            'species': [{
-                'element': 'O',
-                'occu': 1.0
-            }],
-            'xyz': [2.105, 2.105, 2.105]
-        }]
+        'pymatgen.core.structure'
     }
 
-    output_struct = calcnode.out.output_structure.get_pymatgen_structure().as_dict()
+    output_struct = calcnode.out.output_structure.get_pymatgen_structure(
+    ).as_dict()
     # in later version of pymatgen only
     if "charge" in output_struct:
         output_struct.pop("charge")
