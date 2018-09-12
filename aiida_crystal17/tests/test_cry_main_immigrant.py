@@ -4,7 +4,7 @@ import shutil
 from aiida_crystal17.tests import TEST_DIR
 import aiida_crystal17.tests.utils as tests
 import pytest
-from aiida_crystal17.utils import aiida_version, cmp_version
+from aiida_crystal17.aiida_compatability import aiida_version, cmp_version
 
 
 def get_main_code(workdir):

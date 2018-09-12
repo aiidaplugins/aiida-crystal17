@@ -80,117 +80,6 @@ def get_basissets_by_kind(structure, family_name):
     return bases
 
 
-# pylint: disable=too-many-locals
-def upload_basisset_family(folder,
-                           group_name,
-                           group_description,
-                           stop_if_existing=True,
-                           extension=".basis"):
-    """
-    Upload a set of Basis Set files in a given group.
-
-    :param folder: a path containing all Basis Set files to be added.
-        Only files ending in the set extension (case-insensitive) are considered.
-    :param group_name: the name of the group to create. If it exists and is
-        non-empty, a UniquenessError is raised.
-    :param group_description: a string to be set as the group description.
-        Overwrites previous descriptions, if the group was existing.
-    :param stop_if_existing: if True, check for the md5 of the files and,
-        if the file already exists in the DB, raises a MultipleObjectsError.
-        If False, simply adds the existing UPFData node to the group.
-    :param extension: the filename extension to look for
-    """
-    from aiida.common import aiidalogger
-    from aiida.orm import Group
-    from aiida.common.exceptions import UniquenessError, NotExistent
-
-    # aiida v1 compatibility
-    try:
-        from aiida.backends.utils import get_automatic_user
-        automatic_user = get_automatic_user()
-    except ImportError:
-        from aiida.orm.backend import construct_backend
-        backend = construct_backend()
-        automatic_user = backend.users.get_automatic_user()
-
-    if not os.path.isdir(folder):
-        raise ValueError("folder must be a directory")
-
-    # only files, and only those ending with specified exension;
-    # go to the real file if it is a symlink
-    files = [
-        os.path.realpath(os.path.join(folder, i)) for i in os.listdir(folder)
-        if os.path.isfile(os.path.join(folder, i))
-        and i.lower().endswith(extension)
-    ]
-
-    nfiles = len(files)
-
-    try:
-        group = Group.get(name=group_name, type_string=BASISGROUP_TYPE)
-        group_created = False
-    except NotExistent:
-        group = Group(
-            name=group_name, type_string=BASISGROUP_TYPE, user=automatic_user)
-        group_created = True
-
-    if group.user.email != automatic_user.email:
-        raise UniquenessError(
-            "There is already a BasisFamily group with name {}"
-            ", but it belongs to user {}, therefore you "
-            "cannot modify it".format(group_name, group.user.email))
-
-    # Always update description, even if the group already existed
-    group.description = group_description
-
-    # NOTE: GROUP SAVED ONLY AFTER CHECKS OF UNICITY
-
-    basis_and_created = _retrieve_basis_sets(files, stop_if_existing)
-    # check whether basisset are unique per element
-    elements = [(i[0].element, i[0].md5sum) for i in basis_and_created]
-    # If group already exists, check also that I am not inserting more than
-    # once the same element
-    if not group_created:
-        for aiida_n in group.nodes:
-            # Skip non-basis sets
-            if not isinstance(aiida_n, BasisSetData):
-                continue
-            elements.append((aiida_n.element, aiida_n.md5sum))
-
-    elements = set(elements)  # Discard elements with the same MD5, that would
-    # not be stored twice
-    elements_names = [e[0] for e in elements]
-
-    if not len(elements_names) == len(set(elements_names)):
-        duplicates = set(
-            [x for x in elements_names if elements_names.count(x) > 1])
-        duplicates_string = ", ".join(i for i in duplicates)
-        raise UniquenessError("More than one Basis found for the elements: " +
-                              duplicates_string + ".")
-
-        # At this point, save the group, if still unstored
-    if group_created:
-        group.store()
-
-    # save the basis set in the database, and add them to group
-    for basisset, created in basis_and_created:
-        if created:
-            basisset.store()
-
-            aiidalogger.debug("New node {0} created for file {1}".format(  # pylint: disable=logging-format-interpolation
-                basisset.uuid, basisset.filename))
-        else:
-            aiidalogger.debug("Reusing node {0} for file {1}".format(  # pylint: disable=logging-format-interpolation
-                basisset.uuid, basisset.filename))
-
-    # Add elements to the group all together
-    group.add_nodes(basis for basis, created in basis_and_created)
-
-    nuploaded = len([_ for _, created in basis_and_created if created])
-
-    return nfiles, nuploaded
-
-
 def _retrieve_basis_sets(files, stop_if_existing):
     """ get existing basis sets or create if not
 
@@ -545,7 +434,7 @@ class BasisSetData(Data):
                                      "with the same MD5 has been found in the "
                                      "DB. pks={}".format(",".join(
                                          [str(i.pk) for i in basissets])))
-            return (basissets[0], False)
+            return basissets[0], False
 
     def store(self, with_transaction=True, use_cache=None):
         """
@@ -737,3 +626,118 @@ class BasisSetData(Data):
         groups.sort()
         # Return the groups, without name
         return [_[1] for _ in groups]
+
+    # pylint: disable=too-many-locals,too-many-arguments
+    @classmethod
+    def upload_basisset_family(cls,
+                               folder,
+                               group_name,
+                               group_description,
+                               stop_if_existing=True,
+                               extension=".basis",
+                               dry_run=False):
+        """
+        Upload a set of Basis Set files in a given group.
+
+        :param folder: a path containing all Basis Set files to be added.
+            Only files ending in the set extension (case-insensitive) are considered.
+        :param group_name: the name of the group to create. If it exists and is
+            non-empty, a UniquenessError is raised.
+        :param group_description: a string to be set as the group description.
+            Overwrites previous descriptions, if the group was existing.
+        :param stop_if_existing: if True, check for the md5 of the files and,
+            if the file already exists in the DB, raises a MultipleObjectsError.
+            If False, simply adds the existing BasisSetData node to the group.
+        :param extension: the filename extension to look for
+        :param dry_run: If True, do not change the database.
+        """
+        from aiida.common import aiidalogger
+        from aiida.orm import Group
+        from aiida.common.exceptions import UniquenessError, NotExistent
+        from aiida_crystal17.aiida_compatability import get_automatic_user
+
+        automatic_user = get_automatic_user()
+
+        if not os.path.isdir(folder):
+            raise ValueError("folder must be a directory")
+
+        # only files, and only those ending with specified exension;
+        # go to the real file if it is a symlink
+        files = [
+            os.path.realpath(os.path.join(folder, i))
+            for i in os.listdir(folder)
+            if os.path.isfile(os.path.join(folder, i))
+            and i.lower().endswith(extension)
+        ]
+
+        nfiles = len(files)
+
+        try:
+            group = Group.get(name=group_name, type_string=BASISGROUP_TYPE)
+            group_created = False
+        except NotExistent:
+            group = Group(
+                name=group_name,
+                type_string=BASISGROUP_TYPE,
+                user=automatic_user)
+            group_created = True
+
+        if group.user.email != automatic_user.email:
+            raise UniquenessError(
+                "There is already a BasisFamily group with name {}"
+                ", but it belongs to user {}, therefore you "
+                "cannot modify it".format(group_name, group.user.email))
+
+        # Always update description, even if the group already existed
+        group.description = group_description
+
+        # NOTE: GROUP SAVED ONLY AFTER CHECKS OF UNICITY
+
+        basis_and_created = _retrieve_basis_sets(files, stop_if_existing)
+        # check whether basisset are unique per element
+        elements = [(i[0].element, i[0].md5sum) for i in basis_and_created]
+        # If group already exists, check also that I am not inserting more than
+        # once the same element
+        if not group_created:
+            for aiida_n in group.nodes:
+                # Skip non-basis sets
+                if not isinstance(aiida_n, BasisSetData):
+                    continue
+                elements.append((aiida_n.element, aiida_n.md5sum))
+
+        elements = set(
+            elements)  # Discard elements with the same MD5, that would
+        # not be stored twice
+        elements_names = [e[0] for e in elements]
+
+        if not len(elements_names) == len(set(elements_names)):
+            duplicates = set(
+                [x for x in elements_names if elements_names.count(x) > 1])
+            duplicates_string = ", ".join(i for i in duplicates)
+            raise UniquenessError(
+                "More than one Basis found for the elements: " +
+                duplicates_string + ".")
+
+        # At this point, save the group, if still unstored
+        if group_created and not dry_run:
+            group.store()
+
+        # save the basis set in the database, and add them to group
+        for basisset, created in basis_and_created:
+            if created:
+                if not dry_run:
+                    basisset.store()
+
+                aiidalogger.debug("New node {0} created for file {1}".format(  # pylint: disable=logging-format-interpolation
+                    basisset.uuid, basisset.filename))
+            else:
+                aiidalogger.debug("Reusing node {0} for file {1}".format(  # pylint: disable=logging-format-interpolation
+                    basisset.uuid, basisset.filename))
+
+        # Add elements to the group all together
+        if not dry_run:
+            group.add_nodes(basis for basis, created in basis_and_created)
+
+        nuploaded = len([_ for _, created in basis_and_created if created])
+
+        return nfiles, nuploaded

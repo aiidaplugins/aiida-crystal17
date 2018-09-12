@@ -9,7 +9,7 @@ import aiida_crystal17.tests.utils as tests
 import ejplugins
 import pytest
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.utils import aiida_version, cmp_version, run_get_node
+from aiida_crystal17.aiida_compatability import aiida_version, cmp_version, run_get_node
 from ase.spacegroup import crystal
 from jsonextended import edict
 
@@ -342,7 +342,8 @@ def test_submit_nio_afm(new_database, new_workdir):
     """Test submitting a calculation"""
     from aiida.orm import DataFactory
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import upload_basisset_family
+    from aiida_crystal17.data.basis_set import BasisSetData
+    upload_basisset_family = BasisSetData.upload_basisset_family
     from aiida.common.folders import SandboxFolder
 
     # get code
@@ -608,7 +609,9 @@ def test_full_run_nio_afm(new_database, new_workdir):
     from aiida.orm import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import upload_basisset_family, get_basissets_from_structure
+    from aiida_crystal17.data.basis_set import get_basissets_from_structure
+    from aiida_crystal17.data.basis_set import BasisSetData
+    upload_basisset_family = BasisSetData.upload_basisset_family
 
     # get code
     code = get_main_code(new_workdir, configure=True)
@@ -732,7 +735,9 @@ def test_full_run_nio_afm_opt(new_database, new_workdir):
     from aiida.orm import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import upload_basisset_family, get_basissets_from_structure
+    from aiida_crystal17.data.basis_set import get_basissets_from_structure
+    from aiida_crystal17.data.basis_set import BasisSetData
+    upload_basisset_family = BasisSetData.upload_basisset_family
 
     # get code
     code = get_main_code(new_workdir, configure=True)

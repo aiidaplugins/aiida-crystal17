@@ -48,7 +48,8 @@ def test_create_single(new_database, new_workdir):
 
 def test_create_group(new_database, new_workdir):
     computer = tests.get_computer(workdir=new_workdir)
-    from aiida_crystal17.data.basis_set import upload_basisset_family
+    from aiida_crystal17.data.basis_set import BasisSetData
+    upload_basisset_family = BasisSetData.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"), "sto3g",
@@ -86,7 +87,8 @@ def test_create_group(new_database, new_workdir):
 def test_bases_from_struct(new_database, new_workdir):
 
     computer = tests.get_computer(workdir=new_workdir)
-    from aiida_crystal17.data.basis_set import upload_basisset_family
+    from aiida_crystal17.data.basis_set import BasisSetData
+    upload_basisset_family = BasisSetData.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"), "sto3g",

@@ -27,7 +27,7 @@ def test_example(new_database, new_workdir):
     from aiida.orm import DataFactory
     StructureData = DataFactory('structure')
     from ase.spacegroup import crystal
-    from aiida_crystal17.data.basis_set import upload_basisset_family
+    from aiida_crystal17.data.basis_set import BasisSetData
     from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
 
     # get code
@@ -56,7 +56,7 @@ def test_example(new_database, new_workdir):
     settings_dict = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
     instruct, settings = run_symmetrise_3d_structure(instruct, settings_dict)
 
-    upload_basisset_family(
+    BasisSetData.upload_basisset_family(
         os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files", "sto3g"),
         "sto3g",
         "minimal basis sets",

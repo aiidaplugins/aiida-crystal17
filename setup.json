@@ -29,6 +29,8 @@
             "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure"
         ],
         "aiida.cmdline.data": [
+            "cry17-settings = aiida_crystal17.cmndline.structsettings:structsettings",
+            "cry17-basis = aiida_crystal17.cmndline.basis_set:basisset"
         ]
     },
     "scripts": [

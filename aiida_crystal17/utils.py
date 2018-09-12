@@ -1,8 +1,8 @@
 """
-helpful code
+common utilities
 """
-from packaging import version
 import collections
+
 from jsonextended import edict
 
 # python 3 to 2 compatibility
@@ -10,20 +10,6 @@ try:
     basestring
 except NameError:
     basestring = str  # pylint: disable=redefined-builtin
-
-
-def aiida_version():
-    """get the version of aiida in use
-
-    :returns: packaging.version.Version
-    """
-    from aiida import __version__ as aiida_version_
-    return version.parse(aiida_version_)
-
-
-def cmp_version(string):
-    """convert a version string to a packaging.version.Version"""
-    return version.parse(string)
 
 
 def unflatten_dict(indict, delimiter="."):
@@ -193,30 +179,3 @@ def get_keys(dct, keys, default=None, raise_error=False):
             else:
                 return default
     return subdct
-
-
-def run_get_node(process, inputs_dict):
-    """ an implementation of run_get_node which is compatible with both aiida v0.12 and v1.0.0
-
-    it will also convert "options" "label" and "description" to/from the _ variant
-
-    :param process: a process
-    :param inputs_dict: a dictionary of inputs
-    :type inputs_dict: dict
-    :return: the calculation Node
-    """
-    if aiida_version() < cmp_version("1.0.0a1"):
-        for key in ["options", "label", "description"]:
-            if key in inputs_dict:
-                inputs_dict["_" + key] = inputs_dict.pop(key)
-        workchain = process.new_instance(inputs=inputs_dict)
-        workchain.run_until_complete()
-        calcnode = workchain.calc
-    else:
-        from aiida.work.launch import run_get_node  # pylint: disable=import-error
-        for key in ["_options", "_label", "_description"]:
-            if key in inputs_dict:
-                inputs_dict[key[1:]] = inputs_dict.pop(key)
-        _, calcnode = run_get_node(process, **inputs_dict)
-
-    return calcnode

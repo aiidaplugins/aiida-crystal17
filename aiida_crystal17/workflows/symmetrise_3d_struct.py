@@ -5,7 +5,8 @@ from aiida.orm import DataFactory
 from aiida.work import WorkChain
 from aiida_crystal17.parsers.geometry import structure_to_dict, compute_symmetry_3d, SYMMETRY_PROGRAM, SYMMETRY_VERSION, \
     dict_to_structure
-from aiida_crystal17.utils import run_get_node, unflatten_dict
+from aiida_crystal17.utils import unflatten_dict
+from aiida_crystal17.aiida_compatability import run_get_node
 from aiida_crystal17.validation import validate_with_dict
 from aiida_crystal17 import __version__ as VERSION
 from jsonextended import edict
