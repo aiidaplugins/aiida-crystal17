@@ -9,6 +9,8 @@ AiiDA plugin for running the [CRYSTAL17](http://www.crystal.unito.it/) code.
 The code is principally tested against CRYSTAL17, 
 but the output parsing has also been tested against CRYSTAL14.
 
+**Documentation**: https://readthedocs.org/projects/aiida-crystal17
+
 ## Installation
 
 To install from pypi:
