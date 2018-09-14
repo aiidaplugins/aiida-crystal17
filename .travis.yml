@@ -53,9 +53,9 @@ script:
 - >
   if [[ "$TEST_TYPE" == "tests" ]]; then
     if [[ ! -z "${AIIDA_BRANCH}" ]]; then
-      pytest -v;
+      pytest -v aiida_crystal17 examples;
     else
-      pytest -v --cov-config .coveragerc --cov-report=;
+      pytest -v --cov-config .coveragerc --cov-report= aiida_crystal17 examples;
     fi
   fi
 - >
