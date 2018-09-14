@@ -72,7 +72,7 @@ The inputs represent:
 -  ``structure`` stores the initial atomic configuration for the calculation.
 -  ``settings`` stores additional data related to the initial atomic
     configuration, such as symmetry operations and initial spin.
--  `basis_` store the basis set for each element
+-  ``basis_`` store the basis set for each element
 
 The outputs represent:
 

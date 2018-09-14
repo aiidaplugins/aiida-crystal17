@@ -37,7 +37,7 @@ number of output nodes:
 
 .. code:: shell
 
-   verdi calculation show 5
+   >> verdi calculation show 5
    -----------  ---------------------------------------------------
    type         CryBasicCalculation
    pk           5
