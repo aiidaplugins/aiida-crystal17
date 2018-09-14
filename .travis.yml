@@ -55,7 +55,7 @@ script:
     if [[ ! -z "${AIIDA_BRANCH}" ]]; then
       pytest -v;
     else
-      pytest -v --cov=.  --cov-config .coveragerc --cov-report=;
+      pytest -v --cov=aiida_crystal17  --cov-config .coveragerc --cov-report=;
     fi
   fi
 - >
