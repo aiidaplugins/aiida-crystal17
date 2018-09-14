@@ -1,8 +1,11 @@
 [run]
-source=aiida_crystal17
+source =
+    aiida_crystal17
+    examples
+
 omit =
-    */tests/*
-    */test_*
-    setup.py
-    conftest.py
+    tests/*
+
+[report]
+
 
