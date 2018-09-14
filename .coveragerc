@@ -6,3 +6,4 @@ omit =
     */test*
     */travis/*
     setup.py
+    conftest.py
