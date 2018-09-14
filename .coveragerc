@@ -4,5 +4,5 @@ source=aiida_crystal17
 [report]
 omit =
     */test*
-    travis/*
+    */travis/*
     setup.py
