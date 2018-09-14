@@ -3,4 +3,6 @@ source=aiida_crystal17
 
 [report]
 omit =
-    *test*
+    */test*
+    travis/*
+    setup.py
