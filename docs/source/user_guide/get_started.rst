@@ -12,14 +12,18 @@ for more information on how to perform these steps.
 Installation
 ++++++++++++
 
-Use the following commands to install the plugin::
+To install from pypi::
 
-    git clone https://github.com/chrisjsewell/aiida-crystal17 .
-    cd aiida-crystal17
-    pip install -e .  # also installs aiida, if missing (but not postgres)
-    #pip install -e .[pre-commit,testing] # install extras for more features
-    verdi quicksetup  # better to set up a new profile
-    verdi calculation plugins  # should now show your calclulation plugins
+    >> pip install aiida-crystal17
+
+To install the development version::
+
+    >> git clone https://github.com/chrisjsewell/aiida-crystal17 .
+    >> cd aiida-crystal17
+    >> pip install -e .  # also installs aiida, if missing (but not postgres)
+    #>> pip install -e .[pre-commit,testing] # install extras for more features
+    >> verdi quicksetup  # better to set up a new profile
+    >> verdi calculation plugins  # should now show your calclulation plugins
 
 Then use ``verdi code setup`` with a ``crystal17.`` input plugin
 to set up an AiiDA code for that plugin.
