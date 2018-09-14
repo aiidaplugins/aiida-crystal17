@@ -3,8 +3,8 @@ source=aiida_crystal17
 
 [report]
 omit =
-    tests/*
-    travis/*
+    *test*
+    home/travis/*
     setup.py
     conftest.py
 
