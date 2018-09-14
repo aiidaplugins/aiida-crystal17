@@ -1,7 +1,5 @@
 [run]
 source=aiida_crystal17
-
-[report]
 omit =
     */tests/*
     */test_*
