@@ -1,7 +1,5 @@
 [run]
-source =
-    aiida_crystal17
-    examples
+
 
 [report]
 
