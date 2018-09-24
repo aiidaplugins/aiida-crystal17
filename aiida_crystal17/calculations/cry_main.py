@@ -2,7 +2,6 @@
 Plugin to create a CRYSTAL17 output file from input files created via data nodes
 """
 import os
-import copy
 
 import six
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
