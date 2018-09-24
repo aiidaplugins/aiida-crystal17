@@ -140,6 +140,15 @@ class StructSettingsData(Data):
                     }
                 }
             },
+            "equivalent": {
+                "description":
+                "a number for each site, with the same number denoting symmetric equivalence",
+                "type":
+                "array",
+                "items": {
+                    "type": "integer"
+                }
+            }
         }
     }
 
@@ -241,6 +250,14 @@ class StructSettingsData(Data):
             data.pop("num_symops")
         data["operations"] = self._get_operations()
         return AttributeDict(data)
+
+    def get_dict(self):
+        """get dictionary of data"""
+        data = dict(self.iterattrs())
+        if "num_symops" in data:
+            data.pop("num_symops")
+        data["operations"] = self._get_operations()
+        return data
 
     @property
     def num_symops(self):

@@ -170,8 +170,8 @@ def _parse_first_line(line, fname):
 
     # we would deal with different numbering at .d12 creation time
     newline = "{0} {1}\n".format(
-        atomic_number
-        if basis_type == "all-electron" else 200 + atomic_number, num_shells)
+        atomic_number if basis_type == "all-electron" else 200 + atomic_number,
+        num_shells)
 
     return atomic_number, basis_type, num_shells, newline
 
@@ -208,8 +208,8 @@ def validate_basis_string(instr):
 
     if len(lines) > indx + 1:
         raise ValueError(
-            "the basis set string contains more than one basis set or has trailing empty lines:\n{}".
-            format(instr))
+            "the basis set string contains more than one basis set or has trailing empty lines:\n{}"
+            .format(instr))
 
     return True
 
@@ -267,8 +267,8 @@ def parse_basis(fname):
                             format(fname))
                     if set(head_data.keys()).intersection(protected_keys):
                         raise ParsingError(
-                            "the header data contained a forbidden key(s) {} for file: {}".
-                            format(protected_keys, fname))
+                            "the header data contained a forbidden key(s) {} for file: {}"
+                            .format(protected_keys, fname))
                     meta_data = head_data
                     in_yaml = False
                     parsing_data = True

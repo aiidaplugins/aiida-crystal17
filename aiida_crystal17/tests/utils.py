@@ -185,9 +185,8 @@ def configure_computer_v012(computer, user_email=None, authparams=None):
                   old_authparams.keys())))
 
     if set(authparams.keys()) != set(valid_keys):
-        raise ValueError(
-            "new_authparams should contain only the keys: {}".format(
-                valid_keys))
+        raise ValueError("new_authparams should contain only the keys: {}".
+                         format(valid_keys))
 
     # convert keys from strings
     transport_members = dict(inspect.getmembers(transport))
@@ -283,8 +282,9 @@ def get_code(entry_point, computer):
     try:
         executable = exec_lookup[entry_point]
     except KeyError:
-        raise KeyError("Entry point {} not recognized. Allowed values: {}"
-                       .format(entry_point, exec_lookup.keys()))
+        raise KeyError(
+            "Entry point {} not recognized. Allowed values: {}".format(
+                entry_point, exec_lookup.keys()))
 
     try:
         code = Code.get_from_string('{}-{}@{}'.format(entry_point, executable,
@@ -326,8 +326,8 @@ def test_calculation_execution(calc,
         st = os.stat(script_path)
         os.chmod(script_path, st.st_mode | stat.S_IEXEC)
         # now call script, NB: bash -l -c is required to access global variable loaded in .bash_profile
-        returncode = subprocess.call(
-            ["bash", "-l", "-c", script_path], cwd=subfolder.abspath)
+        returncode = subprocess.call(["bash", "-l", "-c", script_path],
+                                     cwd=subfolder.abspath)
 
         if returncode not in allowed_returncodes:
 

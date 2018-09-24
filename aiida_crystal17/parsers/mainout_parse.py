@@ -132,8 +132,8 @@ def _extract_symmetry(final_data, init_settings, output_nodes, param_data):
                 final_data["primitive_symmops"])
             if differences:
                 param_data["parser_warnings"].append(
-                    "output symmetry operations were not the same as those input: {}".
-                    format(differences))
+                    "output symmetry operations were not the same as those input: {}"
+                    .format(differences))
                 psuccess = False
         else:
             from aiida.orm import DataFactory

@@ -44,6 +44,18 @@ CRYSTAL_TYPE_MAP = {
     5: 'hexagonal',
     6: 'cubic'
 }
+
+CRYSTAL_TYPE_NUM_MAP = {
+    'triclinic': 1,
+    'monoclinic': 2,
+    'orthorhombic': 3,
+    'tetragonal': 4,
+    'hexagonal': 5,
+    'rhombohedral': 5,
+    'triganol': 5,
+    'cubic': 6
+}
+
 _DIMENSIONALITY = {
     0: [False, False, False],
     1: [True, False, False],
@@ -87,9 +99,8 @@ def read_gui_file(fpath, cryversion=17):
         init_data = lines[0].split()
         dimensionality = int(init_data[0])
         if dimensionality not in _DIMENSIONALITY:
-            raise ValueError(
-                "dimensionality was not between 0 and 3: {}".format(
-                    dimensionality))
+            raise ValueError("dimensionality was not between 0 and 3: {}".
+                             format(dimensionality))
         structdata["pbc"] = _DIMENSIONALITY[dimensionality]
         structdata["origin_setting"] = int(init_data[1])
         crystal_type = int(init_data[2])
@@ -108,8 +119,8 @@ def read_gui_file(fpath, cryversion=17):
                 values = lines[line_num].split()
                 if not len(values) == 3:
                     raise IOError(
-                        "expected symop x, y and z coordinate on line {0}: {1}".
-                        format(line_num, lines[line_num]))
+                        "expected symop x, y and z coordinate on line {0}: {1}"
+                        .format(line_num, lines[line_num]))
                 symop.extend(
                     [float(values[0]),
                      float(values[1]),
@@ -160,8 +171,7 @@ def get_crystal_system(sg_number, as_number=False):
                 sg_number))
 
     if as_number:
-        crystal_system = {v: k
-                          for k, v in CRYSTAL_TYPE_MAP.items()}[crystal_system]
+        crystal_system = CRYSTAL_TYPE_NUM_MAP[crystal_system]
 
     return crystal_system
 
@@ -240,15 +250,15 @@ def cart2frac(lattice, ccoords):
     fcoords = []
     det_latt_tr = np.linalg.det(latt_tr)
     for i in ccoords:
-        a = (det3([[i[0], latt_tr[0][1], latt_tr[0][2]], [
-            i[1], latt_tr[1][1], latt_tr[1][2]
-        ], [i[2], latt_tr[2][1], latt_tr[2][2]]])) / det_latt_tr
-        b = (det3([[latt_tr[0][0], i[0], latt_tr[0][2]], [
-            latt_tr[1][0], i[1], latt_tr[1][2]
-        ], [latt_tr[2][0], i[2], latt_tr[2][2]]])) / det_latt_tr
-        c = (det3([[latt_tr[0][0], latt_tr[0][1], i[0]], [
-            latt_tr[1][0], latt_tr[1][1], i[1]
-        ], [latt_tr[2][0], latt_tr[2][1], i[2]]])) / det_latt_tr
+        a = (det3([[i[0], latt_tr[0][1], latt_tr[0][2]],
+                   [i[1], latt_tr[1][1], latt_tr[1][2]],
+                   [i[2], latt_tr[2][1], latt_tr[2][2]]])) / det_latt_tr
+        b = (det3([[latt_tr[0][0], i[0], latt_tr[0][2]],
+                   [latt_tr[1][0], i[1], latt_tr[1][2]],
+                   [latt_tr[2][0], i[2], latt_tr[2][2]]])) / det_latt_tr
+        c = (det3([[latt_tr[0][0], latt_tr[0][1], i[0]],
+                   [latt_tr[1][0], latt_tr[1][1], i[1]],
+                   [latt_tr[2][0], latt_tr[2][1], i[2]]])) / det_latt_tr
         fcoords.append([a, b, c])
     return fcoords
 
@@ -338,9 +348,7 @@ def ops_cart_to_frac(ops_flat, lattice):
 #
 #     if symops is not None:
 #         # if the symops are given, we can go straight to writing the file
-#         crystal_type = {v: k
-#                         for k, v in CRYSTAL_TYPE_MAP.items()
-#                         }[settings["crystal"]["system"]]
+#         crystal_type = CRYSTAL_TYPE_NUM_MAP[settings["crystal"]["system"]]
 #         origin_setting = settings["crystal"]["transform"]
 #         origin_setting = 1 if origin_setting is None else origin_setting
 #
@@ -378,7 +386,7 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
                         angletol):
     """ create 3d geometry input for CRYSTAL17
 
-    :param structdata: "lattice", "atomic_numbers", "ccoords", "pbc" and (optionally) "equivalent"
+    :param structdata: "lattice", "atomic_numbers", "ccoords", "equivalent"
     :param standardize: whether to standardize the structure
     :param primitive: whether to create a primitive structure
     :param idealize: whether to idealize the structure
@@ -434,8 +442,7 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     if symm_dataset is None:
         # TODO option to use P1 symmetry if can't find symmetry
         raise ValueError("could not find symmetry of cell: {}".format(cell))
-    sg_num = symm_dataset[
-        'number'] if symm_dataset['number'] is not None else 1
+    sg_num = symm_dataset['number'] if symm_dataset['number'] is not None else 1
     crystal_type = get_crystal_system(sg_num, as_number=True)
 
     # format the symmetry operations (fractional to cartesian)

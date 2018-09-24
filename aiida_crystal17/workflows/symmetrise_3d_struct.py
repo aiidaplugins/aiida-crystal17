@@ -113,8 +113,8 @@ class Symmetrise3DStructure(WorkChain):
 
         settings_dict = self.inputs.settings.get_dict(
         ) if "settings" in self.inputs else {}
-        settings_dict = edict.merge(
-            [self._settings_defaults, settings_dict], overwrite=True)
+        settings_dict = edict.merge([self._settings_defaults, settings_dict],
+                                    overwrite=True)
 
         validate_with_dict(settings_dict, self._settings_schema)
 

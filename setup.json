@@ -56,10 +56,10 @@
             "jsonextended"
         ],
         "pre-commit": [
-            "pre-commit==1.10.5",
-            "yapf==0.22.0",
+            "pre-commit==1.11.0",
+            "yapf==0.24.0",
             "prospector==1.1.2",
-            "pylint==1.8.4"
+            "pylint==1.9.3"
         ],
         "docs": [
             "sphinx"

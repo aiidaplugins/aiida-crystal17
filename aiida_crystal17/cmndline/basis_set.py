@@ -82,8 +82,8 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
             dry_run=dry_run)
 
     click.echo(
-        'Basis Set files found and added to family: {}, of those {} were newly uploaded'.
-        format(nfiles, num_uploaded))
+        'Basis Set files found and added to family: {}, of those {} were newly uploaded'
+        .format(nfiles, num_uploaded))
     if dry_run:
         click.echo('No files were uploaded due to --dry-run.')
 

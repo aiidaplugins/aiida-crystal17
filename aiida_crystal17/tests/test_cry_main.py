@@ -875,8 +875,8 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
             4.49784306967,
             'b':
             3.073643846369251,
-            'matrix': [[0.0, -2.17339440672,
-                        -2.17339440672], [0.0, -2.17339440672, 2.17339440672],
+            'matrix': [[0.0, -2.17339440672, -2.17339440672],
+                       [0.0, -2.17339440672, 2.17339440672],
                        [-4.49784306967, 0.0, 0.0]],
             'volume':
             42.49241208568022,
@@ -898,40 +898,43 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
                 'occu': 1.0,
                 'element': 'Ni'
             }]
-        }, {
-            'properties': {
-                'kind_name': 'Ni2'
-            },
-            'abc': [0.5, 0.5, 0.5],
-            'xyz': [-2.248921534835, -2.17339440672, 0.0],
-            'label': 'Ni',
-            'species': [{
-                'occu': 1.0,
-                'element': 'Ni'
-            }]
-        }, {
-            'properties': {
-                'kind_name': 'O'
-            },
-            'abc': [1.0, 0.0, 0.5],
-            'xyz': [-2.248921534835, -2.17339440672, -2.17339440672],
-            'label': 'O',
-            'species': [{
-                'occu': 1.0,
-                'element': 'O'
-            }]
-        }, {
-            'properties': {
-                'kind_name': 'O'
-            },
-            'abc': [0.5, 0.5, 0.0],
-            'xyz': [0.0, -2.17339440672, 0.0],
-            'label': 'O',
-            'species': [{
-                'occu': 1.0,
-                'element': 'O'
-            }]
-        }],
+        },
+                  {
+                      'properties': {
+                          'kind_name': 'Ni2'
+                      },
+                      'abc': [0.5, 0.5, 0.5],
+                      'xyz': [-2.248921534835, -2.17339440672, 0.0],
+                      'label': 'Ni',
+                      'species': [{
+                          'occu': 1.0,
+                          'element': 'Ni'
+                      }]
+                  },
+                  {
+                      'properties': {
+                          'kind_name': 'O'
+                      },
+                      'abc': [1.0, 0.0, 0.5],
+                      'xyz': [-2.248921534835, -2.17339440672, -2.17339440672],
+                      'label': 'O',
+                      'species': [{
+                          'occu': 1.0,
+                          'element': 'O'
+                      }]
+                  },
+                  {
+                      'properties': {
+                          'kind_name': 'O'
+                      },
+                      'abc': [0.5, 0.5, 0.0],
+                      'xyz': [0.0, -2.17339440672, 0.0],
+                      'label': 'O',
+                      'species': [{
+                          'occu': 1.0,
+                          'element': 'O'
+                      }]
+                  }],
         '@class':
         'Structure',
         '@module':

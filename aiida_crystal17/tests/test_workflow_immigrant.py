@@ -33,8 +33,8 @@ def test_full_nio_afm(new_database):
         ['basis_Ni', 'basis_O', 'parameters', 'structure', 'settings'])
 
     struct = node.inp.structure
-    assert "struct_setup" in struct.get_inputs_dict()[
-        'structure'].get_inputs_dict()
+    assert "struct_setup" in struct.get_inputs_dict(
+    )['structure'].get_inputs_dict()
 
     print(node.get_outputs_dict())
 
@@ -74,8 +74,8 @@ def test_full_mgo_opt(new_database):
         ['basis_Mg', 'basis_O', 'parameters', 'structure', 'settings'])
 
     struct = node.inp.structure
-    assert "struct_setup" in struct.get_inputs_dict()[
-        'structure'].get_inputs_dict()
+    assert "struct_setup" in struct.get_inputs_dict(
+    )['structure'].get_inputs_dict()
 
     print(node.get_outputs_dict())
 
@@ -117,15 +117,16 @@ def test_full_mgo_opt(new_database):
                 'occu': 1.0
             }],
             'xyz': [0.0, 0.0, 0.0]
-        }, {
-            'abc': [0.5, 0.5, 0.5],
-            'label': 'O',
-            'species': [{
-                'element': 'O',
-                'occu': 1.0
-            }],
-            'xyz': [2.105, 2.105, 2.105]
-        }]
+        },
+                  {
+                      'abc': [0.5, 0.5, 0.5],
+                      'label': 'O',
+                      'species': [{
+                          'element': 'O',
+                          'occu': 1.0
+                      }],
+                      'xyz': [2.105, 2.105, 2.105]
+                  }]
     }
 
     input_struct = node.inp.structure.get_pymatgen_structure().as_dict()
