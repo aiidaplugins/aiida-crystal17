@@ -8,8 +8,8 @@ import aiida_crystal17
 import aiida_crystal17.tests.utils as tests
 import ejplugins
 import pytest
+from aiida_crystal17.aiida_compatability import aiida_version, cmp_version, run_get_node, get_calc_log
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.aiida_compatability import aiida_version, cmp_version, run_get_node
 from ase.spacegroup import crystal
 from jsonextended import edict
 
@@ -810,6 +810,7 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     calcnode = run_get_node(process, inputs_dict)
 
     print(calcnode)
+    print(get_calc_log(calcnode))
 
     assert '_aiida_cached_from' not in calcnode.extras()
 

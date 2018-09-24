@@ -140,6 +140,22 @@ def get_automatic_user():
     return automatic_user
 
 
+def get_calc_log(calcnode):
+    """get a formatted string of the calculation log"""
+    from aiida.backends.utils import get_log_messages
+    import json
+    import datetime
+
+    def default(o):
+        if isinstance(o, (datetime.date, datetime.datetime)):
+            return o.isoformat()
+
+    log_string = "- Calc State:\n{0}\n- Scheduler Out:\n{1}\n- Scheduler Err:\n{2}\n- Log:\n{3}".format(
+        calcnode.get_state(),
+        calcnode.get_scheduler_output(), calcnode.get_scheduler_error(),
+        json.dumps(get_log_messages(calcnode), default=default, indent=2))
+    return log_string
+
 # @dbenv
 # def backend_obj_users():
 #     """Test if aiida accesses users through backend object."""

@@ -16,6 +16,7 @@ env:
     - TEST_TYPE: tests
       TEST_AIIDA_BACKEND: django
       MOCK_EXECUTABLES: true
+      PYPI_DEPLOY: true
     - TEST_TYPE: tests
       TEST_AIIDA_BACKEND: sqlalchemy
       MOCK_EXECUTABLES: true
@@ -77,4 +78,4 @@ deploy:
     on:
       branch: master
       tags: true
-      condition: $TEST_AIIDA_BACKEND = "django"
+      condition: $PYPI_DEPLOY = true
