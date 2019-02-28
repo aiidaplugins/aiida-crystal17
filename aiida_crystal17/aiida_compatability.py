@@ -132,13 +132,19 @@ def get_basic_data_pre_1_0(data_type):
 
 @dbenv
 def get_automatic_user():
-    try:
-        from aiida.backends.utils import get_automatic_user
-        automatic_user = get_automatic_user()
-    except ImportError:
+    if aiida_version() >= cmp_version("1.0.0a4"):
+        from aiida.orm.backends import construct_backend
+        backend = construct_backend()
+        automatic_user = backend.users.find()[0]
+        # automatic_user = backend.users.get_automatic_user()
+    elif aiida_version() >= cmp_version("1.0.0a2"):
         from aiida.orm.backend import construct_backend
         backend = construct_backend()
         automatic_user = backend.users.get_automatic_user()
+    else:
+        from aiida.backends.utils import get_automatic_user
+        automatic_user = get_automatic_user()
+
     return automatic_user
 
 

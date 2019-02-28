@@ -11,8 +11,11 @@
         "Topic :: Scientific/Engineering :: Chemistry",
         "Topic :: Scientific/Engineering :: Physics"
     ],
-    "version": "0.3.2a1",
+    "version": "0.3.3",
     "entry_points": {
+        "console_scripts": [
+            "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main"
+        ],
         "aiida.data": [
             "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData",
             "crystal17.structsettings = aiida_crystal17.data.struct_settings:StructSettingsData"
@@ -33,17 +36,18 @@
             "cry17-basis = aiida_crystal17.cmndline.basis_set:basisset"
         ]
     },
-    "scripts": [
-        "aiida_crystal17/tests/mock_runcry17"
-    ],
     "include_package_data": true,
-    "setup_requires": ["reentry"],
+    "setup_requires": [
+        "reentry"
+    ],
     "reentry_register": true,
     "install_requires": [
-        "aiida-core[atomic_tools]>=0.12.0",
-        "ejplugins==0.9.7"
+        "ejplugins>=0.9.7"
     ],
     "extras_require": {
+        "aiida": [
+            "aiida-core[atomic_tools]>=0.12.0"
+        ],
         "testing": [
             "mock==2.0.0",
             "pgtest==1.1.0",

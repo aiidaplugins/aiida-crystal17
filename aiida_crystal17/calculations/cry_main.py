@@ -221,7 +221,7 @@ class CryMainCalculation(JobCalculation):
         """
         basissets = {}
         # I create here a dictionary that associates each kind name to a basisset
-        for link in inputdict.keys():
+        for link in list(inputdict.keys()):
             if link.startswith(self._get_linkname_basisset_prefix()):
                 element = link[len(self._get_linkname_basisset_prefix()):]
                 the_basisset = inputdict.pop(link)

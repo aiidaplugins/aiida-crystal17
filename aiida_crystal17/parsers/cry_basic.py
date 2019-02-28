@@ -130,12 +130,18 @@ class CryBasicParser(Parser):
             successful = False
 
         outparams = output_nodes.pop("parameters")
-        perrors = outparams.get_attr("errors")
-
-        if perrors:
-            self.logger.warning(
-                "the parser raised the following errors:\n{}".format(
-                    "\n\t".join(perrors)))
+        if "errors" in outparams.get_attrs():
+            perrors = outparams.get_attr("errors")
+            if perrors:
+                self.logger.warning(
+                    "the parser raised the following errors:\n{}".format(
+                        "\n\t".join(perrors)))
+        if "parser_warnings" in outparams.get_attrs():
+            pwarns = outparams.get_attr("parser_warnings")
+            if pwarns:
+                self.logger.warning(
+                    "the parser raised the following errors:\n{}".format(
+                        "\n\t".join(pwarns)))
 
         node_list.append((self.get_linkname_outparams(), outparams))
         if "settings" in output_nodes:

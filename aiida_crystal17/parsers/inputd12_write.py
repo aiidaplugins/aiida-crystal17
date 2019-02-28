@@ -27,7 +27,7 @@ def format_value(dct, keys):
         return ""
     if isinstance(value, dict):
         outstr = ""
-        for keyword in value.keys():
+        for keyword in sorted(value.keys()):
             args = value[keyword]
             if isinstance(args, bool):
                 if args:
@@ -62,7 +62,7 @@ def write_input(indict, basis_sets, atom_props=None):
     if atom_props is None:
         atom_props = {}
     if not set(atom_props.keys()).issubset(
-        ["spin_alpha", "spin_beta", "unfixed", "ghosts"]):
+            ["spin_alpha", "spin_beta", "unfixed", "ghosts"]):
         raise ValueError(
             "atom_props should only contain: 'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
         )
@@ -136,7 +136,7 @@ def _hamiltonian_block(outstr, indict, atom_props):
     outstr += format_value(indict, ["scf", "numerical"])
     outstr += format_value(indict, ["scf", "fock_mixing"])
     outstr += format_value(indict, ["scf", "spinlock"])
-    for keyword in get_keys(indict, ["scf", "post_scf"], []):
+    for keyword in sorted(get_keys(indict, ["scf", "post_scf"], [])):
         outstr += "{}\n".format(keyword)
 
     # Hamiltonian and SCF End
@@ -162,8 +162,8 @@ def _geometry_block(outstr, indict, atom_props):
             outstr += " ".join([str(a) for a in sorted(unfixed)]) + " \n"
         outstr += format_value(indict, ["geometry", "optimise", "hessian"])
         outstr += format_value(indict, ["geometry", "optimise", "gradient"])
-        for keyword in get_keys(indict, ["geometry", "optimise", "info_print"],
-                                []):
+        for keyword in sorted(get_keys(
+                indict, ["geometry", "optimise", "info_print"], [])):
             outstr += "{}\n".format(keyword)
         outstr += format_value(indict, ["geometry", "optimise", "convergence"])
         outstr += "ENDOPT\n"

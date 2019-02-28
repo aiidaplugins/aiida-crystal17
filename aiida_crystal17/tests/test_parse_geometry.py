@@ -99,7 +99,7 @@ def test_read_gui_file():
          [1.0, 0.0, 0.0, -1.0, -1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]]
     }
 
-    assert edict.diff(data, expected) == {}
+    assert edict.diff(data, expected, np_allclose=True) == {}
 
 
 def test_write_gui_with_symops():
@@ -847,14 +847,14 @@ def test_transform_conversions():
 
     # convert from frac to cart
     cart_ops = ops_frac_to_cart(known_frac_ops, lattice)
-    assert not difference_ops(cart_ops, known_cart_ops)
+    assert not difference_ops(np.round(cart_ops, 5), known_cart_ops)
 
     # convert from cart to frac
     frac_ops = ops_cart_to_frac(known_cart_ops, lattice)
-    assert not difference_ops(frac_ops, known_frac_ops)
+    assert not difference_ops(np.round(frac_ops, 5), known_frac_ops)
 
     # convert back
     frac_ops2 = ops_cart_to_frac(cart_ops, lattice)
-    assert not difference_ops(frac_ops2, known_frac_ops)
+    assert not difference_ops(np.round(frac_ops2, 5), known_frac_ops)
     cart_ops2 = ops_frac_to_cart(frac_ops, lattice)
-    assert not difference_ops(cart_ops2, known_cart_ops)
+    assert not difference_ops(np.round(cart_ops2, 5), known_cart_ops)

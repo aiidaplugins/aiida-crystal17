@@ -213,7 +213,7 @@ class StructSettingsData(Data):
         :param data: a dictionary with the keys to substitute. It works like
           dict.update(), adding new keys and overwriting existing keys.
         """
-        for k, v in data.iteritems():
+        for k, v in data.items():
             self._set_attr(k, v)
 
     def _set_operations(self, ops):

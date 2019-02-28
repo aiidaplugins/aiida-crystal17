@@ -66,7 +66,7 @@ def get_basissets_by_kind(structure, family_name):
     # Will contain a list of all species of the basis with given PK
     basis_species = defaultdict(list)
 
-    for kindname, basis in kind_basis_dict.iteritems():
+    for kindname, basis in kind_basis_dict.items():
         basis_dict[basis.pk] = basis
         basis_species[basis.pk].append(kindname)
 

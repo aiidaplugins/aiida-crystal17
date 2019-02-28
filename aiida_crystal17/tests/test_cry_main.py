@@ -691,7 +691,12 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
     except AttributeError:
         pass
 
-    assert calcnode.get_state() == calc_states.FINISHED
+    if not calcnode.get_state() == calc_states.FINISHED:
+        error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
+        if 'output_parameters' in calcnode.get_outputs_dict():
+            error_msg += "\n{}".format(
+                calcnode.get_outputs_dict()['output_parameters'].get_dict())
+        raise AssertionError(error_msg)
 
     assert set(calcnode.get_outputs_dict().keys()).issuperset(
         ['output_parameters', 'retrieved'])
@@ -819,7 +824,12 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     except AttributeError:
         pass
 
-    assert calcnode.get_state() == calc_states.FINISHED
+    if not calcnode.get_state() == calc_states.FINISHED:
+        error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
+        if 'output_parameters' in calcnode.get_outputs_dict():
+            error_msg += "\n{}".format(
+                calcnode.get_outputs_dict()['output_parameters'].get_dict())
+        raise AssertionError(error_msg)
 
     assert set(calcnode.get_outputs_dict().keys()).issuperset(
         ['output_structure', 'output_parameters', 'retrieved'])

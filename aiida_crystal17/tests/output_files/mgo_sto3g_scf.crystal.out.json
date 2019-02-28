@@ -1,0 +1,389 @@
+{
+  "errors": [], 
+  "creator": {
+    "program": "CRYSTAL"
+  }, 
+  "initial": {
+    "calculation": {
+      "spin": false, 
+      "type": "restricted closed shell"
+    }, 
+    "primitive_cell": {
+      "symbols": [
+        "Mg", 
+        "O"
+      ], 
+      "ccoords": {
+        "units": "angstrom", 
+        "magnitude": [
+          [
+            0.0, 
+            0.0, 
+            0.0
+          ], 
+          [
+            2.105, 
+            2.105, 
+            2.105
+          ]
+        ]
+      }, 
+      "ids": [
+        "1", 
+        "2"
+      ], 
+      "cell_parameters": {
+        "a": {
+          "units": "angstrom", 
+          "magnitude": 2.97691955
+        }, 
+        "c": {
+          "units": "angstrom", 
+          "magnitude": 2.97691955
+        }, 
+        "b": {
+          "units": "angstrom", 
+          "magnitude": 2.97691955
+        }, 
+        "beta": {
+          "units": "degrees", 
+          "magnitude": 60.0
+        }, 
+        "alpha": {
+          "units": "degrees", 
+          "magnitude": 60.0
+        }, 
+        "gamma": {
+          "units": "degrees", 
+          "magnitude": 60.0
+        }
+      }, 
+      "atomic_numbers": [
+        12, 
+        8
+      ], 
+      "fcoords": [
+        [
+          0.0, 
+          0.0, 
+          0.0
+        ], 
+        [
+          -0.5, 
+          -0.5, 
+          -0.5
+        ]
+      ], 
+      "assymetric": [
+        true, 
+        true
+      ], 
+      "cell_vectors": {
+        "a": {
+          "units": "angstrom", 
+          "magnitude": [
+            0.0, 
+            2.105, 
+            2.105
+          ]
+        }, 
+        "c": {
+          "units": "angstrom", 
+          "magnitude": [
+            2.105, 
+            2.105, 
+            0.0
+          ]
+        }, 
+        "b": {
+          "units": "angstrom", 
+          "magnitude": [
+            2.105, 
+            0.0, 
+            2.105
+          ]
+        }
+      }, 
+      "pbc": [
+        true, 
+        true, 
+        true
+      ]
+    }, 
+    "energy": {
+      "total_corrected": {
+        "units": "eV", 
+        "magnitude": -7380.221605190324
+      }
+    }, 
+    "scf": [
+      {
+        "atomic_charges_peratom": [
+          10.972064, 
+          9.027936
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7378.821265408909
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }, 
+      {
+        "atomic_charges_peratom": [
+          11.2090834, 
+          8.7909166
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7380.0943628932055
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }, 
+      {
+        "atomic_charges_peratom": [
+          11.167937, 
+          8.832063
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7380.190637204164
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }, 
+      {
+        "atomic_charges_peratom": [
+          11.2219078, 
+          8.7780922
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7380.2215539891085
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }, 
+      {
+        "atomic_charges_peratom": [
+          11.222703, 
+          8.777297
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7380.221601478419
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }, 
+      {
+        "atomic_charges_peratom": [
+          11.2227556, 
+          8.7772444
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7380.221605056716
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }, 
+      {
+        "atomic_charges_peratom": [
+          11.2227092, 
+          8.7772908
+        ], 
+        "energy": {
+          "total": {
+            "units": "eV", 
+            "magnitude": -7380.221605190052
+          }
+        }, 
+        "charge_normalization_factor": 1.0
+      }
+    ], 
+    "crystallographic_cell": {
+      "cell_parameters": {
+        "a": {
+          "units": "angstrom", 
+          "magnitude": 4.21
+        }, 
+        "c": {
+          "units": "angstrom", 
+          "magnitude": 4.21
+        }, 
+        "b": {
+          "units": "angstrom", 
+          "magnitude": 4.21
+        }, 
+        "beta": {
+          "units": "degrees", 
+          "magnitude": 90.0
+        }, 
+        "alpha": {
+          "units": "degrees", 
+          "magnitude": 90.0
+        }, 
+        "gamma": {
+          "units": "degrees", 
+          "magnitude": 90.0
+        }
+      }, 
+      "assymetric": [
+        true, 
+        true
+      ], 
+      "ids": [
+        "1", 
+        "2"
+      ], 
+      "symbols": [
+        "Mg", 
+        "O"
+      ], 
+      "atomic_numbers": [
+        12, 
+        8
+      ], 
+      "fcoords": [
+        [
+          0.0, 
+          0.0, 
+          0.0
+        ], 
+        [
+          -0.5, 
+          -0.5, 
+          -0.5
+        ]
+      ], 
+      "pbc": [
+        true, 
+        true, 
+        true
+      ]
+    }
+  }, 
+  "meta": {
+    "elapsed_time": "0:00:03"
+  }, 
+  "warnings": [], 
+  "optimisation": null, 
+  "final": {
+    "primitive_cell": {
+      "cell_parameters": {
+        "a": {
+          "units": "angstrom", 
+          "magnitude": 2.97691955
+        }, 
+        "c": {
+          "units": "angstrom", 
+          "magnitude": 2.97691955
+        }, 
+        "b": {
+          "units": "angstrom", 
+          "magnitude": 2.97691955
+        }, 
+        "beta": {
+          "units": "degrees", 
+          "magnitude": 60.0
+        }, 
+        "alpha": {
+          "units": "degrees", 
+          "magnitude": 60.0
+        }, 
+        "gamma": {
+          "units": "degrees", 
+          "magnitude": 60.0
+        }
+      }, 
+      "assymetric": [
+        true, 
+        true
+      ], 
+      "ids": [
+        "1", 
+        "2"
+      ], 
+      "symbols": [
+        "Mg", 
+        "O"
+      ], 
+      "atomic_numbers": [
+        12, 
+        8
+      ], 
+      "fcoords": [
+        [
+          0.0, 
+          0.0, 
+          0.0
+        ], 
+        [
+          -0.5, 
+          -0.5, 
+          -0.5
+        ]
+      ], 
+      "ccoords": {
+        "units": "angstrom", 
+        "magnitude": [
+          [
+            0.0, 
+            0.0, 
+            0.0
+          ], 
+          [
+            2.105, 
+            2.105, 
+            2.105
+          ]
+        ]
+      }, 
+      "cell_vectors": {
+        "a": {
+          "units": "angstrom", 
+          "magnitude": [
+            0.0, 
+            2.105, 
+            2.105
+          ]
+        }, 
+        "c": {
+          "units": "angstrom", 
+          "magnitude": [
+            2.105, 
+            2.105, 
+            0.0
+          ]
+        }, 
+        "b": {
+          "units": "angstrom", 
+          "magnitude": [
+            2.105, 
+            0.0, 
+            2.105
+          ]
+        }
+      }, 
+      "pbc": [
+        true, 
+        true, 
+        true
+      ]
+    }, 
+    "energy": {
+      "total_corrected": {
+        "units": "eV", 
+        "magnitude": -7380.221605190324
+      }
+    }
+  }
+}

@@ -4,8 +4,11 @@ import os
 import stat
 import subprocess
 import sys
+import logging
 
 from aiida_crystal17.aiida_compatability import aiida_version, cmp_version
+
+logger = logging.getLogger(__name__)
 
 TEST_COMPUTER = 'localhost-test'
 executables = {
@@ -48,7 +51,8 @@ def get_path_to_executable(executable):
     """
     path = None
 
-    # issue with distutils finding scripts within the python path (i.e. those created by pip install)
+    # issue with distutils finding scripts within the python path 
+    # (i.e. those created by pip install)
     script_path = os.path.join(os.path.dirname(sys.executable), executable)
     if os.path.exists(script_path):
         path = script_path
@@ -79,7 +83,18 @@ def get_computer(name=TEST_COMPUTER, workdir=None, configure=False):
     """
     from aiida.common.exceptions import NotExistent
 
-    if aiida_version() >= cmp_version("1.0.0a2"):
+    if aiida_version() >= cmp_version("1.0.0a4"):
+        from aiida import orm
+        from aiida.orm.backends import construct_backend
+        backend = construct_backend()
+        def get_computer(name):
+            raise NotExistent  # TODO
+        def create_computer(**kwargs):
+            return orm.Computer(
+                backend=backend,
+                **kwargs
+            )
+    elif aiida_version() >= cmp_version("1.0.0a2"):
         from aiida.orm.backend import construct_backend
         backend = construct_backend()
         get_computer = lambda name: backend.computers.get(name=name)
@@ -107,15 +122,38 @@ def get_computer(name=TEST_COMPUTER, workdir=None, configure=False):
             enabled_state=True)
         computer.store()
 
+        # return computer
+
         if configure:
-            try:
+            if aiida_version() >= cmp_version("1.0.0a4"):
+                configure_computer_v1a4(computer)
+            elif aiida_version() >= cmp_version("1.0.0a2"):
                 # aiida-core v1
                 from aiida.control.computer import configure_computer
                 configure_computer(computer)
-            except ImportError:
+            else:
                 configure_computer_v012(computer)
 
     return computer
+
+
+def configure_computer_v1a4(computer, user=False, **kwargs):
+    """Configure a computer via the CLI."""
+    from aiida.common.utils import get_configured_user_email
+    from aiida import orm
+
+    user = user or orm.User.objects.get_default()
+
+    logger.debug(
+        'Configuring computer {} for user {}.'.format(
+            computer.name, user.email))
+    if user.email != get_configured_user_email():
+        logger.debug(
+            'Configuring different user, defaults may not be appropriate.')
+
+    computer.configure(user=user, **kwargs)
+    logger.debug('{} successfully configured for {}'.format(
+        computer.name, user.email))
 
 
 def configure_computer_v012(computer, user_email=None, authparams=None):
@@ -207,7 +245,7 @@ def configure_computer_v012(computer, user_email=None, authparams=None):
 
         try:
             authparams[k] = converter(txtval)
-        except ValidationError, err:
+        except ValidationError as err:
             raise ValueError("error in the authparam "
                              "{0}: {1}, suggested value: {2}".format(
                                  k, err, suggestion))
@@ -239,7 +277,8 @@ def _get_auth_info(computer, user):
         from aiida.backends.sqlalchemy import get_scoped_session
 
         session = get_scoped_session()
-        # TODO sqlalchemy get_scoped_session returns None and the alternative (from aiida-vasp) fails
+        # TODO sqlalchemy get_scoped_session returns None 
+        # and the alternative (from aiida-vasp) fails
         if session is not None:
             authinfo = session.query(DbAuthInfo).filter(
                 DbAuthInfo.dbcomputer == computer.dbcomputer).filter(
