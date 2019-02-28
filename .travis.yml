@@ -9,17 +9,22 @@ services:
 addons:
   postgresql: "9.5"
 
-env:
-  matrix:
-    - python=2.7 TEST_TYPE="tests" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true PYPI_DEPLOY=true
-    - python=2.7 TEST_TYPE="tests" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
-    - python=2.7 TEST_TYPE="pre-commit"
-    - python=2.7 TEST_TYPE="docs" READTHEDOCS="True"
-  # TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
-    - python=3.6 TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
-    - python=3.6 TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
-
 matrix:
+  include:
+    - python: 2.7 
+      env: TEST_TYPE="tests" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true PYPI_DEPLOY=true
+    - python: 2.7 
+      env: TEST_TYPE="tests" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
+    - python: 2.7 
+      env: TEST_TYPE="pre-commit"
+    - python: 2.7 
+      env: TEST_TYPE="docs" READTHEDOCS="True"
+  # TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
+    - python: 3.6
+      env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
+    - python: 3.6
+      env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
+
   allow_failures:
     - env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
     - env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
