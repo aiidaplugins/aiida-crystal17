@@ -3,7 +3,7 @@ import pytest
 
 def test_fail(new_database):
     from aiida.common.exceptions import ValidationError
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     StructSettingsData = DataFactory("crystal17.structsettings")
 
     with pytest.raises(ValidationError):
@@ -16,7 +16,7 @@ def test_fail(new_database):
 
 def test_pass(new_database):
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     StructSettingsData = DataFactory("crystal17.structsettings")
 
     data = {

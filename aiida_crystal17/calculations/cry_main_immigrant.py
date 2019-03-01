@@ -57,7 +57,7 @@ class CryMainImmigrantCalculation(CryMainCalculation):
         # were just provided during this method call, store the values.
         if remote_workdir is not None:
             self.set_remote_workdir(remote_workdir)
-        elif self.get_attr('remote_workdir', None) is None:
+        elif self.get_attribute('remote_workdir', None) is None:
             raise InputValidationError(
                 'The remote working directory has not been specified.\n'
                 'Please specify it using one of the following...\n '
@@ -141,7 +141,7 @@ class CryMainImmigrantCalculation(CryMainCalculation):
         for key, node in innodes["basis"].items():
             self.use_basisset(node, key)
 
-        self._set_attr('input_nodes_created', True)
+        self.set_attribute('input_nodes_created', True)
 
     def _prepare_for_retrieval(self, open_transport):
         """
@@ -163,8 +163,8 @@ class CryMainImmigrantCalculation(CryMainCalculation):
         # Manually set the files that will be copied to the repository and that
         # the parser will extract the results from. This would normally be
         # performed in self._prepare_for_submission prior to submission.
-        self._set_attr('retrieve_list', [self._DEFAULT_OUTPUT_FILE])
-        self._set_attr('retrieve_singlefile_list', [])
+        self.set_attribute('retrieve_list', [self._DEFAULT_OUTPUT_FILE])
+        self.set_attribute('retrieve_singlefile_list', [])
 
         # Make sure the calculation and input links are stored.
         self.store_all()
@@ -210,7 +210,7 @@ class CryMainImmigrantCalculation(CryMainCalculation):
             ``open_transport`` is not open.
         """
         # Check that the create_input_nodes method has run successfully.
-        if not self.get_attr('input_nodes_created', False):
+        if not self.get_attribute('input_nodes_created', False):
             raise InvalidOperation(
                 "You must run the create_input_nodes method before calling "
                 "prepare_for_retrieval_and_parsing!")
@@ -252,7 +252,7 @@ class CryMainImmigrantCalculation(CryMainCalculation):
         """
         # This is the functionality as self._set_remote_workir, but it bypasses
         # the need to have the calculation state set as SUBMITTING.
-        self._set_attr('remote_workdir', remote_workdir)
+        self.set_attribute('remote_workdir', remote_workdir)
 
     def set_input_file_name(self, input_file_name):
         """
@@ -281,16 +281,16 @@ class CryMainImmigrantCalculation(CryMainCalculation):
 
     @property
     def _DEFAULT_INPUT_FILE(self):
-        return self.get_attr('input_file_name', None)
+        return self.get_attribute('input_file_name', None)
 
     @_DEFAULT_INPUT_FILE.setter
     def _DEFAULT_INPUT_FILE(self, value):
-        self._set_attr('input_file_name', value)
+        self.set_attribute('input_file_name', value)
 
     @property
     def _DEFAULT_OUTPUT_FILE(self):
-        return self.get_attr('output_file_name', None)
+        return self.get_attribute('output_file_name', None)
 
     @_DEFAULT_OUTPUT_FILE.setter
     def _DEFAULT_OUTPUT_FILE(self, value):
-        self._set_attr('output_file_name', value)
+        self.set_attribute('output_file_name', value)

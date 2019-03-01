@@ -65,8 +65,8 @@ described in the `CRYSTAL17 Manual <http://www.crystal.unito.it/Manuals/crystal1
                     'spinlock': {'SPINLOCK': (0, 15)}},
             'title': 'NiO Bulk with AFM spin'}
 
-  from aiida.orm import DataFactory
-  ParameterData = DataFactory('parameter')
+  from aiida.plugins import DataFactory
+  ParameterData = DataFactory('dict')
 
   parameters = ParameterData(dict=params)
 
@@ -228,7 +228,7 @@ The simplest way to create a structure is *via* :py:mod:`ase`:
     spacegroup=225,
     cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
 
-  from aiida.orm import DataFactory
+  from aiida.plugins import DataFactory
   StructureData = DataFactory('structure')
 
   structure = StructureData(ase=atoms)
@@ -546,7 +546,7 @@ and (optionally) a yaml style header section, fenced by ``---``:
   >>> from aiida_crystal17.tests import TEST_DIR
   >>> fpath = os.path.join(TEST_DIR, "input_files", "sto3g", "sto3g_Mg.basis")
 
-  >>> from aiida.orm import DataFactory
+  >>> from aiida.plugins import DataFactory
   >>> BasisSetData = DataFactory("crystal17.basisset")
   >>> bset, created = BasisSetData.get_or_create(fpath)
   >>> bset.metadata
@@ -580,7 +580,7 @@ Basis families can be searched (optionally by the elements they contain):
 
 .. code:: python
 
-  >>> from aiida.orm import DataFactory
+  >>> from aiida.plugins import DataFactory
   >>> basis_cls = DataFactory('crystal17.basisset')
   >>> basis_cls.get_basis_groups(["Ni", "O"])
   [<Group: "sto3g" [type data.basisset.family], of user test@hotmail.com>]
@@ -598,7 +598,7 @@ are then extracted by ``crystal17.main``:
   ...   spacegroup=225,
   ...   cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
 
-  >>> from aiida.orm import DataFactory
+  >>> from aiida.plugins import DataFactory
   >>> StructureData = DataFactory('structure')
 
   >>> structure = StructureData(ase=atoms)
@@ -626,7 +626,7 @@ and validate their content.
 
 .. code:: python
 
-  from aiida.orm import DataFactory, CalculationFactory
+  from aiida.plugins import DataFactory, CalculationFactory
   StructureData = DataFactory('structure')
   calc_cls = CalculationFactory('crystal17.main')
 
@@ -671,7 +671,7 @@ Then the code can be submitted using ``verdi run`` or programmatically:
 
   from aiida.orm import Code
   code = Code.get_from_string('cry17.2@MyHPC')
-  calc = code.new_calc()
+  calc = code.get_builder()
 
   calc.label = "aiida_crystal17 test"
   calc.description = "Test job submission with the aiida_crystal17 plugin"

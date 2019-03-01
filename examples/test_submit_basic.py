@@ -24,7 +24,7 @@ def get_basic_code(workdir):
 
 def test_example(new_database, new_workdir):
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     # try:
     #     from aiida.work import submit  # for aiida<1.0
     # except ImportError:
@@ -37,15 +37,15 @@ def test_example(new_database, new_workdir):
     SinglefileData = DataFactory("singlefile")
     # main .d12 file
     infile = SinglefileData(
-        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
+        filepath=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.d12'))
     # optional .gui file (for use with EXTERNAL)
     ingeom = SinglefileData(
-        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
+        filepath=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
     calc.label = "aiida_crystal17 test"
     calc.description = "Test job submission with the aiida_crystal17 plugin"
     calc.set_max_wallclock_seconds(30)

@@ -5,7 +5,7 @@ import tempfile
 import shutil
 import os
 
-from aiida.utils.fixtures import fixture_manager
+from aiida.manage.fixtures import fixture_manager
 from aiida_crystal17.aiida_compatability import aiida_version, cmp_version
 import pytest
 

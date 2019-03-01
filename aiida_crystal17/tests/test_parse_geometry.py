@@ -383,6 +383,7 @@ def test_compute_symmetry_3d_mgo_nonprimitive():
     assert atoms.get_number_of_atoms() == outatoms.get_number_of_atoms()
 
 
+@pytest.mark.timeout(10)
 def test_compute_symmetry_3d_mgo_primitive():
     # MgO
     atoms = crystal(

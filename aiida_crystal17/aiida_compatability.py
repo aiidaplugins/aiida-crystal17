@@ -52,9 +52,11 @@ def cmp_load_verdi_data():
 
 
 def run_get_node(process, inputs_dict):
-    """ an implementation of run_get_node which is compatible with both aiida v0.12 and v1.0.0
+    """ an implementation of run_get_node,
+     which is compatible with both aiida v0.12 and v1.0.0
 
-    it will also convert "options" "label" and "description" to/from the _ variant
+    it will also convert "options" "label" and "description"
+    to/from the _ variant
 
     :param process: a process
     :param inputs_dict: a dictionary of inputs
@@ -79,14 +81,16 @@ def run_get_node(process, inputs_dict):
 
 
 def load_dbenv_if_not_loaded(**kwargs):
-    """Load dbenv if necessary, run spinner meanwhile to show command hasn't crashed."""
+    """Load dbenv if necessary, 
+    run spinner meanwhile to show command hasn't crashed."""
     from aiida.backends.utils import load_dbenv, is_dbenv_loaded
     if not is_dbenv_loaded():
         load_dbenv(**kwargs)
 
 
 def dbenv(function):
-    """A function decorator that loads the dbenv if necessary before running the function."""
+    """A function decorator that loads the dbenv if necessary,
+    before running the function."""
 
     @wraps(function)
     def decorated_function(*args, **kwargs):
@@ -106,9 +110,10 @@ def get_data_class(data_type):
     """
     Provide access to the orm.data classes with deferred dbenv loading.
 
-    compatiblity: also provide access to the orm.data.base memebers, which are loadable through the DataFactory as of 1.0.0-alpha only.
+    compatiblity: also provide access to the orm.data.base memebers, 
+    which are loadable through the DataFactory as of 1.0.0-alpha only.
     """
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     from aiida.common.exceptions import MissingPluginError
     data_cls = None
     try:
@@ -133,10 +138,16 @@ def get_basic_data_pre_1_0(data_type):
 @dbenv
 def get_automatic_user():
     if aiida_version() >= cmp_version("1.0.0a4"):
-        from aiida.orm.backends import construct_backend
-        backend = construct_backend()
-        automatic_user = backend.users.find()[0]
-        # automatic_user = backend.users.get_automatic_user()
+        # from aiida.manage.manager import get_manager
+        # backend = get_manager().get_backend()
+        # automatic_user = backend.users.find()[0]
+        from aiida import orm
+        automatic_user = orm.User.objects.get_default()
+    # if aiida_version() >= cmp_version("1.0.0a4"):
+    #     from aiida.orm.backends import construct_backend
+    #     backend = construct_backend()
+    #     automatic_user = backend.users.find()[0]
+    #     # automatic_user = backend.users.get_automatic_user()
     elif aiida_version() >= cmp_version("1.0.0a2"):
         from aiida.orm.backend import construct_backend
         backend = construct_backend()
@@ -158,10 +169,15 @@ def get_calc_log(calcnode):
     """get a formatted string of the calculation log"""
     from aiida.backends.utils import get_log_messages
 
-    log_string = "- Calc State:\n{0}\n- Scheduler Out:\n{1}\n- Scheduler Err:\n{2}\n- Log:\n{3}".format(
-        calcnode.get_state(), calcnode.get_scheduler_output(),
-        calcnode.get_scheduler_error(),
-        json.dumps(get_log_messages(calcnode), default=json_default, indent=2))
+    log_string = (
+        "- Calc State:\n{0}\n"
+        "- Scheduler Out:\n{1}\n"
+        "- Scheduler Err:\n{2}\n"
+        "- Log:\n{3}".format(
+            calcnode.get_state(), calcnode.get_scheduler_output(),
+            calcnode.get_scheduler_error(),
+            json.dumps(
+                get_log_messages(calcnode), default=json_default, indent=2)))
     return log_string
 
 

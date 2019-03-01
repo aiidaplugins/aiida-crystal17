@@ -29,7 +29,7 @@ def test_prepare_and_validate(new_database, new_workdir):
 
     inparams = {"scf.k_points": (8, 8)}
 
-    from aiida.orm import DataFactory, CalculationFactory
+    from aiida.plugins import DataFactory, CalculationFactory
     StructureData = DataFactory('structure')
 
     atoms = crystal(
@@ -48,8 +48,8 @@ def test_prepare_and_validate(new_database, new_workdir):
 
 def test_submit_mgo(new_database, new_workdir):
     """Test submitting a calculation"""
-    from aiida.orm import DataFactory
-    ParameterData = DataFactory('parameter')
+    from aiida.plugins import DataFactory
+    ParameterData = DataFactory('dict')
     StructureData = DataFactory('structure')
     BasisSetData = DataFactory('crystal17.basisset')
     from aiida.common.folders import SandboxFolder
@@ -82,7 +82,7 @@ def test_submit_mgo(new_database, new_workdir):
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
     # calc.label = "aiida_crystal17 test"
     # calc.description = "Test job submission with the aiida_crystal17 plugin"
     # calc.set_max_wallclock_seconds(30)
@@ -340,7 +340,7 @@ END
 
 def test_submit_nio_afm(new_database, new_workdir):
     """Test submitting a calculation"""
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
@@ -381,7 +381,7 @@ def test_submit_nio_afm(new_database, new_workdir):
         extension=".basis")
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
     # calc.label = "aiida_crystal17 test"
     # calc.description = "Test job submission with the aiida_crystal17 plugin"
     # calc.set_max_wallclock_seconds(30)
@@ -533,14 +533,14 @@ def test_parser_with_init_struct(new_database, new_workdir):
     """ Test the parser
 
     """
-    from aiida.parsers import ParserFactory
+    from aiida.plugins import ParserFactory
     from aiida.common.datastructures import calc_states
     from aiida.common.folders import SandboxFolder
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
 
     code = get_main_code(new_workdir)
 
-    calc = code.new_calc()
+    calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
     from aiida.orm.data.structure import StructureData
@@ -606,7 +606,7 @@ def test_parser_with_init_struct(new_database, new_workdir):
 def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     """Test submitting a calculation"""
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
     from aiida_crystal17.data.basis_set import get_basissets_from_structure
@@ -649,13 +649,13 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
     # basis_map = BasisSetData.get_basis_group_map("sto3g")
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
 
     params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
                                        True)
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
 
     inputs_dict = {
         "parameters":
@@ -737,7 +737,7 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
 def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
     """Test submitting a calculation"""
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
     from aiida_crystal17.data.basis_set import get_basissets_from_structure
@@ -781,13 +781,13 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     # basis_map = BasisSetData.get_basis_group_map("sto3g")
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
 
     params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
                                        True)
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
 
     inputs_dict = {
         "parameters":

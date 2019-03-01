@@ -83,10 +83,21 @@ def get_computer(name=TEST_COMPUTER, workdir=None, configure=False):
     """
     from aiida.common.exceptions import NotExistent
 
+    # if aiida_version() >= cmp_version("1.0.0a4"):
+    #     from aiida import orm
+    #     from aiida.orm.backends import construct_backend
+    #     backend = construct_backend()
+    #     def get_computer(name):
+    #         raise NotExistent  # TODO
+    #     def create_computer(**kwargs):
+    #         return orm.Computer(
+    #             backend=backend,
+    #             **kwargs
+    #         )
     if aiida_version() >= cmp_version("1.0.0a4"):
         from aiida import orm
-        from aiida.orm.backends import construct_backend
-        backend = construct_backend()
+        from aiida.manage.manager import get_manager
+        backend = get_manager().get_backend()
         def get_computer(name):
             raise NotExistent  # TODO
         def create_computer(**kwargs):

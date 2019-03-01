@@ -3,139 +3,93 @@ Plugin to create a CRYSTAL17 output file from a supplied input file.
 """
 import os
 
+import six
+
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import (InputValidationError, ValidationError)
 from aiida.common.utils import classproperty
-from aiida.orm.calculation.job import JobCalculation
-from aiida.orm import DataFactory
+from aiida.engine import CalcJob
+from aiida.plugins import DataFactory
 SinglefileData = DataFactory('singlefile')
 
 
-class CryBasicCalculation(JobCalculation):
+class CryBasicCalculation(CalcJob):
     """
     AiiDA calculation plugin wrapping the runcry17 executable.
 
     """
+    @classmethod
+    def define(cls, spec):
+        # yapf: disable
+        super(CryBasicCalculation, cls).define(spec)
 
-    def _init_internal_params(self):  # pylint: disable=useless-super-delegation
+        spec.input('metadata.options.parser_name',
+                   valid_type=six.string_types, default='crystal17.basic',
+                   non_db=True)
+        spec.input('metadata.options.default_input_file',
+                   valid_type=six.string_types, default='main.d12',
+                   non_db=True)
+        spec.input('metadata.options.default_external_file',
+                   valid_type=six.string_types, default='main.gui',
+                   non_db=True)
+        spec.input('metadata.options.default_output_file',
+                   valid_type=six.string_types, default='main.out',
+                   non_db=True)
+
+        spec.input(
+            'input_file', valid_type=SinglefileData, required=True,
+            help='the input .d12 file content.')
+        spec.input(
+            'input_external', valid_type=SinglefileData, required=False,
+            help=('optional input .gui (fort.34) file content '
+                  '(for use with EXTERNAL keyword).'))
+
+        # spec.output()
+
+        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
+        # spec.input(
+        #     'parent_folder', valid_type=RemoteData, required=False,
+        #     help=('Use a remote folder as parent folder (for '
+        #           'restarts and similar.'))
+
+    def prepare_for_submission(self, tempfolder):
         """
-        Init internal parameters at class load time
+        This is the routine to be called when you want to create
+        the input files and related stuff with a plugin.
+
+        :param tempfolder: an aiida.common.folders.Folder subclass 
+                           where the plugin should put all its files.
         """
-        # reuse base class function
-        super(CryBasicCalculation, self)._init_internal_params()
-
-        # default input and output files
-        self._DEFAULT_INPUT_FILE = 'main.d12'
-        self._DEFAULT_EXTERNAL_FILE = 'main.gui'
-        self._DEFAULT_OUTPUT_FILE = 'main.out'
-
-        # parser entry point defined in setup.json
-        self._default_parser = 'crystal17.basic'
-
-    @classproperty
-    def _use_methods(cls):
-        """
-        Add use_* methods for calculations.
-
-        Code below enables the usage
-        my_calculation.use_parameters(my_parameters)
-
-        """
-        use_dict = JobCalculation._use_methods
-
-        use_dict.update({
-            "input_file": {
-                'valid_types': SinglefileData,
-                'additional_parameter': None,
-                'linkname': 'input_file',
-                'docstring': "the input .d12 file content."
-            },
-            "input_external": {
-                'valid_types':
-                SinglefileData,
-                'additional_parameter':
-                None,
-                'linkname':
-                'input_external',
-                'docstring':
-                "optional input .gui (fort.34) file content (for use with EXTERNAL keyword)."
-            },
-            # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
-            # "parent_folder": {
-            #     'valid_types': RemoteData,
-            #     'additional_parameter': None,
-            #     'linkname': 'parent_calc_folder',
-            #     'docstring': ("Use a remote folder as parent folder (for "
-            #                   "restarts and similar"),
-            # },
-        })
-
-        return use_dict
-
-    def _prepare_for_submission(self, tempfolder, inputdict):
-        """
-        Create input files.
-
-            :param tempfolder: aiida.common.folders.Folder subclass where
-                the plugin should put all its files.
-            :param inputdict: dictionary of the input nodes as they would
-                be returned by get_inputs_dict
-
-        See https://aiida-core.readthedocs.io/en/latest/
-        developer_guide/devel_tutorial/code_plugin_qe.html#step-3-prepare-a-text-input
-        for a description of its finction and inputs
-        """
-        # read inputs
-        # we expect "code" and "input_file"
-
+        # pylint: disable=too-many-locals,too-many-statements,too-many-branches
+        code = self.inputs.code
+        infile = self.inputs.input_file
         try:
-            code = inputdict.pop(self.get_linkname('code'))
-        except KeyError:
-            raise InputValidationError("No code specified for this "
-                                       "calculation")
-
-        try:
-            infile = inputdict.pop(self.get_linkname('input_file'))
-        except KeyError:
-            raise InputValidationError("Missing input_file")
-        if not isinstance(infile, SinglefileData):
-            raise InputValidationError("input_file not of type SinglefileData")
-
-        try:
-            ingui = inputdict.pop(self.get_linkname('input_external'))
+            ingui = self.inputs.input_external
             external_geom = True
-        except KeyError:
+        except AttributeError:
             ingui = None
             external_geom = False
-        if external_geom and not isinstance(ingui, SinglefileData):
-            raise InputValidationError(
-                "input_external not of type SinglefileData")
-
-        if inputdict:
-            raise ValidationError(
-                "Unknown additional inputs: {}".format(inputdict))
 
         # Prepare CodeInfo object for aiida, describes how a code has to be executed
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
         codeinfo.cmdline_params = [
-            os.path.splitext(self._DEFAULT_INPUT_FILE)[0]
+            os.path.splitext(self.inputs.default_input_file)[0]
         ]
-        # codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE  # this file doesn't actually come from stdout
-        codeinfo.withmpi = self.get_withmpi()
+        codeinfo.withmpi = self.metadata.options.withmpi
 
         # Prepare CalcInfo object for aiida
         calcinfo = CalcInfo()
         calcinfo.uuid = self.uuid
         calcinfo.codes_info = [codeinfo]
         calcinfo.local_copy_list = [[
-            infile.get_file_abs_path(), self._DEFAULT_INPUT_FILE
+            infile.get_file_abs_path(), self.inputs.default_input_file
         ]]
         if external_geom:
             calcinfo.local_copy_list.append(
-                [ingui.get_file_abs_path(), self._DEFAULT_EXTERNAL_FILE])
+                [ingui.get_file_abs_path(), self.inputs.default_external_file])
         calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [self._DEFAULT_OUTPUT_FILE]
+        calcinfo.retrieve_list = [self.inputs.default_output_file]
         # TODO .gui won't be available for scf runs, will the computation fail if it can't find a file in retrieve list?
         # calcinfo.retrieve_list.append(self._DEFAULT_EXTERNAL_FILE)
         calcinfo.retrieve_temporary_list = []

@@ -632,7 +632,7 @@ def dict_to_structure(structdict, logger=None):
     :rtype structure: aiida.orm.data.structure.StructureData
 
     """
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
     struct = StructureData(cell=structdict['lattice'])
     struct.set_pbc(structdict["pbc"])

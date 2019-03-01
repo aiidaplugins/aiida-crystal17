@@ -1,8 +1,8 @@
 """a work flow to symmetrise a structure and compute the symmetry operations"""
 from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
-from aiida.orm import DataFactory
-from aiida.work import WorkChain
+from aiida.plugins import DataFactory
+from aiida.engine import WorkChain
 from aiida_crystal17.parsers.geometry import structure_to_dict, compute_symmetry_3d, SYMMETRY_PROGRAM, SYMMETRY_VERSION, \
     dict_to_structure
 from aiida_crystal17.utils import unflatten_dict
@@ -12,7 +12,7 @@ from aiida_crystal17 import __version__ as VERSION
 from jsonextended import edict
 
 StructureData = DataFactory('structure')
-ParameterData = DataFactory('parameter')
+ParameterData = DataFactory('dict')
 StructSettingsData = DataFactory('crystal17.structsettings')
 
 

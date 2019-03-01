@@ -9,13 +9,16 @@ import pytest
 
 
 def test_create_single(new_database, new_workdir):
-    computer = tests.get_computer(workdir=new_workdir)
+    _ = tests.get_computer(workdir=new_workdir)
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     BasisSetData = DataFactory("crystal17.basisset")
 
     basis = BasisSetData(
-        file=os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+        filepath=os.path.join(
+            TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+    
+    print(basis.filename)
 
     expected_meta = {
         'num_shells': 3,
@@ -57,7 +60,7 @@ def test_create_group(new_database, new_workdir):
 
     assert (nfiles, nuploaded) == (3, 3)
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     BasisSetData = DataFactory("crystal17.basisset")
 
     group = BasisSetData.get_basis_group("sto3g")
@@ -95,18 +98,19 @@ def test_bases_from_struct(new_database, new_workdir):
         "group of sto3g basis sets")
 
     # MgO
+    import ase
     from ase.spacegroup import crystal
-    atoms = crystal(
+    atoms = crystal( 
         symbols=[12, 8],
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,
-        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
+        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])   # type: ase.Atoms
 
-    atoms[0].tag = 1
-    atoms[1].tag = 1
+    # atoms[0].tag = 1
+    # atoms[1].tag = 1
+    atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
-    print(atoms)
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     StructureData = DataFactory("structure")
     struct = StructureData(ase=atoms)
 

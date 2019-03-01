@@ -1,8 +1,8 @@
 """a workflow to immigrate previously run CRYSTAL17 computations into Aiida"""
 import os
 
-from aiida.parsers.exceptions import ParsingError
-from aiida.work import WorkChain
+from aiida.common.exceptions import ParsingError
+from aiida.engine import WorkChain
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 # from aiida.common.datastructures import calc_states
@@ -18,9 +18,9 @@ class CryMainImmigrant(WorkChain):
     # self.calc._updatable_attributes = tuple(
     #     list(self.calc._updatable_attributes) +
     #     ["jobresource_params", "parser"])
-    # self.calc._set_attr("state", calc_states.FINISHED, stored_check=False)
-    # self.calc._set_attr("jobresource_params", resources, stored_check=False)
-    # self.calc._set_attr("parser", parser_cls.__name__, stored_check=False)
+    # self.calc.set_attribute("state", calc_states.FINISHED, stored_check=False)
+    # self.calc.set_attribute("jobresource_params", resources, stored_check=False)
+    # self.calc.set_attribute("parser", parser_cls.__name__, stored_check=False)
 
 
 # pylint: disable=too-many-locals
@@ -79,7 +79,7 @@ def migrate_as_main(work_dir,
         init_settings=inputs['settings'])
 
     outparams = output_nodes.pop("parameters")
-    perrors = outparams.get_attr("errors") + outparams.get_attr(
+    perrors = outparams.get_attribute("errors") + outparams.get_attribute(
         "parser_warnings")
 
     if perrors or not psuccess:

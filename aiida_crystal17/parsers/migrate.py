@@ -5,7 +5,7 @@ import os
 import tempfile
 
 import ase
-from aiida.parsers.exceptions import OutputParsingError
+from aiida.common.exceptions import OutputParsingError
 from aiida_crystal17.parsers.inputd12_read import extract_data
 from ejplugins.crystal import CrystalOutputPlugin
 
@@ -21,7 +21,7 @@ def create_inputs(inpath, outpath):
     :param outpath: path to .out file
     :return: dictionary of inputs, with keys 'structure', 'parameters', 'settings', 'structure', 'basis'
     """
-    from aiida.orm import DataFactory, CalculationFactory
+    from aiida.plugins import DataFactory, CalculationFactory
     calc_cls = CalculationFactory('crystal17.main')
     basis_cls = DataFactory('crystal17.basisset')
     struct_cls = DataFactory('structure')

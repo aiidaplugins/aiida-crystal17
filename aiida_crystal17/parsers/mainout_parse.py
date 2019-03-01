@@ -8,7 +8,7 @@ import ejplugins
 from aiida_crystal17.parsers.geometry import dict_to_structure
 from ejplugins.crystal import CrystalOutputPlugin
 
-from aiida.parsers.exceptions import OutputParsingError
+from aiida.common.exceptions import OutputParsingError
 
 from aiida_crystal17 import __version__ as pkg_version
 
@@ -26,7 +26,7 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     :return psuccess: a boolean that is False in case of failed calculations
     :return output_nodes: containing "paramaters" and (optionally) "structure" and "settings"
     """
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
 
     psuccess = True
     param_data = {"parser_warnings": []}
@@ -40,8 +40,10 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
         try:
             data = cryparse.read_file(f, log_warnings=False)
         except IOError as err:
+            f.seek(0)
             param_data["parser_warnings"].append(
-                "Error in CRYSTAL 17 run output: {}".format(err))
+                "Error in CRYSTAL 17 run output: {0}\n'{1}'".format(
+                    err, f.read()))
             output_nodes["parameters"] = DataFactory("parameter")(
                 dict=param_data)
             return False, output_nodes
@@ -136,7 +138,7 @@ def _extract_symmetry(final_data, init_settings, output_nodes, param_data):
                     .format(differences))
                 psuccess = False
         else:
-            from aiida.orm import DataFactory
+            from aiida.plugins import DataFactory
             StructSettings = DataFactory('crystal17.structsettings')
             # TODO retrieve centering code, crystal system and spacegroup
             settings_dict = {

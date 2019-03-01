@@ -2,8 +2,8 @@ name: aiida_1a4
 channels:
 - conda-forge
 - matsci  # for pymatgen
-# - damianavila82  # for rise
-- cjs14 # currently for jsonextended, ejplugins
+- cjs14 # currently for pg8000, pgtest, sqlalchemy-diff, sphinxcontrib-contentui
+- anaconda # for sphinx_rtd_theme 
 - defaults
 dependencies:
   - python==3.6
@@ -58,11 +58,20 @@ dependencies:
   
   # from testing
   # - unittest2==1.1.0; python_version<"3.5"
-  # - pgtest==1.1.0  # CJS pgtest not available on conda
-  # - sqlalchemy-diff==0.1.3  # CJS sqlalchemy-diff not available on conda
+  - pgtest==1.1.0
+  - sqlalchemy-diff==0.1.3
   # - coverage==4.5.1
   # - codecov==2.0.15
   # - futures; python_version=="2.7"
+
+  # from docs
+  - sphinx==1.8.4
+  - pygments==2.3.1
+  - docutils==0.14
+  - jinja2==2.10
+  - markupsafe==1.1.1
+  - sphinx-rtd-theme==0.4.2 # CJS ==0.4.3 not avaliable on conda
+  - sphinxcontrib-contentui==0.2.2
   
   # from atomic_tools
   - spglib==1.10.3.65
@@ -79,10 +88,8 @@ dependencies:
   - flake8
   - autopep8
 
-  - pip:
-    - pgtest==1.1.0
-  #   - sqlalchemy-diff==0.1.3
-
+  # - pip:
+  #   - .
 
 # RUN
 # >> conda clean all

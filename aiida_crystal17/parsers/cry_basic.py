@@ -2,7 +2,7 @@
 A parser to read output from a standard CRYSTAL17 run
 """
 from aiida.parsers.parser import Parser
-from aiida.parsers.exceptions import OutputParsingError
+from aiida.common.exceptions import OutputParsingError
 from aiida.common.datastructures import calc_states
 from aiida.orm import CalculationFactory
 
@@ -131,13 +131,13 @@ class CryBasicParser(Parser):
 
         outparams = output_nodes.pop("parameters")
         if "errors" in outparams.get_attrs():
-            perrors = outparams.get_attr("errors")
+            perrors = outparams.get_attribute("errors")
             if perrors:
                 self.logger.warning(
                     "the parser raised the following errors:\n{}".format(
                         "\n\t".join(perrors)))
         if "parser_warnings" in outparams.get_attrs():
-            pwarns = outparams.get_attr("parser_warnings")
+            pwarns = outparams.get_attribute("parser_warnings")
             if pwarns:
                 self.logger.warning(
                     "the parser raised the following errors:\n{}".format(

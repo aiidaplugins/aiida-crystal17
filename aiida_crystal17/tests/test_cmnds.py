@@ -1,4 +1,6 @@
 import os
+from textwrap import dedent
+
 from click.testing import CliRunner
 from aiida_crystal17.cmndline.structsettings import structsettings
 from aiida_crystal17.cmndline.basis_set import basisset
@@ -7,7 +9,7 @@ from aiida_crystal17.tests import TEST_DIR
 
 def test_settings_show(new_database):
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     setting_cls = DataFactory('crystal17.structsettings')
 
     symmdata = {
@@ -24,13 +26,16 @@ def test_settings_show(new_database):
 
     assert result.exit_code == 0
 
-    expected = """centring_code: 2
-crystal_type:  3
-num_symops:    1
-space_group:   1
-"""
+    expected = dedent("""\
+                centring_code: 2
+                crystal_type:  3
+                num_symops:    1
+                space_group:   1
+                """)
 
-    assert expected in result.output
+    print(result.output)
+
+    assert expected == str(result.output)
 
     result2 = runner.invoke(structsettings,
                             ['show', "-s", str(settings_node.pk)])
@@ -40,7 +45,7 @@ space_group:   1
 
 def test_basis_show(new_database):
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     basis_cls = DataFactory('crystal17.basisset')
     node, created = basis_cls.get_or_create(
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
@@ -50,18 +55,19 @@ def test_basis_show(new_database):
 
     assert result.exit_code == 0
 
-    expected = """atomic_number: 8
-author:        John Smith
-basis_type:    all-electron
-class:         sto3g
-element:       O
-filename:      sto3g_O.basis
-md5:           73a9c7315dc6edf6ab8bd4427a66f31c
-num_shells:    2
-year:          1999
-"""
+    expected = """\
+        atomic_number: 8
+        author:        John Smith
+        basis_type:    all-electron
+        class:         sto3g
+        element:       O
+        filename:      sto3g_O.basis
+        md5:           73a9c7315dc6edf6ab8bd4427a66f31c
+        num_shells:    2
+        year:          1999
+        """
 
-    assert expected in result.output
+    assert dedent(expected) == str(result.output)
 
     result2 = runner.invoke(basisset, ['show', '-c', str(node.pk)])
 
@@ -77,9 +83,13 @@ def test_basis_upload(new_database):
         'STO3G'
     ])
 
+    print(result.output)
+
     assert result.exit_code == 0
 
     result2 = runner.invoke(basisset, ['listfamilies', '-d'])
+
+    print(result2.output)
 
     assert result2.exit_code == 0
 

@@ -22,57 +22,61 @@ def get_basic_code(workdir, configure=False):
 
 def test_submit(new_database, new_workdir):
     """Test submitting a calculation"""
-    from aiida.orm.data.singlefile import SinglefileData
+    from aiida.plugins import DataFactory
+    SinglefileData = DataFactory('singlefile')
+
     from aiida.common.folders import SandboxFolder
 
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(TEST_DIR, "input_files",
-                          'mgo_sto3g_scf.crystal.d12'))
+        filepath=os.path.join(TEST_DIR, "input_files",
+                              'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
-    calc = code.new_calc()
+    builder = code.get_builder()
     # calc.label = "aiida_crystal17 test"
     # calc.description = "Test job submission with the aiida_crystal17 plugin"
     # calc.set_max_wallclock_seconds(30)
-    calc.set_withmpi(False)
-    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+    builder.metadata.options.withmpi = False
+    builder.metadata.options.resources = {
+        "num_machines": 1, "num_mpiprocs_per_machine": 1}
+    builder.input_file = infile
 
-    calc.use_input_file(infile)
-
-    calc.store_all()
+    # calc.store_all()
 
     # output input files and scripts to temporary folder
     with SandboxFolder() as folder:
-        subfolder, script_filename = calc.submit_test(folder=folder)
+        subfolder, script_filename = builder.submit_test(folder=folder)
         print("inputs created successfully at {}".format(subfolder.abspath))
 
 
 @pytest.mark.process_execution
 def test_process(new_database, new_workdir):
     """Test running a calculation
-    note this does not test parsing of the output"""
-    from aiida.orm.data.singlefile import SinglefileData
+    note this does not test parsing of the output """
+    from aiida.plugins import DataFactory
+    SinglefileData = DataFactory('singlefile')
 
     # get code
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(TEST_DIR, "input_files",
-                          'mgo_sto3g_scf.crystal.d12'))
+        filepath=os.path.join(TEST_DIR, "input_files",
+                              'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
     # calc.label = "aiida_crystal17 test"
     # calc.description = "Test job submission with the aiida_crystal17 plugin"
-    # calc.set_max_wallclock_seconds(30)
-    calc.set_withmpi(False)
-    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+    # calc.metadata.options.max_wallclock_seconds = 30
+    calc.metadata.options.withmpi = False
+    calc.metadata.options.resources = {
+        "num_machines": 1, "num_mpiprocs_per_machine": 1}
 
-    calc.use_input_file(infile)
+    calc.input_file = infile
 
     calc.store_all()
 
@@ -85,21 +89,22 @@ def test_process(new_database, new_workdir):
 def test_process_with_external(new_database, new_workdir):
     """Test running a calculation
     note this does not test parsing of the output"""
-    from aiida.orm.data.singlefile import SinglefileData
+    from aiida.plugins import DataFactory
+    SinglefileData = DataFactory('singlefile')
 
     # get code
     code = get_basic_code(new_workdir)
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(TEST_DIR, "input_files",
-                          'mgo_sto3g_external.crystal.d12'))
+        filepath=os.path.join(TEST_DIR, "input_files",
+                              'mgo_sto3g_external.crystal.d12'))
     ingui = SinglefileData(
-        file=os.path.join(TEST_DIR, "input_files",
-                          'mgo_sto3g_external.crystal.gui'))
+        filepath=os.path.join(TEST_DIR, "input_files",
+                              'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
     # calc.label = "aiida_crystal17 test"
     # calc.description = "Test job submission with the aiida_crystal17 plugin"
     # calc.set_max_wallclock_seconds(30)
@@ -121,14 +126,14 @@ def test_parser_scf(new_database, new_workdir):
     """ Test the parser
 
     """
-    from aiida.parsers import ParserFactory
+    from aiida.plugins import ParserFactory
     from aiida.common.datastructures import calc_states
     from aiida.common.folders import SandboxFolder
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
 
     code = get_basic_code(new_workdir)
 
-    calc = code.new_calc()
+    calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
     calc.store_all()
@@ -224,15 +229,15 @@ def test_parser_scf(new_database, new_workdir):
             }],
             'xyz': [0.0, 0.0, 0.0]
         },
-                  {
-                      'abc': [0.5, 0.5, 0.5],
-                      'label': 'O',
-                      'species': [{
-                          'element': 'O',
-                          'occu': 1.0
-                      }],
-                      'xyz': [2.105, 2.105, 2.105]
-                  }]
+            {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [2.105, 2.105, 2.105]
+        }]
     }
 
     output_struct = node_dict['output_structure'].get_pymatgen_structure(
@@ -248,14 +253,14 @@ def test_parser_external(new_database, new_workdir):
     """ Test the parser
 
     """
-    from aiida.parsers import ParserFactory
+    from aiida.plugins import ParserFactory
     from aiida.common.datastructures import calc_states
     from aiida.common.folders import SandboxFolder
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
 
     code = get_basic_code(new_workdir)
 
-    calc = code.new_calc()
+    calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
     calc.store_all()
@@ -409,15 +414,15 @@ def test_parser_external(new_database, new_workdir):
             }],
             'xyz': [0.0, 0.0, 0.0]
         },
-                  {
-                      'abc': [0.5, 0.5, 0.5],
-                      'label': 'O',
-                      'species': [{
-                          'element': 'O',
-                          'occu': 1.0
-                      }],
-                      'xyz': [2.105, 2.105, 2.105]
-                  }]
+            {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [2.105, 2.105, 2.105]
+        }]
     }
 
     output_struct = node_dict['output_structure'].get_pymatgen_structure(
@@ -436,11 +441,11 @@ def test_parser_opt(new_database, new_workdir):
     from aiida.parsers import ParserFactory
     from aiida.common.datastructures import calc_states
     from aiida.common.folders import SandboxFolder
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
 
     code = get_basic_code(new_workdir)
 
-    calc = code.new_calc()
+    calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
 
     calc.store_all()
@@ -540,15 +545,15 @@ def test_parser_opt(new_database, new_workdir):
             }],
             'xyz': [0.0, 0.0, 0.0]
         },
-                  {
-                      'abc': [0.5, 0.5, 0.5],
-                      'label': 'O',
-                      'species': [{
-                          'element': 'O',
-                          'occu': 1.0
-                      }],
-                      'xyz': [1.942180612737, 1.942180612737, 1.942180612737]
-                  }]
+            {
+            'abc': [0.5, 0.5, 0.5],
+            'label': 'O',
+            'species': [{
+                'element': 'O',
+                'occu': 1.0
+            }],
+            'xyz': [1.942180612737, 1.942180612737, 1.942180612737]
+        }]
     }
 
     output_struct = node_dict['output_structure'].get_pymatgen_structure(
@@ -567,7 +572,8 @@ def test_parser_opt(new_database, new_workdir):
     reason='Error in obtaining authinfo for computer configuration')
 def test_full_run(new_database_with_daemon, new_workdir):
     """Test running a calculation"""
-    from aiida.orm.data.singlefile import SinglefileData
+    from aiida.plugins import DataFactory
+    SinglefileData = DataFactory('singlefile')
     from aiida.common.datastructures import calc_states
 
     # get code
@@ -575,11 +581,11 @@ def test_full_run(new_database_with_daemon, new_workdir):
 
     # Prepare input parameters
     infile = SinglefileData(
-        file=os.path.join(TEST_DIR, "input_files",
-                          'mgo_sto3g_scf.crystal.d12'))
+        filepath=os.path.join(TEST_DIR, "input_files",
+                              'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
 
     inputs_dict = {
         "input_file": infile,

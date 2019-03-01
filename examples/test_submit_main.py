@@ -24,7 +24,7 @@ def get_main_code(workdir):
 
 def test_example(new_database, new_workdir):
 
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
     from ase.spacegroup import crystal
     from aiida_crystal17.data.basis_set import BasisSetData
@@ -64,7 +64,7 @@ def test_example(new_database, new_workdir):
         extension=".basis")
 
     # set up calculation
-    calc = code.new_calc()
+    calc = code.get_builder()
     calc.label = "aiida_crystal17 test"
     calc.description = "Test job submission with the aiida_crystal17 plugin"
     calc.set_max_wallclock_seconds(30)

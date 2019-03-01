@@ -1,5 +1,6 @@
 """
-Plugin to create a CRYSTAL17 output file from input files created via data nodes
+Plugin to create a CRYSTAL17 output file, 
+from input files created via data nodes
 """
 import os
 
@@ -7,21 +8,22 @@ import six
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import (InputValidationError, ValidationError)
 from aiida.common.utils import classproperty
-from aiida.orm import DataFactory
-from aiida.orm.calculation.job import JobCalculation
+from aiida.plugins import DataFactory
+from aiida.engine import CalcJob
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
-from aiida_crystal17.parsers.geometry import crystal17_gui_string, structure_to_dict
+from aiida_crystal17.parsers.geometry import (
+    crystal17_gui_string, structure_to_dict)
 from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
 
 StructureData = DataFactory('structure')
-ParameterData = DataFactory('parameter')
+ParameterData = DataFactory('dict')
 BasisSetData = DataFactory('crystal17.basisset')
 StructSettingsData = DataFactory('crystal17.structsettings')
 
 
-class CryMainCalculation(JobCalculation):
+class CryMainCalculation(CalcJob):
     """
     AiiDA calculation plugin wrapping the runcry17 executable.
 
@@ -86,19 +88,20 @@ class CryMainCalculation(JobCalculation):
 
     @classmethod
     def _get_linkname_basisset_prefix(cls):
-        """
-        The prefix for the name of the link used for each pseudo before the kind name
+        """The prefix for the name of the link used
+        for each pseudo before the kind name
         """
         return "basis_"
 
     @classmethod
     def get_linkname_basisset(cls, element):
-        """
-        The name of the link used for the basis set for atomic element 'element'.
+        """The name of the link used for the basis set 
+        for atomic element 'element'.
         It appends the basis name to the basisset_prefix, as returned by the
         _get_linkname_basisset_prefix() method.
 
-        :param element: a string for the atomic element for which we want to get the link name
+        :param element: a string for the atomic element 
+                        for which we want to get the link name
         """
         if not isinstance(element, six.string_types):
             raise TypeError(
@@ -120,7 +123,7 @@ class CryMainCalculation(JobCalculation):
         my_calculation.use_parameters(my_parameters)
 
         """
-        use_dict = JobCalculation._use_methods
+        use_dict = CalcJob._use_methods
 
         use_dict.update({
             "parameters": {
@@ -147,8 +150,8 @@ class CryMainCalculation(JobCalculation):
                 'linkname':
                 'settings',
                 'docstring':
-                "Structure settings for conversion to .gui (fort.34) input file "
-                "defining symmetry operations and kind specific data",
+                "Structure settings for conversion to .gui (fort.34) input "
+                "file defining symmetry operations and kind specific data",
             },
             "basisset": {
                 'valid_types':
@@ -164,7 +167,7 @@ class CryMainCalculation(JobCalculation):
                  "atomic element symbol for which you want to use this "
                  "basis set."),
             },
-            # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
+            # TODO retrieve .f9 / .f98 from remote folder (for GUESSP/RESTART)
             # "parent_folder": {
             #     'valid_types': RemoteData,
             #     'additional_parameter': None,
@@ -178,8 +181,8 @@ class CryMainCalculation(JobCalculation):
 
     def use_basisset_from_family(self, family_name):
         """
-        Set the basis set to use for all atomic types, picking basis sets from the
-        family with name family_name.
+        Set the basis set to use for all atomic types, picking basis sets from 
+        the family with name family_name.
 
         :note: The structure must already be set.
 
@@ -212,7 +215,8 @@ class CryMainCalculation(JobCalculation):
         return self.get_inputs_dict()[self.get_linkname('structure')]
 
     def _retrieve_basis_sets(self, inputdict, instruct):
-        """ retrieve BasisSetData objects from the inputdict, associate them with an atomic element
+        """ retrieve BasisSetData objects from the inputdict, 
+        associate them with an atomic element
         and validate a 1-to-1 mapping between the two
 
         :param inputdict: dictionary of inputs
@@ -220,7 +224,8 @@ class CryMainCalculation(JobCalculation):
         :return: basissets dict {element: BasisSetData}
         """
         basissets = {}
-        # I create here a dictionary that associates each kind name to a basisset
+        # I create here a dictionary that 
+        # associates each kind name to a basisset
         for link in list(inputdict.keys()):
             if link.startswith(self._get_linkname_basisset_prefix()):
                 element = link[len(self._get_linkname_basisset_prefix()):]
@@ -329,7 +334,8 @@ class CryMainCalculation(JobCalculation):
         for a description of its function and inputs
         """
         # read inputs
-        # we expect "code", "parameters", "structure" and "basis_" (one for each basis)
+        # we expect "code", "parameters", "structure" and "basis_" 
+        # (one for each basis)
         # "settings" is optional
 
         try:
@@ -369,7 +375,8 @@ class CryMainCalculation(JobCalculation):
         self._create_input_files(basissets, instruct, parameters,
                                  settings.data, tempfolder)
 
-        # Prepare CodeInfo object for aiida, describes how a code has to be executed
+        # Prepare CodeInfo object for aiida, 
+        # describes how a code has to be executed
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
         codeinfo.cmdline_params = [
@@ -389,7 +396,9 @@ class CryMainCalculation(JobCalculation):
         ]
         calcinfo.retrieve_temporary_list = []
 
-        # TODO set hpc options (i.e. calcinfo.num_machines, etc)? Doesn't seem required looking at aiida-quantumespresso
+        # TODO set hpc options 
+        # (i.e. calcinfo.num_machines, etc)? 
+        # Doesn't seem required looking at aiida-quantumespresso
         # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
 
         return calcinfo

@@ -7,7 +7,7 @@ from jsonextended import edict
 
 @pytest.mark.timeout(60)
 def test_full_nio_afm(new_database):
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
     # from aiida.common.datastructures import calc_states
 
@@ -43,12 +43,12 @@ def test_full_nio_afm(new_database):
 
     assert '_aiida_cached_from' not in node.extras()
 
-    # assert node.get_attr("state") == calc_states.FINISHED
+    # assert node.get_attribute("state") == calc_states.FINISHED
 
 
 @pytest.mark.timeout(60)
 def test_full_mgo_opt(new_database):
-    from aiida.orm import DataFactory
+    from aiida.plugins import DataFactory
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
     # from aiida.common.datastructures import calc_states
 
@@ -84,7 +84,7 @@ def test_full_mgo_opt(new_database):
 
     assert '_aiida_cached_from' not in node.extras()
 
-    # assert node.get_attr("state") == calc_states.FINISHED
+    # assert node.get_attribute("state") == calc_states.FINISHED
 
     expected_struct = {
         '@class':

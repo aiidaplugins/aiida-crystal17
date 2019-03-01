@@ -6,19 +6,14 @@ from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
 from aiida.common.utils import classproperty
 from aiida.orm import Data
-from aiida_crystal17.parsers.geometry import CRYSTAL_TYPE_MAP, CENTERING_CODE_MAP
+from aiida_crystal17.parsers.geometry import (
+    CRYSTAL_TYPE_MAP, CENTERING_CODE_MAP)
 from aiida_crystal17.validation import validate_with_dict
 from jsonschema import ValidationError as SchemeError
 
 
 class StructSettingsData(Data):
-    """
-    Stores input symmetry and kind specific setting for a structure (as required by CRYSTAL17)
 
-    - symmetry operations are stored on file (in the style of ArrayData)
-    - the rest of the values are stored as attributes in the database
-
-    """
     _ops_filename = "operations.npy"
     _data_schema = {
         "$schema":
@@ -76,7 +71,8 @@ class StructSettingsData(Data):
                 "type": ["null", "array"],
                 "items": {
                     "description":
-                    "each item should be a list of [r00,r10,r20,r01,r11,r21,r02,r12,r22,t0,t1,t2]",
+                    ("each item should be a list of "
+                     "[r00,r10,r20,r01,r11,r21,r02,r12,r22,t0,t1,t2]"),
                     "type":
                     "array",
                     "minItems":
@@ -152,6 +148,20 @@ class StructSettingsData(Data):
         }
     }
 
+    def __init__(self, **kwargs):
+        """Stores input symmetry and kind specific setting
+        for a structure (as required by CRYSTAL17)
+
+        - symmetry operations are stored on file (in the style of ArrayData)
+        - the rest of the values are stored as attributes in the database
+
+        :param data: the data to set
+        """
+        data = kwargs.pop('data', None)
+        super(StructSettingsData, self).__init__(**kwargs)
+        if data:
+            self.set_data(data)
+
     @classproperty
     def data_schema(cls):
         return copy.deepcopy(cls._data_schema)
@@ -160,7 +170,7 @@ class StructSettingsData(Data):
         super(StructSettingsData, self)._validate()
 
         fname = self._ops_filename
-        if fname not in self.get_folder_list():
+        if fname not in self.list_object_names():
             raise ValidationError("operations not set")
 
         try:
@@ -183,25 +193,23 @@ class StructSettingsData(Data):
             raise ValidationError(err)
 
         # store all but the symmetry operations as attributes
-        old_dict = copy.deepcopy(dict(self.iterattrs()))
-        attributes_set = False
+        backup_dict = copy.deepcopy(dict(self.attributes))
+
         try:
-            # Delete existing attributes
-            self._del_all_attrs()
-            # I set the keys
+            # Clear existing attributes and set the new dictionary
             self._update_attrs(
                 {k: v
                  for k, v in data.items() if k != "operations"})
-            self._set_attr("num_symops", len(data["operations"]))
-            attributes_set = True
-        finally:
-            if not attributes_set:
-                try:
-                    # Try to restore the old data
-                    self._del_all_attrs()
-                    self._update_attrs(old_dict)
-                except ModificationNotAllowed:
-                    pass
+            self.set_attribute("num_symops", len(data["operations"]))
+        except ModificationNotAllowed:  # pylint: disable=try-except-raise
+            # I reraise here to avoid to go in the generic 'except' below that 
+            # would raise the same exception again
+            raise
+        except Exception:
+            # Try to restore the old data
+            self.clear_attributes()
+            self._update_attrs(backup_dict)
+            raise
 
         # store the symmetry operations on file
         self._set_operations(data["operations"])
@@ -214,29 +222,38 @@ class StructSettingsData(Data):
           dict.update(), adding new keys and overwriting existing keys.
         """
         for k, v in data.items():
-            self._set_attr(k, v)
+            self.set_attribute(k, v)
 
     def _set_operations(self, ops):
         fname = self._ops_filename
 
-        if fname in self.get_folder_list():
+        if fname in self.list_object_names():
             self.remove_path(fname)
 
-        with tempfile.NamedTemporaryFile() as f:
+        with tempfile.NamedTemporaryFile() as handle:
             # Store in a temporary file, and then add to the node
-            np.save(f, ops)
-            f.flush(
-            )  # Important to flush here, otherwise the next copy command
-            # will just copy an empty file
-            super(StructSettingsData, self).add_path(f.name, fname)
+            np.save(handle, ops)
+
+            # Flush and rewind the handle, otherwise the command to store it in
+            # the repo will write an empty file
+            handle.flush()
+            handle.seek(0)
+
+            # Write the numpy array to the repository,
+            # keeping the byte representation
+            self.put_object_from_filelike(handle, fname,
+                                          mode='wb', encoding=None)
 
     def _get_operations(self):
-        fname = self._ops_filename
-        if fname not in self.get_folder_list():
+        filename = self._ops_filename
+        if filename not in self.list_object_names():
             raise KeyError("symmetry operations not set for node pk={}".format(
                 self.pk))
 
-        array = np.load(self.get_abs_path(fname))
+        # Open a handle in binary read mode as the arrays are written
+        # as binary files as well
+        with self.open(filename, mode='rb') as handle:
+            array = np.load(handle)
 
         return array.tolist()
 
@@ -245,7 +262,7 @@ class StructSettingsData(Data):
         """
         Return the data as an AttributeDict
         """
-        data = dict(self.iterattrs())
+        data = dict(self.attributes)
         if "num_symops" in data:
             data.pop("num_symops")
         data["operations"] = self._get_operations()
@@ -253,7 +270,7 @@ class StructSettingsData(Data):
 
     def get_dict(self):
         """get dictionary of data"""
-        data = dict(self.iterattrs())
+        data = dict(self.attributes)
         if "num_symops" in data:
             data.pop("num_symops")
         data["operations"] = self._get_operations()
@@ -261,22 +278,22 @@ class StructSettingsData(Data):
 
     @property
     def num_symops(self):
-        return self.get_attr("num_symops", None)
+        return self.get_attribute("num_symops", None)
 
     @property
     def space_group(self):
-        return self.get_attr("space_group", None)
+        return self.get_attribute("space_group", None)
 
     @property
     def crystal_system(self):
         """get the string version of the crystal system (e.g. 'triclinic')"""
-        ctype = self.get_attr('crystal_type')
+        ctype = self.get_attribute('crystal_type')
         return CRYSTAL_TYPE_MAP[ctype]
 
     @property
     def crystallographic_transform(self):
         """get the primitive to crystallographic transformation matrix"""
-        ctype = self.get_attr('centring_code')
+        ctype = self.get_attribute('centring_code')
         return CENTERING_CODE_MAP[ctype]
 
     def add_path(self, src_abs, dst_path):
