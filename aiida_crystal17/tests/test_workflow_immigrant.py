@@ -77,7 +77,7 @@ def test_full_mgo_opt(new_database):
     assert "struct_setup" in struct.get_inputs_dict()[
         'structure'].get_inputs_dict()
 
-    print(node.get_outputs_dict())
+    # print(node.get_outputs_dict())
 
     assert set(node.get_outputs_dict().keys()).issuperset(
         ['output_parameters', 'output_structure', 'retrieved'])
@@ -86,7 +86,7 @@ def test_full_mgo_opt(new_database):
 
     # assert node.get_attr("state") == calc_states.FINISHED
 
-    expected_struct_attrs = {
+    expected_instruct_attrs = {
         'cell': [
             [0.0, 2.105, 2.105],
             [2.105, 0.0, 2.105],
@@ -96,7 +96,10 @@ def test_full_mgo_opt(new_database):
              'name': 'Mg',
              'symbols': ['Mg'],
              'weights': [1.0]},
-            {'mass': 15.9994, 'name': 'O', 'symbols': ['O'], 'weights': [1.0]}],
+            {'mass': 15.9994,
+             'name': 'O',
+             'symbols': ['O'],
+             'weights': [1.0]}],
         'pbc1': True,
         'pbc2': True,
         'pbc3': True,
@@ -105,5 +108,30 @@ def test_full_mgo_opt(new_database):
     }
 
     assert edict.diff(
+        dict(node.inp.structure.get_attrs()),
+        expected_instruct_attrs, np_allclose=True, atol=1e-3) == {}
+
+    expected_outstruct_attrs = {
+        'cell': [
+            [0.0, 1.94218061274, 1.94218061274],
+            [1.94218061274, 0.0, 1.94218061274],
+            [1.94218061274, 1.94218061274, 0.0]],
+        'kinds': [
+            {'mass': 24.305,
+             'name': 'Mg',
+             'symbols': ['Mg'],
+             'weights': [1.0]},
+            {'mass': 15.9994, 'name': 'O', 'symbols': ['O'], 'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [
+            {'kind_name': 'Mg',
+             'position': [0.0, 0.0, 0.0]},
+            {'kind_name': 'O',
+             'position': [1.94218061274, 1.94218061274, 1.94218061274]}]
+    }
+
+    assert edict.diff(
         dict(node.get_outputs_dict()['output_structure'].get_attrs()),
-        expected_struct_attrs, np_allclose=True) == {}
+        expected_outstruct_attrs, np_allclose=True, atol=1e-3) == {}
