@@ -138,6 +138,7 @@ def test_write_gui_with_symops():
     assert outstr == expected
 
 
+@pytest.mark.timeout(30)
 def test_compute_symmetry_3d_primitive():
     sdata = {
         "lattice": [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
