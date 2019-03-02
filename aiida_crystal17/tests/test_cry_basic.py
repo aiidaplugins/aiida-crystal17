@@ -167,16 +167,15 @@ def test_parser_scf(new_database, new_workdir):
         ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings': [],
-        'energy':
-        -2.7121814374931E+02 * 27.21138602,
+        'energy': -2.7121814374931E+02 * 27.21138602,
         'energy_units':
         'eV',  # hartree to eV
         'calculation_type':
         'restricted closed shell',
         'calculation_spin':
         False,
-        'wall_time_seconds':
-        3,
+        # 'wall_time_seconds':
+        # 3,
         'number_of_atoms':
         2,
         'number_of_assymetric':
@@ -187,63 +186,33 @@ def test_parser_scf(new_database, new_workdir):
         18.65461527264623,
     }
 
+    out_params_dict = node_dict['output_parameters'].get_dict()
+    # wall time is not fixed
+    out_params_dict.pop('wall_time_seconds', None)
+
     assert edict.diff(
         node_dict['output_parameters'].get_dict(),
         expected_params,
         np_allclose=True) == {}
 
-    expected_struct = {
-        '@class':
-        'Structure',
-        '@module':
-        'pymatgen.core.structure',
-        'lattice': {
-            'a':
-            2.9769195487953652,
-            'alpha':
-            60.00000000000001,
-            'b':
-            2.9769195487953652,
-            'beta':
-            60.00000000000001,
-            'c':
-            2.9769195487953652,
-            'gamma':
-            60.00000000000001,
-            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
-                       [2.105, 2.105, 0.0]],
-            'volume':
-            18.65461525
-        },
-        'sites': [{
-            'abc': [0.0, 0.0, 0.0],
-            'label': 'Mg',
-            'species': [{
-                'element': 'Mg',
-                'occu': 1.0
-            }],
-            'xyz': [0.0, 0.0, 0.0]
-        }, {
-            'abc': [0.5, 0.5, 0.5],
-            'label': 'O',
-            'species': [{
-                'element': 'O',
-                'occu': 1.0
-            }],
-            'xyz': [2.105, 2.105, 2.105]
-        }]
+    expected_struct_attrs = {
+        'cell': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105], [2.105, 2.105, 0.0]],
+        'kinds': [
+            {'mass': 24.305,
+             'name': 'Mg',
+             'symbols': ['Mg'],
+             'weights': [1.0]},
+            {'mass': 15.9994, 'name': 'O', 'symbols': ['O'], 'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [{'kind_name': 'Mg', 'position': [0.0, 0.0, 0.0]},
+                  {'kind_name': 'O', 'position': [2.105, 2.105, 2.105]}]
     }
 
-    # TODO this is currently failing on travis, due to:
-    # ValueError: numpy.ufunc has the wrong size, try recompiling
-
-    # output_struct = node_dict[
-    #     'output_structure'].get_pymatgen_structure().as_dict()
-    # # in later version of pymatgen only
-    # if "charge" in output_struct:
-    #     output_struct.pop("charge")
-
-    # assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
+    assert edict.diff(
+        dict(node_dict['output_structure'].get_attrs()),
+        expected_struct_attrs, np_allclose=True) == {}
 
 
 def test_parser_external(new_database, new_workdir):
@@ -296,16 +265,16 @@ def test_parser_external(new_database, new_workdir):
         ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings': [],
-        'energy':
-        -2.7121814374931E+02 * 27.21138602,
+        'energy': -2.7121814374931E+02 *
+        27.21138602,
         'energy_units':
         'eV',  # hartree to eV
         'calculation_type':
         'restricted closed shell',
         'calculation_spin':
         False,
-        'wall_time_seconds':
-        3,
+        # 'wall_time_seconds':
+        # 3,
         'number_of_atoms':
         2,
         'number_of_assymetric':
@@ -318,8 +287,11 @@ def test_parser_external(new_database, new_workdir):
         'mulliken_electrons': [11.223, 8.777],
     }
 
+    out_params_dict = node_dict['output_parameters'].get_dict()
+    out_params_dict.pop('wall_time_seconds', None)
+
     assert edict.diff(
-        node_dict['output_parameters'].get_dict(),
+        out_params_dict,
         expected_params,
         np_allclose=True) == {}
 
@@ -378,55 +350,27 @@ def test_parser_external(new_database, new_workdir):
     assert node_dict['output_settings'].compare_operations(
         expected_operations) == {}
 
-    expected_struct = {
-        '@class':
-        'Structure',
-        '@module':
-        'pymatgen.core.structure',
-        'lattice': {
-            'a':
-            2.9769195487953652,
-            'alpha':
-            60.00000000000001,
-            'b':
-            2.9769195487953652,
-            'beta':
-            60.00000000000001,
-            'c':
-            2.9769195487953652,
-            'gamma':
-            60.00000000000001,
-            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
-                       [2.105, 2.105, 0.0]],
-            'volume':
-            18.65461525
-        },
-        'sites': [{
-            'abc': [0.0, 0.0, 0.0],
-            'label': 'Mg',
-            'species': [{
-                'element': 'Mg',
-                'occu': 1.0
-            }],
-            'xyz': [0.0, 0.0, 0.0]
-        }, {
-            'abc': [0.5, 0.5, 0.5],
-            'label': 'O',
-            'species': [{
-                'element': 'O',
-                'occu': 1.0
-            }],
-            'xyz': [2.105, 2.105, 2.105]
-        }]
+    expected_struct_attrs = {
+        'cell': [[0.0, 2.105, 2.105],
+                 [2.105, 0.0, 2.105],
+                 [2.105, 2.105, 0.0]],
+        'kinds': [
+            {'mass': 24.305,
+             'name': 'Mg',
+             'symbols': ['Mg'],
+             'weights': [1.0]},
+            {'mass': 15.9994, 'name': 'O',
+             'symbols': ['O'], 'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [{'kind_name': 'Mg', 'position': [0.0, 0.0, 0.0]},
+                  {'kind_name': 'O', 'position': [2.105, 2.105, 2.105]}]
     }
 
-    output_struct = node_dict[
-        'output_structure'].get_pymatgen_structure().as_dict()
-    # in later version of pymatgen only
-    if "charge" in output_struct:
-        output_struct.pop("charge")
-
-    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
+    assert edict.diff(
+        dict(node_dict['output_structure'].get_attrs()),
+        expected_struct_attrs, np_allclose=True) == {}
 
 
 def test_parser_opt(new_database, new_workdir):
@@ -480,16 +424,15 @@ def test_parser_opt(new_database, new_workdir):
         'errors': [],
         'warnings':
         ['WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY'],
-        'energy':
-        -2.712596206888E+02 * 27.21138602,
+        'energy': -2.712596206888E+02 * 27.21138602,
         'energy_units':
         'eV',  # hartree to eV
         'calculation_type':
         'restricted closed shell',
         'calculation_spin':
         False,
-        'wall_time_seconds':
-        102,
+        # 'wall_time_seconds':
+        # 102,
         'number_of_atoms':
         2,
         'number_of_assymetric':
@@ -502,61 +445,34 @@ def test_parser_opt(new_database, new_workdir):
         14.652065094424696,
     }
 
+    out_params_dict = node_dict['output_parameters'].get_dict()
+    out_params_dict.pop('wall_time_seconds', None)
+
     assert edict.diff(
-        node_dict['output_parameters'].get_dict(),
+        out_params_dict,
         expected_params,
         np_allclose=True) == {}
 
-    expected_struct = {
-        '@class':
-        'Structure',
-        '@module':
-        'pymatgen.core.structure',
-        'lattice': {
-            'a':
-            2.746658163114996,
-            'alpha':
-            60.00000000000001,
-            'b':
-            2.746658163114996,
-            'beta':
-            60.00000000000001,
-            'c':
-            2.746658163114996,
-            'gamma':
-            60.00000000000001,
-            'matrix': [[0.0, 1.94218061274,
-                        1.94218061274], [1.94218061274, 0.0, 1.94218061274],
-                       [1.94218061274, 1.94218061274, 0.0]],
-            'volume':
-            14.652065094424696
-        },
-        'sites': [{
-            'abc': [0.0, 0.0, 0.0],
-            'label': 'Mg',
-            'species': [{
-                'element': 'Mg',
-                'occu': 1.0
-            }],
-            'xyz': [0.0, 0.0, 0.0]
-        }, {
-            'abc': [0.5, 0.5, 0.5],
-            'label': 'O',
-            'species': [{
-                'element': 'O',
-                'occu': 1.0
-            }],
-            'xyz': [1.942180612737, 1.942180612737, 1.942180612737]
-        }]
+    expected_struct_attrs = {
+        'cell': [[0.0, 1.94218061274, 1.94218061274],
+                 [1.94218061274, 0.0, 1.94218061274],
+                 [1.94218061274, 1.94218061274, 0.0]],
+        'kinds': [{'mass': 24.305,
+                   'name': 'Mg',
+                   'symbols': [u'Mg'],
+                   'weights': [1.0]},
+                  {'mass': 15.9994, 'name': 'O', 'symbols': ['O'], 'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [{'kind_name': 'Mg', 'position': [0.0, 0.0, 0.0]},
+                  {'kind_name': 'O',
+                   'position': [1.94218061274, 1.94218061274, 1.94218061274]}]
     }
 
-    output_struct = node_dict[
-        'output_structure'].get_pymatgen_structure().as_dict()
-    # in later version of pymatgen only
-    if "charge" in output_struct:
-        output_struct.pop("charge")
-
-    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
+    assert edict.diff(
+        dict(node_dict['output_structure'].get_attrs()),
+        expected_struct_attrs, np_allclose=True) == {}
 
 
 @pytest.mark.timeout(60)
@@ -618,8 +534,8 @@ def test_full_run(new_database_with_daemon, new_workdir):
         ["no initial structure available, creating new kinds for atoms"],
         'errors': [],
         'warnings': [],
-        'energy':
-        -2.7121814374931E+02 * 27.21138602,
+        'energy': -2.7121814374931E+02 *
+        27.21138602,
         'energy_units':
         'eV',  # hartree to eV
         'calculation_type':

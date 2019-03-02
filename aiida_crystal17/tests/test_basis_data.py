@@ -95,17 +95,19 @@ def test_bases_from_struct(new_database, new_workdir):
         "group of sto3g basis sets")
 
     # MgO
+    import ase
     from ase.spacegroup import crystal
     atoms = crystal(
         symbols=[12, 8],
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,
-        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
+        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])  # type: ase.Atoms
 
-    atoms[0].tag = 1
-    atoms[1].tag = 1
+    # atoms[0].tag = 1
+    # atoms[1].tag = 1
+    atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
-    print(atoms)
+    print(atoms.get_tags())
     from aiida.orm import DataFactory
     StructureData = DataFactory("structure")
     struct = StructureData(ase=atoms)

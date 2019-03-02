@@ -7,6 +7,7 @@
   hooks:
   - id: yapf
     language: system
+    exclude: '^(aiida_crystal17/tests/)'
 
 # prospector: collection of python linters
 - repo: git://github.com/guykisel/prospector-mirror

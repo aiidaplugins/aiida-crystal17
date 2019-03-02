@@ -136,7 +136,8 @@ def get_crystal_system(sg_number, as_number=False):
     :param as_number: return the system as a number (recognized by CRYSTAL) or a str
     :return: Crystal system for structure or None if system cannot be detected.
     """
-    f = lambda i, j: i <= sg_number <= j
+    def f(i, j):
+        return i <= sg_number <= j
     cs = {
         "triclinic": (1, 2),
         "monoclinic": (3, 15),
@@ -505,6 +506,9 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
 
     if fractional_ops:
         symops = ops_frac_to_cart(symops, lattice)
+
+    # sort the symmetry operations (useful to standardize for testing)
+    # symops = np.sort(symops, axis=0)
 
     num_symops = len(symops)
     sym_lines = []

@@ -52,7 +52,8 @@ def cmp_load_verdi_data():
 
 
 def run_get_node(process, inputs_dict):
-    """ an implementation of run_get_node which is compatible with both aiida v0.12 and v1.0.0
+    """ an implementation of run_get_node,
+    which is compatible with both aiida v0.12 and v1.0.0
 
     it will also convert "options" "label" and "description" to/from the _ variant
 
