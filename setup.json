@@ -40,13 +40,11 @@
     "setup_requires": ["reentry"],
     "reentry_register": true,
     "install_requires": [
-        "aiida-core[atomic_tools]==0.12.2",
+        "aiida-core==0.12.2",
         "ejplugins>=0.9.7",
-        "packaging",
-        "scipy==1.1.0",
-        "pandas==0.23.4",
-        "monty==1.0.3",
-        "matplotlib==2.2.3"
+        "packaging==19.0",
+        "spglib==1.10.3.65",
+        "ase==3.12.0"
     ],
     "extras_require": {
         "testing": [
