@@ -12,6 +12,11 @@ for more information on how to perform these steps.
 Installation
 ++++++++++++
 
+To install from conda (recommended)::
+
+    >> conda install -c conda-forge aiida-crystal17
+    >> conda install -c bioconda chainmap==1.0.2
+
 To install from pypi::
 
     >> pip install aiida-crystal17
