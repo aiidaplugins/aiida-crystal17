@@ -35,7 +35,7 @@ matrix:
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
-- pip uninstall numpy
+- pip uninstall -y numpy
 - pip install -e .[pre-commit,testing,docs]
 - >
   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
