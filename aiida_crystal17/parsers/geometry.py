@@ -136,8 +136,10 @@ def get_crystal_system(sg_number, as_number=False):
     :param as_number: return the system as a number (recognized by CRYSTAL) or a str
     :return: Crystal system for structure or None if system cannot be detected.
     """
+
     def f(i, j):
         return i <= sg_number <= j
+
     cs = {
         "triclinic": (1, 2),
         "monoclinic": (3, 15),
