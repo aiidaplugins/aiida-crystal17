@@ -191,7 +191,7 @@ def test_parser_scf(new_database, new_workdir):
     out_params_dict.pop('wall_time_seconds', None)
 
     assert edict.diff(
-        node_dict['output_parameters'].get_dict(),
+        out_params_dict,
         expected_params,
         np_allclose=True) == {}
 
