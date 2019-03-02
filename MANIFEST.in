@@ -1,3 +1,4 @@
+include LICENSE
 include setup.json
 recursive-include aiida_crystal17/tests/ *
 include aiida_crystal17/validation/*.json
