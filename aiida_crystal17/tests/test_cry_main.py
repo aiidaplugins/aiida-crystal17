@@ -427,7 +427,7 @@ def test_submit_nio_afm(new_database, new_workdir):
             gui_content = f.read()
 
         print(input_content)
-        print()
+        print("--")
         print(gui_content)
 
     expected_input = """NiO Bulk with AFM spin
@@ -531,10 +531,10 @@ END
   0.000000000E+00   0.000000000E+00   1.000000000E+00
   0.000000000E+00   0.000000000E+00   0.000000000E+00
 4
- 28  -2.549714636E-16  -2.082000000E+00  -2.082000000E+00
- 28  -2.082000000E+00  -2.082000000E+00   4.440892099E-16
+ 28   0.000000000E+00  -2.082000000E+00  -2.082000000E+00
+ 28  -2.082000000E+00  -2.082000000E+00   0.000000000E+00
   8  -2.082000000E+00  -2.082000000E+00  -2.082000000E+00
-  8  -1.274857318E-16  -2.082000000E+00   4.440892099E-16
+  8   0.000000000E+00  -2.082000000E+00   0.000000000E+00
 123 16
 """
 
@@ -905,5 +905,5 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
 
     assert edict.diff(
         dict(calcnode.out.output_structure.get_attrs()),
-        expected_struct_attrs, np_allclose=True) == {}
+        expected_struct_attrs, np_allclose=True, atol=1e-3) == {}
 

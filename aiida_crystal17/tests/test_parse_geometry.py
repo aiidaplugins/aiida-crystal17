@@ -666,9 +666,30 @@ def test_compute_symmetry_3d_mgo_primitive():
     # difflib is too slow. if there are a lot of differences, to compare all
     outstr_lines = outstr.splitlines()
     print(outstr_lines)
+    # print(outstr_lines)
     assert len(outstr_lines) == len(expected)
-    assert outstr_lines[0:10] == expected[0:10]
-    assert outstr_lines[-10:-1] == expected[-10:-1]
+    # test cell coords
+    assert outstr_lines[0:5] == expected[0:5]
+    # test atomic positions
+    assert outstr_lines[-4:-1] == expected[-4:-1]
+    # test symmetries
+
+    def reconstruct_symmetries(lines):
+        symops = []
+        i = 4
+        for l in lines:
+            if i == 4:
+                symops.append([])
+                i = 0
+            symops[len(symops) - 1].extend([float(j) for j in l.split()])
+            i += 1
+        return symops
+
+    symso = reconstruct_symmetries(outstr_lines[5:-4])
+    symse = reconstruct_symmetries(expected[5:-4])
+    assert np.allclose(
+        np.sort(symso, axis=0),
+        np.sort(symse, axis=0))
 
     assert np.allclose(
         outatoms.cell,
@@ -842,10 +863,10 @@ def test_compute_symmetry_3d_inequivalent():
   0.000000000E+00   0.000000000E+00   1.000000000E+00
   0.000000000E+00   0.000000000E+00   0.000000000E+00
 4
- 12   4.094618574E-32   2.105000000E+00  -2.105000000E+00
- 12   2.105000000E+00   2.105000000E+00   6.661338148E-16
+ 12   0.000000000E+00   2.105000000E+00  -2.105000000E+00
+ 12   2.105000000E+00   2.105000000E+00   0.000000000E+00
   8   2.105000000E+00   2.105000000E+00  -2.105000000E+00
-  8   1.288940756E-16   2.105000000E+00   6.661338148E-16
+  8   0.000000000E+00   2.105000000E+00   0.000000000E+00
 123 16
 """
 

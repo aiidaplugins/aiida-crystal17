@@ -37,12 +37,21 @@ additional_files = {
 }
 
 
-def main():
+def main(sys_args=None):
+
+    if sys_args is None:
+        sys_args = sys.argv[1:]
+
+    if len(sys_args) < 1:
+        raise ValueError("no input name given (as 1st argument)")
+    
+    if sys_args[0] == "--test":
+        return
 
     # script_path = os.path.dirname(os.path.realpath(__file__))
     test_path = os.path.dirname(tests.__file__)
     # runcry17 requires input file name without extension as first arg
-    input_name = sys.argv[1]
+    input_name = sys_args[0]
 
     with open(input_name + ".d12", "rb") as f:
         hashkey = hashlib.md5(f.read()).digest()

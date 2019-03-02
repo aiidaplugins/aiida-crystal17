@@ -520,6 +520,8 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
         sym_lines.append(symop[6:9])
         sym_lines.append(symop[9:12])
 
+    # for all output numbers, we round to 9 dp and add 0, so we don't get -0.0
+
     geom_str_list = []
     geom_str_list.append("{0} {1} {2}".format(dimensionality, origin_setting,
                                               crystal_type))
@@ -536,7 +538,7 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
     geom_str_list.append(str(len(atomic_numbers)))
     for anum, coord in zip(atomic_numbers, ccoords):
         geom_str_list.append("{0:3} {1:17.9E} {2:17.9E} {3:17.9E}".format(
-            anum, *coord))
+            anum, *(np.round(coord, 10) + 0.)))
 
     geom_str_list.append("{0} {1}".format(sg_num, num_symops))
     geom_str_list.append("")
