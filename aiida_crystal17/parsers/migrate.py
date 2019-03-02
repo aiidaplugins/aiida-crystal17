@@ -7,7 +7,7 @@ import tempfile
 import ase
 from aiida.parsers.exceptions import OutputParsingError
 from aiida_crystal17.parsers.inputd12_read import extract_data
-from ejplugins import CrystalOutputPlugin
+from ejplugins.crystal import CrystalOutputPlugin
 
 
 # pylint: disable=too-many-locals
