@@ -491,12 +491,12 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
     """create string of gui file content (for CRYSTAL17)
 
     :param structdata: dictionary of structure data with keys: 'pbc', 'atomic_numbers', 'ccoords', 'lattice'
-    :param symmdata:  dictionary of symmetry data with keys: 'crystal_type', 'centring_code', 'sgnum', 'symops'
+    :param symmdata:  dictionary of symmetry data with keys: 'crystal_type', 'centring_code', 'space_group', 'operations'
     :param fractional_ops: whether the symmetry operations are in fractional coordinates
     :return:
     """
 
-    dimensionality = len(structdata["pbc"])
+    dimensionality = 3 if structdata["pbc"] is True else sum(structdata["pbc"])
     atomic_numbers = structdata["atomic_numbers"]
     ccoords = structdata["ccoords"]
     lattice = structdata["lattice"]
