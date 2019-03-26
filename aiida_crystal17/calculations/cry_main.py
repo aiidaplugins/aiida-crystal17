@@ -18,7 +18,7 @@ from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
 
 StructureData = DataFactory('structure')
-ParameterData = DataFactory('dict')
+DictData = DataFactory('dict')
 BasisSetData = DataFactory('crystal17.basisset')
 StructSettingsData = DataFactory('crystal17.structsettings')
 
@@ -29,7 +29,7 @@ class CryMainCalculation(CalcJob):
 
     """
 
-    def _init_internal_params(self):  # pylint: disable=useless-super-delegation
+    def _init_internal_params(self):
         """
         Init internal parameters at class load time
         """
@@ -84,7 +84,7 @@ class CryMainCalculation(CalcJob):
             get_basissets_from_structure(
                 structure, basis_family, by_kind=False)
 
-        return ParameterData(dict=param_dict)
+        return DictData(dict=param_dict)
 
     @classmethod
     def _get_linkname_basisset_prefix(cls):
@@ -128,7 +128,7 @@ class CryMainCalculation(CalcJob):
         use_dict.update({
             "parameters": {
                 'valid_types':
-                ParameterData,
+                DictData,
                 'additional_parameter':
                 None,
                 'linkname':
@@ -348,8 +348,8 @@ class CryMainCalculation(CalcJob):
             parameters = inputdict.pop(self.get_linkname('parameters'))
         except KeyError:
             raise InputValidationError("Missing parameters")
-        if not isinstance(parameters, ParameterData):
-            raise InputValidationError("parameters not of type ParameterData")
+        if not isinstance(parameters, DictData):
+            raise InputValidationError("parameters not of type DictData")
 
         try:
             instruct = inputdict.pop(self.get_linkname('structure'))
@@ -382,7 +382,8 @@ class CryMainCalculation(CalcJob):
         codeinfo.cmdline_params = [
             os.path.splitext(self._DEFAULT_INPUT_FILE)[0]
         ]
-        # codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE  # this file doesn't actually come from stdout
+        # codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE  
+        # # this file doesn't actually come from stdout
         codeinfo.withmpi = self.get_withmpi()
 
         # Prepare CalcInfo object for aiida
@@ -395,10 +396,5 @@ class CryMainCalculation(CalcJob):
             self._DEFAULT_OUTPUT_FILE, self._DEFAULT_EXTERNAL_FILE
         ]
         calcinfo.retrieve_temporary_list = []
-
-        # TODO set hpc options 
-        # (i.e. calcinfo.num_machines, etc)? 
-        # Doesn't seem required looking at aiida-quantumespresso
-        # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
 
         return calcinfo

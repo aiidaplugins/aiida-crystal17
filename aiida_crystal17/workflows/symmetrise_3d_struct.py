@@ -6,13 +6,13 @@ from aiida.engine import WorkChain
 from aiida_crystal17.parsers.geometry import structure_to_dict, compute_symmetry_3d, SYMMETRY_PROGRAM, SYMMETRY_VERSION, \
     dict_to_structure
 from aiida_crystal17.utils import unflatten_dict
-from aiida_crystal17.aiida_compatability import run_get_node
+from aiida.engine import run_get_node
 from aiida_crystal17.validation import validate_with_dict
 from aiida_crystal17 import __version__ as VERSION
 from jsonextended import edict
 
 StructureData = DataFactory('structure')
-ParameterData = DataFactory('dict')
+DictData = DataFactory('dict')
 StructSettingsData = DataFactory('crystal17.structsettings')
 
 
@@ -100,7 +100,7 @@ class Symmetrise3DStructure(WorkChain):
     def define(cls, spec):
         super(Symmetrise3DStructure, cls).define(spec)
         spec.input("structure", valid_type=StructureData)
-        spec.input("settings", valid_type=ParameterData, required=False)
+        spec.input("settings", valid_type=DictData, required=False)
         spec.outline(cls.validate, cls.compute)
         spec.output("output_structure", valid_type=StructureData)
         spec.output("output_settings", valid_type=StructSettingsData)
@@ -146,12 +146,12 @@ def run_symmetrise_3d_structure(structure, settings=None):
     for inputting into ``crystal17.main`` calculation
 
     :param structure: StructureData
-    :param settings: dict or ParameterData
+    :param settings: dict or DictData
     :return: (StructureData, StructSettingsData)
     """
     if isinstance(settings, dict):
         settings = unflatten_dict(settings)
-        settings = ParameterData(dict=settings)
+        settings = DictData(dict=settings)
     inputs_dict = {"structure": structure}
     if settings:
         inputs_dict["settings"] = settings

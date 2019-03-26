@@ -7,7 +7,7 @@ from aiida_crystal17.cmndline.basis_set import basisset
 from aiida_crystal17.tests import TEST_DIR
 
 
-def test_settings_show(new_database):
+def test_settings_show(db_test_app):
 
     from aiida.plugins import DataFactory
     setting_cls = DataFactory('crystal17.structsettings')
@@ -43,7 +43,7 @@ def test_settings_show(new_database):
     assert result2.exit_code == 0
 
 
-def test_basis_show(new_database):
+def test_basis_show(db_test_app):
 
     from aiida.plugins import DataFactory
     basis_cls = DataFactory('crystal17.basisset')
@@ -74,7 +74,7 @@ def test_basis_show(new_database):
     assert result2.exit_code == 0
 
 
-def test_basis_upload(new_database):
+def test_basis_upload(db_test_app):
 
     path = os.path.join(TEST_DIR, "input_files", "sto3g")
     runner = CliRunner()

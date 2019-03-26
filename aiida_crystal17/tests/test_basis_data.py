@@ -4,12 +4,11 @@ tests BasisSetData
 import os
 
 from aiida_crystal17.tests import TEST_DIR
-import aiida_crystal17.tests.utils as tests
 import pytest
 
 
-def test_create_single(new_database, new_workdir):
-    _ = tests.get_computer(workdir=new_workdir)
+def test_create_single(db_test_app):
+    db_test_app.get_or_create_computer()
 
     from aiida.plugins import DataFactory
     BasisSetData = DataFactory("crystal17.basisset")
@@ -17,7 +16,7 @@ def test_create_single(new_database, new_workdir):
     basis = BasisSetData(
         filepath=os.path.join(
             TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
-    
+
     print(basis.filename)
 
     expected_meta = {
@@ -49,8 +48,8 @@ def test_create_single(new_database, new_workdir):
     assert not created
 
 
-def test_create_group(new_database, new_workdir):
-    computer = tests.get_computer(workdir=new_workdir)
+def test_create_group(db_test_app):
+    db_test_app.get_or_create_computer()
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
 
@@ -87,9 +86,8 @@ def test_create_group(new_database, new_workdir):
     assert (nfiles, nuploaded) == (3, 0)
 
 
-def test_bases_from_struct(new_database, new_workdir):
-
-    computer = tests.get_computer(workdir=new_workdir)
+def test_bases_from_struct(db_test_app):
+    db_test_app.get_or_create_computer()
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
 
@@ -100,7 +98,7 @@ def test_bases_from_struct(new_database, new_workdir):
     # MgO
     import ase
     from ase.spacegroup import crystal
-    atoms = crystal( 
+    atoms = crystal(
         symbols=[12, 8],
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,

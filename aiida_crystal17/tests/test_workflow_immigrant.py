@@ -6,7 +6,7 @@ from jsonextended import edict
 
 
 @pytest.mark.timeout(60)
-def test_full_nio_afm(new_database):
+def test_full_nio_afm(db_test_app):
     from aiida.plugins import DataFactory
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
     # from aiida.common.datastructures import calc_states
@@ -21,7 +21,7 @@ def test_full_nio_afm(new_database):
         outpath,
         input_links={
             'structure': {
-                "struct_setup": DataFactory('parameter')()
+                "struct_setup": DataFactory('dict')()
             }
         })
 
@@ -62,7 +62,7 @@ def test_full_mgo_opt(new_database):
         outpath,
         input_links={
             'structure': {
-                "struct_setup": DataFactory('parameter')()
+                "struct_setup": DataFactory('dict')()
             }
         })
 

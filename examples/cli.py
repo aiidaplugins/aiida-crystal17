@@ -27,10 +27,10 @@ def main(codelabel, submit):
     SinglefileData = DataFactory('singlefile')
 
     infile = SinglefileData(
-        filepath=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'nio_sto3g_afm.crystal.d12'))
     ingeom = SinglefileData(
-        filepath=os.path.join(aiida_crystal17.tests.TEST_DIR, "output_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "output_files",
                           'nio_sto3g_afm.crystal.out'))
 
     # set up calculation

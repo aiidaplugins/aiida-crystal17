@@ -1,67 +1,158 @@
 """
 initialise a text database and profile
 """
-import tempfile
-import shutil
+from contextlib import contextmanager
+import distutils.spawn
 import os
+import shutil
+import sys
+import tempfile
 
 from aiida.manage.fixtures import fixture_manager
-from aiida_crystal17.aiida_compatability import aiida_version, cmp_version
 import pytest
+
+executables = {
+    'crystal17.basic': 'runcry17',
+    'crystal17.main': 'runcry17',
+}
+MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
+mock_executables = {
+    'crystal17.basic': 'mock_runcry17',
+    'crystal17.main': 'mock_runcry17',
+}
 
 
 @pytest.fixture(scope='session')
 def aiida_profile():
     """setup a test profile for the duration of the tests"""
+    # TODO this is required locally for click
+    # (see https://click.palletsprojects.com/en/7.x/python3/)
+    os.environ["LC_ALL"] = "en_US.UTF-8"
     with fixture_manager() as fixture_mgr:
         yield fixture_mgr
 
 
 @pytest.fixture(scope='function')
-def new_database(aiida_profile):
+def db_test_app(aiida_profile):
     """clear the database after each test"""
-    yield aiida_profile
+    work_directory = tempfile.mkdtemp()
+    yield AiidaTestApp(aiida_profile, work_directory)
     aiida_profile.reset_db()
+    shutil.rmtree(work_directory)
 
 
-@pytest.fixture(scope='function')
-def new_database_with_daemon(aiida_profile):
-    """When you run something in aiida v1, it will be done in its own runner,
-    which is a mini daemon in and of its own.
-    However, in 0.12 the global daemon is the only one that can
-    submit, update and retrieve job calculations.
-    Therefore, we must configure and start it before running JobProcesses
-    """
-    if aiida_version() < cmp_version('1.0.0a1'):
-        from aiida.backends.utils import set_daemon_user
-        from aiida.cmdline.commands.daemon import Daemon
-        from aiida.common import setup
+class AiidaTestApp(object):
+    def __init__(self, profile, work_directory):
+        self._profile = profile
+        self._work_directory = work_directory
 
-        set_daemon_user(aiida_profile.email)
-        daemon = Daemon()
-        daemon.logfile = os.path.join(aiida_profile.config_dir,
-                                      setup.LOG_SUBDIR, setup.CELERY_LOG_FILE)
-        daemon.pidfile = os.path.join(aiida_profile.config_dir,
-                                      setup.LOG_SUBDIR, setup.CELERY_PID_FILE)
-        daemon.celerybeat_schedule = os.path.join(aiida_profile.config_dir,
-                                                  setup.DAEMON_SUBDIR,
-                                                  'celerybeat-schedule')
+    @property
+    def work_directory(self):
+        return self._work_directory
 
-        if daemon.get_daemon_pid() is None:
-            daemon.daemon_start()
+    @property
+    def profile(self):
+        return self._profile
+
+    @staticmethod
+    def get_backend():
+        from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
+        if os.environ.get('TEST_AIIDA_BACKEND') == BACKEND_SQLA:
+            return BACKEND_SQLA
+        return BACKEND_DJANGO
+
+    @staticmethod
+    def get_path_to_executable(executable):
+        """ Get path to local executable.
+
+        :param executable: Name of executable in the $PATH variable
+        :type executable: str
+
+        :return: path to executable
+        :rtype: str
+        """
+        path = None
+
+        # issue with distutils finding scripts within the python path
+        # (i.e. those created by pip install)
+        script_path = os.path.join(os.path.dirname(sys.executable), executable)
+        if os.path.exists(script_path):
+            path = script_path
+        if path is None:
+            path = distutils.spawn.find_executable(executable)
+        if path is None:
+            raise ValueError(
+                "{} executable not found in PATH.".format(executable))
+
+        return os.path.abspath(path)
+
+    def get_or_create_computer(self, name='localhost'):
+        """Setup localhost computer"""
+        from aiida.orm import Computer
+        from aiida.common import NotExistent
+
+        try:
+            computer = Computer.objects.get(name=name)
+        except NotExistent:
+
+            computer = Computer(
+                name=name,
+                description=('localhost computer, '
+                             'set up by aiida_crystal17 tests'),
+                hostname='localhost',
+                workdir=self.work_directory,
+                transport_type='local',
+                scheduler_type='direct',
+                enabled_state=True)
+            computer.store()
+            computer.configure()
+
+        return computer
+
+    def get_or_create_code(self, entry_point, computer_name='localhost'):
+        """Setup code on localhost computer"""
+        from aiida.orm import Code
+        from aiida.common import NotExistent
+
+        computer = self.get_or_create_computer(computer_name)
+
+        if os.environ.get(MOCK_GLOBAL_VAR, False):
+            print("NB: using mock executable")
+            exec_lookup = mock_executables
         else:
-            daemon.daemon_restart()
-        yield aiida_profile
-        daemon.kill_daemon()
-        aiida_profile.reset_db()
-    else:
-        yield aiida_profile
-        aiida_profile.reset_db()
+            exec_lookup = executables
 
+        try:
+            executable = exec_lookup[entry_point]
+        except KeyError:
+            raise KeyError(
+                "Entry point {} not recognized. Allowed values: {}".format(
+                    entry_point, exec_lookup.keys()))
 
-@pytest.fixture(scope='function')
-def new_workdir():
-    """get a new temporary folder to use as the computer's wrkdir"""
-    dirpath = tempfile.mkdtemp()
-    yield dirpath
-    shutil.rmtree(dirpath)
+        try:
+            code = Code.objects.get(
+                label='{}-{}@{}'.format(entry_point, executable,
+                                        computer_name))
+        except NotExistent:
+            path = self.get_path_to_executable(executable)
+            code = Code(
+                input_plugin_name=entry_point,
+                remote_computer_exec=[computer, path],
+            )
+            code.label = '{}-{}'.format(entry_point, executable)
+            code.store()
+
+        return code
+
+    @contextmanager
+    def with_folder(self):
+        """AiiDA folder object context.
+
+        Useful for calculation.submit_test()
+        """
+        from aiida.common.folders import Folder
+        temp_dir = tempfile.mkdtemp()
+        try:
+            yield Folder(temp_dir)
+        finally:
+            shutil.rmtree(temp_dir)

@@ -5,27 +5,17 @@ import glob
 import os
 
 import aiida_crystal17
-import aiida_crystal17.tests.utils as tests
+from aiida_crystal17.common import get_calc_log
 import ejplugins
 import pytest
-from aiida_crystal17.aiida_compatability import aiida_version, cmp_version, run_get_node, get_calc_log
 from aiida_crystal17.tests import TEST_DIR
 from ase.spacegroup import crystal
 from jsonextended import edict
 
 
-def get_main_code(workdir, configure=False):
-    """get the crystal17.basic code """
-    computer = tests.get_computer(workdir=workdir, configure=configure)
-    # get code
-    code = tests.get_code(entry_point='crystal17.main', computer=computer)
-
-    return code
-
-
-def test_prepare_and_validate(new_database, new_workdir):
+def test_prepare_and_validate(db_test_app):
     """test preparation of inputs"""
-    code = get_main_code(new_workdir)
+    db_test_app.get_or_create_code('crystal17.main')
 
     inparams = {"scf.k_points": (8, 8)}
 
@@ -39,26 +29,26 @@ def test_prepare_and_validate(new_database, new_workdir):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import (
+        run_symmetrise_3d_structure)
     instruct, settings = run_symmetrise_3d_structure(instruct)
 
     calc_cls = CalculationFactory('crystal17.main')
     calc_cls.prepare_and_validate(inparams, instruct, settings, flattened=True)
 
 
-def test_submit_mgo(new_database, new_workdir):
+def test_submit_mgo(db_test_app):
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
-    ParameterData = DataFactory('dict')
+    DictData = DataFactory('dict')
     StructureData = DataFactory('structure')
     BasisSetData = DataFactory('crystal17.basisset')
     from aiida.common.folders import SandboxFolder
 
-    # get code
-    code = get_main_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
-    inparams = ParameterData(dict={
+    inparams = DictData(dict={
         "title": "MgO Bulk",
         "scf": {
             "k_points": (8, 8)
@@ -73,7 +63,8 @@ def test_submit_mgo(new_database, new_workdir):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import (
+        run_symmetrise_3d_structure)
     instruct, settings = run_symmetrise_3d_structure(instruct)
 
     mg_basis, _ = BasisSetData.get_or_create(
@@ -338,7 +329,7 @@ END
     assert gui_content == expected_gui
 
 
-def test_submit_nio_afm(new_database, new_workdir):
+def test_submit_nio_afm(db_test_app):
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
@@ -347,7 +338,7 @@ def test_submit_nio_afm(new_database, new_workdir):
     from aiida.common.folders import SandboxFolder
 
     # get code
-    code = get_main_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
     params = {
@@ -370,7 +361,8 @@ def test_submit_nio_afm(new_database, new_workdir):
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import (
+        run_symmetrise_3d_structure)
     instruct, settings = run_symmetrise_3d_structure(instruct, settings)
 
     upload_basisset_family(
@@ -529,7 +521,7 @@ END
     assert gui_content == expected_gui
 
 
-def test_parser_with_init_struct(new_database, new_workdir):
+def test_parser_with_init_struct(db_test_app):
     """ Test the parser
 
     """
@@ -538,7 +530,7 @@ def test_parser_with_init_struct(new_database, new_workdir):
     from aiida.common.folders import SandboxFolder
     from aiida.plugins import DataFactory
 
-    code = get_main_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.main')
 
     calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
@@ -557,7 +549,7 @@ def test_parser_with_init_struct(new_database, new_workdir):
 
     with SandboxFolder() as folder:
         main_out_path = os.path.join(
-            os.path.dirname(tests.__file__), "output_files",
+            TEST_DIR, "output_files",
             "mgo_sto3g_scf.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
@@ -599,13 +591,9 @@ def test_parser_with_init_struct(new_database, new_workdir):
 
 
 @pytest.mark.timeout(60)
-@pytest.mark.process_execution
-@pytest.mark.skipif(
-    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
-    reason='Error in obtaining authinfo for computer configuration')
-def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
+def test_full_run_nio_afm(db_test_app):
     """Test running a calculation"""
-    """Test submitting a calculation"""
+    from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
@@ -614,7 +602,7 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
     upload_basisset_family = BasisSetData.upload_basisset_family
 
     # get code
-    code = get_main_code(new_workdir, configure=True)
+    code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
     params = {
@@ -637,7 +625,8 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import (
+        run_symmetrise_3d_structure)
     instruct, settings = run_symmetrise_3d_structure(instruct, settings)
 
     upload_basisset_family(
@@ -731,12 +720,9 @@ def test_full_run_nio_afm(new_database_with_daemon, new_workdir):
 
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-@pytest.mark.skipif(
-    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
-    reason='Error in obtaining authinfo for computer configuration')
-def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
+def test_full_run_nio_afm_opt(db_test_app):
     """Test running a calculation"""
-    """Test submitting a calculation"""
+    from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
@@ -744,8 +730,7 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
 
-    # get code
-    code = get_main_code(new_workdir, configure=True)
+    code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
     params = {
@@ -769,7 +754,8 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
 
     settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import run_symmetrise_3d_structure
+    from aiida_crystal17.workflows.symmetrise_3d_struct import (
+        run_symmetrise_3d_structure)
     instruct, settings = run_symmetrise_3d_structure(instruct, settings)
 
     upload_basisset_family(
@@ -813,7 +799,6 @@ def test_full_run_nio_afm_opt(new_database_with_daemon, new_workdir):
     process = calc.process()
 
     calcnode = run_get_node(process, inputs_dict)
-
     print(calcnode)
     print(get_calc_log(calcnode))
 

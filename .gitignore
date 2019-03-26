@@ -12,3 +12,4 @@
 postgres*.log
 .aiida_envs.yaml
 .ropeproject
+_archive/

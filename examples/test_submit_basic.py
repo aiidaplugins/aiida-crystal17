@@ -37,11 +37,11 @@ def test_example(new_database, new_workdir):
     SinglefileData = DataFactory("singlefile")
     # main .d12 file
     infile = SinglefileData(
-        filepath=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.d12'))
     # optional .gui file (for use with EXTERNAL)
     ingeom = SinglefileData(
-        filepath=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
+        file=os.path.join(aiida_crystal17.tests.TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.gui'))
 
     # set up calculation

@@ -7,8 +7,7 @@ import os
 from aiida_crystal17.tests import TEST_DIR
 import numpy as np
 import pytest
-from aiida_crystal17.parsers.geometry import read_gui_file, get_centering_code, get_crystal_system, \
-    crystal17_gui_string, structdict_to_ase, compute_symmetry_3d, ase_to_structdict, ops_frac_to_cart, ops_cart_to_frac
+from aiida_crystal17.parsers import geometry as geo
 from ase.spacegroup import crystal
 from jsonextended import edict
 
@@ -25,14 +24,14 @@ from jsonextended import edict
         (227, 'Fd3m', 5, 6)  # greigite
     ])
 def test_get_centering_code(sg_num, sg_symbol, centering, crystal_type):
-    assert get_crystal_system(sg_num, as_number=True) == crystal_type
-    assert get_centering_code(sg_num, sg_symbol) == centering
+    assert geo.get_crystal_system(sg_num, as_number=True) == crystal_type
+    assert geo.get_centering_code(sg_num, sg_symbol) == centering
 
 
 def test_read_gui_file():
     inpath = os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_external.crystal.gui')
-    data = read_gui_file(inpath)
+    data = geo.read_gui_file(inpath)
 
     expected = {
         'natoms':
@@ -117,7 +116,7 @@ def test_write_gui_with_symops():
         "crystal_type": 1
     }
 
-    outstr = crystal17_gui_string(sdata, symmdata)
+    outstr = geo.crystal17_gui_string(sdata, symmdata)
 
     expected = """3 1 1
   1.000000000E+00   0.000000000E+00   0.000000000E+00
@@ -144,7 +143,7 @@ def test_compute_symmetry_3d_primitive():
         "equivalent": [0]
     }
 
-    outsdata, symmdata = compute_symmetry_3d(
+    outsdata, symmdata = geo.compute_symmetry_3d(
         sdata,
         standardize=True,
         primitive=True,
@@ -152,7 +151,7 @@ def test_compute_symmetry_3d_primitive():
         symprec=0.01,
         angletol=None)
 
-    outstr = crystal17_gui_string(outsdata, symmdata)
+    outstr = geo.crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 1 6
   2.000000000E+00   0.000000000E+00   0.000000000E+00
@@ -367,9 +366,9 @@ def test_compute_symmetry_3d_mgo_nonprimitive():
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
 
-    sdata = ase_to_structdict(atoms)
+    sdata = geo.ase_to_structdict(atoms)
 
-    outsdata, symmdata = compute_symmetry_3d(
+    outsdata, symmdata = geo.compute_symmetry_3d(
         sdata,
         standardize=False,
         primitive=False,
@@ -377,7 +376,7 @@ def test_compute_symmetry_3d_mgo_nonprimitive():
         symprec=0.01,
         angletol=None)
 
-    outatoms = structdict_to_ase(outsdata)
+    outatoms = geo.structdict_to_ase(outsdata)
 
     assert np.allclose(atoms.cell, outatoms.cell)
     assert atoms.get_number_of_atoms() == outatoms.get_number_of_atoms()
@@ -391,9 +390,9 @@ def test_compute_symmetry_3d_mgo_primitive():
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
-    sdata = ase_to_structdict(atoms)
+    sdata = geo.ase_to_structdict(atoms)
 
-    outsdata, symmdata = compute_symmetry_3d(
+    outsdata, symmdata = geo.compute_symmetry_3d(
         sdata,
         standardize=True,
         primitive=True,
@@ -401,8 +400,8 @@ def test_compute_symmetry_3d_mgo_primitive():
         symprec=0.01,
         angletol=None)
 
-    outatoms = structdict_to_ase(outsdata)
-    outstr = crystal17_gui_string(outsdata, symmdata)
+    outatoms = geo.structdict_to_ase(outsdata)
+    outstr = geo.crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 5 6
   0.000000000E+00  -2.105000000E+00  -2.105000000E+00
@@ -621,9 +620,9 @@ def test_compute_symmetry_3d_marcasite():
         basis=[[0, 0, 0], [0.20052, 0.37827, 0.0]],
         spacegroup=58,
         cellpar=[4.57072239, 5.60859256, 3.50105841, 90, 90, 90])
-    sdata = ase_to_structdict(atoms)
+    sdata = geo.ase_to_structdict(atoms)
 
-    outsdata, symmdata = compute_symmetry_3d(
+    outsdata, symmdata = geo.compute_symmetry_3d(
         sdata,
         standardize=True,
         primitive=True,
@@ -631,8 +630,8 @@ def test_compute_symmetry_3d_marcasite():
         symprec=0.01,
         angletol=None)
 
-    outatoms = structdict_to_ase(outsdata)
-    outstr = crystal17_gui_string(outsdata, symmdata)
+    outatoms = geo.structdict_to_ase(outsdata)
+    outstr = geo.crystal17_gui_string(outsdata, symmdata)
 
     expected = """3 1 3
   4.570722390E+00   0.000000000E+00   0.000000000E+00
@@ -695,9 +694,9 @@ def test_compute_symmetry_3d_inequivalent():
 
     atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
-    sdata = ase_to_structdict(atoms)
+    sdata = geo.ase_to_structdict(atoms)
 
-    outsdata, symmdata = compute_symmetry_3d(
+    outsdata, symmdata = geo.compute_symmetry_3d(
         sdata,
         standardize=True,
         primitive=True,
@@ -705,8 +704,8 @@ def test_compute_symmetry_3d_inequivalent():
         symprec=0.01,
         angletol=None)
 
-    outatoms = structdict_to_ase(outsdata)
-    outstr = crystal17_gui_string(outsdata, symmdata)
+    outatoms = geo.structdict_to_ase(outsdata)
+    outstr = geo.crystal17_gui_string(outsdata, symmdata)
 
     print(outstr)
 
@@ -847,15 +846,15 @@ def test_transform_conversions():
     ]
 
     # convert from frac to cart
-    cart_ops = ops_frac_to_cart(known_frac_ops, lattice)
+    cart_ops = geo.ops_frac_to_cart(known_frac_ops, lattice)
     assert not difference_ops(np.round(cart_ops, 5), known_cart_ops)
 
     # convert from cart to frac
-    frac_ops = ops_cart_to_frac(known_cart_ops, lattice)
+    frac_ops = geo.ops_cart_to_frac(known_cart_ops, lattice)
     assert not difference_ops(np.round(frac_ops, 5), known_frac_ops)
 
     # convert back
-    frac_ops2 = ops_cart_to_frac(cart_ops, lattice)
+    frac_ops2 = geo.ops_cart_to_frac(cart_ops, lattice)
     assert not difference_ops(np.round(frac_ops2, 5), known_frac_ops)
-    cart_ops2 = ops_frac_to_cart(frac_ops, lattice)
+    cart_ops2 = geo.ops_frac_to_cart(frac_ops, lattice)
     assert not difference_ops(np.round(cart_ops2, 5), known_cart_ops)

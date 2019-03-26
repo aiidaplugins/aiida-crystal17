@@ -1,14 +1,10 @@
 import click
-from aiida_crystal17.aiida_compatability import cmp_load_verdi_data
-from aiida import load_dbenv, is_dbenv_loaded
+from aiida.cmdline.commands.cmd_verdi import verdi
+from aiida_crystal17.common import load_node, get_data_plugin
 from jsonextended import edict
 
-VERDI_DATA = cmp_load_verdi_data()
 
-# TODO add tests
-
-
-@VERDI_DATA.group('cry17-settings')
+@verdi.group('cry17-settings')
 def structsettings():
     """Commandline interface for working with StructSettingsData"""
 
@@ -19,14 +15,9 @@ def structsettings():
 @click.argument('pk', type=int)
 def show(pk, symmetries):
     """show the contents of a StructSettingsData"""
-    if not is_dbenv_loaded():
-        load_dbenv()
-    from aiida.orm import load_node
-    from aiida.plugins import DataFactory
-
     node = load_node(pk)
 
-    if not isinstance(node, DataFactory('crystal17.structsettings')):
+    if not isinstance(node, get_data_plugin('crystal17.structsettings')):
         click.echo(
             "The node was not of type 'crystal17.structsettings'", err=True)
     elif symmetries:
@@ -38,8 +29,5 @@ def show(pk, symmetries):
 @structsettings.command()
 def schema():
     """view the validation schema"""
-    if not is_dbenv_loaded():
-        load_dbenv()
-    from aiida.plugins import DataFactory
-    schema = DataFactory('crystal17.structsettings').data_schema
+    schema = get_data_plugin('crystal17.structsettings').data_schema
     edict.pprint(schema, depth=None, print_func=click.echo)

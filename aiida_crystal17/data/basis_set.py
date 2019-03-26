@@ -576,7 +576,7 @@ class BasisSetData(Data):
 
     @classproperty
     def basisfamily_type_string(cls):
-        return GroupTypeString.BASISGROUP_TYPE
+        return GroupTypeString.BASISGROUP_TYPE.value
 
     def get_basis_family_names(self):
         """
@@ -596,8 +596,8 @@ class BasisSetData(Data):
         """
         from aiida.orm import Group
 
-        return Group.get(
-            label=group_name, type_string=cls.basisfamily_type_string)
+        return Group.objects.get(
+            label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE.value[0])
 
     @classmethod
     def get_basis_group_map(cls, group_name):
@@ -636,7 +636,7 @@ class BasisSetData(Data):
         from aiida.orm import User
 
         query = QueryBuilder()
-        filters = {'type_string': {'==': cls.basisfamily_type_string.value}}
+        filters = {'type_string': {'==': cls.basisfamily_type_string}}
 
         query.append(Group, filters=filters, tag='group', project='*')
 
@@ -679,12 +679,8 @@ class BasisSetData(Data):
         :param extension: the filename extension to look for
         :param dry_run: If True, do not change the database.
         """
-        # from aiida.common import aiidalogger  TODO v1.0.0b1 this was removed
-        from aiida.orm import Group
-        from aiida.common.exceptions import UniquenessError, NotExistent
-        from aiida_crystal17.aiida_compatability import get_automatic_user
-
-        automatic_user = get_automatic_user()
+        from aiida.orm import Group, User
+        from aiida.common.exceptions import UniquenessError
 
         if not os.path.isdir(folder):
             raise ValueError("folder must be a directory")
@@ -700,16 +696,10 @@ class BasisSetData(Data):
 
         nfiles = len(files)
 
-        try:
-            group = Group.get(
-                label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE)
-            group_created = False
-        except NotExistent:
-            group = Group(
-                label=group_name,
-                type_string=GroupTypeString.BASISGROUP_TYPE,
-                user=automatic_user)
-            group_created = True
+        automatic_user = User.objects.get_default()
+        group, group_created = Group.objects.get_or_create(
+            label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE,
+            user=automatic_user)
 
         if group.user.email != automatic_user.email:
             raise UniquenessError(

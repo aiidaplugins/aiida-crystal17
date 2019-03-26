@@ -4,35 +4,25 @@
 import os
 
 import aiida_crystal17
-import aiida_crystal17.tests.utils as tests
 import ejplugins
 import pytest
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.aiida_compatability import aiida_version, cmp_version, run_get_node
 from jsonextended import edict
 
 
-def get_basic_code(workdir, configure=False):
-    """get the crystal17.basic code """
-    computer = tests.get_computer(workdir=workdir, configure=configure)
-    code = tests.get_code(entry_point='crystal17.basic', computer=computer)
-
-    return code
-
-
-def test_submit(new_database, new_workdir):
+def test_submit(db_test_app):
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
     SinglefileData = DataFactory('singlefile')
 
     from aiida.common.folders import SandboxFolder
 
-    code = get_basic_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.basic')
 
     # Prepare input parameters
     infile = SinglefileData(
-        filepath=os.path.join(TEST_DIR, "input_files",
-                              'mgo_sto3g_scf.crystal.d12'))
+        file=os.path.join(TEST_DIR, "input_files",
+                          'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
     builder = code.get_builder()
@@ -52,77 +42,7 @@ def test_submit(new_database, new_workdir):
         print("inputs created successfully at {}".format(subfolder.abspath))
 
 
-@pytest.mark.process_execution
-def test_process(new_database, new_workdir):
-    """Test running a calculation
-    note this does not test parsing of the output """
-    from aiida.plugins import DataFactory
-    SinglefileData = DataFactory('singlefile')
-
-    # get code
-    code = get_basic_code(new_workdir)
-
-    # Prepare input parameters
-    infile = SinglefileData(
-        filepath=os.path.join(TEST_DIR, "input_files",
-                              'mgo_sto3g_scf.crystal.d12'))
-
-    # set up calculation
-    calc = code.get_builder()
-    # calc.label = "aiida_crystal17 test"
-    # calc.description = "Test job submission with the aiida_crystal17 plugin"
-    # calc.metadata.options.max_wallclock_seconds = 30
-    calc.metadata.options.withmpi = False
-    calc.metadata.options.resources = {
-        "num_machines": 1, "num_mpiprocs_per_machine": 1}
-
-    calc.input_file = infile
-
-    calc.store_all()
-
-    # test process execution
-    tests.test_calculation_execution(
-        calc, check_paths=[calc._DEFAULT_OUTPUT_FILE])
-
-
-@pytest.mark.process_execution
-def test_process_with_external(new_database, new_workdir):
-    """Test running a calculation
-    note this does not test parsing of the output"""
-    from aiida.plugins import DataFactory
-    SinglefileData = DataFactory('singlefile')
-
-    # get code
-    code = get_basic_code(new_workdir)
-
-    # Prepare input parameters
-    infile = SinglefileData(
-        filepath=os.path.join(TEST_DIR, "input_files",
-                              'mgo_sto3g_external.crystal.d12'))
-    ingui = SinglefileData(
-        filepath=os.path.join(TEST_DIR, "input_files",
-                              'mgo_sto3g_external.crystal.gui'))
-
-    # set up calculation
-    calc = code.get_builder()
-    # calc.label = "aiida_crystal17 test"
-    # calc.description = "Test job submission with the aiida_crystal17 plugin"
-    # calc.set_max_wallclock_seconds(30)
-    calc.set_withmpi(False)
-    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
-
-    calc.use_input_file(infile)
-    calc.use_input_external(ingui)
-
-    calc.store_all()
-
-    # test process execution
-    tests.test_calculation_execution(
-        calc,
-        check_paths=[calc._DEFAULT_OUTPUT_FILE, calc._DEFAULT_EXTERNAL_FILE])
-
-
-def test_parser_scf(new_database, new_workdir):
+def test_parser_scf(db_test_app):
     """ Test the parser
 
     """
@@ -131,7 +51,7 @@ def test_parser_scf(new_database, new_workdir):
     from aiida.common.folders import SandboxFolder
     from aiida.plugins import DataFactory
 
-    code = get_basic_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.basic')
 
     calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
@@ -144,7 +64,7 @@ def test_parser_scf(new_database, new_workdir):
 
     with SandboxFolder() as folder:
         main_out_path = os.path.join(
-            os.path.dirname(tests.__file__), "output_files",
+            TEST_DIR, "output_files",
             "mgo_sto3g_scf.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
@@ -249,7 +169,7 @@ def test_parser_scf(new_database, new_workdir):
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
-def test_parser_external(new_database, new_workdir):
+def test_parser_external(db_test_app):
     """ Test the parser
 
     """
@@ -258,7 +178,7 @@ def test_parser_external(new_database, new_workdir):
     from aiida.common.folders import SandboxFolder
     from aiida.plugins import DataFactory
 
-    code = get_basic_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.basic')
 
     calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
@@ -271,7 +191,7 @@ def test_parser_external(new_database, new_workdir):
 
     with SandboxFolder() as folder:
         main_out_path = os.path.join(
-            os.path.dirname(tests.__file__), "output_files",
+            TEST_DIR, "output_files",
             "mgo_sto3g_external.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
@@ -434,7 +354,7 @@ def test_parser_external(new_database, new_workdir):
     assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
 
 
-def test_parser_opt(new_database, new_workdir):
+def test_parser_opt(db_test_app):
     """ Test the parser
 
     """
@@ -443,7 +363,7 @@ def test_parser_opt(new_database, new_workdir):
     from aiida.common.folders import SandboxFolder
     from aiida.plugins import DataFactory
 
-    code = get_basic_code(new_workdir)
+    code = db_test_app.get_or_create_code('crystal17.basic')
 
     calc = code.get_builder()
     calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
@@ -456,7 +376,7 @@ def test_parser_opt(new_database, new_workdir):
 
     with SandboxFolder() as folder:
         main_out_path = os.path.join(
-            os.path.dirname(tests.__file__), "output_files",
+            TEST_DIR, "output_files",
             "mgo_sto3g_opt.crystal.out")
         with open(main_out_path) as f:
             folder.create_file_from_filelike(f, "main.out")
@@ -567,21 +487,17 @@ def test_parser_opt(new_database, new_workdir):
 
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-@pytest.mark.skipif(
-    aiida_version() < cmp_version('1.0.0a1') and tests.is_sqla_backend(),
-    reason='Error in obtaining authinfo for computer configuration')
-def test_full_run(new_database_with_daemon, new_workdir):
+def test_full_run(db_test_app):
     """Test running a calculation"""
+    from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     SinglefileData = DataFactory('singlefile')
-    from aiida.common.datastructures import calc_states
 
-    # get code
-    code = get_basic_code(new_workdir, configure=True)
+    code = db_test_app.get_or_create_code('crystal17.basic')
 
     # Prepare input parameters
     infile = SinglefileData(
-        filepath=os.path.join(TEST_DIR, "input_files",
+        file=os.path.join(TEST_DIR, "input_files",
                               'mgo_sto3g_scf.crystal.d12'))
 
     # set up calculation
@@ -608,7 +524,7 @@ def test_full_run(new_database_with_daemon, new_workdir):
 
     assert '_aiida_cached_from' not in calcnode.extras()
 
-    if not calcnode.get_state() == calc_states.FINISHED:
+    if not calcnode.get_state() == "FINISHED":
         error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
         if 'output_parameters' in calcnode.get_outputs_dict():
             error_msg += "\n{}".format(

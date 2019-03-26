@@ -4,7 +4,7 @@ from aiida_crystal17.parsers.migrate import create_inputs
 from aiida_crystal17.tests import TEST_DIR
 
 
-def test_create_inputs(new_database):
+def test_create_inputs(db_test_app):
     inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
     outpath = os.path.join(TEST_DIR, "output_files",
                            'nio_sto3g_afm.crystal.out')

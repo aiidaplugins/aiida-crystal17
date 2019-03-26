@@ -1,1 +1,0 @@
-{"retrieve_list": ["main.out", "main.gui", "_scheduler-stdout.txt", "_scheduler-stderr.txt"], "remote_copy_list": [], "local_copy_list": [], "retrieve_temporary_list": [], "codes_info": [{"cmdline_params": ["/usr/local/bin/runcry17", "main"], "code_uuid": "d740f1ff-4571-4995-bb81-ae3f7a14942b", "withmpi": false}], "uuid": "b2c3bb50-4a31-4b4a-a8cf-2ebf09b44aea"}

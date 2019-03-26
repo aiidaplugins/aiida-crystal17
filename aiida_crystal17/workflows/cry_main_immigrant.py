@@ -6,7 +6,7 @@ from aiida.engine import WorkChain
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 from aiida_crystal17.parsers.migrate import create_inputs
 # from aiida.common.datastructures import calc_states
-from aiida_crystal17.aiida_compatability import run_get_node
+from aiida.engine import run_get_node
 
 
 class CryMainImmigrant(WorkChain):

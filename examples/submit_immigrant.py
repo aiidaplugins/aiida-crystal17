@@ -8,14 +8,13 @@ Note: This script assumes you have set up computer and code as in README.md.
 import os
 
 import aiida_crystal17.tests
-import aiida_crystal17.tests as tests
-import aiida_crystal17.tests.utils
 import pytest
 
 
 @pytest.mark.timeout(10)
-def test_example(new_database, new_workdir):
-    from aiida_crystal17.calculations.cry_main_immigrant import CryMainImmigrantCalculation
+def test_example(db_test_app):
+    from aiida_crystal17.calculations.cry_main_immigrant import (
+        CryMainImmigrantCalculation)
 
     # get code
     computer = aiida_crystal17.tests.utils.get_computer(
@@ -34,15 +33,7 @@ def test_example(new_database, new_workdir):
         output_file_name='nio_sto3g_afm.crystal.out')
     calc.use_code(code)
 
-    try:
-        # aiida v0.12
-        from aiida.backends.utils import get_authinfo, get_automatic_user
-        authinfo = get_authinfo(
-            computer=computer, aiidauser=get_automatic_user())
-        transport = authinfo.get_transport()
-    except ImportError:
-        # aiida v1
-        transport = computer.get_transport()
+    transport = computer.get_transport()
 
     with transport as open_transport:
         calc.create_input_nodes(open_transport)
