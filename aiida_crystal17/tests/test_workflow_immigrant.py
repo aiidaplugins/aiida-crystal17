@@ -29,16 +29,16 @@ def test_full_nio_afm(db_test_app):
 
     assert node.is_stored
 
-    assert set(node.get_inputs_dict().keys()) == set(
+    assert set(node.get_incoming().keys()) == set(
         ['basis_Ni', 'basis_O', 'parameters', 'structure', 'settings'])
 
-    struct = node.inp.structure
-    assert "struct_setup" in struct.get_inputs_dict(
-    )['structure'].get_inputs_dict()
+    struct = node.incoming.structure
+    assert "struct_setup" in struct.get_incoming(
+    )['structure'].get_incoming()
 
-    print(node.get_outputs_dict())
+    print(node.get_outgoing())
 
-    assert set(node.get_outputs_dict().keys()).issuperset(
+    assert set(node.get_outgoing().keys()).issuperset(
         ['output_parameters', 'retrieved'])
 
     assert '_aiida_cached_from' not in node.extras()
@@ -70,16 +70,16 @@ def test_full_mgo_opt(new_database):
 
     assert node.is_stored
 
-    assert set(node.get_inputs_dict().keys()) == set(
+    assert set(node.get_incoming().keys()) == set(
         ['basis_Mg', 'basis_O', 'parameters', 'structure', 'settings'])
 
-    struct = node.inp.structure
-    assert "struct_setup" in struct.get_inputs_dict(
-    )['structure'].get_inputs_dict()
+    struct = node.incoming.structure
+    assert "struct_setup" in struct.get_incoming(
+    )['structure'].get_incoming()
 
-    print(node.get_outputs_dict())
+    print(node.get_outgoing())
 
-    assert set(node.get_outputs_dict().keys()).issuperset(
+    assert set(node.get_outgoing().keys()).issuperset(
         ['output_parameters', 'output_structure', 'retrieved'])
 
     assert '_aiida_cached_from' not in node.extras()
@@ -129,7 +129,7 @@ def test_full_mgo_opt(new_database):
                   }]
     }
 
-    input_struct = node.inp.structure.get_pymatgen_structure().as_dict()
+    input_struct = node.incoming.structure.get_pymatgen_structure().as_dict()
     # in later version of pymatgen only
     if "charge" in input_struct:
         input_struct.pop("charge")

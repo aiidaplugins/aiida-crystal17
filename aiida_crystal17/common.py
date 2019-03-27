@@ -18,10 +18,9 @@ def get_data_plugin(name):
 
 
 @with_dbenv
-def load_node(node_id=None, pk=None, uuid=None, parent_class=None):
+def load_node(identifier=None, pk=None, uuid=None, **kwargs):
     from aiida.orm import load_node
-    return load_node(node_id=node_id, pk=pk, uuid=uuid,
-                     parent_class=parent_class)
+    return load_node(identifier=identifier, pk=pk, uuid=uuid, **kwargs)
 
 
 def get_calc_log(calcnode):

@@ -597,7 +597,7 @@ class BasisSetData(Data):
         from aiida.orm import Group
 
         return Group.objects.get(
-            label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE.value[0])
+            label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE._value_)
 
     @classmethod
     def get_basis_group_map(cls, group_name):

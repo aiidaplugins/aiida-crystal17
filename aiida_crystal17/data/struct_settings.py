@@ -159,7 +159,7 @@ class StructSettingsData(Data):
         """
         data = kwargs.pop('data', None)
         super(StructSettingsData, self).__init__(**kwargs)
-        if data:
+        if data is not None:
             self.set_data(data)
 
     @classproperty
@@ -228,7 +228,7 @@ class StructSettingsData(Data):
         fname = self._ops_filename
 
         if fname in self.list_object_names():
-            self.remove_path(fname)
+            self.delete_object(fname)
 
         with tempfile.NamedTemporaryFile() as handle:
             # Store in a temporary file, and then add to the node

@@ -212,7 +212,7 @@ class CryMainCalculation(CalcJob):
         :note: this method can be redefined in a given subclass
                to specify which is the reference structure to consider.
         """
-        return self.get_inputs_dict()[self.get_linkname('structure')]
+        return self.get_incoming()[self.get_linkname('structure')]
 
     def _retrieve_basis_sets(self, inputdict, instruct):
         """ retrieve BasisSetData objects from the inputdict, 

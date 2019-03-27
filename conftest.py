@@ -15,7 +15,7 @@ executables = {
     'crystal17.basic': 'runcry17',
     'crystal17.main': 'runcry17',
 }
-MOCK_GLOBAL_VAR = "MOCK_EXECUTABLES"
+MOCK_GLOBAL_VAR = "MOCK_CRY17_EXECUTABLES"
 mock_executables = {
     'crystal17.basic': 'mock_runcry17',
     'crystal17.main': 'mock_runcry17',
@@ -156,3 +156,32 @@ class AiidaTestApp(object):
             yield Folder(temp_dir)
         finally:
             shutil.rmtree(temp_dir)
+
+    @staticmethod
+    def check_calculation(
+            calc_node, expected_outgoing_labels,
+            error_include=(("results", "errors"),
+                           ("results", "parser_warnings"))):
+        """ check a calculation has completed successfully """
+
+        exit_status = calc_node.get_attribute("exit_status")
+        proc_state = calc_node.get_attribute("process_state")
+        if exit_status != 0 or proc_state != "finished":
+            message = "exit status: {}\nprocess state: {}".format(
+                exit_status, proc_state)
+            out_nodes = calc_node.get_outgoing()
+            for name, attribute in error_include:
+                if name not in out_nodes:
+                    continue
+                value = out_nodes.get(name).get_attribute(attribute, None)
+                if value is None:
+                    continue
+                message += "\n{}.{}: {}".format(name, attribute, value)
+            raise AssertionError(message)
+
+        link_labels = calc_node.get_outgoing().all_link_labels()
+        for outgoing in expected_outgoing_labels:
+            if outgoing not in link_labels:
+                raise AssertionError(
+                    "missing outgoing node link'{}': {}".format(
+                        outgoing, link_labels))

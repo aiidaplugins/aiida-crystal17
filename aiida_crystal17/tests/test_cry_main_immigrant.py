@@ -34,11 +34,11 @@ def test_full(db_test_app):
         calc.create_input_nodes(open_transport)
         calc.prepare_for_retrieval_and_parsing(open_transport)
 
-    assert set(calc.get_inputs_dict().keys()) == set(
+    assert set(calc.get_incoming().keys()) == set(
         ['basis_O', 'parameters', 'settings', 'basis_Ni', 'code', 'structure'])
 
     # TODO block until parsed, then test outputs (requires workflow?)
-    # print(calc.get_outputs_dict())
+    # print(calc.get_outgoing())
     # print(calc.has_finished())
     # print(calc.has_finished_ok())
     # print(calc.get_state())

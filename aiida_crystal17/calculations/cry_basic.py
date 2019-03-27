@@ -6,11 +6,8 @@ import os
 import six
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
-from aiida.common.exceptions import (InputValidationError, ValidationError)
-from aiida.common.utils import classproperty
 from aiida.engine import CalcJob
 from aiida.plugins import DataFactory
-SinglefileData = DataFactory('singlefile')
 
 
 class CryBasicCalculation(CalcJob):
@@ -24,27 +21,42 @@ class CryBasicCalculation(CalcJob):
         super(CryBasicCalculation, cls).define(spec)
 
         spec.input('metadata.options.parser_name',
-                   valid_type=six.string_types, default='crystal17.basic',
-                   non_db=True)
-        spec.input('metadata.options.default_input_file',
-                   valid_type=six.string_types, default='main.d12',
-                   non_db=True)
-        spec.input('metadata.options.default_external_file',
-                   valid_type=six.string_types, default='main.gui',
-                   non_db=True)
-        spec.input('metadata.options.default_output_file',
-                   valid_type=six.string_types, default='main.out',
-                   non_db=True)
+                   valid_type=six.string_types, default='crystal17.basic')
+        spec.input('metadata.options.input_file_name',
+                   valid_type=six.string_types, default='main.d12')
+        spec.input('metadata.options.external_file_name',
+                   valid_type=six.string_types, default='main.gui')
+        spec.input('metadata.options.output_main_file_name',
+                   valid_type=six.string_types, default='main.out')
 
         spec.input(
-            'input_file', valid_type=SinglefileData, required=True,
+            'input_file', valid_type=DataFactory('singlefile'),
+            required=True,
             help='the input .d12 file content.')
         spec.input(
-            'input_external', valid_type=SinglefileData, required=False,
+            'input_external', valid_type=DataFactory('singlefile'),
+            required=False,
             help=('optional input .gui (fort.34) file content '
                   '(for use with EXTERNAL keyword).'))
 
-        # spec.output()
+        spec.exit_code(
+            30, 'ERROR_NO_RETRIEVED_FOLDER',
+            message='The retrieved folder data node could not be accessed.')
+        spec.exit_code(
+            40, 'ERROR_OUTPUT_FILE_MISSING',
+            message='the main output file was not found')
+
+        spec.output('results', valid_type=DataFactory('dict'),
+                    required=True,
+                    help='the data extracted from the main output file')
+        spec.output('structure', valid_type=DataFactory('structure'),
+                    required=False,
+                    help='the structure output from the calculation '
+                    '(optimisations only)')
+        # spec.output('symmetry', valid_type=DataFactory('structure'),
+        #             required=False,
+        #             help='the structure output from the calculation '
+        #             '(optimisations only)')
 
         # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
         # spec.input(
@@ -70,11 +82,12 @@ class CryBasicCalculation(CalcJob):
             ingui = None
             external_geom = False
 
-        # Prepare CodeInfo object for aiida, describes how a code has to be executed
+        # Prepare CodeInfo object for aiida,
+        # describes how a code has to be executed
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
         codeinfo.cmdline_params = [
-            os.path.splitext(self.inputs.default_input_file)[0]
+            os.path.splitext(self.metadata.options.input_file_name)[0]
         ]
         codeinfo.withmpi = self.metadata.options.withmpi
 
@@ -83,18 +96,18 @@ class CryBasicCalculation(CalcJob):
         calcinfo.uuid = self.uuid
         calcinfo.codes_info = [codeinfo]
         calcinfo.local_copy_list = [[
-            infile.get_file_abs_path(), self.inputs.default_input_file
+            infile.uuid, infile.filename,
+            self.metadata.options.input_file_name
         ]]
         if external_geom:
-            calcinfo.local_copy_list.append(
-                [ingui.get_file_abs_path(), self.inputs.default_external_file])
+            calcinfo.local_copy_list.append([
+                ingui.uuid, ingui.filename,
+                self.metadata.options.external_file_name])
         calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [self.inputs.default_output_file]
-        # TODO .gui won't be available for scf runs, will the computation fail if it can't find a file in retrieve list?
-        # calcinfo.retrieve_list.append(self._DEFAULT_EXTERNAL_FILE)
+        calcinfo.retrieve_list = [self.metadata.options.output_main_file_name]
+        # TODO .gui won't be available for scf runs,
+        # will the computation fail if it can't find a file in retrieve list?
+        # calcinfo.retrieve_list.append(self._external_file_name)
         calcinfo.retrieve_temporary_list = []
-
-        # TODO set hpc options (i.e. calcinfo.num_machines, etc)? Doesn't seem required looking at aiida-quantumespresso
-        # (see https://aiida-core.readthedocs.io/en/latest/_modules/aiida/common/datastructures.html)
 
         return calcinfo

@@ -1,20 +1,16 @@
 """
 parse the main output file and create the required output nodes
 """
-import os
-
 # TODO remove dependancy on ejplugins?
 import ejplugins
 from aiida_crystal17.parsers.geometry import dict_to_structure
 from ejplugins.crystal import CrystalOutputPlugin
 
-from aiida.common.exceptions import OutputParsingError
-
 from aiida_crystal17 import __version__ as pkg_version
 
 
 # pylint: disable=too-many-locals,too-many-statements
-def parse_mainout(abs_path, parser_class, init_struct=None,
+def parse_mainout(fileobj, parser_class, init_struct=None,
                   init_settings=None):
     """ parse the main output file and create the required output nodes
 
@@ -24,38 +20,36 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     :param init_settings: input structure settings
 
     :return psuccess: a boolean that is False in case of failed calculations
-    :return output_nodes: containing "paramaters" and (optionally) "structure" and "settings"
+    :return output_nodes: containing "paramaters" and
+    (optionally) "structure" and "settings"
     """
     from aiida.plugins import DataFactory
 
     psuccess = True
-    param_data = {"parser_warnings": []}
+    param_data = {"parser_warnings": [], "errors": []}
     output_nodes = {}
 
     cryparse = CrystalOutputPlugin()
-    if not os.path.exists(abs_path):
-        raise OutputParsingError(
-            "The raw data file does not exist: {}".format(abs_path))
-    with open(abs_path) as f:
-        try:
-            data = cryparse.read_file(f, log_warnings=False)
-        except IOError as err:
-            f.seek(0)
-            param_data["parser_warnings"].append(
-                "Error in CRYSTAL 17 run output: {0}\n'{1}'".format(
-                    err, f.read()))
-            output_nodes["parameters"] = DataFactory("parameter")(
-                dict=param_data)
-            return False, output_nodes
+    try:
+        data = cryparse.read_file(fileobj, log_warnings=False)
+    except IOError as err:
+        fileobj.seek(0)
+        param_data["parser_warnings"].append(
+            "Error parsing CRYSTAL 17 main output: {0}".format(err))
+        output_nodes["parameters"] = DataFactory("dict")(
+            dict=param_data)
+        return False, output_nodes
 
     # data contains the top-level keys:
     # "warnings" (list), "errors" (list), "meta" (dict), "creator" (dict),
     # "initial" (None or dict), "optimisation" (None or dict), "final" (dict)
     # "mulliken" (optional dict)
 
-    # TODO could also read .gui file for definitive final (primitive) geometry, with symmetries
+    # TODO could also read .gui file for definitive final (primitive) geometry,
+    # with symmetries
     # TODO could also read .SCFLOG, to get scf output for each opt step
-    # TODO could also read files in .optstory folder, to get (primitive) geometries (+ symmetries) for each opt step
+    # TODO could also read files in .optstory folder,
+    # to get (primitive) geometries (+ symmetries) for each opt step
     # Note the above files are only available for optimisation runs
 
     perrors = data["errors"]
@@ -63,7 +57,8 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     if perrors:
         psuccess = False
     param_data["errors"] = perrors
-    # aiida-quantumespresso only has warnings, so we group errors and warnings for compatibility
+    # aiida-quantumespresso only has warnings,
+    # so we group errors and warnings for compatibility
     param_data["warnings"] = perrors + pwarnings
 
     # get meta data
@@ -112,7 +107,7 @@ def parse_mainout(abs_path, parser_class, init_struct=None,
     param_data["parser_class"] = str(parser_class)
     param_data["ejplugins_version"] = str(ejplugins.__version__)
 
-    output_nodes["parameters"] = DataFactory("parameter")(dict=param_data)
+    output_nodes["parameters"] = DataFactory("dict")(dict=param_data)
 
     # if array_dict:
     #     arraydata = DataFactory("array")()
@@ -134,8 +129,8 @@ def _extract_symmetry(final_data, init_settings, output_nodes, param_data):
                 final_data["primitive_symmops"])
             if differences:
                 param_data["parser_warnings"].append(
-                    "output symmetry operations were not the same as those input: {}"
-                    .format(differences))
+                    "output symmetry operations were not the same as "
+                    "those input: {}".format(differences))
                 psuccess = False
         else:
             from aiida.plugins import DataFactory
@@ -176,16 +171,11 @@ def _extract_structure(cell_data, init_struct, param_data):
             init_struct.get_kind(n) for n in init_struct.get_site_kindnames()
         ]
     structure = dict_to_structure({
-        "lattice":
-        cell_vectors,
-        "pbc":
-        cell_data["pbc"],
-        "symbols":
-        cell_data["symbols"],
-        "ccoords":
-        cell_data["ccoords"]["magnitude"],
-        "kinds":
-        kinds
+        "lattice": cell_vectors,
+        "pbc": cell_data["pbc"],
+        "symbols": cell_data["symbols"],
+        "ccoords": cell_data["ccoords"]["magnitude"],
+        "kinds": kinds
     })
     param_data["volume"] = structure.get_cell_volume()
     return structure

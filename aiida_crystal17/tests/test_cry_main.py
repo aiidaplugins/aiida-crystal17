@@ -682,12 +682,12 @@ def test_full_run_nio_afm(db_test_app):
 
     if not calcnode.get_state() == calc_states.FINISHED:
         error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
-        if 'output_parameters' in calcnode.get_outputs_dict():
+        if 'output_parameters' in calcnode.get_outgoing():
             error_msg += "\n{}".format(
-                calcnode.get_outputs_dict()['output_parameters'].get_dict())
+                calcnode.get_outgoing()['output_parameters'].get_dict())
         raise AssertionError(error_msg)
 
-    assert set(calcnode.get_outputs_dict().keys()).issuperset(
+    assert set(calcnode.get_outgoing().keys()).issuperset(
         ['output_parameters', 'retrieved'])
 
     expected_params = {
@@ -713,7 +713,7 @@ def test_full_run_nio_afm(db_test_app):
     }
 
     assert edict.diff(
-        calcnode.get_outputs_dict()['output_parameters'].get_dict(),
+        calcnode.get_outgoing()['output_parameters'].get_dict(),
         expected_params,
         np_allclose=True) == {}
 
@@ -811,12 +811,12 @@ def test_full_run_nio_afm_opt(db_test_app):
 
     if not calcnode.get_state() == calc_states.FINISHED:
         error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
-        if 'output_parameters' in calcnode.get_outputs_dict():
+        if 'output_parameters' in calcnode.get_outgoing():
             error_msg += "\n{}".format(
-                calcnode.get_outputs_dict()['output_parameters'].get_dict())
+                calcnode.get_outgoing()['output_parameters'].get_dict())
         raise AssertionError(error_msg)
 
-    assert set(calcnode.get_outputs_dict().keys()).issuperset(
+    assert set(calcnode.get_outgoing().keys()).issuperset(
         ['output_structure', 'output_parameters', 'retrieved'])
 
     expected_params = {
@@ -858,7 +858,7 @@ def test_full_run_nio_afm_opt(db_test_app):
     }
 
     assert edict.diff(
-        calcnode.get_outputs_dict()['output_parameters'].get_dict(),
+        calcnode.get_outgoing()['output_parameters'].get_dict(),
         expected_params,
         np_allclose=True) == {}
 
