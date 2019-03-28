@@ -1,32 +1,20 @@
 """a workflow to immigrate previously run CRYSTAL17 computations into Aiida"""
+import io
 import os
 
 from aiida.common.exceptions import ParsingError
 from aiida.engine import WorkChain
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
-from aiida_crystal17.parsers.migrate import create_inputs
+from aiida_crystal17.parsers.migrate import create_builder
 # from aiida.common.datastructures import calc_states
 from aiida.engine import run_get_node
-
-
-class CryMainImmigrant(WorkChain):
-    """
-    an immigrant calculation of CryMainCalculation
-    """
-    pass
-    # TODO how to to set attributes of a WorkCalculation? (below works for v0.12 but not v1)
-    # self.calc._updatable_attributes = tuple(
-    #     list(self.calc._updatable_attributes) +
-    #     ["jobresource_params", "parser"])
-    # self.calc.set_attribute("state", calc_states.FINISHED, stored_check=False)
-    # self.calc.set_attribute("jobresource_params", resources, stored_check=False)
-    # self.calc.set_attribute("parser", parser_cls.__name__, stored_check=False)
 
 
 # pylint: disable=too-many-locals
 def migrate_as_main(work_dir,
                     input_rel_path,
                     output_rel_path,
+                    code,
                     resources=None,
                     input_links=None):
     """ migrate existing CRYSTAL17 calculation as a WorkCalculation,
@@ -49,12 +37,8 @@ def migrate_as_main(work_dir,
     :rtype: aiida.orm.WorkCalculation
 
     """
-    from aiida.orm.data.folder import FolderData
-    from aiida_crystal17.calculations.cry_main import CryMainCalculation
-    from aiida_crystal17.parsers.cry_basic import CryBasicParser
-
-    calc = CryMainCalculation()
-    parser_cls = CryBasicParser
+    from aiida.orm.nodes import FolderData
+    from aiida.plugins.factories import ParserFactory
 
     # TODO optionally use transport to remote work directory
     if not os.path.exists(work_dir):
@@ -66,69 +50,56 @@ def migrate_as_main(work_dir,
     if not os.path.exists(output_path):
         raise IOError("output_path doesn't exist: {}".format(output_path))
 
-    if resources:
-        raise NotImplementedError("saving resources to ImmigrantCalculation")
-    # resources = {} if resources is None else resources
+    builder = create_builder(input_path, output_path)
+    builder.code = code
+    builder.metadata.options.resources = {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            } if resources is None else resources
+    calc = builder.process_class(inputs=builder)
+    parser_cls = ParserFactory(calc.metadata.options.parser_name)
 
-    inputs = create_inputs(input_path, output_path)
+    with io.open(output_path) as file_obj:
+        parser_result = parse_mainout(
+            file_obj,
+            parser_class=parser_cls.__name__,
+            init_struct=builder.structure,
+            init_settings=builder.symmetry)
 
-    psuccess, output_nodes = parse_mainout(
-        output_path,
-        parser_class=parser_cls.__name__,
-        init_struct=inputs['structure'],
-        init_settings=inputs['settings'])
+    perrors = parser_result.nodes.results.get_attribute("errors")
+    perrors = parser_result.nodes.results.get_attribute("parser_errors")
 
-    outparams = output_nodes.pop("parameters")
-    perrors = outparams.get_attribute("errors") + outparams.get_attribute(
-        "parser_warnings")
-
-    if perrors or not psuccess:
+    if perrors or not parser_result.success:
         raise ParsingError(
             "the parser failed, raising the following errors:\n{}".format(
                 "\n\t".join(perrors)))
 
     folder = FolderData()
-    folder.add_path(input_path, calc._DEFAULT_INPUT_FILE)  # pylint: disable=protected-access
-    folder.add_path(output_path, calc._DEFAULT_OUTPUT_FILE)  # pylint: disable=protected-access
+    folder.put_object_from_file(
+        input_path, calc.metadata.options.input_file_name)
+    folder.put_object_from_file(
+        output_path, calc.metadata.options.output_main_file_name)
 
-    # create links from existing nodes to inputs
-    input_links = {} if not input_links else input_links
-    for key, nodes_dict in input_links.items():
-        _run_dummy_workchain(
-            nodes_dict,
-            {key: inputs[key]},
-        )
+    # # create links from existing nodes to inputs
+    # input_links = {} if not input_links else input_links
+    # for key, nodes_dict in input_links.items():
+    #     _run_dummy_workchain(
+    #         nodes_dict,
+    #         {key: inputs[key]},
+    #     )
 
-    # assign linknames
-    inputs_dict = {
-        calc.get_linkname("parameters"): inputs['parameters'],
-        calc.get_linkname("structure"): inputs['structure'],
-        calc.get_linkname("settings"): inputs['settings']
-    }
-    for el, basis in inputs["basis"].items():
-        inputs_dict[calc.get_linkname_basisset(el)] = basis
+    parser_result.nodes.results
+    parser_result.nodes.structure
+    parser_result.nodes.symmetry
+    parser_result.nodes.folder = folder
 
-    outputs_dict = {parser_cls.get_linkname_outparams(): outparams}
-    if "settings" in output_nodes:
-        outputs_dict[parser_cls.get_linkname_outsettings()] = output_nodes.pop(
-            "settings")
-    if "structure" in output_nodes:
-        outputs_dict[parser_cls.get_linkname_outstructure(
-        )] = output_nodes.pop("structure")
-    if output_nodes:
-        raise ParsingError("unknown key(s) in output_nodes: {}".format(
-            list(output_nodes.keys())))
+    
 
-    outputs_dict["retrieved"] = folder
-
-    calcnode = _run_dummy_workchain(inputs_dict, outputs_dict,
-                                    CryMainImmigrant)
-
-    calcnode.label = "CryMainImmigrant"
-    calcnode.description = "an immigrated CRYSTAL17 calculation into the {} format".format(
+    calc_node.label = "CryMainImmigrant"
+    calc_node.description = "an immigrated CRYSTAL17 calculation into the {} format".format(
         calc.__class__)
 
-    return calcnode
+    return calc_node
 
 
 def _run_dummy_workchain(inputs_dict, outputs_dict, workchain_cls=None):

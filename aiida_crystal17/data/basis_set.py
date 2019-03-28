@@ -11,9 +11,11 @@ import tempfile
 import six
 import yaml
 from aiida.common.utils import classproperty
-from aiida.orm import Data, GroupTypeString
+from aiida.orm import Data
 from aiida_crystal17.utils import (
     flatten_dict, unflatten_dict, ATOMIC_NUM2SYMBOL)
+
+BASISGROUP_TYPE = 'crystal17.basisset'
 
 
 def get_basissets_from_structure(structure, family_name, by_kind=False):
@@ -576,7 +578,7 @@ class BasisSetData(Data):
 
     @classproperty
     def basisfamily_type_string(cls):
-        return GroupTypeString.BASISGROUP_TYPE.value
+        return BASISGROUP_TYPE
 
     def get_basis_family_names(self):
         """
@@ -597,7 +599,7 @@ class BasisSetData(Data):
         from aiida.orm import Group
 
         return Group.objects.get(
-            label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE._value_)
+            label=group_name, type_string=cls.basisfamily_type_string)
 
     @classmethod
     def get_basis_group_map(cls, group_name):
@@ -698,7 +700,7 @@ class BasisSetData(Data):
 
         automatic_user = User.objects.get_default()
         group, group_created = Group.objects.get_or_create(
-            label=group_name, type_string=GroupTypeString.BASISGROUP_TYPE,
+            label=group_name, type_string=BASISGROUP_TYPE,
             user=automatic_user)
 
         if group.user.email != automatic_user.email:

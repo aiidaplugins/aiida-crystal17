@@ -12,8 +12,8 @@ from aiida.plugins import DataFactory
 
 class CryBasicCalculation(CalcJob):
     """
-    AiiDA calculation plugin wrapping the runcry17 executable.
-
+    AiiDA calculation plugin to run the runcry17 executable,
+    by supplying a normal .d12 input file and (optional) .gui file
     """
     @classmethod
     def define(cls, spec):
@@ -50,13 +50,12 @@ class CryBasicCalculation(CalcJob):
                     required=True,
                     help='the data extracted from the main output file')
         spec.output('structure', valid_type=DataFactory('structure'),
-                    required=False,
-                    help='the structure output from the calculation '
-                    '(optimisations only)')
-        # spec.output('symmetry', valid_type=DataFactory('structure'),
-        #             required=False,
-        #             help='the structure output from the calculation '
-        #             '(optimisations only)')
+                    required=True,
+                    help='the structure output from the calculation')
+        spec.output('symmetry',
+                    valid_type=DataFactory('crystal17.structsettings'),
+                    required=True,
+                    help='the symmetry data from the calculation')
 
         # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
         # spec.input(
@@ -104,10 +103,9 @@ class CryBasicCalculation(CalcJob):
                 ingui.uuid, ingui.filename,
                 self.metadata.options.external_file_name])
         calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [self.metadata.options.output_main_file_name]
-        # TODO .gui won't be available for scf runs,
-        # will the computation fail if it can't find a file in retrieve list?
-        # calcinfo.retrieve_list.append(self._external_file_name)
+        calcinfo.retrieve_list = [
+            self.metadata.options.output_main_file_name,
+            self.metadata.options.external_file_name]
         calcinfo.retrieve_temporary_list = []
 
         return calcinfo

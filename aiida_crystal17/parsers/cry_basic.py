@@ -3,7 +3,6 @@ A parser to read output from a standard CRYSTAL17 run
 """
 from aiida.common import exceptions
 from aiida.parsers.parser import Parser
-from aiida.plugins import CalculationFactory
 
 from aiida_crystal17.parsers.mainout_parse import parse_mainout
 
@@ -29,28 +28,30 @@ class CryBasicParser(Parser):
         # parse the stdout file and add nodes
         self.logger.info("parsing main out file")
         with output_folder.open(mainout_file) as fileobj:
-            psuccess, output_nodes = parse_mainout(
+            parser_result = parse_mainout(
                 fileobj, parser_class=self.__class__.__name__)
+            if not parser_result.success:
+                fileobj.seek(0)
+                self.logger.warning("parsing main output file failed: "
+                                    "{}".format(fileobj.read()))
 
-        outparams = output_nodes.pop("parameters")
-        if outparams.get_attribute("errors"):
-            perrors = outparams.get_attribute("errors")
-            if perrors:
-                self.logger.warning(
+        errors = parser_result.nodes.results.get_attribute("errors")
+        parser_errors = parser_result.nodes.results.get_attribute(
+            "parser_errors")
+        if parser_errors:
+            self.logger.warning(
                     "the parser raised the following errors:\n{}".format(
-                        "\n\t".join(perrors)))
-        if outparams.get_attribute("parser_warnings"):
-            pwarns = outparams.get_attribute("parser_warnings")
-            if pwarns:
-                self.logger.warning(
-                    "the parser raised the following errors:\n{}".format(
-                        "\n\t".join(pwarns)))
+                        "\n\t".join(parser_errors)))
+        if errors:
+            self.logger.warning(
+                "the calculation raised the following errors:\n{}".format(
+                    "\n\t".join(errors)))
 
-        self.out('results', outparams)
-        if "structure" in output_nodes:
-            self.out('structure', output_nodes.pop("structure"))
-        if "settings" in output_nodes:
-            self.out('symmetry', output_nodes.pop("settings"))
+        self.out('results', parser_result.nodes.results)
+        if parser_result.nodes.structure is not None:
+            self.out('structure', parser_result.nodes.structure)
+        if parser_result.nodes.symmetry is not None:
+            self.out('symmetry', parser_result.nodes.symmetry)
 
-        if not psuccess:
+        if not parser_result.success:
             return self.exit_codes.ERROR_PARSING_FAILED

@@ -11,7 +11,7 @@ from ejplugins.crystal import CrystalOutputPlugin
 
 
 # pylint: disable=too-many-locals
-def create_inputs(inpath, outpath):
+def create_builder(inpath, outpath):
     """ create ``crystal17.main`` input nodes from an existing run
 
     NB: none of the nodes are stored, also
@@ -19,15 +19,13 @@ def create_inputs(inpath, outpath):
 
     :param inpath: path to .d12 file
     :param outpath: path to .out file
-    :return: dictionary of inputs, with keys 'structure', 'parameters', 'settings', 'structure', 'basis'
+    :return: CalcJobBuilder
     """
     from aiida.plugins import DataFactory, CalculationFactory
     calc_cls = CalculationFactory('crystal17.main')
     basis_cls = DataFactory('crystal17.basisset')
     struct_cls = DataFactory('structure')
     structsettings_cls = DataFactory('crystal17.structsettings')
-
-    inputs = {}
 
     with open(inpath) as f:
         d12content = f.read()
@@ -59,7 +57,6 @@ def create_inputs(inpath, outpath):
     atoms.set_tags(_create_tags(atom_props, atoms))
 
     structure = struct_cls(ase=atoms)
-    inputs['structure'] = structure
 
     settings_dict = {"kinds": {}}
     for key, vals in atom_props.items():
@@ -74,12 +71,7 @@ def create_inputs(inpath, outpath):
     settings_dict["centring_code"] = 1
     settings = structsettings_cls(data=settings_dict)
 
-    parameters = calc_cls.prepare_and_validate(output_dict, structure,
-                                               settings)
-    inputs['parameters'] = parameters
-    inputs['settings'] = settings
-
-    inputs["basis"] = {}
+    bases = {}
     for bset in basis_sets:
 
         bfile = tempfile.NamedTemporaryFile(delete=False)
@@ -92,9 +84,11 @@ def create_inputs(inpath, outpath):
         finally:
             os.remove(bfile.name)
 
-        inputs["basis"][bdata.element] = bdata
+        bases[bdata.element] = bdata
 
-    return inputs
+    builder = calc_cls.create_builder(output_dict, structure, settings, bases)
+
+    return builder
 
 
 def _create_atoms(data, section="initial"):

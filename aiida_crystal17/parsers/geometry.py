@@ -590,11 +590,11 @@ def structure_to_dict(structure):
     from aiida.common.exceptions import InputValidationError
 
     for kind in structure.kinds:
-        if kind.is_alloy():
+        if kind.is_alloy:
             raise InputValidationError(
                 "Kind '{}' is an alloy. This is not allowed for CRYSTAL input structures."
                 "".format(kind.name))
-        if kind.has_vacancies():
+        if kind.has_vacancies:
             raise InputValidationError(
                 "Kind '{}' has vacancies. This is not allowed for CRYSTAL input structures."
                 "".format(kind.name))
@@ -659,7 +659,7 @@ def dict_to_structure(structdict, logger=None):
             raise AssertionError(
                 "the length of ccoords and atom_kinds must be the same")
 
-        from aiida.orm.data.structure import Site, Kind
+        from aiida.orm.nodes.data.structure import Site, Kind
         for kind, ccoord in zip(atom_kinds, structdict['ccoords']):
             if not isinstance(kind, Kind):
                 kind = Kind(raw=kind)

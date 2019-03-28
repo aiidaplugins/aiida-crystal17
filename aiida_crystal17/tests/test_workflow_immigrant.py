@@ -19,6 +19,7 @@ def test_full_nio_afm(db_test_app):
         work_dir,
         inpath,
         outpath,
+        db_test_app.get_or_create_code('crystal17.main'),
         input_links={
             'structure': {
                 "struct_setup": DataFactory('dict')()
@@ -47,7 +48,7 @@ def test_full_nio_afm(db_test_app):
 
 
 @pytest.mark.timeout(60)
-def test_full_mgo_opt(new_database):
+def test_full_mgo_opt(db_test_app):
     from aiida.plugins import DataFactory
     from aiida_crystal17.workflows.cry_main_immigrant import migrate_as_main
     # from aiida.common.datastructures import calc_states

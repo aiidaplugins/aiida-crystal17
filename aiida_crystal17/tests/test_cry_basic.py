@@ -10,7 +10,7 @@ from jsonextended import edict
 import pytest
 
 
-@pytest.mark.skip(reason="awaiting fix for aiidateam/aiida_core#2650")
+# @pytest.mark.skip(reason="awaiting fix for aiidateam/aiida_core#2650")
 def test_submit(db_test_app):
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
@@ -91,6 +91,7 @@ def compare_expected_results(infile, result_node):
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
             'parser_class': 'CryBasicParser',
+            'parser_errors': [],
             'parser_warnings': ["no initial structure available, "
                                 "creating new kinds for atoms"],
             'errors': [],
@@ -111,6 +112,7 @@ def compare_expected_results(infile, result_node):
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
             'parser_class': 'CryBasicParser',
+            'parser_errors': [],
             'parser_warnings': [
                 "no initial structure available, "
                 "creating new kinds for atoms"],
@@ -133,6 +135,7 @@ def compare_expected_results(infile, result_node):
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
             'parser_class': 'CryBasicParser',
+            'parser_errors': [],
             'parser_warnings': ["no initial structure available, "
                                 "creating new kinds for atoms"],
             'errors': [],
@@ -154,6 +157,7 @@ def compare_expected_results(infile, result_node):
 
     attributes = result_node.get_dict()
     attributes.pop('wall_time_seconds', None)
+    assert set(attributes.keys()) == set(expected.keys())
     assert edict.diff(attributes, expected, np_allclose=True) == {}
 
 

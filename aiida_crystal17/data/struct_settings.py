@@ -197,7 +197,7 @@ class StructSettingsData(Data):
 
         try:
             # Clear existing attributes and set the new dictionary
-            self._update_attrs(
+            self._update_attributes(
                 {k: v
                  for k, v in data.items() if k != "operations"})
             self.set_attribute("num_symops", len(data["operations"]))
@@ -208,13 +208,13 @@ class StructSettingsData(Data):
         except Exception:
             # Try to restore the old data
             self.clear_attributes()
-            self._update_attrs(backup_dict)
+            self._update_attributes(backup_dict)
             raise
 
         # store the symmetry operations on file
         self._set_operations(data["operations"])
 
-    def _update_attrs(self, data):
+    def _update_attributes(self, data):
         """
         Update the current attribute with the keys provided in the dictionary.
 

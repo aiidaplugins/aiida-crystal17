@@ -9,6 +9,20 @@ from ejplugins.crystal import CrystalOutputPlugin
 from aiida_crystal17 import __version__ as pkg_version
 
 
+class OutputNodes(object):
+    def __init__(self):
+        self.results = None
+        self.structure = None
+        self.symmetry = None
+        self.folder = None
+
+
+class ParserResult(object):
+    def __init__(self):
+        self.success = True
+        self.nodes = OutputNodes()
+
+
 # pylint: disable=too-many-locals,too-many-statements
 def parse_mainout(fileobj, parser_class, init_struct=None,
                   init_settings=None):
@@ -19,26 +33,31 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
     :param init_struct: input structure
     :param init_settings: input structure settings
 
-    :return psuccess: a boolean that is False in case of failed calculations
-    :return output_nodes: containing "paramaters" and
-    (optionally) "structure" and "settings"
+    :return parse_result
     """
     from aiida.plugins import DataFactory
 
-    psuccess = True
-    param_data = {"parser_warnings": [], "errors": []}
-    output_nodes = {}
+    parser_result = ParserResult()
+
+    results_data = {
+        "parser_version": str(pkg_version),
+        "parser_class": str(parser_class),
+        "ejplugins_version": str(ejplugins.__version__),
+        "parser_errors": [],
+        "parser_warnings": [],
+        "errors": [],
+        "warnings": []
+        }
 
     cryparse = CrystalOutputPlugin()
     try:
         data = cryparse.read_file(fileobj, log_warnings=False)
     except IOError as err:
-        fileobj.seek(0)
-        param_data["parser_warnings"].append(
-            "Error parsing CRYSTAL 17 main output: {0}".format(err))
-        output_nodes["parameters"] = DataFactory("dict")(
-            dict=param_data)
-        return False, output_nodes
+        parser_result.success = False
+        results_data["parser_errors"].append(
+            "Error parsing CRYSTAL 17 main output: {0}\n{1}".format(err))
+        parser_result.nodes.results = DataFactory("dict")(dict=results_data)
+        return parser_result
 
     # data contains the top-level keys:
     # "warnings" (list), "errors" (list), "meta" (dict), "creator" (dict),
@@ -52,34 +71,31 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
     # to get (primitive) geometries (+ symmetries) for each opt step
     # Note the above files are only available for optimisation runs
 
-    perrors = data["errors"]
-    pwarnings = data["warnings"]
-    if perrors:
-        psuccess = False
-    param_data["errors"] = perrors
-    # aiida-quantumespresso only has warnings,
-    # so we group errors and warnings for compatibility
-    param_data["warnings"] = perrors + pwarnings
+    if data["errors"]:
+        parser_result.success = False
+    results_data["errors"] = data["errors"]
+    results_data["warnings"] = data["warnings"]
 
     # get meta data
     meta_data = data.pop("meta")
     if "elapsed_time" in meta_data:
         h, m, s = meta_data["elapsed_time"].split(':')
-        param_data["wall_time_seconds"] = int(h) * 3600 + int(m) * 60 + int(s)
+        wall_time = int(h) * 3600 + int(m) * 60 + int(s)
+        results_data["wall_time_seconds"] = wall_time
 
     # get initial data
     initial_data = data.pop("initial")
     initial_data = {} if not initial_data else initial_data
     for name, val in initial_data.get("calculation", {}).items():
-        param_data["calculation_{}".format(name)] = val
+        results_data["calculation_{}".format(name)] = val
     init_scf_data = initial_data.get("scf", [])
-    param_data["scf_iterations"] = len(init_scf_data)
+    results_data["scf_iterations"] = len(init_scf_data)
     # TODO create TrajectoryData from init_scf_data data
 
     # optimisation trajectory data
     opt_data = data.pop("optimisation")
     if opt_data:
-        param_data["opt_iterations"] = len(
+        results_data["opt_iterations"] = len(
             opt_data) + 1  # the first optimisation step is the initial scf
     # TODO create TrajectoryData from optimisation data
 
@@ -87,27 +103,23 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
 
     # TODO read separate energy contributions
     energy = final_data["energy"]["total_corrected"]
-    param_data["energy"] = energy["magnitude"]
-    param_data["energy_units"] = energy["units"]
+    results_data["energy"] = energy["magnitude"]
+    results_data["energy_units"] = energy["units"]
 
     # TODO read from .gui file and check consistency of final cell/symmops
-    structure = _extract_structure(final_data["primitive_cell"], init_struct,
-                                   param_data)
+    structure = _extract_structure(
+        final_data["primitive_cell"], init_struct, results_data)
     if opt_data or not init_struct:
-        output_nodes["structure"] = structure
+        parser_result.nodes.structure = structure
+    else:
+        pass
+        # TODO test intput structure is same as output structure
 
-    ssuccess = _extract_symmetry(final_data, init_settings, output_nodes,
-                                 param_data)
-    psuccess = False if not ssuccess else psuccess
+    _extract_symmetry(final_data, init_settings, results_data, parser_result)
 
-    _extract_mulliken(data, param_data)
+    _extract_mulliken(data, results_data)
 
-    # add the version and class of parser
-    param_data["parser_version"] = str(pkg_version)
-    param_data["parser_class"] = str(parser_class)
-    param_data["ejplugins_version"] = str(ejplugins.__version__)
-
-    output_nodes["parameters"] = DataFactory("dict")(dict=param_data)
+    parser_result.nodes.results = DataFactory("dict")(dict=results_data)
 
     # if array_dict:
     #     arraydata = DataFactory("array")()
@@ -116,22 +128,25 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
     # else:
     #     arraydata = None
 
-    return psuccess, output_nodes
+    return parser_result
 
 
-def _extract_symmetry(final_data, init_settings, output_nodes, param_data):
+def _extract_symmetry(final_data, init_settings, param_data, parser_result):
     """extract symmetry operations"""
-    psuccess = True
+
     if "primitive_symmops" in final_data:
 
         if init_settings:
-            differences = init_settings.compare_operations(
-                final_data["primitive_symmops"])
-            if differences:
-                param_data["parser_warnings"].append(
-                    "output symmetry operations were not the same as "
-                    "those input: {}".format(differences))
-                psuccess = False
+            if init_settings.num_symops != len(final_data["primitive_symmops"]):
+                param_data["parser_errors"].append("number of symops different")
+                parser_result.success = False
+            # differences = init_settings.compare_operations(
+            #     final_data["primitive_symmops"])
+            # if differences:
+            #     param_data["parser_errors"].append(
+            #         "output symmetry operations were not the same as "
+            #         "those input: {}".format(differences))
+            #     parser_result.success = False
         else:
             from aiida.plugins import DataFactory
             StructSettings = DataFactory('crystal17.structsettings')
@@ -142,19 +157,17 @@ def _extract_symmetry(final_data, init_settings, output_nodes, param_data):
                 "crystal_type": 1,
                 "centring_code": 1
             }
-            output_nodes["settings"] = StructSettings(data=settings_dict)
+            parser_result.nodes.symmetry = StructSettings(data=settings_dict)
     else:
-        param_data["parser_warnings"].append(
+        param_data["parser_errors"].append(
             "primitive symmops were not found in the output file")
-        psuccess = False
-
-    return psuccess
+        parser_result.success = False
 
 
-def _extract_structure(cell_data, init_struct, param_data):
+def _extract_structure(cell_data, init_struct, results_data):
     """create a StructureData object of the final configuration"""
-    param_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
-    param_data["number_of_assymetric"] = sum(cell_data["assymetric"])
+    results_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
+    results_data["number_of_assymetric"] = sum(cell_data["assymetric"])
 
     cell_vectors = []
     for n in "a b c".split():
@@ -163,7 +176,7 @@ def _extract_structure(cell_data, init_struct, param_data):
 
     # we want to reuse the kinds from the input structure, if available
     if not init_struct:
-        param_data["parser_warnings"].append(
+        results_data["parser_warnings"].append(
             "no initial structure available, creating new kinds for atoms")
         kinds = None
     else:
@@ -177,7 +190,7 @@ def _extract_structure(cell_data, init_struct, param_data):
         "ccoords": cell_data["ccoords"]["magnitude"],
         "kinds": kinds
     })
-    param_data["volume"] = structure.get_cell_volume()
+    results_data["volume"] = structure.get_cell_volume()
     return structure
 
 

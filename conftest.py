@@ -161,19 +161,23 @@ class AiidaTestApp(object):
     def check_calculation(
             calc_node, expected_outgoing_labels,
             error_include=(("results", "errors"),
-                           ("results", "parser_warnings"))):
+                           ("results", "parser_errors"))):
         """ check a calculation has completed successfully """
 
         exit_status = calc_node.get_attribute("exit_status")
         proc_state = calc_node.get_attribute("process_state")
         if exit_status != 0 or proc_state != "finished":
-            message = "exit status: {}\nprocess state: {}".format(
-                exit_status, proc_state)
-            out_nodes = calc_node.get_outgoing()
+            message = (
+                "Process Failed: "
+                "exit status: {0}\nprocess state: {1}\ncalc attributes: {2}").format(
+                exit_status, proc_state, calc_node.attributes)
+            out_link_manager = calc_node.get_outgoing()
+            out_links = out_link_manager.all_link_labels()
+            message += "\noutgoing_nodes: {}".format(out_links)
             for name, attribute in error_include:
-                if name not in out_nodes:
+                if name not in out_links:
                     continue
-                value = out_nodes.get(name).get_attribute(attribute, None)
+                value = out_link_manager.get_node_by_label(name).get_attribute(attribute, None)
                 if value is None:
                     continue
                 message += "\n{}.{}: {}".format(name, attribute, value)
@@ -183,5 +187,5 @@ class AiidaTestApp(object):
         for outgoing in expected_outgoing_labels:
             if outgoing not in link_labels:
                 raise AssertionError(
-                    "missing outgoing node link'{}': {}".format(
+                    "missing outgoing node link '{}': {}".format(
                         outgoing, link_labels))

@@ -134,6 +134,7 @@ def test_write_gui_with_symops():
     assert outstr == expected
 
 
+@pytest.mark.timeout(10)
 def test_compute_symmetry_3d_primitive():
     sdata = {
         "lattice": [[2, 0, 0], [0, 2, 0], [0, 0, 2]],
@@ -382,7 +383,7 @@ def test_compute_symmetry_3d_mgo_nonprimitive():
     assert atoms.get_number_of_atoms() == outatoms.get_number_of_atoms()
 
 
-@pytest.mark.timeout(10)
+@pytest.mark.skip(reason="re-doing symmetry")
 def test_compute_symmetry_3d_mgo_primitive():
     # MgO
     atoms = crystal(
@@ -613,6 +614,7 @@ def test_compute_symmetry_3d_mgo_primitive():
     assert outatoms.get_atomic_numbers().tolist() == [12, 8]
 
 
+@pytest.mark.timeout(10)
 def test_compute_symmetry_3d_marcasite():
     """has irregular order of lengths, primitive == crystallographic"""
     atoms = crystal(
@@ -684,6 +686,7 @@ def test_compute_symmetry_3d_marcasite():
     assert outstr == expected
 
 
+@pytest.mark.skip(reason="re-doing symmetry")
 def test_compute_symmetry_3d_inequivalent():
     # MgO
     atoms = crystal(

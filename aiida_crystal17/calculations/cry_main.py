@@ -6,7 +6,7 @@ import os
 
 import six
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
-from aiida.common.exceptions import (InputValidationError, ValidationError)
+from aiida.common.exceptions import InputValidationError
 from aiida.common.utils import classproperty
 from aiida.plugins import DataFactory
 from aiida.engine import CalcJob
@@ -15,34 +15,72 @@ from aiida_crystal17.validation import read_schema
 from aiida_crystal17.parsers.geometry import (
     crystal17_gui_string, structure_to_dict)
 from aiida_crystal17.parsers.inputd12_write import write_input
-from aiida_crystal17.utils import unflatten_dict, ATOMIC_NUM2SYMBOL
-
-StructureData = DataFactory('structure')
-DictData = DataFactory('dict')
-BasisSetData = DataFactory('crystal17.basisset')
-StructSettingsData = DataFactory('crystal17.structsettings')
+from aiida_crystal17.utils import unflatten_dict
 
 
 class CryMainCalculation(CalcJob):
     """
-    AiiDA calculation plugin wrapping the runcry17 executable.
-
+    AiiDA calculation plugin to run the runcry17 executable,
+    by supplying aiida nodes, with data sufficient to create the
+    .d12 input file and .gui file
     """
+    @classmethod
+    def define(cls, spec):
 
-    def _init_internal_params(self):
-        """
-        Init internal parameters at class load time
-        """
-        # reuse base class function
-        super(CryMainCalculation, self)._init_internal_params()
+        super(CryMainCalculation, cls).define(spec)
 
-        # default input and output files
-        self._DEFAULT_INPUT_FILE = 'main.d12'
-        self._DEFAULT_EXTERNAL_FILE = 'main.gui'
-        self._DEFAULT_OUTPUT_FILE = 'main.out'
+        spec.input('metadata.options.parser_name',
+                   valid_type=six.string_types, default='crystal17.main')
+        spec.input('metadata.options.input_file_name',
+                   valid_type=six.string_types, default='main.d12')
+        spec.input('metadata.options.external_file_name',
+                   valid_type=six.string_types, default='main.gui')
+        spec.input('metadata.options.output_main_file_name',
+                   valid_type=six.string_types, default='main.out')
 
-        # parser entry point defined in setup.json
-        self._default_parser = 'crystal17.basic'
+        spec.input(
+            'parameters', valid_type=DataFactory('dict'),
+            required=True,
+            help='the input parameters to create the .d12 file content.')
+        spec.input(
+            'structure', valid_type=DataFactory('structure'),
+            required=True,
+            help=('the structure used to construct the input .gui file '
+                  '(fort.34)'))
+        spec.input(
+            'symmetry', valid_type=DataFactory('crystal17.structsettings'),
+            required=True,
+            help=('the symmetry of the structure, '
+                  'used to construct the input .gui file (fort.34)'))
+        spec.input_namespace(
+            'basissets',
+            valid_type=DataFactory('crystal17.basisset'), dynamic=True,
+            help=("Use a node for the basis set of one of "
+                  "the elements in the structure. You have to pass "
+                  "an additional parameter ('element') specifying the "
+                  "atomic element symbol for which you want to use this "
+                  "basis set."))
+
+        spec.exit_code(
+            30, 'ERROR_NO_RETRIEVED_FOLDER',
+            message='The retrieved folder data node could not be accessed.')
+        spec.exit_code(
+            40, 'ERROR_OUTPUT_FILE_MISSING',
+            message='the main output file was not found')
+
+        spec.output('results', valid_type=DataFactory('dict'),
+                    required=True,
+                    help='the data extracted from the main output file')
+        spec.output('structure', valid_type=DataFactory('structure'),
+                    required=False,
+                    help=('the structure output from the calculation '
+                          '(optimisation only)'))
+
+        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
+        # spec.input(
+        #     'parent_folder', valid_type=RemoteData, required=False,
+        #     help=('Use a remote folder as parent folder (for '
+        #           'restarts and similar.'))
 
     @classproperty
     def settings_schema(cls):
@@ -56,20 +94,18 @@ class CryMainCalculation(CalcJob):
 
     # pylint: disable=too-many-arguments
     @classmethod
-    def prepare_and_validate(cls,
-                             param_dict,
-                             structure,
-                             settings,
-                             basis_family=None,
-                             flattened=False):
-        """ prepare and validate the inputs to the calculation
+    def create_builder(cls, param_dict, structure, settings, bases,
+                       code=None, metaoptions=None, flattened=False):
+        """ prepare and validate the inputs to the calculation,
+        and return a builder pre-populated with the calculation inputs
 
         :param input: dict giving data to create the input .d12 file
         :param structure: the StructureData
         :param settings: StructSettingsData giving symmetry operations, etc
-        :param basis_family: string of the BasisSetFamily to use
+        :param bases: string of the BasisSetFamily to use
+        or dict of {<symbol>: <basisset>}
         :param flattened: whether the input dictionary is flattened
-        :return: parameters
+        :return: CalcJobBuilder
         """
         if flattened:
             param_dict = unflatten_dict(param_dict)
@@ -80,196 +116,103 @@ class CryMainCalculation(CalcJob):
                                             settings.data)
         write_input(param_dict, ["test_basis"], atom_props)
         # validate basis sets
-        if basis_family:
-            get_basissets_from_structure(
-                structure, basis_family, by_kind=False)
+        if isinstance(bases, six.string_types):
+            symbol_to_basis_map = get_basissets_from_structure(
+                structure, bases, by_kind=False)
+        else:
+            elements_required = set([kind.symbol for kind in structure.kinds])
+            if set(bases.keys()) != elements_required:
+                err_msg = (
+                    "Mismatch between the defined basissets and the list of "
+                    "elements of the structure. Basissets: {}; elements: {}".
+                    format(set(bases.keys()), elements_required))
+                raise InputValidationError(err_msg)
+            symbol_to_basis_map = bases
 
-        return DictData(dict=param_dict)
+        builder = cls.get_builder()
 
-    @classmethod
-    def _get_linkname_basisset_prefix(cls):
-        """The prefix for the name of the link used
-        for each pseudo before the kind name
+        builder.parameters = DataFactory('dict')(dict=param_dict)
+        builder.structure = structure
+        builder.symmetry = settings
+        builder.basissets = symbol_to_basis_map
+        if code is not None:
+            builder.code = code
+        if metaoptions is not None:
+            builder.metadata.options = metaoptions
+
+        return builder
+
+    def prepare_for_submission(self, tempfolder):
         """
-        return "basis_"
+        This is the routine to be called when you want to create
+        the input files and related stuff with a plugin.
 
-    @classmethod
-    def get_linkname_basisset(cls, element):
-        """The name of the link used for the basis set 
-        for atomic element 'element'.
-        It appends the basis name to the basisset_prefix, as returned by the
-        _get_linkname_basisset_prefix() method.
-
-        :param element: a string for the atomic element 
-                        for which we want to get the link name
+        :param tempfolder: an aiida.common.folders.Folder subclass 
+                           where the plugin should put all its files.
         """
-        if not isinstance(element, six.string_types):
-            raise TypeError(
-                "The parameter 'element' of _get_linkname_basisset can "
-                "only be an string: {}".format(element))
-        if element not in ATOMIC_NUM2SYMBOL.values():
-            raise TypeError(
-                "The parameter 'symbol' of _get_linkname_basisset can "
-                "must be a known atomic element: {}".format(element))
+        # Check that a basis set was specified
+        # for each symbol present in the `StructureData`
+        symbols = [kind.symbol for kind in self.inputs.structure.kinds]
+        if set(symbols) != set(self.inputs.basissets.keys()):
+            raise InputValidationError(
+                'Mismatch between the defined basissets '
+                'and the list of symbols of the structure.\n'
+                'Basissets: {};\nSymbols: {}'.format(
+                    ', '.join(self.inputs.basissets.keys()),
+                    ', '.join(list(symbols))))
 
-        return "{}{}".format(cls._get_linkname_basisset_prefix(), element)
+        self._create_input_files(
+            self.inputs.basissets,
+            self.inputs.structure,
+            self.inputs.parameters,
+            self.inputs.symmetry,
+            tempfolder)
 
-    @classproperty
-    def _use_methods(cls):
-        """
-        Add use_* methods for calculations.
+        # Prepare CodeInfo object for aiida,
+        # describes how a code has to be executed
+        code = self.inputs.code
+        codeinfo = CodeInfo()
+        codeinfo.code_uuid = code.uuid
+        codeinfo.cmdline_params = [
+            os.path.splitext(self.metadata.options.input_file_name)[0]
+        ]
+        codeinfo.withmpi = self.metadata.options.withmpi
 
-        Code below enables the usage
-        my_calculation.use_parameters(my_parameters)
+        # Prepare CalcInfo object for aiida
+        calcinfo = CalcInfo()
+        calcinfo.uuid = self.uuid
+        calcinfo.codes_info = [codeinfo]
+        calcinfo.local_copy_list = []
+        calcinfo.remote_copy_list = []
+        calcinfo.retrieve_list = [
+            self.metadata.options.output_main_file_name,
+            self.metadata.options.external_file_name
+        ]
+        calcinfo.retrieve_temporary_list = []
 
-        """
-        use_dict = CalcJob._use_methods
-
-        use_dict.update({
-            "parameters": {
-                'valid_types':
-                DictData,
-                'additional_parameter':
-                None,
-                'linkname':
-                'parameters',
-                'docstring':
-                "the input parameters to create the .d12 file content."
-            },
-            "structure": {
-                'valid_types': StructureData,
-                'additional_parameter': None,
-                'linkname': 'structure',
-                'docstring': "structure to use."
-            },
-            "settings": {
-                'valid_types':
-                StructSettingsData,
-                'additional_parameter':
-                None,
-                'linkname':
-                'settings',
-                'docstring':
-                "Structure settings for conversion to .gui (fort.34) input "
-                "file defining symmetry operations and kind specific data",
-            },
-            "basisset": {
-                'valid_types':
-                BasisSetData,
-                'additional_parameter':
-                "element",
-                'linkname':
-                cls.get_linkname_basisset,
-                'docstring':
-                ("Use a node for the basis set of one of "
-                 "the elements in the structure. You have to pass "
-                 "an additional parameter ('element') specifying the "
-                 "atomic element symbol for which you want to use this "
-                 "basis set."),
-            },
-            # TODO retrieve .f9 / .f98 from remote folder (for GUESSP/RESTART)
-            # "parent_folder": {
-            #     'valid_types': RemoteData,
-            #     'additional_parameter': None,
-            #     'linkname': 'parent_calc_folder',
-            #     'docstring': ("Use a remote folder as parent folder (for "
-            #                   "restarts and similar"),
-            # },
-        })
-
-        return use_dict
-
-    def use_basisset_from_family(self, family_name):
-        """
-        Set the basis set to use for all atomic types, picking basis sets from 
-        the family with name family_name.
-
-        :note: The structure must already be set.
-
-        :param family_name: the name of the group containing the basis sets
-        """
-        try:
-            structure = self._get_reference_structure()
-        except AttributeError:
-            raise ValueError(
-                "Structure is not set yet! Therefore, the method "
-                "use_basisset_from_family cannot automatically set "
-                "the basis sets")
-
-        # A dict {element: basisset_object}
-        element_basis_dict = get_basissets_from_structure(
-            structure, family_name, by_kind=False)
-
-        for element, basis in element_basis_dict.items():
-            self.use_basisset(basis, element)
-
-    def _get_reference_structure(self):
-        """
-        Used to get the reference structure to obtain which
-        basis sets to use from a given family using
-        use_basisset_from_family.
-
-        :note: this method can be redefined in a given subclass
-               to specify which is the reference structure to consider.
-        """
-        return self.get_incoming()[self.get_linkname('structure')]
-
-    def _retrieve_basis_sets(self, inputdict, instruct):
-        """ retrieve BasisSetData objects from the inputdict, 
-        associate them with an atomic element
-        and validate a 1-to-1 mapping between the two
-
-        :param inputdict: dictionary of inputs
-        :param instruct: input StructureData
-        :return: basissets dict {element: BasisSetData}
-        """
-        basissets = {}
-        # I create here a dictionary that 
-        # associates each kind name to a basisset
-        for link in list(inputdict.keys()):
-            if link.startswith(self._get_linkname_basisset_prefix()):
-                element = link[len(self._get_linkname_basisset_prefix()):]
-                the_basisset = inputdict.pop(link)
-                if not isinstance(the_basisset, BasisSetData):
-                    raise InputValidationError(
-                        "basisset for element '{}' is not of "
-                        "type BasisSetData".format(element))
-                basissets[element] = the_basisset
-
-        # Check retrieved elements match the required elements
-        elements_required = [k.symbol for k in instruct.kinds]
-        if set(elements_required) != set(basissets.keys()):
-            err_msg = (
-                "Mismatch between the defined basissets and the list of "
-                "elements of the structure. Basissets: {}; elements: {}".
-                format(",".join(basissets.keys()), ",".join(
-                    list(elements_required))))
-            raise InputValidationError(err_msg)
-
-        return basissets
+        return calcinfo
 
     # pylint: disable=too-many-arguments
     def _create_input_files(self, basissets, instruct, parameters,
-                            settings_dict, tempfolder):
+                            settings, tempfolder):
         """ create input files in temporary folder
 
         :param basissets:
         :param instruct:
         :param parameters:
-        :param setting_dict:
+        :param setting:
         :param tempfolder:
         :return: atomid_kind_map
         """
         # create .gui external geometry file and place it in tempfolder
         struct_dict = structure_to_dict(instruct)
 
-        gui_content = crystal17_gui_string(struct_dict, settings_dict)
-        with open(tempfolder.get_abs_path(self._DEFAULT_EXTERNAL_FILE),
-                  'w') as f:
+        gui_content = crystal17_gui_string(struct_dict, settings.data)
+        with tempfolder.open(self.metadata.options.external_file_name, 'w') as f:
             f.write(gui_content)
 
         atom_props = self._create_atom_props(struct_dict["kinds"],
-                                             settings_dict)
+                                             settings.data)
 
         # create .d12 input file and place it in tempfolder
         try:
@@ -280,7 +223,7 @@ class CryMainCalculation(CalcJob):
                 "an input file could not be created from the parameters: {}".
                 format(err))
 
-        with open(tempfolder.get_abs_path(self._DEFAULT_INPUT_FILE), 'w') as f:
+        with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
             f.write(d12_filecontent)
 
         return True
@@ -319,82 +262,3 @@ class CryMainCalculation(CalcJob):
             atom_props.pop("unfixed")
 
         return atom_props
-
-    def _prepare_for_submission(self, tempfolder, inputdict):
-        """
-        Create input files.
-
-            :param tempfolder: aiida.common.folders.Folder subclass where
-                the plugin should put all its files.
-            :param inputdict: dictionary of the input nodes as they would
-                be returned by get_inputs_dict
-
-        See https://aiida-core.readthedocs.io/en/latest/
-        developer_guide/devel_tutorial/code_plugin_qe.html#step-3-prepare-a-text-input
-        for a description of its function and inputs
-        """
-        # read inputs
-        # we expect "code", "parameters", "structure" and "basis_" 
-        # (one for each basis)
-        # "settings" is optional
-
-        try:
-            code = inputdict.pop(self.get_linkname('code'))
-        except KeyError:
-            raise InputValidationError("No code specified for this "
-                                       "calculation")
-
-        try:
-            parameters = inputdict.pop(self.get_linkname('parameters'))
-        except KeyError:
-            raise InputValidationError("Missing parameters")
-        if not isinstance(parameters, DictData):
-            raise InputValidationError("parameters not of type DictData")
-
-        try:
-            instruct = inputdict.pop(self.get_linkname('structure'))
-        except KeyError:
-            raise InputValidationError("Missing structure")
-        if not isinstance(instruct, StructureData):
-            raise InputValidationError("structure not of type StructureData")
-
-        try:
-            settings = inputdict.pop(self.get_linkname('settings'))
-        except KeyError:
-            raise InputValidationError("Missing settings")
-        if not isinstance(settings, StructSettingsData):
-            raise InputValidationError(
-                "settings not of type StructSettingsData")
-
-        basissets = self._retrieve_basis_sets(inputdict, instruct)
-
-        if inputdict:
-            raise ValidationError(
-                "Unknown additional inputs: {}".format(inputdict))
-
-        self._create_input_files(basissets, instruct, parameters,
-                                 settings.data, tempfolder)
-
-        # Prepare CodeInfo object for aiida, 
-        # describes how a code has to be executed
-        codeinfo = CodeInfo()
-        codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = [
-            os.path.splitext(self._DEFAULT_INPUT_FILE)[0]
-        ]
-        # codeinfo.stdout_name = self._DEFAULT_OUTPUT_FILE  
-        # # this file doesn't actually come from stdout
-        codeinfo.withmpi = self.get_withmpi()
-
-        # Prepare CalcInfo object for aiida
-        calcinfo = CalcInfo()
-        calcinfo.uuid = self.uuid
-        calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = []
-        calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [
-            self._DEFAULT_OUTPUT_FILE, self._DEFAULT_EXTERNAL_FILE
-        ]
-        calcinfo.retrieve_temporary_list = []
-
-        return calcinfo

@@ -102,8 +102,8 @@ class Symmetrise3DStructure(WorkChain):
         spec.input("structure", valid_type=StructureData)
         spec.input("settings", valid_type=DictData, required=False)
         spec.outline(cls.validate, cls.compute)
-        spec.output("output_structure", valid_type=StructureData)
-        spec.output("output_settings", valid_type=StructSettingsData)
+        spec.output("structure", valid_type=StructureData, required=True)
+        spec.output("settings", valid_type=StructSettingsData, required=True)
 
     def validate(self):
         # only allow 3d structures
@@ -137,8 +137,8 @@ class Symmetrise3DStructure(WorkChain):
         symmdata["computation_class"] = self.__class__.__name__
         symmdata["computation_version"] = VERSION
 
-        self.out('output_settings', StructSettingsData(data=symmdata))
-        self.out('output_structure', dict_to_structure(structdict))
+        self.out('settings', StructSettingsData(data=symmdata))
+        self.out('structure', dict_to_structure(structdict))
 
 
 def run_symmetrise_3d_structure(structure, settings=None):
@@ -155,6 +155,8 @@ def run_symmetrise_3d_structure(structure, settings=None):
     inputs_dict = {"structure": structure}
     if settings:
         inputs_dict["settings"] = settings
-    node = run_get_node(Symmetrise3DStructure, inputs_dict)
+    outcome = run_get_node(Symmetrise3DStructure, **inputs_dict)
+    outgoing = outcome.node.get_outgoing()
 
-    return node.out.output_structure, node.out.output_settings
+    return (outgoing.get_node_by_label("structure"),
+            outgoing.get_node_by_label("settings"))

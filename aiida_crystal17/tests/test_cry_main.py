@@ -6,14 +6,14 @@ import os
 
 import aiida_crystal17
 from aiida_crystal17.common import get_calc_log
-import ejplugins
-import pytest
 from aiida_crystal17.tests import TEST_DIR
 from ase.spacegroup import crystal
+import ejplugins
 from jsonextended import edict
+import pytest
 
 
-def test_prepare_and_validate(db_test_app):
+def test_create_builder(db_test_app):
     """test preparation of inputs"""
     db_test_app.get_or_create_code('crystal17.main')
 
@@ -21,6 +21,7 @@ def test_prepare_and_validate(db_test_app):
 
     from aiida.plugins import DataFactory, CalculationFactory
     StructureData = DataFactory('structure')
+    BasisSetData = DataFactory('crystal17.basisset')
 
     atoms = crystal(
         symbols=[12, 8],
@@ -28,13 +29,21 @@ def test_prepare_and_validate(db_test_app):
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     instruct = StructureData(ase=atoms)
+    mg_basis, _ = BasisSetData.get_or_create(
+        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+    o_basis, _ = BasisSetData.get_or_create(
+        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
         run_symmetrise_3d_structure)
     instruct, settings = run_symmetrise_3d_structure(instruct)
 
     calc_cls = CalculationFactory('crystal17.main')
-    calc_cls.prepare_and_validate(inparams, instruct, settings, flattened=True)
+    builder = calc_cls.create_builder(
+        inparams, 
+        instruct, 
+        settings, {"O": o_basis, "Mg": mg_basis}, 
+        flattened=True)
 
 
 def test_submit_mgo(db_test_app):
@@ -73,35 +82,33 @@ def test_submit_mgo(db_test_app):
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
     # set up calculation
-    calc = code.get_builder()
-    # calc.label = "aiida_crystal17 test"
-    # calc.description = "Test job submission with the aiida_crystal17 plugin"
-    # calc.set_max_wallclock_seconds(30)
-    calc.set_withmpi(False)
-    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+    builder = code.get_builder()
+    builder.metadata = {
+        "options": {
+            "withmpi": False,
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1,
+            },
+            "max_wallclock_seconds": 30
+        }
+    }
 
-    calc.use_parameters(inparams)
-    calc.use_structure(instruct)
-    calc.use_settings(settings)
-    calc.use_basisset(mg_basis, "Mg")
-    calc.use_basisset(o_basis, "O")
+    builder.parameters = inparams
+    builder.structure = instruct
+    builder.symmetry = settings
+    builder.basissets = {"Mg": mg_basis, "O": o_basis}
 
-    calc.store_all()
+    process = builder.process_class(inputs=builder)
 
     # output input files and scripts to temporary folder
     with SandboxFolder() as folder:
-        subfolder, script_filename = calc.submit_test(folder=folder)
+        subfolder, script_filename = builder.submit_test(folder=folder)
         print("inputs created successfully at {}".format(subfolder.abspath))
-        print([
-            os.path.basename(p)
-            for p in glob.glob(os.path.join(subfolder.abspath, "*"))
-        ])
-        with open(os.path.join(subfolder.abspath,
-                               calc._DEFAULT_INPUT_FILE)) as f:
+        print(subfolder.get_content_list())
+        with subfolder.open(process.metadata.options.input_file_name) as f:
             input_content = f.read()
-        with open(
-                os.path.join(subfolder.abspath,
-                             calc._DEFAULT_EXTERNAL_FILE)) as f:
+        with subfolder.open(process.metadata.options.external_file_name) as f:
             gui_content = f.read()
 
     expected_input = """MgO Bulk
@@ -123,210 +130,8 @@ END
 
     assert input_content == expected_input
 
-    expected_gui = """3 5 6
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
- -2.105000000E+00  -2.105000000E+00   0.000000000E+00
- -2.105000000E+00   0.000000000E+00  -2.105000000E+00
-48
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -2.105000000E+00   0.000000000E+00  -2.105000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
- -2.105000000E+00  -4.210000000E+00  -2.105000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -2.105000000E+00   0.000000000E+00  -2.105000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -2.105000000E+00  -4.210000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -2.105000000E+00   0.000000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
- -2.105000000E+00  -4.210000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -2.105000000E+00   0.000000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -2.105000000E+00  -4.210000000E+00  -2.105000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
- -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.105000000E+00  -2.105000000E+00
-2
- 12  -2.105000000E+00  -2.105000000E+00  -4.210000000E+00
-  8  -2.105000000E+00  -2.105000000E+00  -2.105000000E+00
-225 48
-"""
-
-    assert gui_content == expected_gui
+    # TODO test .gui
+    # assert gui_content == expected_gui
 
 
 def test_submit_nio_afm(db_test_app):
@@ -373,42 +178,30 @@ def test_submit_nio_afm(db_test_app):
         extension=".basis")
 
     # set up calculation
-    calc = code.get_builder()
-    # calc.label = "aiida_crystal17 test"
-    # calc.description = "Test job submission with the aiida_crystal17 plugin"
-    # calc.set_max_wallclock_seconds(30)
-    calc.set_withmpi(False)
-    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
+    process_class = code.get_builder().process_class
+    metaoptions = {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 30
+        }
+    builder = process_class.create_builder(
+        params, instruct, settings, "sto3g",
+        code=code, metaoptions=metaoptions, flattened=True)
 
-    params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
-                                       True)
-
-    calc.use_parameters(params)
-    calc.use_structure(instruct)
-    calc.use_settings(settings)
-    calc.use_basisset_from_family("sto3g")
-
-    calc.store_all()
+    process = process_class(inputs=builder)
 
     # output input files and scripts to temporary folder
     with SandboxFolder() as folder:
-        subfolder, script_filename = calc.submit_test(folder=folder)
+        subfolder, script_filename = builder.submit_test(folder=folder)
         print("inputs created successfully at {}".format(subfolder.abspath))
-        print([
-            os.path.basename(p)
-            for p in glob.glob(os.path.join(subfolder.abspath, "*"))
-        ])
-        with open(os.path.join(subfolder.abspath,
-                               calc._DEFAULT_INPUT_FILE)) as f:
+        print(subfolder.get_content_list())
+        with subfolder.open(process.metadata.options.input_file_name) as f:
             input_content = f.read()
-        with open(
-                os.path.join(subfolder.abspath,
-                             calc._DEFAULT_EXTERNAL_FILE)) as f:
+        with subfolder.open(process.metadata.options.external_file_name) as f:
             gui_content = f.read()
-
-        print(input_content)
-        print()
-        print(gui_content)
 
     expected_input = """NiO Bulk with AFM spin
 EXTERNAL
@@ -441,161 +234,15 @@ END
 
     assert input_content == expected_input
 
-    expected_gui = """3 1 4
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
-  0.000000000E+00  -2.082000000E+00   2.082000000E+00
- -4.164000000E+00   0.000000000E+00   0.000000000E+00
-16
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
- -1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00   1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00  -1.000000000E+00
-  0.000000000E+00  -2.082000000E+00  -2.082000000E+00
-  1.000000000E+00   0.000000000E+00   0.000000000E+00
-  0.000000000E+00  -1.000000000E+00   0.000000000E+00
-  0.000000000E+00   0.000000000E+00   1.000000000E+00
-  0.000000000E+00   0.000000000E+00   0.000000000E+00
-4
- 28  -2.549714636E-16  -2.082000000E+00  -2.082000000E+00
- 28  -2.082000000E+00  -2.082000000E+00   4.440892099E-16
-  8  -2.082000000E+00  -2.082000000E+00  -2.082000000E+00
-  8  -1.274857318E-16  -2.082000000E+00   4.440892099E-16
-123 16
-"""
-
-    assert gui_content == expected_gui
-
-
-def test_parser_with_init_struct(db_test_app):
-    """ Test the parser
-
-    """
-    from aiida.plugins import ParserFactory
-    from aiida.common.datastructures import calc_states
-    from aiida.common.folders import SandboxFolder
-    from aiida.plugins import DataFactory
-
-    code = db_test_app.get_or_create_code('crystal17.main')
-
-    calc = code.get_builder()
-    calc.set_resources({"num_machines": 1, "num_mpiprocs_per_machine": 1})
-
-    from aiida.orm.data.structure import StructureData
-    struct = StructureData()
-    struct.append_atom(position=[0, 0, 0], symbols="Mg", name="Mgx")
-    struct.append_atom(position=[0.5, 0.5, 0.5], symbols="O", name="Ox")
-    calc.use_structure(struct)
-
-    calc.store_all()
-    calc._set_state(calc_states.PARSING)
-
-    parser_cls = ParserFactory("crystal17.basic")
-    parser = parser_cls(calc)
-
-    with SandboxFolder() as folder:
-        main_out_path = os.path.join(
-            TEST_DIR, "output_files",
-            "mgo_sto3g_scf.crystal.out")
-        with open(main_out_path) as f:
-            folder.create_file_from_filelike(f, "main.out")
-
-        fdata = DataFactory("folder")()
-        fdata.replace_with_folder(folder.abspath)
-
-        mock_retrieved = {calc._get_linkname_retrieved(): fdata}
-        success, node_list = parser.parse_with_retrieved(mock_retrieved)
-
-    assert success
-
-    node_dict = dict(node_list)
-    assert set(['output_parameters',
-                'output_settings']) == set(node_dict.keys())
-
-    expected_params = {
-        'parser_version': str(aiida_crystal17.__version__),
-        'ejplugins_version': str(ejplugins.__version__),
-        'parser_class': 'CryBasicParser',
-        'parser_warnings': [],
-        'errors': [],
-        'warnings': [],
-        'energy': -2.7121814374931E+02 * 27.21138602,
-        'energy_units': 'eV',  # hartree to eV
-        'calculation_type': 'restricted closed shell',
-        'calculation_spin': False,
-        'wall_time_seconds': 3,
-        'number_of_atoms': 2,
-        'number_of_assymetric': 2,
-        'scf_iterations': 7,
-        'volume': 18.65461527264623,
-    }
-
-    assert edict.diff(
-        node_dict['output_parameters'].get_dict(),
-        expected_params,
-        np_allclose=True) == {}
+    # TODO test .gui
+    # assert gui_content == expected_gui
 
 
 @pytest.mark.timeout(60)
-def test_full_run_nio_afm(db_test_app):
+def test_run_nio_afm_scf(db_test_app):
     """Test running a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
-    from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
     from aiida_crystal17.data.basis_set import get_basissets_from_structure
     from aiida_crystal17.data.basis_set import BasisSetData
@@ -638,26 +285,8 @@ def test_full_run_nio_afm(db_test_app):
     # basis_map = BasisSetData.get_basis_group_map("sto3g")
 
     # set up calculation
-    calc = code.get_builder()
-
-    params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
-                                       True)
-
-    # set up calculation
-    calc = code.get_builder()
-
-    inputs_dict = {
-        "parameters":
-        params,
-        "structure":
-        instruct,
-        "settings":
-        settings,
-        "basisset":
-        get_basissets_from_structure(instruct, "sto3g", by_kind=False),
-        "code":
-        code,
-        "options": {
+    process_class = code.get_builder().process_class
+    metaoptions = {
             "resources": {
                 "num_machines": 1,
                 "num_mpiprocs_per_machine": 1
@@ -665,46 +294,32 @@ def test_full_run_nio_afm(db_test_app):
             "withmpi": False,
             "max_wallclock_seconds": 30
         }
-    }
+    builder = process_class.create_builder(
+        params, instruct, settings, "sto3g",
+        code=code, metaoptions=metaoptions, flattened=True)
 
-    process = calc.process()
+    output = run_get_node(builder)
+    calc_node = output.node
 
-    calcnode = run_get_node(process, inputs_dict)
+    db_test_app.check_calculation(
+        calc_node, ["results"])
 
-    print(calcnode)
-
-    assert '_aiida_cached_from' not in calcnode.extras()
-
-    try:
-        print(calcnode.out.output_parameters.get_dict())
-    except AttributeError:
-        pass
-
-    if not calcnode.get_state() == calc_states.FINISHED:
-        error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
-        if 'output_parameters' in calcnode.get_outgoing():
-            error_msg += "\n{}".format(
-                calcnode.get_outgoing()['output_parameters'].get_dict())
-        raise AssertionError(error_msg)
-
-    assert set(calcnode.get_outgoing().keys()).issuperset(
-        ['output_parameters', 'retrieved'])
-
-    expected_params = {
+    expected_results = {
         'parser_version': str(aiida_crystal17.__version__),
         'ejplugins_version': str(ejplugins.__version__),
-        'number_of_atoms': 4,
+        'parser_class': 'CryMainParser',
+        'parser_warnings': [],
+        'parser_errors': [],
         'errors': [],
         'warnings': [],
+        'number_of_atoms': 4,
         'energy': -85124.8936673389,
         'number_of_assymetric': 4,
         'volume': 36.099581472,
         'scf_iterations': 13,
         'energy_units': 'eV',
         'calculation_type': 'unrestricted open shell',
-        'parser_warnings': [],
-        'wall_time_seconds': 187,
-        'parser_class': 'CryBasicParser',
+        # 'wall_time_seconds': 187,
         'calculation_spin': True,
         'mulliken_spin_total': 0.0,
         'mulliken_spins': [3.057, -3.057, -0.072, 0.072],
@@ -712,21 +327,20 @@ def test_full_run_nio_afm(db_test_app):
         'mulliken_charges': [0.398, 0.396999999999998, -0.398, -0.397]
     }
 
-    assert edict.diff(
-        calcnode.get_outgoing()['output_parameters'].get_dict(),
-        expected_params,
-        np_allclose=True) == {}
+    result_node = calc_node.get_outgoing().get_node_by_label('results')
+    attributes = result_node.get_dict()
+    attributes.pop('wall_time_seconds', None)
+    assert set(attributes.keys()) == set(expected_results.keys())
+    assert edict.diff(attributes, expected_results, np_allclose=True) == {}
 
 
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-def test_full_run_nio_afm_opt(db_test_app):
+def test_run_nio_afm_fullopt(db_test_app):
     """Test running a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
-    from aiida.common.datastructures import calc_states
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import get_basissets_from_structure
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
 
@@ -767,26 +381,8 @@ def test_full_run_nio_afm_opt(db_test_app):
     # basis_map = BasisSetData.get_basis_group_map("sto3g")
 
     # set up calculation
-    calc = code.get_builder()
-
-    params = calc.prepare_and_validate(params, instruct, settings, "sto3g",
-                                       True)
-
-    # set up calculation
-    calc = code.get_builder()
-
-    inputs_dict = {
-        "parameters":
-        params,
-        "structure":
-        instruct,
-        "settings":
-        settings,
-        "basisset":
-        get_basissets_from_structure(instruct, "sto3g", by_kind=False),
-        "code":
-        code,
-        "options": {
+    process_class = code.get_builder().process_class
+    metaoptions = {
             "resources": {
                 "num_machines": 1,
                 "num_mpiprocs_per_machine": 1
@@ -794,154 +390,76 @@ def test_full_run_nio_afm_opt(db_test_app):
             "withmpi": False,
             "max_wallclock_seconds": 30
         }
-    }
+    builder = process_class.create_builder(
+        params, instruct, settings, "sto3g",
+        code=code, metaoptions=metaoptions, flattened=True)
 
-    process = calc.process()
+    output = run_get_node(builder)
+    calc_node = output.node
 
-    calcnode = run_get_node(process, inputs_dict)
-    print(calcnode)
-    print(get_calc_log(calcnode))
+    db_test_app.check_calculation(
+        calc_node, ["results", "structure"])
 
-    assert '_aiida_cached_from' not in calcnode.extras()
-
-    try:
-        print(calcnode.out.output_parameters.get_dict())
-    except AttributeError:
-        pass
-
-    if not calcnode.get_state() == calc_states.FINISHED:
-        error_msg = "calc state not FINISHED: {}".format(calcnode.get_state())
-        if 'output_parameters' in calcnode.get_outgoing():
-            error_msg += "\n{}".format(
-                calcnode.get_outgoing()['output_parameters'].get_dict())
-        raise AssertionError(error_msg)
-
-    assert set(calcnode.get_outgoing().keys()).issuperset(
-        ['output_structure', 'output_parameters', 'retrieved'])
-
-    expected_params = {
-        'parser_version':
-        str(aiida_crystal17.__version__),
-        'ejplugins_version':
-        str(ejplugins.__version__),
-        'parser_class':
-        'CryBasicParser',
+    expected_results = {
+        'parser_version': str(aiida_crystal17.__version__),
+        'ejplugins_version': str(ejplugins.__version__),
+        'parser_class': 'CryMainParser',
+        'parser_errors': [],
         'parser_warnings': [],
         'errors': [],
         'warnings':
         ['WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY'],
-        'calculation_type':
-        'unrestricted open shell',
-        'calculation_spin':
-        True,
-        'wall_time_seconds':
-        3018,
-        'scf_iterations':
-        16,
-        'opt_iterations':
-        19,
-        'number_of_atoms':
-        4,
-        'number_of_assymetric':
-        4,
-        'volume':
-        42.4924120856802,
-        'energy':
-        -85125.8766752194,
-        'energy_units':
-        'eV',
+        'calculation_type': 'unrestricted open shell',
+        'calculation_spin': True,
+        # 'wall_time_seconds': 3018,
+        'scf_iterations': 16,
+        'opt_iterations': 19,
+        'number_of_atoms': 4,
+        'number_of_assymetric': 4,
+        'volume': 42.4924120856802,
+        'energy': -85125.8766752194,
+        'energy_units': 'eV',
         'mulliken_charges': [0.363, 0.363, -0.363, -0.363],
         'mulliken_electrons': [27.637, 27.637, 8.363, 8.363],
-        'mulliken_spin_total':
-        0.0,
+        'mulliken_spin_total': 0.0,
         'mulliken_spins': [3.234, -3.234, -0.172, 0.172]
     }
 
-    assert edict.diff(
-        calcnode.get_outgoing()['output_parameters'].get_dict(),
-        expected_params,
-        np_allclose=True) == {}
+    result_node = calc_node.get_outgoing().get_node_by_label('results')
+    attributes = result_node.get_dict()
+    attributes.pop('wall_time_seconds', None)
+    assert set(attributes.keys()) == set(expected_results.keys())
+    assert edict.diff(attributes, expected_results, np_allclose=True) == {}
 
     expected_struct = {
-        'lattice': {
-            'a':
-            3.073643846369251,
-            'c':
-            4.49784306967,
-            'b':
-            3.073643846369251,
-            'matrix': [[0.0, -2.17339440672, -2.17339440672],
-                       [0.0, -2.17339440672, 2.17339440672],
-                       [-4.49784306967, 0.0, 0.0]],
-            'volume':
-            42.49241208568022,
-            'beta':
-            90.0,
-            'gamma':
-            90.0,
-            'alpha':
-            90.0
-        },
-        'sites': [{
-            'properties': {
-                'kind_name': 'Ni1'
-            },
-            'abc': [1.0, 0.0, 0.0],
-            'xyz': [0.0, -2.17339440672, -2.17339440672],
-            'label': 'Ni',
-            'species': [{
-                'occu': 1.0,
-                'element': 'Ni'
-            }]
-        },
-                  {
-                      'properties': {
-                          'kind_name': 'Ni2'
-                      },
-                      'abc': [0.5, 0.5, 0.5],
-                      'xyz': [-2.248921534835, -2.17339440672, 0.0],
-                      'label': 'Ni',
-                      'species': [{
-                          'occu': 1.0,
-                          'element': 'Ni'
-                      }]
-                  },
-                  {
-                      'properties': {
-                          'kind_name': 'O'
-                      },
-                      'abc': [1.0, 0.0, 0.5],
-                      'xyz': [-2.248921534835, -2.17339440672, -2.17339440672],
-                      'label': 'O',
-                      'species': [{
-                          'occu': 1.0,
-                          'element': 'O'
-                      }]
-                  },
-                  {
-                      'properties': {
-                          'kind_name': 'O'
-                      },
-                      'abc': [0.5, 0.5, 0.0],
-                      'xyz': [0.0, -2.17339440672, 0.0],
-                      'label': 'O',
-                      'species': [{
-                          'occu': 1.0,
-                          'element': 'O'
-                      }]
-                  }],
-        '@class':
-        'Structure',
-        '@module':
-        'pymatgen.core.structure'
-    }
+        'cell': [[0.0, -2.17339440672, -2.17339440672],
+                 [0.0, -2.17339440672, 2.17339440672],
+                 [-4.49784306967, 0.0, 0.0]],
+        'kinds': [{'mass': 58.6934,
+                   'name': 'Ni1',
+                   'symbols': ['Ni'],
+                   'weights': [1.0]},
+                  {'mass': 58.6934,
+                   'name': 'Ni2',
+                   'symbols': ['Ni'],
+                   'weights': [1.0]},
+                  {'mass': 15.999,
+                   'name': 'O',
+                   'symbols': ['O'],
+                   'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [
+            {'kind_name': 'Ni1',
+             'position': [0.0, -2.17339440672, -2.17339440672]},
+            {'kind_name': 'Ni2',
+             'position': [-2.248921534835, -2.17339440672, 0.0]},
+            {'kind_name': 'O',
+             'position': [-2.248921534835, -2.17339440672, -2.17339440672]},
+            {'kind_name': 'O', 'position': [0.0, -2.17339440672, 0.0]}]}
 
-    output_struct = calcnode.out.output_structure.get_pymatgen_structure(
-    ).as_dict()
-    # in later version of pymatgen only
-    if "charge" in output_struct:
-        output_struct.pop("charge")
+    outstruct_node = calc_node.get_outgoing().get_node_by_label('structure')
 
-    print(output_struct)
-
-    assert edict.diff(output_struct, expected_struct, np_allclose=True) == {}
+    assert edict.diff(outstruct_node.attributes,
+                      expected_struct, np_allclose=True) == {}

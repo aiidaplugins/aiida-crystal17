@@ -13,3 +13,5 @@ postgres*.log
 .aiida_envs.yaml
 .ropeproject
 _archive/
+.ipynb_checkpoints/
+databases/
