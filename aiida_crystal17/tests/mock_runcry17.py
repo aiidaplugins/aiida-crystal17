@@ -48,8 +48,9 @@ def main(sys_args=None):
 
     if len(sys_args) < 1:
         raise ValueError("no input name given (as 1st argument)")
-    
+
     if sys_args[0] == "--test":
+        # this used in the conda recipe, to test the executable is present
         return
 
     # script_path = os.path.dirname(os.path.realpath(__file__))
