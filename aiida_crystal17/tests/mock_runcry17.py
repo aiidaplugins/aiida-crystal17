@@ -6,10 +6,13 @@ and writes an appropriate outputfile to stdoout
 
 to create a hashkey:
 
-input_path = 'path/to/input.d12'
-with open(input_path, "rb") as f:
-    hashkey = hashlib.md5(f.read()).digest()
-hashkey
+.. code-block::
+
+    import hashlib
+    input_path = 'path/to/input.d12'
+    with open(input_path, "rb") as f:
+        hashkey = hashlib.md5(f.read()).digest()
+    hashkey
 
 """
 import hashlib
