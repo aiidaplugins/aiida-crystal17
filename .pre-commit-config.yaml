@@ -18,8 +18,7 @@
     name: yapf
     entry: yapf
     language: system
-    types: [python]
-    args: ["-i"]
+    exclude: '^(aiida_crystal17/tests/)'
 
   # prospector: collection of linters
   - id: prospector

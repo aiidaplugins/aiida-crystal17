@@ -87,52 +87,52 @@ def test_full_mgo_opt(db_test_app):
 
     # assert node.get_attribute("state") == calc_states.FINISHED
 
-    expected_struct = {
-        '@class':
-        'Structure',
-        '@module':
-        'pymatgen.core.structure',
-        'lattice': {
-            'a':
-            2.9769195487953652,
-            'alpha':
-            60.00000000000001,
-            'b':
-            2.9769195487953652,
-            'beta':
-            60.00000000000001,
-            'c':
-            2.9769195487953652,
-            'gamma':
-            60.00000000000001,
-            'matrix': [[0.0, 2.105, 2.105], [2.105, 0.0, 2.105],
-                       [2.105, 2.105, 0.0]],
-            'volume':
-            18.65461525
-        },
-        'sites': [{
-            'abc': [0.0, 0.0, 0.0],
-            'label': 'Mg',
-            'species': [{
-                'element': 'Mg',
-                'occu': 1.0
-            }],
-            'xyz': [0.0, 0.0, 0.0]
-        },
-                  {
-                      'abc': [0.5, 0.5, 0.5],
-                      'label': 'O',
-                      'species': [{
-                          'element': 'O',
-                          'occu': 1.0
-                      }],
-                      'xyz': [2.105, 2.105, 2.105]
-                  }]
+    expected_instruct_attrs = {
+        'cell': [
+            [0.0, 2.105, 2.105],
+            [2.105, 0.0, 2.105],
+            [2.105, 2.105, 0.0]],
+        'kinds': [
+            {'mass': 24.305,
+             'name': 'Mg',
+             'symbols': ['Mg'],
+             'weights': [1.0]},
+            {'mass': 15.9994,
+             'name': 'O',
+             'symbols': ['O'],
+             'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [{'kind_name': 'Mg', 'position': [0.0, 0.0, 0.0]},
+                  {'kind_name': 'O', 'position': [2.105, 2.105, 2.105]}]
     }
 
-    input_struct = node.incoming.structure.get_pymatgen_structure().as_dict()
-    # in later version of pymatgen only
-    if "charge" in input_struct:
-        input_struct.pop("charge")
+    assert edict.diff(
+        dict(node.inp.structure.get_attrs()),
+        expected_instruct_attrs, np_allclose=True, atol=1e-3) == {}
 
-    assert edict.diff(input_struct, expected_struct, np_allclose=True) == {}
+    expected_outstruct_attrs = {
+        'cell': [
+            [0.0, 1.94218061274, 1.94218061274],
+            [1.94218061274, 0.0, 1.94218061274],
+            [1.94218061274, 1.94218061274, 0.0]],
+        'kinds': [
+            {'mass': 24.305,
+             'name': 'Mg',
+             'symbols': ['Mg'],
+             'weights': [1.0]},
+            {'mass': 15.9994, 'name': 'O', 'symbols': ['O'], 'weights': [1.0]}],
+        'pbc1': True,
+        'pbc2': True,
+        'pbc3': True,
+        'sites': [
+            {'kind_name': 'Mg',
+             'position': [0.0, 0.0, 0.0]},
+            {'kind_name': 'O',
+             'position': [1.94218061274, 1.94218061274, 1.94218061274]}]
+    }
+
+    assert edict.diff(
+        dict(node.get_outputs_dict()['output_structure'].get_attrs()),
+        expected_outstruct_attrs, np_allclose=True, atol=1e-3) == {}

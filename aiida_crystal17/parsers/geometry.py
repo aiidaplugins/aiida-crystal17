@@ -147,7 +147,10 @@ def get_crystal_system(sg_number, as_number=False):
     :param as_number: return the system as a number (recognized by CRYSTAL) or a str
     :return: Crystal system for structure or None if system cannot be detected.
     """
-    f = lambda i, j: i <= sg_number <= j
+
+    def f(i, j):
+        return i <= sg_number <= j
+
     cs = {
         "triclinic": (1, 2),
         "monoclinic": (3, 15),
@@ -495,12 +498,12 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
     """create string of gui file content (for CRYSTAL17)
 
     :param structdata: dictionary of structure data with keys: 'pbc', 'atomic_numbers', 'ccoords', 'lattice'
-    :param symmdata:  dictionary of symmetry data with keys: 'crystal_type', 'centring_code', 'sgnum', 'symops'
+    :param symmdata:  dictionary of symmetry data with keys: 'crystal_type', 'centring_code', 'space_group', 'operations'
     :param fractional_ops: whether the symmetry operations are in fractional coordinates
     :return:
     """
 
-    dimensionality = len(structdata["pbc"])
+    dimensionality = 3 if structdata["pbc"] is True else sum(structdata["pbc"])
     atomic_numbers = structdata["atomic_numbers"]
     ccoords = structdata["ccoords"]
     lattice = structdata["lattice"]
@@ -513,6 +516,9 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
     if fractional_ops:
         symops = ops_frac_to_cart(symops, lattice)
 
+    # sort the symmetry operations (useful to standardize for testing)
+    # symops = np.sort(symops, axis=0)
+
     num_symops = len(symops)
     sym_lines = []
     for symop in symops:
@@ -520,6 +526,8 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
         sym_lines.append(symop[3:6])
         sym_lines.append(symop[6:9])
         sym_lines.append(symop[9:12])
+
+    # for all output numbers, we round to 9 dp and add 0, so we don't get -0.0
 
     geom_str_list = []
     geom_str_list.append("{0} {1} {2}".format(dimensionality, origin_setting,
@@ -537,7 +545,7 @@ def crystal17_gui_string(structdata, symmdata, fractional_ops=True):
     geom_str_list.append(str(len(atomic_numbers)))
     for anum, coord in zip(atomic_numbers, ccoords):
         geom_str_list.append("{0:3} {1:17.9E} {2:17.9E} {3:17.9E}".format(
-            anum, *coord))
+            anum, *(np.round(coord, 10) + 0.)))
 
     geom_str_list.append("{0} {1}".format(sg_num, num_symops))
     geom_str_list.append("")

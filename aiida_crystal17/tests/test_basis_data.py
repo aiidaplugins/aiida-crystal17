@@ -102,7 +102,7 @@ def test_bases_from_struct(db_test_app):
         symbols=[12, 8],
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,
-        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])   # type: ase.Atoms
+        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])  # type: ase.Atoms
 
     # atoms[0].tag = 1
     # atoms[1].tag = 1

@@ -11,7 +11,7 @@
         "Topic :: Scientific/Engineering :: Chemistry",
         "Topic :: Scientific/Engineering :: Physics"
     ],
-    "version": "0.3.3",
+    "version": "0.4.0",
     "entry_points": {
         "console_scripts": [
             "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main"
@@ -43,7 +43,11 @@
     ],
     "reentry_register": true,
     "install_requires": [
-        "ejplugins>=0.9.7"
+        "aiida-core==0.12.2",
+        "ejplugins>=0.9.7",
+        "packaging==19.0",
+        "spglib==1.10.3.65",
+        "ase==3.12.0"
     ],
     "extras_require": {
         "aiida": [
@@ -67,7 +71,7 @@
             "pylint==1.9.3"
         ],
         "docs": [
-            "sphinx"
+            "sphinx>=1.6"
         ]
     }
 }
