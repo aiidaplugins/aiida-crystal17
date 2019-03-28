@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
 this is a mock version of runcry17,
-which compares an input file to a hash and writes an appropriate outputfile st stdoout
+which compares an input file to a hash,
+and writes an appropriate outputfile to stdoout
 
-to add find hashkeys:
+to create a hashkey:
 
 input_path = 'path/to/input.d12'
 with open(input_path, "rb") as f:
