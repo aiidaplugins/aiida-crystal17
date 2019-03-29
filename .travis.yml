@@ -45,7 +45,7 @@ install:
   fi
 
 before_script:
-- reentry scan
+- if [ "$TEST_TYPE" != "code_style" ]]; then; reentry scan; fi
 
 script:
 - |
