@@ -14,14 +14,18 @@ matrix:
     - python: 3.6
       env: TEST_TYPE="code-style"
     - python: 3.6
+      env: TEST_TYPE="version"
+    - python: 3.6
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
+    - python: 2.7
       env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
     - python: 3.6 
       env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
     - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
 
-  allow_failures:
-    - env: TEST_TYPE="docs" READTHEDOCS="True"
+  # allow_failures:
+  #   - env: TEST_TYPE="docs" READTHEDOCS="True"
 
 install:
 # Upgrade pip setuptools and wheel
@@ -29,17 +33,18 @@ install:
 - |
     if [[ "$TEST_TYPE" == "code-style" ]]; then
       pip install "flake8<3.8.0,>=3.7.0"
-    else
-      pip uninstall -y numpy
-      pip install -U aiida-core==1.0.0b1
     fi
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
+      pip uninstall -y numpy
+      pip install -U aiida-core==1.0.0b1
       pip install -e .[testing]
       pip install coveralls
     fi
 - |
     if [[ "$TEST_TYPE" == "docs" ]]; then
+      pip uninstall -y numpy
+      pip install -U aiida-core==1.0.0b1
       pip install -e .[docs]
     fi
 # - |
@@ -68,6 +73,10 @@ script:
   if [[ "$TEST_TYPE" == "docs" ]]; then
     cd docs
     make
+  fi
+- |
+  if [[ "$TEST_TYPE" == "version" ]]; then
+    python ./.travis-data/check_version.py
   fi
 
 after_success:
