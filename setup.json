@@ -42,7 +42,7 @@
     ],
     "reentry_register": true,
     "install_requires": [
-        "aiida-core==1.0.0",
+        "aiida-core==1.0.0b1",
         "ejplugins>=0.9.7",
         "packaging==19.0",
         "spglib==1.10.3.65",
