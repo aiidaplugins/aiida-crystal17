@@ -25,7 +25,7 @@ matrix:
 
 install:
 # Upgrade pip setuptools and wheel
-- pip install -U pip wheel setuptools
+- pip install -U pip wheel setuptools reentry
 - |
     if [ "$TEST_TYPE" == "code_style" ]]; then
       pip install pyflakes==2.1.1
@@ -45,7 +45,7 @@ install:
   fi
 
 before_script:
-- if [ "$TEST_TYPE" != "code_style" ]]; then; reentry scan; fi
+- reentry scan
 
 script:
 - |
