@@ -32,8 +32,15 @@ install:
     else
       pip uninstall -y numpy
       pip install -e .
-      pip install -e .[testing,docs]
+    fi
+- |
+    if [[ "$TEST_TYPE" == "pytest" ]]; then
+      pip install -e .[testing]
       pip install coveralls
+    fi
+- |
+    if [[ "$TEST_TYPE" == "docs" ]]; then
+      pip install -e .[docs]
     fi
 # - |
 #   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
