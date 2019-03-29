@@ -14,9 +14,9 @@ matrix:
     - python: 3.6
       env: TEST_TYPE="code-style"
     - python: 3.6
-      env: TEST_TYPE="pytest" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
     - python: 3.6 
-      env: TEST_TYPE="pytest" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
     - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
 
@@ -34,15 +34,15 @@ install:
       pip install -e .[testing,docs]
       pip install coveralls
     fi
-- |
-  if [[ ! -z "${AIIDA_BRANCH}" ]]; then
-    cur_path="$(pwd)"
-    cd ..
-    git clone --branch=${AIIDA_BRANCH} https://github.com/aiidateam/aiida_core.git
-    cd aiida_core
-    pip install -U -e .
-    cd "$cur_path"
-  fi
+# - |
+#   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
+#     cur_path="$(pwd)"
+#     cd ..
+#     git clone --branch=${AIIDA_BRANCH} https://github.com/aiidateam/aiida_core.git
+#     cd aiida_core
+#     pip install -U -e .
+#     cd "$cur_path"
+#   fi
 
 before_script:
 - reentry scan
