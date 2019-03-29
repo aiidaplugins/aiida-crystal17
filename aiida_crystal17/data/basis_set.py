@@ -1,5 +1,4 @@
-"""
-a data type to store CRYSTAL17 basis sets
+""" a data type to store CRYSTAL17 basis sets
 """
 from __future__ import absolute_import
 
@@ -21,13 +20,12 @@ BASISGROUP_TYPE = 'crystal17.basisset'
 def get_basissets_from_structure(structure, family_name, by_kind=False):
     """
     Given a family name (a BasisSetFamily group in the DB) and an AiiDA
-    structure, return a dictionary associating each element or kind name 
-    (if by_kind=True)
-    with its BasisSetData object.
+    structure, return a dictionary associating each element or kind name
+    (if ``by_kind=True``) with its BasisSetData object.
 
     :raise aiida.common.exceptions.MultipleObjectsError:
        if more than one Basis Set for the same element is found in the group.
-    :raise aiida.common.exceptions.NotExistent: 
+    :raise aiida.common.exceptions.NotExistent:
         if no Basis Set for an element in the group is found in the group.
     """
     from aiida.common.exceptions import NotExistent
@@ -228,7 +226,7 @@ def parse_basis(fname):
 
     - The basis file must contain one basis set in the CRYSTAL17 format
     - blank lines and lines beginning '#' will be ignored
-    - the file can also start with a fenced (with ---), 
+    - the file can also start with a fenced (with ---),
       yaml formatted header section
         - Note keys should not contain '.'s
 
@@ -604,7 +602,7 @@ class BasisSetData(Data):
     @classmethod
     def get_basis_group_map(cls, group_name):
         """
-        Return an {element: basis} map 
+        Return an {element: basis} map
         for the BasisFamily group with the given name.
         """
         from aiida.common.exceptions import MultipleObjectsError
@@ -622,7 +620,7 @@ class BasisSetData(Data):
     @classmethod
     def get_basis_groups(cls, filter_elements=None, user=None):
         """
-        Return all names of groups of type BasisFamily, 
+        Return all names of groups of type BasisFamily,
         possibly with some filters.
 
         :param filter_elements: A string or a list of strings.
@@ -689,12 +687,13 @@ class BasisSetData(Data):
 
         # only files, and only those ending with specified exension;
         # go to the real file if it is a symlink
-        files = [
-            os.path.realpath(os.path.join(folder, i))
-            for i in os.listdir(folder)
-            if os.path.isfile(os.path.join(folder, i))
-            and i.lower().endswith(extension)
-        ]
+        files = []
+        for i in os.listdir(folder):
+            if not os.path.isfile(os.path.join(folder, i)):
+                continue
+            if not i.lower().endswith(extension):
+                continue
+            files.append(os.path.realpath(os.path.join(folder, i)))
 
         nfiles = len(files)
 
@@ -736,8 +735,8 @@ class BasisSetData(Data):
                 [x for x in elements_names if elements_names.count(x) > 1])
             duplicates_string = ", ".join(i for i in duplicates)
             raise UniquenessError(
-                "More than one Basis found for the elements: " +
-                duplicates_string + ".")
+                ("More than one Basis found for the elements: "
+                 "{}").format(duplicates_string))
 
         # At this point, save the group, if still unstored
         if group_created and not dry_run:

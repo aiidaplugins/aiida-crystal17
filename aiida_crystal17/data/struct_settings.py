@@ -202,7 +202,7 @@ class StructSettingsData(Data):
                  for k, v in data.items() if k != "operations"})
             self.set_attribute("num_symops", len(data["operations"]))
         except ModificationNotAllowed:  # pylint: disable=try-except-raise
-            # I reraise here to avoid to go in the generic 'except' below that 
+            # I re-raise here to avoid to go in the generic 'except' below that
             # would raise the same exception again
             raise
         except Exception:

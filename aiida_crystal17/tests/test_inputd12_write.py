@@ -186,7 +186,7 @@ OPTGEOM
 FULLOPTG
 FRAGMENT
 2
-1 3 
+1 3
 ENDOPT
 END
 basis_set1
@@ -194,7 +194,7 @@ basis_set2
 99 0
 GHOSTS
 2
-5 6 
+5 6
 END
 SHRINK
 16 8

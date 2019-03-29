@@ -4,7 +4,7 @@ A parser to read output from a standard CRYSTAL17 run
 from aiida.common import exceptions
 from aiida.parsers.parser import Parser
 
-from aiida_crystal17.parsers.mainout_parse import parse_mainout
+from aiida_crystal17.parsers.main_out import parse_main_out
 
 
 class CryMainParser(Parser):
@@ -27,23 +27,26 @@ class CryMainParser(Parser):
 
         # parse the stdout file and add nodes
         self.logger.info("parsing main out file")
+        init_struct = None
+        init_settings = None
+        if "structure" in self.node.inputs:
+            init_struct = self.node.inputs.structure
+        if "symmetry" in self.node.inputs:
+            init_settings = self.node.inputs.symmetry
         with output_folder.open(mainout_file) as fileobj:
-            parser_result = parse_mainout(
-                fileobj, parser_class=self.__class__.__name__,
-                init_struct=self.node.inputs.structure,
-                init_settings=self.node.inputs.symmetry)
-            if not parser_result.success:
-                fileobj.seek(0)
-                self.logger.warning("parsing main output file failed: "
-                                    "{}".format(fileobj.read()))
+            parser_result = parse_main_out(
+                fileobj,
+                parser_class=self.__class__.__name__,
+                init_struct=init_struct,
+                init_settings=init_settings)
 
         errors = parser_result.nodes.results.get_attribute("errors")
         parser_errors = parser_result.nodes.results.get_attribute(
             "parser_errors")
         if parser_errors:
             self.logger.warning(
-                    "the parser raised the following errors:\n{}".format(
-                        "\n\t".join(parser_errors)))
+                "the parser raised the following errors:\n{}".format(
+                    "\n\t".join(parser_errors)))
         if errors:
             self.logger.warning(
                 "the calculation raised the following errors:\n{}".format(
@@ -55,5 +58,4 @@ class CryMainParser(Parser):
         if parser_result.nodes.symmetry is not None:
             self.out('symmetry', parser_result.nodes.symmetry)
 
-        if not parser_result.success:
-            return self.exit_codes.ERROR_PARSING_FAILED
+        return parser_result.exit_code

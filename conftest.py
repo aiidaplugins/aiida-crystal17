@@ -139,7 +139,8 @@ class AiidaTestApp(object):
                 input_plugin_name=entry_point,
                 remote_computer_exec=[computer, path],
             )
-            code.label = '{}-{}'.format(entry_point, executable)
+            code.label = '{}-{}@{}'.format(
+                entry_point, executable, computer_name)
             code.store()
 
         return code

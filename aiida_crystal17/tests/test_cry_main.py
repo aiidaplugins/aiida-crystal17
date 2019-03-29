@@ -1,11 +1,9 @@
-""" Tests for basic CRYSTAL17 calculation
+""" Tests for main CRYSTAL17 calculation
 
 """
-import glob
 import os
 
 import aiida_crystal17
-from aiida_crystal17.common import get_calc_log
 from aiida_crystal17.tests import TEST_DIR
 from ase.spacegroup import crystal
 import ejplugins
@@ -40,10 +38,13 @@ def test_create_builder(db_test_app):
 
     calc_cls = CalculationFactory('crystal17.main')
     builder = calc_cls.create_builder(
-        inparams, 
-        instruct, 
-        settings, {"O": o_basis, "Mg": mg_basis}, 
+        inparams,
+        instruct,
+        settings, {"O": o_basis, "Mg": mg_basis},
         flattened=True)
+
+    builder.structure
+    builder.parameters
 
 
 def test_submit_mgo(db_test_app):
@@ -109,7 +110,7 @@ def test_submit_mgo(db_test_app):
         with subfolder.open(process.metadata.options.input_file_name) as f:
             input_content = f.read()
         with subfolder.open(process.metadata.options.external_file_name) as f:
-            gui_content = f.read()
+            gui_content = f.read()  # noqa: F841
 
     expected_input = """MgO Bulk
 EXTERNAL
@@ -179,17 +180,17 @@ def test_submit_nio_afm(db_test_app):
 
     # set up calculation
     process_class = code.get_builder().process_class
-    metaoptions = {
-            "resources": {
-                "num_machines": 1,
-                "num_mpiprocs_per_machine": 1
-            },
-            "withmpi": False,
-            "max_wallclock_seconds": 30
-        }
+    options = {
+        "resources": {
+            "num_machines": 1,
+            "num_mpiprocs_per_machine": 1
+        },
+        "withmpi": False,
+        "max_wallclock_seconds": 30
+    }
     builder = process_class.create_builder(
         params, instruct, settings, "sto3g",
-        code=code, metaoptions=metaoptions, flattened=True)
+        code=code, options=options, flattened=True)
 
     process = process_class(inputs=builder)
 
@@ -201,7 +202,7 @@ def test_submit_nio_afm(db_test_app):
         with subfolder.open(process.metadata.options.input_file_name) as f:
             input_content = f.read()
         with subfolder.open(process.metadata.options.external_file_name) as f:
-            gui_content = f.read()
+            gui_content = f.read()  # noqa: F841
 
     expected_input = """NiO Bulk with AFM spin
 EXTERNAL
@@ -244,7 +245,6 @@ def test_run_nio_afm_scf(db_test_app):
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import get_basissets_from_structure
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
 
@@ -286,17 +286,17 @@ def test_run_nio_afm_scf(db_test_app):
 
     # set up calculation
     process_class = code.get_builder().process_class
-    metaoptions = {
-            "resources": {
-                "num_machines": 1,
-                "num_mpiprocs_per_machine": 1
-            },
-            "withmpi": False,
-            "max_wallclock_seconds": 30
-        }
+    options = {
+        "resources": {
+            "num_machines": 1,
+            "num_mpiprocs_per_machine": 1
+        },
+        "withmpi": False,
+        "max_wallclock_seconds": 30
+    }
     builder = process_class.create_builder(
         params, instruct, settings, "sto3g",
-        code=code, metaoptions=metaoptions, flattened=True)
+        code=code, options=options, flattened=True)
 
     output = run_get_node(builder)
     calc_node = output.node
@@ -382,17 +382,17 @@ def test_run_nio_afm_fullopt(db_test_app):
 
     # set up calculation
     process_class = code.get_builder().process_class
-    metaoptions = {
-            "resources": {
-                "num_machines": 1,
-                "num_mpiprocs_per_machine": 1
-            },
-            "withmpi": False,
-            "max_wallclock_seconds": 30
-        }
+    options = {
+        "resources": {
+            "num_machines": 1,
+            "num_mpiprocs_per_machine": 1
+        },
+        "withmpi": False,
+        "max_wallclock_seconds": 30
+    }
     builder = process_class.create_builder(
         params, instruct, settings, "sto3g",
-        code=code, metaoptions=metaoptions, flattened=True)
+        code=code, options=options, flattened=True)
 
     output = run_get_node(builder)
     calc_node = output.node

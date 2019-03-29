@@ -54,11 +54,10 @@ def write_input(indict, basis_sets, atom_props=None):
     validate_with_json(indict)
     if not basis_sets:
         raise ValueError("there must be at least one basis set")
-    elif not (all([isinstance(b, six.string_types) for b in basis_sets])
-              or all([hasattr(b, "content") for b in basis_sets])):
-        raise ValueError(
-            "basis_sets must be either all strings or all objects with a `content` property"
-        )
+    elif not all([isinstance(b, six.string_types) or hasattr(b, "content")
+                  for b in basis_sets]):
+        raise ValueError("basis_sets must be either all strings"
+                         "or all objects with a `content` property")
     if atom_props is None:
         atom_props = {}
     if not set(atom_props.keys()).issubset(

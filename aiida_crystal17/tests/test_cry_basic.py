@@ -90,7 +90,7 @@ def compare_expected_results(infile, result_node):
         expected = {
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
-            'parser_class': 'CryBasicParser',
+            'parser_class': 'CryMainParser',
             'parser_errors': [],
             'parser_warnings': ["no initial structure available, "
                                 "creating new kinds for atoms"],
@@ -111,7 +111,7 @@ def compare_expected_results(infile, result_node):
         expected = {
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
-            'parser_class': 'CryBasicParser',
+            'parser_class': 'CryMainParser',
             'parser_errors': [],
             'parser_warnings': [
                 "no initial structure available, "
@@ -134,7 +134,7 @@ def compare_expected_results(infile, result_node):
         expected = {
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
-            'parser_class': 'CryBasicParser',
+            'parser_class': 'CryMainParser',
             'parser_errors': [],
             'parser_warnings': ["no initial structure available, "
                                 "creating new kinds for atoms"],

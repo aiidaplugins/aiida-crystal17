@@ -11,7 +11,7 @@ from ejplugins.crystal import CrystalOutputPlugin
 
 
 # pylint: disable=too-many-locals
-def create_builder(inpath, outpath):
+def create_builder(folder, input_name="main.d12", output_name="main.out", code=None):
     """ create ``crystal17.main`` input nodes from an existing run
 
     NB: none of the nodes are stored, also
@@ -27,16 +27,13 @@ def create_builder(inpath, outpath):
     struct_cls = DataFactory('structure')
     structsettings_cls = DataFactory('crystal17.structsettings')
 
-    with open(inpath) as f:
+    with folder.open(input_name, mode='r') as f:
         d12content = f.read()
 
     output_dict, basis_sets, atom_props = extract_data(d12content)
 
     cryparse = CrystalOutputPlugin()
-    if not os.path.exists(outpath):
-        raise OutputParsingError(
-            "The raw data file does not exist: {}".format(outpath))
-    with open(outpath) as f:
+    with folder.open(output_name, mode='r') as f:
         try:
             data = cryparse.read_file(f, log_warnings=False)
         except IOError as err:
@@ -86,7 +83,8 @@ def create_builder(inpath, outpath):
 
         bases[bdata.element] = bdata
 
-    builder = calc_cls.create_builder(output_dict, structure, settings, bases)
+    builder = calc_cls.create_builder(
+        output_dict, structure, settings, bases, code=code)
 
     return builder
 

@@ -1,31 +1,78 @@
 """
 parse the main output file and create the required output nodes
 """
+from collections import Mapping
 # TODO remove dependancy on ejplugins?
 import ejplugins
 from aiida_crystal17.parsers.geometry import dict_to_structure
 from ejplugins.crystal import CrystalOutputPlugin
+from aiida.plugins import DataFactory
+from aiida.engine import ExitCode
+from aiida_crystal17 import __version__
+from aiida_crystal17.calculations.cry_main import CryMainCalculation
 
-from aiida_crystal17 import __version__ as pkg_version
 
+class OutputNodes(Mapping):
 
-class OutputNodes(object):
     def __init__(self):
-        self.results = None
-        self.structure = None
-        self.symmetry = None
-        self.folder = None
+        self._dict = {
+            "results": None,
+            "structure": None,
+            "symmetry": None
+        }
+
+    def _get_results(self):
+        return self._dict["results"]
+
+    def _set_results(self, value):
+        assert isinstance(value, DataFactory('dict'))
+        self._dict["results"] = value
+
+    results = property(_get_results, _set_results)
+
+    def _get_structure(self):
+        return self._dict["structure"]
+
+    def _set_structure(self, value):
+        assert isinstance(value, DataFactory('structure'))
+        self._dict["structure"] = value
+
+    structure = property(_get_structure, _set_structure)
+
+    def _get_symmetry(self):
+        return self._dict["symmetry"]
+
+    def _set_symmetry(self, value):
+        assert isinstance(value, DataFactory('crystal17.structsettings'))
+        self._dict["symmetry"] = value
+
+    symmetry = property(_get_symmetry, _set_symmetry)
+
+    def __getitem__(self, value):
+        out = self._dict[value]
+        if out is None:
+            raise KeyError(value)
+        return out
+
+    def __iter__(self):
+        for key, val in self._dict.items():
+            if val is not None:
+                yield key
+
+    def __len__(self):
+        len([k for k, v in self._dict.items() if v is not None])
 
 
 class ParserResult(object):
     def __init__(self):
-        self.success = True
+        self.exit_code = ExitCode()
         self.nodes = OutputNodes()
 
 
 # pylint: disable=too-many-locals,too-many-statements
-def parse_mainout(fileobj, parser_class, init_struct=None,
-                  init_settings=None):
+def parse_main_out(fileobj, parser_class,
+                   init_struct=None,
+                   init_settings=None):
     """ parse the main output file and create the required output nodes
 
     :param abs_path: absolute path of stdout file
@@ -35,25 +82,24 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
 
     :return parse_result
     """
-    from aiida.plugins import DataFactory
-
     parser_result = ParserResult()
+    exit_codes = CryMainCalculation.exit_codes
 
     results_data = {
-        "parser_version": str(pkg_version),
+        "parser_version": str(__version__),
         "parser_class": str(parser_class),
         "ejplugins_version": str(ejplugins.__version__),
         "parser_errors": [],
         "parser_warnings": [],
         "errors": [],
         "warnings": []
-        }
+    }
 
     cryparse = CrystalOutputPlugin()
     try:
         data = cryparse.read_file(fileobj, log_warnings=False)
     except IOError as err:
-        parser_result.success = False
+        parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
         results_data["parser_errors"].append(
             "Error parsing CRYSTAL 17 main output: {0}\n{1}".format(err))
         parser_result.nodes.results = DataFactory("dict")(dict=results_data)
@@ -72,7 +118,7 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
     # Note the above files are only available for optimisation runs
 
     if data["errors"]:
-        parser_result.success = False
+        parser_result.exit_code = exit_codes.ERROR_CRYSTAL_RUN
     results_data["errors"] = data["errors"]
     results_data["warnings"] = data["warnings"]
 
@@ -115,7 +161,8 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
         pass
         # TODO test intput structure is same as output structure
 
-    _extract_symmetry(final_data, init_settings, results_data, parser_result)
+    _extract_symmetry(
+        final_data, init_settings, results_data, parser_result, exit_codes)
 
     _extract_mulliken(data, results_data)
 
@@ -131,15 +178,17 @@ def parse_mainout(fileobj, parser_class, init_struct=None,
     return parser_result
 
 
-def _extract_symmetry(final_data, init_settings, param_data, parser_result):
+def _extract_symmetry(final_data, init_settings, param_data,
+                      parser_result, exit_codes):
     """extract symmetry operations"""
 
     if "primitive_symmops" in final_data:
 
         if init_settings:
             if init_settings.num_symops != len(final_data["primitive_symmops"]):
-                param_data["parser_errors"].append("number of symops different")
-                parser_result.success = False
+                param_data["parser_errors"].append(
+                    "number of symops different")
+                parser_result.exit_code = exit_codes.ERROR_SYMMETRY_INCONSISTENCY
             # differences = init_settings.compare_operations(
             #     final_data["primitive_symmops"])
             # if differences:
@@ -161,7 +210,7 @@ def _extract_symmetry(final_data, init_settings, param_data, parser_result):
     else:
         param_data["parser_errors"].append(
             "primitive symmops were not found in the output file")
-        parser_result.success = False
+        parser_result.exit_code = exit_codes.ERROR_SYMMETRY_NOT_FOUND
 
 
 def _extract_structure(cell_data, init_struct, results_data):

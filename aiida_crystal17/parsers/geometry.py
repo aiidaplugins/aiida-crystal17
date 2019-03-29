@@ -407,8 +407,8 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     ccoords = structdata["ccoords"]
 
     # spglib only uses the atomic numbers to demark inequivalent sites
-    inequivalent_sites = (np.array(structdata["atomic_numbers"]) * 1000 +
-                          np.array(structdata["equivalent"])).tolist()
+    inequivalent_sites = (
+        np.array(structdata["atomic_numbers"]) * 1000 + np.array(structdata["equivalent"])).tolist()
 
     if "kinds" in structdata:
         inequivalent_to_kind = {
@@ -453,8 +453,8 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
     for rot, trans in zip(symm_dataset["rotations"],
                           symm_dataset["translations"]):
         # rot, trans = operation_frac_to_cart(lattice, rot, trans)
-        symops.append(rot[0].tolist() + rot[1].tolist() + rot[2].tolist() +
-                      trans.tolist())
+        symops.append(
+            rot[0].tolist() + rot[1].tolist() + rot[2].tolist() + trans.tolist())
 
     # find and set centering code
     # the origin_setting (aka centering code) refers to how to convert conventional to primitive
@@ -465,8 +465,8 @@ def compute_symmetry_3d(structdata, standardize, primitive, idealize, symprec,
         origin_setting = 1
 
     equivalent = np.mod(inequivalent_sites, 1000).tolist()
-    atomic_numbers = ((np.array(inequivalent_sites) - np.array(equivalent)) /
-                      1000).astype(int).tolist()
+    atomic_numbers = np.array(inequivalent_sites) - np.array(equivalent)
+    atomic_numbers = (atomic_numbers / 1000).astype(int).tolist()
 
     # from jsonextended import edict
     # edict.pprint(symm_dataset)

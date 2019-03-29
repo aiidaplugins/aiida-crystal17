@@ -1,5 +1,5 @@
 """
-Plugin to create a CRYSTAL17 output file, 
+Plugin to create a CRYSTAL17 output file,
 from input files created via data nodes
 """
 import os
@@ -9,7 +9,7 @@ from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import InputValidationError
 from aiida.common.utils import classproperty
 from aiida.plugins import DataFactory
-from aiida.engine import CalcJob
+from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
 from aiida_crystal17.parsers.geometry import (
@@ -18,7 +18,7 @@ from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.utils import unflatten_dict
 
 
-class CryMainCalculation(CalcJob):
+class CryMainCalculation(CryAbstractCalculation):
     """
     AiiDA calculation plugin to run the runcry17 executable,
     by supplying aiida nodes, with data sufficient to create the
@@ -28,15 +28,6 @@ class CryMainCalculation(CalcJob):
     def define(cls, spec):
 
         super(CryMainCalculation, cls).define(spec)
-
-        spec.input('metadata.options.parser_name',
-                   valid_type=six.string_types, default='crystal17.main')
-        spec.input('metadata.options.input_file_name',
-                   valid_type=six.string_types, default='main.d12')
-        spec.input('metadata.options.external_file_name',
-                   valid_type=six.string_types, default='main.gui')
-        spec.input('metadata.options.output_main_file_name',
-                   valid_type=six.string_types, default='main.out')
 
         spec.input(
             'parameters', valid_type=DataFactory('dict'),
@@ -61,27 +52,6 @@ class CryMainCalculation(CalcJob):
                   "atomic element symbol for which you want to use this "
                   "basis set."))
 
-        spec.exit_code(
-            30, 'ERROR_NO_RETRIEVED_FOLDER',
-            message='The retrieved folder data node could not be accessed.')
-        spec.exit_code(
-            40, 'ERROR_OUTPUT_FILE_MISSING',
-            message='the main output file was not found')
-
-        spec.output('results', valid_type=DataFactory('dict'),
-                    required=True,
-                    help='the data extracted from the main output file')
-        spec.output('structure', valid_type=DataFactory('structure'),
-                    required=False,
-                    help=('the structure output from the calculation '
-                          '(optimisation only)'))
-
-        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
-        # spec.input(
-        #     'parent_folder', valid_type=RemoteData, required=False,
-        #     help=('Use a remote folder as parent folder (for '
-        #           'restarts and similar.'))
-
     @classproperty
     def settings_schema(cls):
         """get a copy of the settings schema"""
@@ -95,7 +65,7 @@ class CryMainCalculation(CalcJob):
     # pylint: disable=too-many-arguments
     @classmethod
     def create_builder(cls, param_dict, structure, settings, bases,
-                       code=None, metaoptions=None, flattened=False):
+                       code=None, options=None, flattened=False):
         """ prepare and validate the inputs to the calculation,
         and return a builder pre-populated with the calculation inputs
 
@@ -137,8 +107,8 @@ class CryMainCalculation(CalcJob):
         builder.basissets = symbol_to_basis_map
         if code is not None:
             builder.code = code
-        if metaoptions is not None:
-            builder.metadata.options = metaoptions
+        if options is not None:
+            builder.metadata.options = options
 
         return builder
 
@@ -147,7 +117,7 @@ class CryMainCalculation(CalcJob):
         This is the routine to be called when you want to create
         the input files and related stuff with a plugin.
 
-        :param tempfolder: an aiida.common.folders.Folder subclass 
+        :param tempfolder: an aiida.common.folders.Folder subclass
                            where the plugin should put all its files.
         """
         # Check that a basis set was specified

@@ -932,7 +932,7 @@ def test_transform_conversions():
     ]
 
     # convert from frac to cart
-    cart_ops = ops_frac_to_cart(known_frac_ops, lattice)
+    cart_ops = geo.ops_frac_to_cart(known_frac_ops, lattice)
     if not np.allclose(
             np.sort(known_cart_ops, axis=0),
             np.sort(cart_ops, axis=0)):
@@ -942,7 +942,7 @@ def test_transform_conversions():
     # assert not difference_ops(cart_ops, known_cart_ops)
 
     # convert from cart to frac
-    frac_ops = ops_cart_to_frac(known_cart_ops, lattice)
+    frac_ops = geo.ops_cart_to_frac(known_cart_ops, lattice)
     if not np.allclose(
             np.sort(known_frac_ops, axis=0),
             np.sort(frac_ops, axis=0)):
@@ -952,7 +952,7 @@ def test_transform_conversions():
     # assert not difference_ops(frac_ops, known_frac_ops)
 
     # convert back
-    frac_ops2 = ops_cart_to_frac(cart_ops, lattice)
+    frac_ops2 = geo.ops_cart_to_frac(cart_ops, lattice)
     if not np.allclose(
             np.sort(known_frac_ops, axis=0),
             np.sort(frac_ops2, axis=0)):
@@ -960,7 +960,7 @@ def test_transform_conversions():
             np.sort(known_frac_ops, axis=0) == np.sort(frac_ops2, axis=0)
         )
     # assert not difference_ops(frac_ops2, known_frac_ops)
-    cart_ops2 = ops_frac_to_cart(frac_ops, lattice)
+    cart_ops2 = geo.ops_frac_to_cart(frac_ops, lattice)
     if not np.allclose(
             np.sort(known_cart_ops, axis=0),
             np.sort(cart_ops2, axis=0)):

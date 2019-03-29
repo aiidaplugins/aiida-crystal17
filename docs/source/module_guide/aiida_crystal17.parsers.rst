@@ -10,7 +10,7 @@ Submodules
    aiida_crystal17.parsers.geometry
    aiida_crystal17.parsers.inputd12_read
    aiida_crystal17.parsers.inputd12_write
-   aiida_crystal17.parsers.mainout_parse
+   aiida_crystal17.parsers.main_out
    aiida_crystal17.parsers.migrate
 
 Module contents
