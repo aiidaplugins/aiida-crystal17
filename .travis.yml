@@ -4,65 +4,63 @@ cache: pip
 
 services:
 - postgresql
-- rabbitmq  # required for aiida >= 1.0
+- rabbitmq
 
 addons:
-  postgresql: "9.5"
+  postgresql: "10.6"
 
 matrix:
   include:
-    - python: 2.7 
-      env: TEST_TYPE="tests" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true PYPI_DEPLOY=true
-    - python: 2.7 
-      env: TEST_TYPE="tests" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
-    - python: 2.7 
-      env: TEST_TYPE="pre-commit"
-    - python: 2.7 
+    - python: 3.6
+      env: TEST_TYPE="code-style"
+    - python: 3.6
+      env: TEST_TYPE="pytest" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
+    - python: 3.6 
+      env: TEST_TYPE="pytest" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
+    - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
-  # TODO for aiida v1 test pytest is failing on setup at present (dependency version clash?)
-    - python: 3.6
-      env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
-    - python: 3.6
-      env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
 
   allow_failures:
-    - env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="django" MOCK_EXECUTABLES=true
-    - env: TEST_TYPE="tests" AIIDA_BRANCH="develop" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_EXECUTABLES=true
+    - env: TEST_TYPE="docs" READTHEDOCS="True"
 
 install:
 # Upgrade pip setuptools and wheel
 - pip install -U pip wheel setuptools
-- pip uninstall -y numpy
-- pip install -e .[pre-commit,testing,docs]
-- >
+- |
+    if [ "$TEST_TYPE" == "code_style" ]]; then
+      pip install pyflakes==2.1.1
+    else
+      pip uninstall -y numpy
+      pip install -e .[testing,docs]
+      pip install coveralls
+    fi
+- |
   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
-    cur_path="$(pwd)";
-    cd ..;
-    git clone --branch=${AIIDA_BRANCH} https://github.com/aiidateam/aiida_core.git;
-    cd aiida_core;
-    pip install -U -e .[aiida,testing];
-    cd "$cur_path";
+    cur_path="$(pwd)"
+    cd ..
+    git clone --branch=${AIIDA_BRANCH} https://github.com/aiidateam/aiida_core.git
+    cd aiida_core
+    pip install -U -e .
+    cd "$cur_path"
   fi
-- pip install coveralls
 
 before_script:
 - reentry scan
 
 script:
-- >
-  if [[ "$TEST_TYPE" == "tests" ]]; then
-    if [[ ! -z "${AIIDA_BRANCH}" ]]; then
-      pytest -v aiida_crystal17 examples;
-    else
-      pytest -v --cov=aiida_crystal17 --cov=examples --cov-config .coveragerc --cov-report= aiida_crystal17 examples;
-    fi
+- |
+  if [[ "$TEST_TYPE" == "pytest" ]]; then
+      pytest -v --cov=aiida_crystal17 --cov=examples --cov-config .coveragerc --cov-report= aiida_crystal17
   fi
-- >
-  if [[ "$TEST_TYPE" == "pre-commit" ]]; then
-  pre-commit install;
-  pre-commit run --all-files || ( git status --short; git diff ; exit 1 ) ;
+- |
+  if [[ "$TEST_TYPE" == "code-style" ]]; then
+    flake8 .
   fi
-- if [[ "$TEST_TYPE" == "docs" ]]; then cd docs; make; fi
+- |
+  if [[ "$TEST_TYPE" == "docs" ]]; then
+    cd docs
+    make
+  fi
 
 after_success:
 - coveralls

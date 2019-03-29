@@ -14,10 +14,30 @@ from aiida_crystal17.calculations.cry_main import CryMainCalculation
 def migrate_as_main(
         folder, code, input_name="main.d12", output_name="main.out",
         resources=(('num_mpiprocs_per_machine', 1), ('num_machines', 1)),
-        withmpi=False,
-        store_all=False,
-        incoming_links=None):
+        withmpi=False, store_all=False):
+    """Set docstring here.
 
+    Parameters
+    ----------
+    folder: aiida.orm.FolderData or str
+        a folder (or absolute path to it) containing the input and output file
+    code: aiida.orm.Code
+    input_name="main.d12": str
+        the file (or object) name of the input file in the folder
+    output_name="main.out": str
+        the file (or object) name of the input file in the folder
+    resources=: tuple or dict
+        mapping of calculation resources used
+    withmpi=False: bool
+        whether mpi was used in the calculation
+    store_all=False: bool
+        whether to store the CalcJobNode and it's outputs and inputs
+
+    Returns
+    -------
+    aiida.orm.CalcJobNode
+
+    """
     # initial calc job setup
     calc_node = CalcJobNode()
     calc_node.set_process_type("crystal17.main")

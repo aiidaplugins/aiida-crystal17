@@ -85,12 +85,7 @@ def test_full_nio_afm(db_test_app):
     node = migrate_as_main(
         folder,
         db_test_app.get_or_create_code('crystal17.main'),
-        store_all=True,
-        # input_links={
-        #     'structure': {
-        #         "struct_setup": DataFactory('dict')()
-        #     }
-        # }
+        store_all=True
     )
 
     print(node.inputs)
@@ -99,9 +94,7 @@ def test_full_nio_afm(db_test_app):
         ['basissets_Ni', 'basissets_O',
          'parameters', 'structure', 'symmetry', 'code'])
 
-    structure = node.inputs.structure  # noqa: F841
-    # assert "struct_setup" in struct.get_incoming(
-    # )['structure'].get_incoming()
+    node.inputs.structure
 
     print(node.outputs)
 
@@ -125,12 +118,7 @@ def test_full_mgo_opt(db_test_app):
     node = migrate_as_main(
         folder,
         db_test_app.get_or_create_code('crystal17.main'),
-        store_all=True,
-        # input_links={
-        #     'structure': {
-        #         "struct_setup": DataFactory('dict')()
-        #     }
-        # }
+        store_all=True
     )
 
     print(node.inputs)
@@ -139,16 +127,12 @@ def test_full_mgo_opt(db_test_app):
         ['basissets_Mg', 'basissets_O',
          'parameters', 'structure', 'symmetry', 'code'])
 
-    structure = node.inputs.structure  # noqa: F841
-    # assert "struct_setup" in struct.get_incoming(
-    # )['structure'].get_incoming()
+    node.inputs.structure
 
     print(node.outputs)
 
     assert set(node.outputs) == set(
         ['results', 'retrieved', 'structure'])
-
-    # assert node.get_attribute("state") == calc_states.FINISHED
 
     expected_instruct_attrs = {
         'cell': [

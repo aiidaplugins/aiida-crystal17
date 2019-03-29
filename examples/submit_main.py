@@ -8,7 +8,6 @@ Note: This script assumes you have set up computer and code as in README.md.
 import os
 
 import aiida_crystal17.tests
-import aiida_crystal17.tests as tests
 import aiida_crystal17.tests.utils
 
 

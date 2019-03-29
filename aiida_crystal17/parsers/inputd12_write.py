@@ -5,7 +5,7 @@ import six
 from aiida_crystal17.utils import get_keys
 from aiida_crystal17.validation import validate_with_json
 
-# TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
+# TODO check float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
 # TODO SHRINK where IS=0 and IS1 IS2 IS3 given
 # TODO FIELD/FIELDCON
@@ -158,7 +158,7 @@ def _geometry_block(outstr, indict, atom_props):
         if unfixed:
             outstr += "FRAGMENT\n"
             outstr += "{}\n".format(len(unfixed))
-            outstr += " ".join([str(a) for a in sorted(unfixed)]) + " \n"
+            outstr += " ".join([str(a) for a in sorted(unfixed)]) + "\n"
         outstr += format_value(indict, ["geometry", "optimise", "hessian"])
         outstr += format_value(indict, ["geometry", "optimise", "gradient"])
         for keyword in sorted(get_keys(
@@ -185,7 +185,7 @@ def _basis_set_block(outstr, indict, basis_sets, atom_props):
     if ghosts:
         outstr += "GHOSTS\n"
         outstr += "{}\n".format(len(ghosts))
-        outstr += " ".join([str(a) for a in sorted(ghosts)]) + " \n"
+        outstr += " ".join([str(a) for a in sorted(ghosts)]) + "\n"
 
     # Basis Sets Optional Keywords
     outstr += format_value(indict, ["basis_set"])
