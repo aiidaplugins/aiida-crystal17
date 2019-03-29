@@ -28,7 +28,7 @@ install:
 - pip install -U pip wheel setuptools reentry
 - |
     if [ "$TEST_TYPE" == "code_style" ]]; then
-      pip install pyflakes==2.1.1
+      pip install "flake8<3.8.0,>=3.7.0"
     else
       pip uninstall -y numpy
       pip install -e .[testing,docs]

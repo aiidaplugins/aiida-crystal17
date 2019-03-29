@@ -61,7 +61,7 @@
             "jsonextended"
         ],
         "code_style": [
-            "pyflakes==2.1.1"
+            "flake8<3.8.0,>=3.7.0"
         ],
         "docs": [
             "sphinx>=1.6"
