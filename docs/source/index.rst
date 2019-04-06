@@ -11,7 +11,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    :maxdepth: 2
 
    user_guide/index
-   module_guide/modules
+   apidoc/aiida_crystal17
 
 If you use this plugin for your research, please cite the Github repository
 (paper to come).

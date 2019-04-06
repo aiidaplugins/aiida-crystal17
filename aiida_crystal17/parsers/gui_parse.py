@@ -76,9 +76,9 @@ CENTERING_CODE_MAP = {
 def gui_file_read(lines):
     """read CRYSTAL geometry (.gui) file
 
-    Paramaters
+    Parameters
     ----------
-    lines: List[str]
+    lines: list[str]
         list of lines in the file
 
     Returns
@@ -154,9 +154,9 @@ def gui_file_read(lines):
 def gui_file_write(structure_data, symmetry_data=None):
     """create string of gui file content (for CRYSTAL17)
 
-    Paramaters
+    Parameters
     ----------
-    structure_data: aiida.orm.data.Structure or dict or ase.Atoms
+    structure_data: aiida.StructureData or dict or ase.Atoms
         dict with keys: 'pbc', 'atomic_numbers', 'ccoords', 'lattice',
         or ase.Atoms, or any object that has method structure_data.get_ase()
     symmetry_data: dict or None
@@ -165,7 +165,7 @@ def gui_file_write(structure_data, symmetry_data=None):
 
     Returns
     -------
-    lines: List[str]
+    lines: list[str]
         list of lines in the file
 
     Notes
@@ -255,7 +255,7 @@ def structure_to_symmetry(structure, symprec=1e-5, angle_tolerance=None,
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure or dict or ase.Atoms
+    structure: aiida.StructureData or dict or ase.Atoms
     symprec=1e-5: float
         Symmetry search tolerance in the unit of length.
     angle_tolerance=None: float or None
@@ -306,7 +306,7 @@ def get_crystal_type_code(hall_number):
 
     Returns
     -------
-    int: centering_code
+    centering_code: int
 
     """
     sg_number = spglib.get_spacegroup_type(hall_number)["number"]
@@ -323,7 +323,7 @@ def get_centering_code(hall_number):
 
     Returns
     -------
-    int: centering_code
+    centering_code: int
 
     """
     sg_data = spglib.get_spacegroup_type(hall_number)

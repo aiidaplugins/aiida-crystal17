@@ -74,13 +74,24 @@ class CryMainCalculation(CryAbstractCalculation):
         """ prepare and validate the inputs to the calculation,
         and return a builder pre-populated with the calculation inputs
 
-        :param input: dict giving data to create the input .d12 file
-        :param structure: the StructureData
-        :param symmetry: SymmetryData giving symmetry operations, etc
-        :param bases: string of the BasisSetFamily to use
-        or dict of {<symbol>: <basisset>}
-        :param flattened: whether the input dictionary is flattened
-        :return: CalcJobBuilder
+        Parameters
+        ----------
+        input: dict
+            giving data to create the input .d12 file
+        structure: aiida.orm.StructureData
+            the structure node
+        symmetry: SymmetryData
+            giving symmetry operations, etc
+        bases: str or dict
+            string of the BasisSetFamily to use,
+            or dict mapping {<symbol>: <basisset>}
+        flattened: bool
+            whether the input dictionary is flattened
+
+        Returns
+        -------
+        aiida.engine.processes.CalcJobBuilder
+
         """
         builder = cls.get_builder()
         if flattened:

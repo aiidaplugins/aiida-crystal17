@@ -7,7 +7,7 @@ Main Calculation Plugin
 The ``crystal17.main`` plugin is designed with a more programmatic
 input interface. It creates the input ``.d12`` and ``.gui`` files,
 from a set of AiiDa
-:py:class:`~aiida.orm.data.Data` nodes.
+:py:class:`~aiida.orm.nodes.data.Data` nodes.
 
 .. note::
 

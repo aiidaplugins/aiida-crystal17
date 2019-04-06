@@ -1,3 +1,4 @@
 build/
+apidoc/
 .vscode/
 *.code-workspace

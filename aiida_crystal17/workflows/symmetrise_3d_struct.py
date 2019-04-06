@@ -122,23 +122,23 @@ class Symmetrise3DStructure(WorkChain):
         self.out('symmetry', SymmetryData(data=symmdata))
 
 
-# def run_symmetrise_3d_structure(structure, settings=None):
-#     """run the Symmetrise3DStructure workchain and return the structure and settings data nodes,
-#     for inputting into ``crystal17.main`` calculation
+def run_symmetrise_3d_structure(structure, settings=None):
+    """run the Symmetrise3DStructure workchain and return the structure and settings data nodes,
+    for inputting into ``crystal17.main`` calculation
 
-#     :param structure: StructureData
-#     :param settings: dict or DictData
-#     :return: (StructureData, StructSettingsData)
-#     """
-#     from aiida.engine import run_get_node
-#     if isinstance(settings, dict):
-#         settings = unflatten_dict(settings)
-#         settings = DictData(dict=settings)
-#     inputs_dict = {"structure": structure}
-#     if settings:
-#         inputs_dict["settings"] = settings
-#     outcome = run_get_node(Symmetrise3DStructure, **inputs_dict)
-#     outgoing = outcome.node.get_outgoing()
+    :param structure: StructureData
+    :param settings: dict or DictData
+    :return: (StructureData, StructSettingsData)
+    """
+    from aiida.engine import run_get_node
+    if isinstance(settings, dict):
+        settings = unflatten_dict(settings)
+        settings = DictData(dict=settings)
+    inputs_dict = {"structure": structure}
+    if settings:
+        inputs_dict["settings"] = settings
+    outcome = run_get_node(Symmetrise3DStructure, **inputs_dict)
+    outgoing = outcome.node.get_outgoing()
 
-#     return (outgoing.get_node_by_label("structure"),
-#             outgoing.get_node_by_label("settings"))
+    return (outgoing.get_node_by_label("structure"),
+            outgoing.get_node_by_label("settings"))

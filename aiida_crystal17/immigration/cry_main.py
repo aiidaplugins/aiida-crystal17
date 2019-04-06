@@ -26,11 +26,11 @@ def migrate_as_main(
         the file (or object) name of the input file in the folder
     output_name="main.out": str
         the file (or object) name of the input file in the folder
-    resources=: tuple or dict
+    resources: tuple or dict
         mapping of calculation resources used
-    withmpi=False: bool
+    withmpi: bool
         whether mpi was used in the calculation
-    store_all=False: bool
+    store_all: bool
         whether to store the CalcJobNode and it's outputs and inputs
 
     Returns

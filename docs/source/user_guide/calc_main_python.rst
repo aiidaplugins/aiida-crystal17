@@ -200,7 +200,7 @@ Structure
 ---------
 
 The ``structure`` refers to a standard
-:py:class:`~aiida.orm.data.structure.StructureData` node in AiiDa.
+:py:class:`~aiida.StructureData` node in AiiDa.
 We now proceed in setting up the structure.
 
 .. note:: Here we discuss only the main features of structures in AiiDA, needed
@@ -269,9 +269,9 @@ of the atomic configurations:
 2. Crystallographic data for the geometry
 3. The input symmetry operations
 
-Available validation schema for the settings data 
+Available validation schema for the settings data
 can be viewed programattically at
-:py:attr:`~.StructSettingsData.data_schema`
+:py:attr:`~.SymmetryData.data_schema`
 
 Or *via* the command line:
 
@@ -280,60 +280,60 @@ Or *via* the command line:
   >>> verdi data cry17-settings schema
   $schema:              http://json-schema.org/draft-04/schema#
   additionalProperties: False
-  properties:           
+  properties:
     centring_code: 
       description: The crystal type, as designated by CRYSTAL17
       maximum:     6
       minimum:     1
       type:        integer
-    computation_class: 
+    computation_class:
       description: the class used to compute the settings
       type:        string
-    computation_version: 
+    computation_version:
       description: the version of the class used to compute the settings
       type:        string
-    crystal_type: 
+    crystal_type:
       description: The crystal type, as designated by CRYSTAL17
       maximum:     6
       minimum:     1
       type:        integer
-    kinds: 
+    kinds:
       additionalProperties: False
       description:          settings for input properties of each species kind
-      properties:           
-        fixed: 
+      properties:
+        fixed:
           description: kinds with are fixed in position for optimisations (set by
                       FRAGMENT)
-          items:       
+          items:
             type:        string
             uniqueItems: True
           type:        array
         ghosts: 
           description: kinds which will be removed, but their basis set are left
                       (set by GHOSTS)
-          items:       
+          items:
             type:        string
             uniqueItems: True
           type:        array
-        spin_alpha: 
+        spin_alpha:
           description: kinds with initial alpha (+1) spin (set by ATOMSPIN)
-          items:       
+          items:
             type:        string
             uniqueItems: True
           type:        array
-        spin_beta: 
+        spin_beta:
           description: kinds with initial beta (-1) spin (set by ATOMSPIN)
-          items:       
+          items:
             type:        string
             uniqueItems: True
           type:        array
       type:                 object
-    operations: 
+    operations:
       description: symmetry operations to use (in the fractional basis)
-      items:       
+      items:
         description: each item should be a list of
                     [r00,r10,r20,r01,r11,r21,r02,r12,r22,t0,t1,t2]
-        items:       
+        items:
           maximum: 1
           minimum: -1
           type:    number
@@ -341,15 +341,15 @@ Or *via* the command line:
         minItems:    12
         type:        array
       type:        [null, array]
-    space_group: 
+    space_group:
       description: Space group number (international)
       maximum:     230
       minimum:     1
       type:        integer
-    symmetry_program: 
+    symmetry_program:
       description: the program used to generate the symmetry
       type:        string
-    symmetry_version: 
+    symmetry_version:
       description: the version of the program used to generate the symmetry
       type:        string
   required:             [space_group, crystal_type, centring_code, operations]
@@ -522,7 +522,7 @@ Basis Sets
 ----------
 
 Basis sets are stored as separate :py:class:`~.BasisSetData` nodes,
-in a similar fashion to :py:class:`~aiida.orm.data.upf.UpfData`
+in a similar fashion to :py:class:`~aiida.orm.nodes.data.upf.UpfData`
 (discussed in :ref:`this tutorial <my-ref-to-pseudo-tutorial>` ).
 They are created individually from a text file,
 which contains the content of the basis set

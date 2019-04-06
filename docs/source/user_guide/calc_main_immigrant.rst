@@ -5,8 +5,8 @@ Main Calculation Immigration
 ============================
 
 In order to immigrate existing CRYSTAL17 calculations,
-the :py:func:`~.create_inputs` function has been written
-to take a ``.d12`` and ``.out`` file set
+the :py:func:`~aiida_crystal17.immigration.create_inputs` function has been
+written to take a ``.d12`` and ``.out`` file set
 and create the inputs required for ``crystal17.main``:
 
 .. code:: python

@@ -26,7 +26,8 @@ import aiida_crystal17
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 on_vscode = os.environ.get('VSCODE_LOGS', None) is not None
 
-if on_rtd or on_vscode:
+# if on_rtd or on_vscode:
+if True:
     # Back-end settings for readthedocs online documentation -
     # we don't want to create a profile there
     # NOTE: There can be no calls to load_dbenv() before this
@@ -59,18 +60,22 @@ else:
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.5'
+needs_sphinx = '1.6'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.mathjax', 'sphinx.ext.intersphinx',
-    'sphinx.ext.viewcode', 'sphinx.ext.todo'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.todo',
+    'sphinx.ext.napoleon'
 ]
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/2.7', None),
+    'python': ('https://docs.python.org/3.6', None),
     'aiida': ('http://aiida-core.readthedocs.io/en/latest/', None),
     'aiida_quantumespresso':
     ('http://aiida-quantumespresso.readthedocs.io/en/latest/', None),
@@ -79,7 +84,10 @@ intersphinx_mapping = {
     "spglib": ('https://atztogo.github.io/spglib/', None)
 }
 
-nitpick_ignore = [('py:obj', 'module')]
+intersphinx_aliases = {
+    ('py:class', 'aiida.StructureData'):
+    ('py:class', 'aiida.orm.nodes.data.structure.StructureData')
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -332,6 +340,17 @@ latex_elements = {
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
+# Napoleon Docstring settings
+napoleon_numpy_docstring = True
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = True
+napoleon_use_param = True
+napoleon_use_rtype = True
+
 # Warnings to ignore when using the -n (nitpicky) option
 # We should ignore any python built-in exception, for instance
 nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'),
@@ -360,9 +379,73 @@ nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'),
                   ('py:exc', 'UnicodeWarning'), ('py:exc', 'UserWarning'),
                   ('py:exc', 'VMSError'), ('py:exc', 'ValueError'),
                   ('py:exc', 'Warning'), ('py:exc', 'WindowsError'),
-                  ('py:exc', 'ZeroDivisionError'), ('py:obj', 'str'),
-                  ('py:obj', 'list'), ('py:obj', 'tuple'), ('py:obj', 'int'),
-                  ('py:obj', 'float'), ('py:obj', 'bool'), ('py:obj',
-                                                            'Mapping'),
+                  ('py:exc', 'ZeroDivisionError'),
+                  ('py:obj', 'str'),
+                  ('py:obj', 'list'),
+                  ('py:obj', 'tuple'), ('py:class', 'tuple'),
+                  ('py:obj', 'int'),
+                  ('py:obj', 'float'),
+                  ('py:obj', 'bool'),
+                  ('py:obj', 'Mapping'),
                   ('py:obj', 'MutableMapping'),
                   ('py:class', '_abcoll.MutableMapping')]
+
+
+def run_apidoc(_):
+    """Runs sphinx-apidoc when building the documentation.
+    Needs to be done in conf.py in order to include the APIdoc in the
+    build on readthedocs.
+    See also https://github.com/rtfd/readthedocs.org/issues/1139
+    """
+    source_dir = os.path.abspath(os.path.dirname(__file__))
+    apidoc_dir = os.path.join(source_dir, 'apidoc')
+    package_dir = os.path.join(
+        source_dir, os.pardir, os.pardir, 'aiida_crystal17')
+
+    # In #1139, they suggest the route below, but this ended up
+    # calling sphinx-build, not sphinx-apidoc
+    # from sphinx.apidoc import main
+    # main([None, '-e', '-o', apidoc_dir, package_dir, '--force'])
+
+    import subprocess
+    cmd_path = 'sphinx-apidoc'
+    if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+        # If we are, assemble the path manually
+        cmd_path = os.path.abspath(os.path.join(
+            sys.prefix, 'bin', 'sphinx-apidoc'))
+
+    options = [
+        '-o', apidoc_dir, package_dir,
+        '--private',
+        '--force',
+        '--no-toc',
+    ]
+
+    # See https://stackoverflow.com/a/30144019
+    env = os.environ.copy()
+    env["SPHINX_APIDOC_OPTIONS"] = 'members,special-members,private-members,undoc-members,show-inheritance'
+    subprocess.check_call([cmd_path] + options, env=env)
+
+
+def add_intersphinx_aliases_to_inv(app):
+    """see https://github.com/sphinx-doc/sphinx/issues/5603"""
+    from sphinx.ext.intersphinx import InventoryAdapter
+    inventories = InventoryAdapter(app.builder.env)
+
+    for alias, target in app.config.intersphinx_aliases.items():
+        alias_domain, alias_name = alias
+        target_domain, target_name = target
+        try:
+            found = inventories.main_inventory[target_domain][target_name]
+            try:
+                inventories.main_inventory[alias_domain][alias_name] = found
+            except KeyError:
+                continue
+        except KeyError:
+            continue
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
+    app.add_config_value('intersphinx_aliases', {}, 'env')
+    app.connect('builder-inited', add_intersphinx_aliases_to_inv)

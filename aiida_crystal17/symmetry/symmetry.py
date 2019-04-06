@@ -78,7 +78,7 @@ def prepare_for_spglib(structure):
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure
+    structure: aiida.StructureData
 
     Returns
     -------
@@ -108,7 +108,7 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure
+    structure: aiida.StructureData
     symprec: float
         Symmetry search tolerance in the unit of length.
     angle_tolerance: float or None
@@ -118,7 +118,7 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
 
     Returns
     -------
-    dict: dataset
+    dataset: dict
         spglib symmetry dataset
 
     """
@@ -137,7 +137,7 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure
+    structure: aiida.StructureData
     symprec: float
         Symmetry search tolerance in the unit of length.
     angle_tolerance: float or None
@@ -182,7 +182,7 @@ def find_primitive(structure, symprec, angle_tolerance):
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure
+    structure: aiida.StructureData
     symprec: float
         Symmetry search tolerance in the unit of length.
     angle_tolerance: float or None
@@ -192,7 +192,7 @@ def find_primitive(structure, symprec, angle_tolerance):
 
     Returns
     -------
-    aiida.orm.data.Structure
+    aiida.StructureData
 
     """
     from aiida.orm.nodes.data.structure import Site
@@ -223,7 +223,7 @@ def standardize_cell(structure, symprec, angle_tolerance,
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure
+    structure: aiida.StructureData
     to_primitive: bool
         If True, the standardized primitive cell is created.
     no_idealize: bool
@@ -238,7 +238,7 @@ def standardize_cell(structure, symprec, angle_tolerance,
 
     Returns
     -------
-    aiida.orm.data.Structure
+    aiida.StructureData
 
     """
     from aiida.orm.nodes.data.structure import Site
@@ -274,7 +274,7 @@ def get_crystal_system_name(sg_number):
 
     Returns
     -------
-    str: crystal_system
+    crystal_system: str
         Crystal system for structure
     """
 
@@ -319,7 +319,7 @@ def get_lattice_type_name(sg_number):
 
     Returns
     -------
-    str: lattice_type
+    lattice_type: str
         Crystal lattice for the structure
 
     """
@@ -346,8 +346,10 @@ def operation_frac_to_cart(lattice, rotation, translation):
 
     Returns
     -------
-    list: rotation
-    list: translation
+    rotation: list
+        3x3 rotation matrix
+    translation: list
+        3x1 translation vector
 
     """
     lattice_tr = np.transpose(lattice)
@@ -397,8 +399,10 @@ def operation_cart_to_frac(lattice, rotation, translation):
 
     Returns
     -------
-    list: rotation
-    list: translation
+    rotation: list
+        3x3 rotation matrix
+    translation: list
+        3x1 translation vector
 
     """
     lattice_tr = np.transpose(lattice)
@@ -440,7 +444,7 @@ def convert_structure(structure, out_type):
 
     Parameters
     ----------
-    structure: aiida.orm.data.Structure or dict or ase.Atoms
+    structure: aiida.StructureData or dict or ase.Atoms
     out_type: str
         one of: 'dict', 'ase' or 'aiida
 
@@ -512,10 +516,16 @@ def convert_structure(structure, out_type):
 def structure_to_dict(structure):
     """create a dictionary of structure properties per atom
 
-    :param structure: the input structure
-    :type structure: aiida.orm.data.structure.StructureData
-    :return: dictionary containing; lattice, atomic_numbers, ccoords, pbc, kinds, equivalent
-    :rtype: dict
+    Parameters
+    ----------
+    structure: aiida.StructureData
+        the input structure
+
+    Returns
+    -------
+    dict:
+        dictionary containing;
+        lattice, atomic_numbers, ccoords, pbc, kinds, equivalent
 
     """
     from aiida.common.exceptions import InputValidationError
