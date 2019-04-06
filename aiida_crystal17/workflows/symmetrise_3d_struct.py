@@ -131,6 +131,7 @@ def run_symmetrise_3d_structure(structure, settings=None):
     :return: (StructureData, StructSettingsData)
     """
     from aiida.engine import run_get_node
+    from aiida_crystal17.common import unflatten_dict
     if isinstance(settings, dict):
         settings = unflatten_dict(settings)
         settings = DictData(dict=settings)
