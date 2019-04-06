@@ -12,10 +12,10 @@ from aiida.plugins import DataFactory
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
-from aiida_crystal17.parsers.geometry import (
-    crystal17_gui_string, structure_to_dict)
+from aiida_crystal17.symmetry import structure_to_dict
+from aiida_crystal17.parsers.gui_parse import gui_file_write
 from aiida_crystal17.parsers.inputd12_write import write_input
-from aiida_crystal17.utils import unflatten_dict
+from aiida_crystal17.common import unflatten_dict
 
 
 class CryMainCalculation(CryAbstractCalculation):
@@ -39,10 +39,15 @@ class CryMainCalculation(CryAbstractCalculation):
             help=('the structure used to construct the input .gui file '
                   '(fort.34)'))
         spec.input(
-            'symmetry', valid_type=DataFactory('crystal17.structsettings'),
-            required=True,
+            'symmetry', valid_type=DataFactory('crystal17.symmetry'),
+            required=False,
             help=('the symmetry of the structure, '
                   'used to construct the input .gui file (fort.34)'))
+        spec.input(
+            'kinds', valid_type=DataFactory('crystal17.kinds'),
+            required=False,
+            help=('additional structure kind specific data '
+                  '(e.g. initial spin)'))
         spec.input_namespace(
             'basissets',
             valid_type=DataFactory('crystal17.basisset'), dynamic=True,
@@ -64,27 +69,38 @@ class CryMainCalculation(CryAbstractCalculation):
 
     # pylint: disable=too-many-arguments
     @classmethod
-    def create_builder(cls, param_dict, structure, settings, bases,
+    def create_builder(cls, param_dict, structure, bases,
+                       symmetry=None, kinds=None,
                        code=None, options=None, flattened=False):
         """ prepare and validate the inputs to the calculation,
         and return a builder pre-populated with the calculation inputs
 
         :param input: dict giving data to create the input .d12 file
         :param structure: the StructureData
-        :param settings: StructSettingsData giving symmetry operations, etc
+        :param symmetry: SymmetryData giving symmetry operations, etc
         :param bases: string of the BasisSetFamily to use
         or dict of {<symbol>: <basisset>}
         :param flattened: whether the input dictionary is flattened
         :return: CalcJobBuilder
         """
+        builder = cls.get_builder()
         if flattened:
             param_dict = unflatten_dict(param_dict)
-        # validate structure and settings
-        struct_dict = structure_to_dict(structure)
+        builder.parameters = DataFactory('dict')(dict=param_dict)
+        builder.structure = structure
+        if symmetry is not None:
+            builder.symmetry = symmetry
+        if kinds is not None:
+            builder.kinds = kinds
+        if code is not None:
+            builder.code = code
+        if options is not None:
+            builder.metadata.options = options
+
         # validate parameters
-        atom_props = cls._create_atom_props(struct_dict["kinds"],
-                                            settings.data)
+        atom_props = cls._create_atom_props(structure, kinds)
         write_input(param_dict, ["test_basis"], atom_props)
+
         # validate basis sets
         if isinstance(bases, six.string_types):
             symbol_to_basis_map = get_basissets_from_structure(
@@ -99,16 +115,7 @@ class CryMainCalculation(CryAbstractCalculation):
                 raise InputValidationError(err_msg)
             symbol_to_basis_map = bases
 
-        builder = cls.get_builder()
-
-        builder.parameters = DataFactory('dict')(dict=param_dict)
-        builder.structure = structure
-        builder.symmetry = settings
         builder.basissets = symbol_to_basis_map
-        if code is not None:
-            builder.code = code
-        if options is not None:
-            builder.metadata.options = options
 
         return builder
 
@@ -135,8 +142,10 @@ class CryMainCalculation(CryAbstractCalculation):
             self.inputs.basissets,
             self.inputs.structure,
             self.inputs.parameters,
-            self.inputs.symmetry,
-            tempfolder)
+            tempfolder,
+            self.inputs.get("symmetry", None),
+            self.inputs.get("kinds", None)
+        )
 
         # Prepare CodeInfo object for aiida,
         # describes how a code has to be executed
@@ -163,26 +172,23 @@ class CryMainCalculation(CryAbstractCalculation):
         return calcinfo
 
     # pylint: disable=too-many-arguments
-    def _create_input_files(self, basissets, instruct, parameters,
-                            settings, tempfolder):
+    def _create_input_files(self, basissets, structure, parameters,
+                            tempfolder, symmetry=None, kinds=None):
         """ create input files in temporary folder
 
         :param basissets:
-        :param instruct:
+        :param structure:
         :param parameters:
         :param setting:
         :param tempfolder:
-        :return: atomid_kind_map
+
         """
         # create .gui external geometry file and place it in tempfolder
-        struct_dict = structure_to_dict(instruct)
-
-        gui_content = crystal17_gui_string(struct_dict, settings.data)
+        gui_content = gui_file_write(structure, symmetry)
         with tempfolder.open(self.metadata.options.external_file_name, 'w') as f:
-            f.write(gui_content)
+            f.writelines(gui_content)
 
-        atom_props = self._create_atom_props(struct_dict["kinds"],
-                                             settings.data)
+        atom_props = self._create_atom_props(structure, kinds)
 
         # create .d12 input file and place it in tempfolder
         try:
@@ -199,13 +205,26 @@ class CryMainCalculation(CryAbstractCalculation):
         return True
 
     @staticmethod
-    def _create_atom_props(atom_kinds, setting_dict):
+    def _create_atom_props(structure, kinds_data=None):
         """ create dict of properties for each atom
 
         :param atom_kinds: atom kind for each atom
         :param setting_dict: setting_dict
         :return:
         """
+        if kinds_data is None:
+            return {
+                "spin_alpha": [],
+                "spin_beta": [],
+                "ghosts": []
+            }
+
+        if set(kinds_data.data.kind_names) != set(structure.get_kind_names()):
+            raise AssertionError(
+                "kind names are different for structure data and kind data: "
+                "{0} != {1}".format(set(structure.get_kind_names()),
+                                    set(kinds_data.data.kind_names)))
+
         atom_props = {
             "spin_alpha": [],
             "spin_beta": [],
@@ -214,18 +233,19 @@ class CryMainCalculation(CryAbstractCalculation):
             "ghosts": []
         }
 
-        if "kinds" in setting_dict:
-            for i, kind in enumerate(atom_kinds):
-                if kind.name in setting_dict["kinds"].get("spin_alpha", []):
-                    atom_props["spin_alpha"].append(i + 1)
-                if kind.name in setting_dict["kinds"].get("spin_beta", []):
-                    atom_props["spin_beta"].append(i + 1)
-                if kind.name in setting_dict["kinds"].get("fixed", []):
-                    atom_props["fixed"].append(i + 1)
-                if kind.name not in setting_dict["kinds"].get("fixed", []):
-                    atom_props["unfixed"].append(i + 1)
-                if kind.name in setting_dict["kinds"].get("ghosts", []):
-                    atom_props["ghosts"].append(i + 1)
+        kind_dict = kinds_data.kind_dict
+
+        for i, kind_name in enumerate(structure.get_site_kindnames()):
+            if kind_dict[kind_name].get("spin_alpha", False):
+                atom_props["spin_alpha"].append(i + 1)
+            if kind_dict[kind_name].get("spin_beta", False):
+                atom_props["spin_beta"].append(i + 1)
+            if kind_dict[kind_name].get("ghost", False):
+                atom_props["ghost"].append(i + 1)
+            if kind_dict[kind_name].get("fixed", False):
+                atom_props["fixed"].append(i + 1)
+            if not kind_dict[kind_name].get("fixed", False):
+                atom_props["unfixed"].append(i + 1)
 
         # we only need unfixed if there are fixed
         if not atom_props.pop("fixed"):

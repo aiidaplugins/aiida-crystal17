@@ -3,6 +3,8 @@ initialise a text database and profile
 """
 from contextlib import contextmanager
 import distutils.spawn
+from ruamel.yaml import YAML
+from ruamel.yaml.compat import StringIO
 import os
 import shutil
 import sys
@@ -164,14 +166,14 @@ class AiidaTestApp(object):
             error_include=(("results", "errors"),
                            ("results", "parser_errors"))):
         """ check a calculation has completed successfully """
-
         exit_status = calc_node.get_attribute("exit_status")
         proc_state = calc_node.get_attribute("process_state")
         if exit_status != 0 or proc_state != "finished":
+            yaml = YAML()
+            stream = StringIO()
+            yaml.dump(calc_node.attributes, stream=stream)
             message = (
-                "Process Failed: "
-                "exit status: {0}\nprocess state: {1}\ncalc attributes: {2}").format(
-                exit_status, proc_state, calc_node.attributes)
+                "Process Failed:\n{}".format(stream.getvalue()))
             out_link_manager = calc_node.get_outgoing()
             out_links = out_link_manager.all_link_labels()
             message += "\noutgoing_nodes: {}".format(out_links)

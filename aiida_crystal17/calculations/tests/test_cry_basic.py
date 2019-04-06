@@ -38,24 +38,20 @@ def test_submit(db_test_app):
         print("inputs created successfully at {}".format(subfolder.abspath))
 
 
-@pytest.mark.parametrize("inpath_main", (
-    'mgo_sto3g_scf.crystal.d12',
-    'mgo_sto3g_external.crystal.d12',
-    'mgo_sto3g_opt.crystal.d12'
+@pytest.mark.parametrize("inpath_main,inpath_gui", (
+    ('mgo_sto3g_scf.crystal.d12', None),
+    ('mgo_sto3g_opt.crystal.d12', None),
+    ('mgo_sto3g_external.crystal.d12', 'mgo_sto3g_external.crystal.gui')
 ))
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-def test_run_runs(db_test_app, inpath_main):
+def test_run_runs(db_test_app, inpath_main, inpath_gui):
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     SinglefileData = DataFactory('singlefile')
 
     code = db_test_app.get_or_create_code('crystal17.basic')
-
-    # Prepare input parameters
-    infile = SinglefileData(
-        file=os.path.join(TEST_DIR, "input_files", inpath_main))
 
     # set up calculation
     builder = code.get_builder()
@@ -66,10 +62,18 @@ def test_run_runs(db_test_app, inpath_main):
                 "num_machines": 1,
                 "num_mpiprocs_per_machine": 1,
             },
-            "max_wallclock_seconds": 30
+            "max_wallclock_seconds": 60
         }
     }
+
+    # Prepare input parameters
+    infile = SinglefileData(
+        file=os.path.join(TEST_DIR, "input_files", inpath_main))
     builder.input_file = infile
+    if inpath_gui is not None:
+        ingui = SinglefileData(
+            file=os.path.join(TEST_DIR, "input_files", inpath_gui))
+        builder.input_external = ingui
 
     outcome = run_get_node(builder)
     # result = outcome.result
@@ -173,7 +177,7 @@ def compare_expected_structure(infile, structure):
                  'name': 'Mg',
                  'symbols': ['Mg'],
                  'weights': [1.0]},
-                {'mass': 15.9994,
+                {'mass': 15.999,
                  'name': 'O',
                  'symbols': ['O'],
                  'weights': [1.0]}],
@@ -193,7 +197,7 @@ def compare_expected_structure(infile, structure):
                  'name': 'Mg',
                  'symbols': ['Mg'],
                  'weights': [1.0]},
-                {'mass': 15.9994,
+                {'mass': 15.999,
                  'name': 'O',
                  'symbols': ['O'],
                  'weights': [1.0]}],

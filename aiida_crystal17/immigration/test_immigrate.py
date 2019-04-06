@@ -1,7 +1,7 @@
 import os
 from jsonextended import edict
 
-from aiida_crystal17.immigration.create_inputs import create_builder
+from aiida_crystal17.immigration.create_inputs import populate_builder
 from aiida_crystal17.tests import TEST_DIR
 
 
@@ -15,7 +15,7 @@ def test_create_builder(db_test_app):
     folder.put_object_from_file(inpath, "main.d12")
     folder.put_object_from_file(outpath, "main.out")
 
-    builder = create_builder(
+    builder = populate_builder(
         folder, input_name="main.d12", output_name="main.out")
 
     assert set(builder["basissets"].keys()) == set(["Ni", "O"])
@@ -91,8 +91,8 @@ def test_full_nio_afm(db_test_app):
     print(node.inputs)
 
     assert set(node.inputs) == set(
-        ['basissets_Ni', 'basissets_O',
-         'parameters', 'structure', 'symmetry', 'code'])
+        ['basissets__Ni', 'basissets__O',
+         'parameters', 'structure', 'symmetry', 'kinds', 'code'])
 
     node.inputs.structure
 
@@ -124,7 +124,7 @@ def test_full_mgo_opt(db_test_app):
     print(node.inputs)
 
     assert set(node.inputs) == set(
-        ['basissets_Mg', 'basissets_O',
+        ['basissets__Mg', 'basissets__O',
          'parameters', 'structure', 'symmetry', 'code'])
 
     node.inputs.structure

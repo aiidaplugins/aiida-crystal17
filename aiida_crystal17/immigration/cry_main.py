@@ -7,7 +7,7 @@ from aiida.common.links import LinkType
 from aiida.orm import FolderData
 
 from aiida_crystal17.parsers.main_out import parse_main_out
-from aiida_crystal17.immigration.create_inputs import create_builder
+from aiida_crystal17.immigration.create_inputs import populate_builder
 from aiida_crystal17.calculations.cry_main import CryMainCalculation
 
 
@@ -64,7 +64,7 @@ def migrate_as_main(
         folder.put_object_from_file(input_path, input_name)
         folder.put_object_from_file(output_path, output_name)
 
-    builder = create_builder(
+    builder = populate_builder(
         folder, input_name=input_name, output_name=output_name, code=code)
 
     calc_node.add_incoming(
@@ -75,9 +75,12 @@ def migrate_as_main(
         builder.parameters, LinkType.INPUT_CALC, "parameters")
     calc_node.add_incoming(
         builder.symmetry, LinkType.INPUT_CALC, "symmetry")
+    if "kinds" in builder:
+        calc_node.add_incoming(
+            builder.kinds, LinkType.INPUT_CALC, "kinds")
     for key, basisset in builder.basissets.items():
         calc_node.add_incoming(
-            basisset, LinkType.INPUT_CALC, "basissets_{}".format(key))
+            basisset, LinkType.INPUT_CALC, "basissets__{}".format(key))
 
     if store_all:
         calc_node.store_all()

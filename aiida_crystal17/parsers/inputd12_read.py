@@ -3,7 +3,7 @@ module for reading main.d12 (for immigration)
 """
 import numpy as np
 
-from aiida_crystal17.utils import get_keys, unflatten_dict
+from aiida_crystal17.common import get_keys, unflatten_dict
 from aiida_crystal17.validation import read_schema, validate_with_json
 
 

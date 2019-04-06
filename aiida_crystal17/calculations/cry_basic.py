@@ -69,6 +69,7 @@ class CryBasicCalculation(CryAbstractCalculation):
                 self.metadata.options.external_file_name])
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [
+            # self.metadata.options.input_file_name,
             self.metadata.options.output_main_file_name,
             self.metadata.options.external_file_name]
         calcinfo.retrieve_temporary_list = []

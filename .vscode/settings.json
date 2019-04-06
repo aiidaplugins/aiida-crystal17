@@ -2,6 +2,18 @@
     "editor.rulers": [
         80, 120
     ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/__pycache__": true,
+        "**/.ipynb_checkpoints": true,
+        "**/.pytest_cache": true,
+        "**/.eggs": true
+    },
+
     "python.pythonPath": "/anaconda/envs/aiida-workshop/bin/python",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
@@ -11,5 +23,6 @@
     ],
     "python.unitTest.unittestEnabled": false,
     "python.unitTest.nosetestsEnabled": false,
-    "python.unitTest.pyTestEnabled": true
+    "python.unitTest.pyTestEnabled": true,
+    "restructuredtext.preview.sphinx.disabled": true
 }

@@ -3,14 +3,15 @@ import os
 
 import jsonschema
 
+SCHEMAPATH = os.path.dirname(os.path.realpath(__file__))
+
 
 def read_schema(name="inputd12"):
     """read and return an json schema
 
     :return:
     """
-    dirpath = os.path.dirname(os.path.realpath(__file__))
-    jpath = os.path.join(dirpath, "{}.schema.json".format(name))
+    jpath = os.path.join(SCHEMAPATH, "{}.schema.json".format(name))
     with open(jpath) as jfile:
         schema = json.load(jfile)
     return schema

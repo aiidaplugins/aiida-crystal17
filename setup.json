@@ -18,12 +18,12 @@
         ],
         "aiida.data": [
             "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData",
-            "crystal17.structsettings = aiida_crystal17.data.struct_settings:StructSettingsData"
+            "crystal17.symmetry = aiida_crystal17.data.symmetry:SymmetryData",
+            "crystal17.kinds = aiida_crystal17.data.kinds:KindData"
         ],
         "aiida.calculations": [
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
-            "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation",
-            "crystal17.immigrant = aiida_crystal17.calculations.cry_main_immigrant:CryMainImmigrantCalculation"
+            "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation"
         ],
         "aiida.parsers": [
             "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser"
@@ -32,8 +32,8 @@
             "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure"
         ],
         "aiida.cmdline.data": [
-            "cry17-settings = aiida_crystal17.cmndline.structsettings:structsettings",
-            "cry17-basis = aiida_crystal17.cmndline.basis_set:basisset"
+            "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
+            "crystal17.basis = aiida_crystal17.cmndline.basis_set:basisset"
         ]
     },
     "include_package_data": true,
@@ -44,9 +44,8 @@
     "install_requires": [
         "aiida-core==1.0.0b1",
         "ejplugins>=0.9.7",
-        "packaging==19.0",
-        "spglib==1.10.3.65",
-        "ase==3.12.0"
+        "spglib>=1.10.0,<2.0.0",
+        "ase>=3.12.0,<4.0.0"
     ],
     "extras_require": {
         "testing": [

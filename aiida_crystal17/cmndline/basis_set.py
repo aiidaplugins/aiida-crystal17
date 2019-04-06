@@ -7,7 +7,7 @@ from aiida.cmdline.commands.cmd_verdi import verdi
 from jsonextended import edict
 
 
-@verdi.group('cry17-basis')
+@verdi.group('crystal17.basis')
 def basisset():
     """Commandline interface for working with Crystal Basis Set Data"""
 

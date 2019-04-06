@@ -11,6 +11,10 @@ class CryMainParser(Parser):
     """
     Parser class for parsing (stdout) output of a standard CRYSTAL17 run
     """
+    def _log_scheduler_errors(self, output_folder):
+        stderr = self.node.get_option("scheduler_stdout")
+        with output_folder.open(stderr) as handle:
+            self.logger.warning("{}:\n{}".format(stderr, handle.read()))
 
     def parse(self, retrieved_temporary_folder, **kwargs):
         """
@@ -22,7 +26,8 @@ class CryMainParser(Parser):
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
 
         mainout_file = self.node.get_option("output_main_file_name")
-        if mainout_file not in output_folder.list_object_names():
+        if not output_folder.has_object(mainout_file):
+            self._log_scheduler_errors(output_folder)
             return self.exit_codes.ERROR_OUTPUT_FILE_MISSING
 
         # parse the stdout file and add nodes

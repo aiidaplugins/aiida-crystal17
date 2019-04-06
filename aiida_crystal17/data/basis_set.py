@@ -11,7 +11,7 @@ import six
 import yaml
 from aiida.common.utils import classproperty
 from aiida.orm import Data
-from aiida_crystal17.utils import (
+from aiida_crystal17.common import (
     flatten_dict, unflatten_dict, ATOMIC_NUM2SYMBOL)
 
 BASISGROUP_TYPE = 'crystal17.basisset'

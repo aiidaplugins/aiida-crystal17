@@ -2,43 +2,41 @@ import os
 from textwrap import dedent
 
 from click.testing import CliRunner
-from aiida_crystal17.cmndline.structsettings import structsettings
+from aiida_crystal17.cmndline.symmetry import symmetry
 from aiida_crystal17.cmndline.basis_set import basisset
 from aiida_crystal17.tests import TEST_DIR
 
 
-def test_settings_show(db_test_app):
+def test_symmetry_show(db_test_app):
 
     from aiida.plugins import DataFactory
-    setting_cls = DataFactory('crystal17.structsettings')
+    node_cls = DataFactory('crystal17.symmetry')
 
     symmdata = {
         "operations": [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]],
-        "space_group": 1,
-        "centring_code": 2,
-        "crystal_type": 3
+        "hall_number": 1,
+        "basis": "fractional"
     }
-    settings_node = setting_cls(data=symmdata)
-    settings_node.store()
+    node = node_cls(data=symmdata)
+    node.store()
 
     runner = CliRunner()
-    result = runner.invoke(structsettings, ['show', str(settings_node.pk)])
+    result = runner.invoke(symmetry, ['show', str(node.pk)])
 
     assert result.exit_code == 0
 
     expected = dedent("""\
-                centring_code: 2
-                crystal_type:  3
-                num_symops:    1
-                space_group:   1
+                basis:       fractional
+                hall_number: 1
+                num_symops:  1
                 """)
 
     print(result.output)
 
     assert expected == str(result.output)
 
-    result2 = runner.invoke(structsettings,
-                            ['show', "-s", str(settings_node.pk)])
+    result2 = runner.invoke(symmetry,
+                            ['show', "-s", str(node.pk)])
 
     assert result2.exit_code == 0
 

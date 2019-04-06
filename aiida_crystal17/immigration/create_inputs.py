@@ -11,7 +11,7 @@ from ejplugins.crystal import CrystalOutputPlugin
 
 
 # pylint: disable=too-many-locals
-def create_builder(folder, input_name="main.d12", output_name="main.out", code=None):
+def populate_builder(folder, input_name="main.d12", output_name="main.out", code=None):
     """ create ``crystal17.main`` input nodes from an existing run
 
     NB: none of the nodes are stored, also
@@ -25,7 +25,8 @@ def create_builder(folder, input_name="main.d12", output_name="main.out", code=N
     calc_cls = CalculationFactory('crystal17.main')
     basis_cls = DataFactory('crystal17.basisset')
     struct_cls = DataFactory('structure')
-    structsettings_cls = DataFactory('crystal17.structsettings')
+    symmetry_cls = DataFactory('crystal17.symmetry')
+    kind_cls = DataFactory('crystal17.kinds')
 
     with folder.open(input_name, mode='r') as f:
         d12content = f.read()
@@ -55,18 +56,22 @@ def create_builder(folder, input_name="main.d12", output_name="main.out", code=N
 
     structure = struct_cls(ase=atoms)
 
-    settings_dict = {"kinds": {}}
-    for key, vals in atom_props.items():
-        settings_dict["kinds"][key] = [
-            structure.sites[i - 1].kind_name for i in vals
-        ]
+    if atom_props:
+        kind_names = structure.get_kind_names()
+        kinds_dict = {"kind_names": kind_names}
+        for key, atom_indexes in atom_props.items():
+            kv_map = {kn: i + 1 in atom_indexes
+                      for i, kn in enumerate(structure.get_site_kindnames())}
+            kinds_dict[key] = [kv_map[kn] for kn in kind_names]
+        kinds = kind_cls(data=kinds_dict)
+    else:
+        kinds = None
 
-    settings_dict["operations"] = data["initial"]["primitive_symmops"]
-    # TODO retrieve centering code, crystal system and spacegroup
-    settings_dict["space_group"] = 1
-    settings_dict["crystal_type"] = 1
-    settings_dict["centring_code"] = 1
-    settings = structsettings_cls(data=settings_dict)
+    symmetry = symmetry_cls(data={
+        "operations": data["initial"]["primitive_symmops"],
+        "basis": "fractional",
+        "hall_number": None
+    })
 
     bases = {}
     for bset in basis_sets:
@@ -84,7 +89,8 @@ def create_builder(folder, input_name="main.d12", output_name="main.out", code=N
         bases[bdata.element] = bdata
 
     builder = calc_cls.create_builder(
-        output_dict, structure, settings, bases, code=code)
+        output_dict, structure, bases,
+        symmetry=symmetry, kinds=kinds, code=code)
 
     return builder
 

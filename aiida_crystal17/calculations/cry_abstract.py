@@ -58,11 +58,11 @@ class CryAbstractCalculation(CalcJob):
                     help='the data extracted from the main output file')
         spec.output(cls.link_output_structure,
                     valid_type=DataFactory('structure'),
-                    required=True,
+                    required=False,
                     help='the structure output from the calculation')
         spec.output(cls.link_output_symmetry,
-                    valid_type=DataFactory('crystal17.structsettings'),
-                    required=True,
+                    valid_type=DataFactory('crystal17.symmetry'),
+                    required=False,
                     help='the symmetry data from the calculation')
 
         # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)

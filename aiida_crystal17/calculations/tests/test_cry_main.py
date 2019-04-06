@@ -3,12 +3,13 @@
 """
 import os
 
-import aiida_crystal17
-from aiida_crystal17.tests import TEST_DIR
 from ase.spacegroup import crystal
 import ejplugins
 from jsonextended import edict
 import pytest
+from aiida.engine import run_get_node
+import aiida_crystal17
+from aiida_crystal17.tests import TEST_DIR
 
 
 def test_create_builder(db_test_app):
@@ -33,21 +34,25 @@ def test_create_builder(db_test_app):
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        run_symmetrise_3d_structure)
-    instruct, settings = run_symmetrise_3d_structure(instruct)
+        Symmetrise3DStructure)
+    sym_calc = run_get_node(Symmetrise3DStructure, structure=instruct).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     calc_cls = CalculationFactory('crystal17.main')
     builder = calc_cls.create_builder(
-        inparams,
-        instruct,
-        settings, {"O": o_basis, "Mg": mg_basis},
-        flattened=True)
+        inparams, instruct, {"O": o_basis, "Mg": mg_basis},
+        symmetry=symmetry, flattened=True)
 
-    builder.structure
+    assert isinstance(builder.structure, StructureData)
     builder.parameters
 
 
-def test_submit_mgo(db_test_app):
+@pytest.mark.parametrize(
+    "input_symmetry",
+    (False, True)
+)
+def test_submit_mgo(db_test_app, input_symmetry):
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
     DictData = DataFactory('dict')
@@ -74,8 +79,10 @@ def test_submit_mgo(db_test_app):
     instruct = StructureData(ase=atoms)
 
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        run_symmetrise_3d_structure)
-    instruct, settings = run_symmetrise_3d_structure(instruct)
+        Symmetrise3DStructure)
+    sym_calc = run_get_node(Symmetrise3DStructure, structure=instruct).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     mg_basis, _ = BasisSetData.get_or_create(
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
@@ -97,8 +104,9 @@ def test_submit_mgo(db_test_app):
 
     builder.parameters = inparams
     builder.structure = instruct
-    builder.symmetry = settings
     builder.basissets = {"Mg": mg_basis, "O": o_basis}
+    if input_symmetry:
+        builder.symmetry = symmetry
 
     process = builder.process_class(inputs=builder)
 
@@ -139,7 +147,8 @@ def test_submit_nio_afm(db_test_app):
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import BasisSetData
+    KindData = DataFactory('crystal17.kinds')
+    BasisSetData = DataFactory('crystal17.basisset')
     upload_basisset_family = BasisSetData.upload_basisset_family
     from aiida.common.folders import SandboxFolder
 
@@ -165,11 +174,15 @@ def test_submit_nio_afm(db_test_app):
     atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
     instruct = StructureData(ase=atoms)
 
-    settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+    kind_data = KindData(data={
+        "kind_names": ["Ni1", "Ni2", "O"],
+        "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        run_symmetrise_3d_structure)
-    instruct, settings = run_symmetrise_3d_structure(instruct, settings)
+        Symmetrise3DStructure)
+    sym_calc = run_get_node(Symmetrise3DStructure, structure=instruct).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"),
@@ -186,10 +199,10 @@ def test_submit_nio_afm(db_test_app):
             "num_mpiprocs_per_machine": 1
         },
         "withmpi": False,
-        "max_wallclock_seconds": 30
+        "max_wallclock_seconds": 60
     }
     builder = process_class.create_builder(
-        params, instruct, settings, "sto3g",
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
         code=code, options=options, flattened=True)
 
     process = process_class(inputs=builder)
@@ -245,6 +258,8 @@ def test_run_nio_afm_scf(db_test_app):
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
+    KindData = DataFactory('crystal17.kinds')
+    BasisSetData = DataFactory('crystal17.basisset')
     from aiida_crystal17.data.basis_set import BasisSetData
     upload_basisset_family = BasisSetData.upload_basisset_family
 
@@ -270,11 +285,15 @@ def test_run_nio_afm_scf(db_test_app):
     atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
     instruct = StructureData(ase=atoms)
 
-    settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+    kind_data = KindData(data={
+        "kind_names": ["Ni1", "Ni2", "O"],
+        "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        run_symmetrise_3d_structure)
-    instruct, settings = run_symmetrise_3d_structure(instruct, settings)
+        Symmetrise3DStructure)
+    sym_calc = run_get_node(Symmetrise3DStructure, structure=instruct).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"),
@@ -295,7 +314,7 @@ def test_run_nio_afm_scf(db_test_app):
         "max_wallclock_seconds": 30
     }
     builder = process_class.create_builder(
-        params, instruct, settings, "sto3g",
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
         code=code, options=options, flattened=True)
 
     output = run_get_node(builder)
@@ -341,7 +360,8 @@ def test_run_nio_afm_fullopt(db_test_app):
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     StructureData = DataFactory('structure')
-    from aiida_crystal17.data.basis_set import BasisSetData
+    KindData = DataFactory('crystal17.kinds')
+    BasisSetData = DataFactory('crystal17.basisset')
     upload_basisset_family = BasisSetData.upload_basisset_family
 
     code = db_test_app.get_or_create_code('crystal17.main')
@@ -366,11 +386,15 @@ def test_run_nio_afm_fullopt(db_test_app):
     atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
     instruct = StructureData(ase=atoms)
 
-    settings = {"kinds.spin_alpha": ["Ni1"], "kinds.spin_beta": ["Ni2"]}
+    kind_data = KindData(data={
+        "kind_names": ["Ni1", "Ni2", "O"],
+        "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        run_symmetrise_3d_structure)
-    instruct, settings = run_symmetrise_3d_structure(instruct, settings)
+        Symmetrise3DStructure)
+    sym_calc = run_get_node(Symmetrise3DStructure, structure=instruct).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"),
@@ -391,7 +415,7 @@ def test_run_nio_afm_fullopt(db_test_app):
         "max_wallclock_seconds": 30
     }
     builder = process_class.create_builder(
-        params, instruct, settings, "sto3g",
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
         code=code, options=options, flattened=True)
 
     output = run_get_node(builder)

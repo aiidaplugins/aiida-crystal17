@@ -2,7 +2,7 @@
 module to write CRYSTAL17 .d12 files
 """
 import six
-from aiida_crystal17.utils import get_keys
+from aiida_crystal17.common import get_keys
 from aiida_crystal17.validation import validate_with_json
 
 # TODO check float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
@@ -45,10 +45,20 @@ def format_value(dct, keys):
 def write_input(indict, basis_sets, atom_props=None):
     """write input of a validated input dictionary
 
-    :param indict: dictionary of input
-    :param basis_sets: list of basis set strings or objects with `content` property
-    :param atom_props: dictionary of atom ids with specific properties ("spin_alpha", "spin_beta", "unfixed", "ghosts")
-    :return:
+    Parameters
+    ----------
+    indict: dict
+        dictionary of inputs
+    basis_sets: list
+        list of basis set strings or objects with `content` property
+    atom_props: dict or None
+        atom ids with specific properties;
+        "spin_alpha", "spin_beta", "unfixed", "ghosts"
+
+    Returns
+    -------
+    str
+
     """
     # validation
     validate_with_json(indict)
@@ -63,7 +73,8 @@ def write_input(indict, basis_sets, atom_props=None):
     if not set(atom_props.keys()).issubset(
             ["spin_alpha", "spin_beta", "unfixed", "ghosts"]):
         raise ValueError(
-            "atom_props should only contain: 'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
+            "atom_props should only contain: "
+            "'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
         )
     # validate that a index isn't in both spin_alpha and spin_beta
     allspin = atom_props.get("spin_alpha", []) + atom_props.get(

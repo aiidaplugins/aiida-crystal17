@@ -3,17 +3,15 @@ from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
 from aiida.plugins import DataFactory
 from aiida.engine import WorkChain
-from aiida_crystal17.parsers.geometry import structure_to_dict, compute_symmetry_3d, SYMMETRY_PROGRAM, SYMMETRY_VERSION, \
-    dict_to_structure
-from aiida_crystal17.utils import unflatten_dict
-from aiida.engine import run_get_node
+from aiida_crystal17.symmetry import (
+    standardize_cell, find_primitive, compute_symmetry_dict)
 from aiida_crystal17.validation import validate_with_dict
-from aiida_crystal17 import __version__ as VERSION
 from jsonextended import edict
 
 StructureData = DataFactory('structure')
 DictData = DataFactory('dict')
-StructSettingsData = DataFactory('crystal17.structsettings')
+SymmetryData = DataFactory('crystal17.symmetry')
+KindData = DataFactory('crystal17.kinds')
 
 
 class Symmetrise3DStructure(WorkChain):
@@ -35,62 +33,40 @@ class Symmetrise3DStructure(WorkChain):
                 "Length tolerance for symmetry finding: "
                 "0.01 is fairly strict and works well for properly refined structures, "
                 "but 0.1 may be required for unrefined structures",
-                "type":
-                "number",
-                "minimum":
-                0,
-                "exclusiveMinimum":
-                True
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": True
             },
-            "angletol": {
+            "angle_tolerance": {
                 "description":
                 "Angle tolerance for symmetry finding in the unit of angle degrees, "
                 "if null, an optimized routine is used to judge symmetry",
                 "type": ["number", "null"],
-                "minimum":
-                0,
-                "exclusiveMinimum":
-                True
+                "minimum": 0,
+                "exclusiveMinimum": True
             },
             "standardize": {
                 "description":
-                "whether to standardize the structure, see https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell",
-                "type":
-                "boolean"
+                "whether to standardize the structure, "
+                "see https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell",
+                "type": "boolean"
             },
             "primitive": {
                 "description":
                 "whether to convert the structure to its (standardized) primitive",
-                "type":
-                "boolean"
+                "type": "boolean"
             },
             "idealize": {
                 "description":
                 "whether to remove distortions of the unit cell's atomic positions, using obtained symmetry operations",
-                "type":
-                "boolean"
-            },
-            "kinds": {
-                "description":
-                "settings for input properties of each species kind",
-                "type":
-                "object",
-                "patternProperties": {
-                    ".+": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "uniqueItems": True
-                        }
-                    }
-                }
+                "type": "boolean"
             }
         }
     }
 
     _settings_defaults = {
         "symprec": 0.01,
-        "angletol": None,
+        "angle_tolerance": None,
         "standardize": True,
         "primitive": True,
         "idealize": False
@@ -102,8 +78,8 @@ class Symmetrise3DStructure(WorkChain):
         spec.input("structure", valid_type=StructureData)
         spec.input("settings", valid_type=DictData, required=False)
         spec.outline(cls.validate, cls.compute)
-        spec.output("structure", valid_type=StructureData, required=True)
-        spec.output("settings", valid_type=StructSettingsData, required=True)
+        spec.output("symmetry", valid_type=SymmetryData, required=True)
+        spec.output("structure", valid_type=StructureData, required=False)
 
     def validate(self):
         # only allow 3d structures
@@ -120,43 +96,49 @@ class Symmetrise3DStructure(WorkChain):
 
         self.ctx.settings = AttributeDict(settings_dict)
 
-        self.ctx.structdict = structure_to_dict(self.inputs.structure)
-
     def compute(self):
 
-        structdict, symmdata = compute_symmetry_3d(
-            self.ctx.structdict, self.ctx.settings.standardize,
-            self.ctx.settings.primitive, self.ctx.settings.idealize,
-            self.ctx.settings.symprec, self.ctx.settings.idealize)
+        if self.ctx.settings.standardize:
+            structure = standardize_cell(
+                self.inputs.structure,
+                self.ctx.settings.symprec, self.ctx.settings.angle_tolerance,
+                to_primitive=self.ctx.settings.primitive,
+                no_idealize=not self.ctx.settings.idealize)
+            self.out('structure', structure)
+        elif self.ctx.settings.primitive:
+            structure = find_primitive(
+                self.inputs.structure,
+                self.ctx.settings.symprec, self.ctx.settings.angle_tolerance
+            )
+            self.out('structure', structure)
+        else:
+            structure = self.inputs.structure
 
-        if "kinds" in self.ctx.settings:
-            symmdata["kinds"] = self.ctx.settings.kinds
+        symmdata = compute_symmetry_dict(
+            structure,
+            self.ctx.settings.symprec, self.ctx.settings.angle_tolerance
+        )
 
-        symmdata["symmetry_program"] = SYMMETRY_PROGRAM
-        symmdata["symmetry_version"] = SYMMETRY_VERSION
-        symmdata["computation_class"] = self.__class__.__name__
-        symmdata["computation_version"] = VERSION
-
-        self.out('settings', StructSettingsData(data=symmdata))
-        self.out('structure', dict_to_structure(structdict))
+        self.out('symmetry', SymmetryData(data=symmdata))
 
 
-def run_symmetrise_3d_structure(structure, settings=None):
-    """run the Symmetrise3DStructure workchain and return the structure and settings data nodes,
-    for inputting into ``crystal17.main`` calculation
+# def run_symmetrise_3d_structure(structure, settings=None):
+#     """run the Symmetrise3DStructure workchain and return the structure and settings data nodes,
+#     for inputting into ``crystal17.main`` calculation
 
-    :param structure: StructureData
-    :param settings: dict or DictData
-    :return: (StructureData, StructSettingsData)
-    """
-    if isinstance(settings, dict):
-        settings = unflatten_dict(settings)
-        settings = DictData(dict=settings)
-    inputs_dict = {"structure": structure}
-    if settings:
-        inputs_dict["settings"] = settings
-    outcome = run_get_node(Symmetrise3DStructure, **inputs_dict)
-    outgoing = outcome.node.get_outgoing()
+#     :param structure: StructureData
+#     :param settings: dict or DictData
+#     :return: (StructureData, StructSettingsData)
+#     """
+#     from aiida.engine import run_get_node
+#     if isinstance(settings, dict):
+#         settings = unflatten_dict(settings)
+#         settings = DictData(dict=settings)
+#     inputs_dict = {"structure": structure}
+#     if settings:
+#         inputs_dict["settings"] = settings
+#     outcome = run_get_node(Symmetrise3DStructure, **inputs_dict)
+#     outgoing = outcome.node.get_outgoing()
 
-    return (outgoing.get_node_by_label("structure"),
-            outgoing.get_node_by_label("settings"))
+#     return (outgoing.get_node_by_label("structure"),
+#             outgoing.get_node_by_label("settings"))

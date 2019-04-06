@@ -4,7 +4,7 @@ parse the main output file and create the required output nodes
 from collections import Mapping
 # TODO remove dependancy on ejplugins?
 import ejplugins
-from aiida_crystal17.parsers.geometry import dict_to_structure
+from aiida_crystal17.symmetry import convert_structure
 from ejplugins.crystal import CrystalOutputPlugin
 from aiida.plugins import DataFactory
 from aiida.engine import ExitCode
@@ -43,7 +43,7 @@ class OutputNodes(Mapping):
         return self._dict["symmetry"]
 
     def _set_symmetry(self, value):
-        assert isinstance(value, DataFactory('crystal17.structsettings'))
+        assert isinstance(value, DataFactory('crystal17.symmetry'))
         self._dict["symmetry"] = value
 
     symmetry = property(_get_symmetry, _set_symmetry)
@@ -101,7 +101,7 @@ def parse_main_out(fileobj, parser_class,
     except IOError as err:
         parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
         results_data["parser_errors"].append(
-            "Error parsing CRYSTAL 17 main output: {0}\n{1}".format(err))
+            "Error parsing CRYSTAL 17 main output: {0}".format(err))
         parser_result.nodes.results = DataFactory("dict")(dict=results_data)
         return parser_result
 
@@ -135,8 +135,14 @@ def parse_main_out(fileobj, parser_class,
     for name, val in initial_data.get("calculation", {}).items():
         results_data["calculation_{}".format(name)] = val
     init_scf_data = initial_data.get("scf", [])
-    results_data["scf_iterations"] = len(init_scf_data)
-    # TODO create TrajectoryData from init_scf_data data
+    if init_scf_data:
+        results_data["scf_iterations"] = len(init_scf_data)
+        # TODO create TrajectoryData from init_scf_data data
+    else:
+        # TODO new parsing error codes?
+        # ERROR **** EXTRN **** GEOMETRY DATA FILE NOT FOUND - EXTERNAL KEYWORD NOT ALLOWED
+        # parser_result.exit_code = exit_codes.ERROR_CRYSTAL_RUN
+        pass
 
     # optimisation trajectory data
     opt_data = data.pop("optimisation")
@@ -198,15 +204,13 @@ def _extract_symmetry(final_data, init_settings, param_data,
             #     parser_result.success = False
         else:
             from aiida.plugins import DataFactory
-            StructSettings = DataFactory('crystal17.structsettings')
-            # TODO retrieve centering code, crystal system and spacegroup
-            settings_dict = {
+            SymmetryData = DataFactory('crystal17.symmetry')
+            data_dict = {
                 "operations": final_data["primitive_symmops"],
-                "space_group": 1,
-                "crystal_type": 1,
-                "centring_code": 1
+                "basis": "fractional",
+                "hall_number": None
             }
-            parser_result.nodes.symmetry = StructSettings(data=settings_dict)
+            parser_result.nodes.symmetry = SymmetryData(data=data_dict)
     else:
         param_data["parser_errors"].append(
             "primitive symmops were not found in the output file")
@@ -232,13 +236,13 @@ def _extract_structure(cell_data, init_struct, results_data):
         kinds = [
             init_struct.get_kind(n) for n in init_struct.get_site_kindnames()
         ]
-    structure = dict_to_structure({
+    structure = convert_structure({
         "lattice": cell_vectors,
         "pbc": cell_data["pbc"],
         "symbols": cell_data["symbols"],
         "ccoords": cell_data["ccoords"]["magnitude"],
         "kinds": kinds
-    })
+    }, "aiida")
     results_data["volume"] = structure.get_cell_volume()
     return structure
 
