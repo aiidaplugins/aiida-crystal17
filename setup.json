@@ -57,7 +57,8 @@
             "coverage",
             "pytest-cov",
             "pytest-timeout",
-            "jsonextended"
+            "jsonextended",
+            "ruamel.yaml"
         ],
         "code_style": [
             "flake8<3.8.0,>=3.7.0"
