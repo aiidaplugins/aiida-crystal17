@@ -12,7 +12,6 @@ from aiida.plugins import DataFactory
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 from aiida_crystal17.data.basis_set import get_basissets_from_structure
 from aiida_crystal17.validation import read_schema
-from aiida_crystal17.symmetry import structure_to_dict
 from aiida_crystal17.parsers.gui_parse import gui_file_write
 from aiida_crystal17.parsers.inputd12_write import write_input
 from aiida_crystal17.common import unflatten_dict

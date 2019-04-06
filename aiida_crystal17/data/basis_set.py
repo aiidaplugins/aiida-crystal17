@@ -747,6 +747,7 @@ class BasisSetData(Data):
             if created:
                 if not dry_run:
                     basisset.store()
+                # TODO what happened to aiidalogger?
                 # pylint: disable=logging-format-interpolation
                 # aiidalogger.debug(
                 # "New node {0} created for file {1}".format(
