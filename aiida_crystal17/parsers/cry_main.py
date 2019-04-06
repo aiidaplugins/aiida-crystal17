@@ -26,7 +26,7 @@ class CryMainParser(Parser):
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
 
         mainout_file = self.node.get_option("output_main_file_name")
-        if not output_folder.has_object(mainout_file):
+        if mainout_file not in output_folder.list_object_names():
             self._log_scheduler_errors(output_folder)
             return self.exit_codes.ERROR_OUTPUT_FILE_MISSING
 

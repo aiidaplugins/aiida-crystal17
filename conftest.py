@@ -99,13 +99,12 @@ class AiidaTestApp(object):
 
             computer = Computer(
                 name=name,
+                hostname='localhost',
                 description=('localhost computer, '
                              'set up by aiida_crystal17 tests'),
-                hostname='localhost',
-                workdir=self.work_directory,
                 transport_type='local',
                 scheduler_type='direct',
-                enabled_state=True)
+                workdir=self.work_directory)
             computer.store()
             computer.configure()
 
