@@ -3,7 +3,7 @@ import numpy as np
 
 from aiida_crystal17.symmetry import (
     prepare_for_spglib, compute_symmetry_dataset, standardize_cell, find_primitive,
-    operations_cart_to_frac, operations_frac_to_cart)
+    operations_cart_to_frac, operations_frac_to_cart, get_hall_number_from_symmetry)
 
 
 def test_prepare_for_spglib(db_test_app):
@@ -32,7 +32,8 @@ def test_compute_symmetry_simple(db_test_app):
         basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
-    dataset = compute_symmetry_dataset(atoms, symprec=0.01, angle_tolerance=None)
+    dataset = compute_symmetry_dataset(
+        atoms, symprec=0.01, angle_tolerance=None)
     assert dataset["number"] == 225
     assert len(dataset["rotations"]) == 192
 
@@ -45,7 +46,8 @@ def test_compute_symmetry_with_equivalent(db_test_app):
         "pbc": [True, True, True],
         "equivalent": [1, 0, 1, 0]
     }
-    dataset = compute_symmetry_dataset(struct_data, symprec=0.01, angle_tolerance=None)
+    dataset = compute_symmetry_dataset(
+        struct_data, symprec=0.01, angle_tolerance=None)
     assert dataset["number"] == 166
     assert len(dataset["rotations"]) == 24
 
@@ -58,7 +60,8 @@ def test_compute_symmetry_no_equivalent(db_test_app):
         "pbc": [True, True, True],
         "equivalent": [1, 2, 3, 4]
     }
-    dataset = compute_symmetry_dataset(struct_data, symprec=0.01, angle_tolerance=None)
+    dataset = compute_symmetry_dataset(
+        struct_data, symprec=0.01, angle_tolerance=None)
     assert dataset["number"] == 160
     assert len(dataset["rotations"]) == 6
 
@@ -71,7 +74,8 @@ def test_find_primitive(db_test_app):
         spacegroup=225,
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     struct = find_primitive(atoms, symprec=0.01, angle_tolerance=None)
-    dataset = compute_symmetry_dataset(struct, symprec=0.01, angle_tolerance=None)
+    dataset = compute_symmetry_dataset(
+        struct, symprec=0.01, angle_tolerance=None)
     assert dataset["number"] == 225
     assert len(dataset["rotations"]) == 48
 
@@ -85,9 +89,16 @@ def test_standardize_cell(db_test_app):
         cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
     struct = standardize_cell(atoms, symprec=0.01, angle_tolerance=None,
                               to_primitive=True)
-    dataset = compute_symmetry_dataset(struct, symprec=0.01, angle_tolerance=None)
+    dataset = compute_symmetry_dataset(
+        struct, symprec=0.01, angle_tolerance=None)
     assert dataset["number"] == 225
     assert len(dataset["rotations"]) == 48
+
+
+def test_get_hall_number_from_symmetry():
+    assert get_hall_number_from_symmetry(
+        [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+         [-1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0]]) == 2
 
 
 def test_operation_transforms():

@@ -10,32 +10,33 @@ from jsonextended import edict
 import pytest
 
 
-# @pytest.mark.skip(reason="awaiting fix for aiidateam/aiida_core#2650")
-def test_submit(db_test_app):
+def test_dry_run(db_test_app):
     """Test submitting a calculation"""
+    from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     SinglefileData = DataFactory('singlefile')
 
-    from aiida.common.folders import SandboxFolder
-
-    code = db_test_app.get_or_create_code('crystal17.basic')
-
     # Prepare input parameters
+    code = db_test_app.get_or_create_code('crystal17.basic')
     infile = SinglefileData(
         file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_scf.crystal.d12'))
+    infile.store()
 
     # set up calculation
     builder = code.get_builder()
     builder.metadata.options.withmpi = False
     builder.metadata.options.resources = {
         "num_machines": 1, "num_mpiprocs_per_machine": 1}
+    builder.metadata.store_provenance = True
     builder.input_file = infile
 
-    # output input files and scripts to temporary folder
-    with SandboxFolder() as folder:
-        subfolder, script_filename = builder.submit_test(folder=folder)
-        print("inputs created successfully at {}".format(subfolder.abspath))
+    builder.metadata.dry_run = True
+
+    outcome = run_get_node(builder)
+
+    incoming = outcome.node.get_incoming()
+    assert set(incoming.all_link_labels()) == set(['code', 'input_file'])
 
 
 @pytest.mark.parametrize("inpath_main,inpath_gui", (
@@ -45,7 +46,7 @@ def test_submit(db_test_app):
 ))
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-def test_run_runs(db_test_app, inpath_main, inpath_gui):
+def test_full_runs(db_test_app, inpath_main, inpath_gui):
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory

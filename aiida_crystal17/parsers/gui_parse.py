@@ -27,7 +27,7 @@ import spglib
 
 from aiida_crystal17.symmetry import (
     compute_symmetry_dataset, get_crystal_system_name, get_lattice_type_name,
-    operations_frac_to_cart, convert_structure)
+    operations_frac_to_cart, convert_structure, get_hall_number_from_symmetry)
 
 NUM_TO_CRYSTAL_TYPE_MAP = {
     1: 'triclinic',
@@ -170,7 +170,7 @@ def gui_file_write(structure_data, symmetry_data=None):
 
     Notes
     -----
-    OLDER versions of CRYSTAL are not compatible,
+    Older versions of CRYSTAL are not compatible,
     because they only specify symmetrically inequivalent atomic positions
     (rather than all)
 
@@ -195,14 +195,15 @@ def gui_file_write(structure_data, symmetry_data=None):
         symops = symmetry_data["operations"]
         basis = symmetry_data["basis"]
     else:
-        # TODO specific test for SymmetryData
+        # TODO specific test for SymmetryData, and move this to separate function
+        symops = symmetry_data.data.operations
+        basis = symmetry_data.data.basis
         hall_number = symmetry_data.hall_number
-        # TODO if hall_number is None, and move this to separate function
+        if hall_number is None:
+            hall_number = get_hall_number_from_symmetry(symops, basis, lattice)
         crystal_type = get_crystal_type_code(hall_number)
         centring_code = get_centering_code(hall_number)
-        symops = symmetry_data.data.operations
         sg_num = spglib.get_spacegroup_type(hall_number)["number"]
-        basis = symmetry_data.data.basis
 
     if basis == "fractional":
         symops = operations_frac_to_cart(symops, lattice)

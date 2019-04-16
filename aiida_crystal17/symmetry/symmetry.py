@@ -177,6 +177,32 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
     return data
 
 
+def get_hall_number_from_symmetry(operations, basis="fractional",
+                                  lattice=None, symprec=1e-5):
+    """obtain the Hall number from the symmetry operations
+
+    Parameters
+    ----------
+    operations: list
+        Nx12 flattened list of symmetry operations
+    basis: str
+        "fractional" or "cartesian"
+
+    Returns
+    -------
+    int
+
+    """
+    if basis == "cartesian":
+        operations = operations_cart_to_frac(operations, lattice)
+    elif basis != "fractional":
+        raise ValueError("basis should be cartesian or fractional")
+    rotations = [[o[0:3], o[3:6], o[6:9]] for o in operations]
+    translations = [o[9:12] for o in operations]
+    return spglib.get_hall_number_from_symmetry(
+        rotations, translations, symprec=symprec)
+
+
 def find_primitive(structure, symprec, angle_tolerance):
     """ compute the primitive cell for an AiiDA structure
 
