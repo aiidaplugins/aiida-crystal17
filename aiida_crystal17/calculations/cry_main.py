@@ -210,7 +210,7 @@ class CryMainCalculation(CryAbstractCalculation):
                 format(err))
 
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write(six.u(d12_filecontent))
+            f.write(d12_filecontent)
 
         return True
 
