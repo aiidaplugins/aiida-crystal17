@@ -94,7 +94,7 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
 
     # set up calculation
     builder = code.get_builder()
-    builder.metadata = {
+    builder._update({"metadata": {
         "options": {
             "withmpi": False,
             "resources": {
@@ -104,7 +104,7 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
             "max_wallclock_seconds": 30
         },
         "dry_run": True
-    }
+    }})
 
     builder.parameters = inparams
     builder.structure = instruct

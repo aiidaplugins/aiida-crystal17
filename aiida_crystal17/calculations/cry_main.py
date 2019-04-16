@@ -196,7 +196,7 @@ class CryMainCalculation(CryAbstractCalculation):
         # create .gui external geometry file and place it in tempfolder
         gui_content = gui_file_write(structure, symmetry)
         with tempfolder.open(self.metadata.options.external_file_name, 'w') as f:
-            f.writelines(gui_content)
+            f.write(six.u("\n".join(gui_content)))
 
         atom_props = self._create_atom_props(structure, kinds)
 
@@ -210,7 +210,7 @@ class CryMainCalculation(CryAbstractCalculation):
                 format(err))
 
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write(d12_filecontent)
+            f.write(six.u(d12_filecontent))
 
         return True
 
