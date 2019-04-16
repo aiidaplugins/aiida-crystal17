@@ -442,9 +442,7 @@ and optionally convert the structure to a standard primitive,
 the space group and symmetry operators can be computed internally,
 a pre-processing workflow has been created
 (currently only for 3D-periodic structures),
-:py:class:`~.Symmetrise3DStructure`,
-which can be run with the helper function
-:py:func:`~.run_symmetrise_3d_structure`.
+:py:class:`~.Symmetrise3DStructure`.
 
 This uses the `spglib <https://atztogo.github.io/spglib/>`_ library
 to compute symmetries, but with the added constraint that sites

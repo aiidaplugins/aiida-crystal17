@@ -90,7 +90,7 @@ class CryMainCalculation(CryAbstractCalculation):
 
         Returns
         -------
-        aiida.engine.processes.CalcJobBuilder
+        aiida.engine.processes.ProcessBuilder
 
         """
         builder = cls.get_builder()

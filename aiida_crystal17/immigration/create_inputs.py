@@ -17,9 +17,17 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out", code
     NB: none of the nodes are stored, also
     existing basis will be retrieved if availiable
 
-    :param inpath: path to .d12 file
-    :param outpath: path to .out file
-    :return: CalcJobBuilder
+    Parameters
+    ----------
+    inpath: str
+        path to .d12 file
+    outpath: str
+        path to .out file
+
+    Returns
+    -------
+    aiida.engine.processes.ProcessBuilder
+
     """
     from aiida.plugins import DataFactory, CalculationFactory
     calc_cls = CalculationFactory('crystal17.main')
