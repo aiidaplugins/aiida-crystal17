@@ -64,7 +64,8 @@
             "flake8<3.8.0,>=3.7.0"
         ],
         "docs": [
-            "sphinx>=1.6"
+            "sphinx>=1.6",
+            "graphviz"
         ]
     }
 }

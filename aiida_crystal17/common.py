@@ -1,7 +1,8 @@
 import datetime
 import json
+from textwrap import wrap
 from jsonextended import edict
-from aiida import is_dbenv_loaded, load_dbenv
+from aiida import load_profile
 
 
 def unflatten_dict(indict, delimiter="."):
@@ -34,10 +35,26 @@ def get_keys(dct, keys, default=None, raise_error=False):
     return subdct
 
 
+class BuilderEncoder(json.JSONEncoder):
+    def default(self, obj):
+        try:
+            return dict(obj)
+        except TypeError:
+            pass
+        return wrap(str(obj))
+
+
+def display_json(builder, indent=2):
+    """ pretty print a dictionary object in a Jupyter Notebook """
+    from IPython.display import display_markdown
+    return display_markdown(
+        "```json\n{}\n```".format(
+            json.dumps(builder, cls=BuilderEncoder, indent=indent)), raw=True)
+
+
 def with_dbenv(func):
     def wrapper(*args, **kwargs):
-        if not is_dbenv_loaded():
-            load_dbenv()
+        load_profile()
         return func(*args, **kwargs)
     return wrapper
 

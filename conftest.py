@@ -165,6 +165,7 @@ class AiidaTestApp(object):
             error_include=(("results", "errors"),
                            ("results", "parser_errors"))):
         """ check a calculation has completed successfully """
+        from aiida.cmdline.utils.common import get_calcjob_report
         exit_status = calc_node.get_attribute("exit_status")
         proc_state = calc_node.get_attribute("process_state")
         if exit_status != 0 or proc_state != "finished":
@@ -183,6 +184,7 @@ class AiidaTestApp(object):
                 if value is None:
                     continue
                 message += "\n{}.{}: {}".format(name, attribute, value)
+            message += "\n\nReport:\n{}".format(get_calcjob_report(calc_node))
             raise AssertionError(message)
 
         link_labels = calc_node.get_outgoing().all_link_labels()
