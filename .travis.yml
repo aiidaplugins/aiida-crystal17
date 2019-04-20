@@ -11,6 +11,7 @@ addons:
   apt:
     packages:
       - graphviz
+      - pandoc
 
 matrix:
   include:
