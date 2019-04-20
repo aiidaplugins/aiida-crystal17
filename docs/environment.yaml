@@ -4,3 +4,5 @@ dependencies:
   - python =3.6
   - pandoc
   - python-graphviz
+  - pip:
+    - aiida-core==1.0.0b2
