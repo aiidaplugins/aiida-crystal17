@@ -192,6 +192,17 @@ class SymmetryData(Data):
         data["operations"] = self._get_operations()
         return data
 
+    def get_description(self):
+        """ return a short string description of the data """
+        desc = []
+        hall_number = self.get_attribute("hall_number", None)
+        num_symops = self.get_attribute("num_symops", None)
+        if hall_number is not None:
+            desc.append("hall_number: {}".format(hall_number))
+        if num_symops is not None:
+            desc.append("symmops: {}".format(num_symops))
+        return "\n".join(desc)
+
     @property
     def num_symops(self):
         return self.get_attribute("num_symops", None)

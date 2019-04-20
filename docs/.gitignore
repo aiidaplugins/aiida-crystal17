@@ -2,3 +2,4 @@ build/
 apidoc/
 .vscode/
 *.code-workspace
+*_nbfiles/

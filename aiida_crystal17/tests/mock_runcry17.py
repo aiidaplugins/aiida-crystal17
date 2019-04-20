@@ -6,7 +6,7 @@ and writes an appropriate outputfile to stdoout
 
 to create a hashkey:
 
-.. code-block::
+.. code-block:: python
 
     import hashlib
     input_path = 'path/to/input.d12'

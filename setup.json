@@ -65,7 +65,8 @@
         ],
         "docs": [
             "sphinx>=1.6",
-            "graphviz"
+            "graphviz",
+            "ipypublish>=0.10.0"
         ]
     }
 }

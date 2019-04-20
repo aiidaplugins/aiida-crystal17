@@ -34,3 +34,18 @@ To install the development version::
 
 Then use ``verdi code setup`` with a ``crystal17.`` input plugin
 to set up an AiiDA code for that plugin.
+
+CRYSTAL17 Executable
+++++++++++++++++++++
+
+``aiida-crystal17`` is designed to call the ``runcry17`` executable,
+as supplied by CRYSTAL, and also can be found within the
+`aiida-crystal17 repository <https://github.com/chrisjsewell/aiida-crystal17/tree/master/cry17_scripts>`_.
+This is required to be available on the computer
+that the calculations are being run on.
+
+For test purposes, a ``mock_runcry17`` executable is installed with
+``aiida-crystal17``, that will return pre-computed output files,
+if parsed specific test input files. When running the test suite,
+this executable will be used in place of ``runcry17``,
+if the global variable ``export MOCK_EXECUTABLES=true`` is set.

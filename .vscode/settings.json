@@ -24,5 +24,6 @@
     "python.unitTest.unittestEnabled": false,
     "python.unitTest.nosetestsEnabled": false,
     "python.unitTest.pyTestEnabled": true,
-    "restructuredtext.preview.sphinx.disabled": true
+    "restructuredtext.preview.sphinx.disabled": true,
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
 }

@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import os
+import subprocess
 import sys
 import time
 import aiida_crystal17
@@ -65,8 +66,36 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'ipypublish.sphinx.notebook'
 ]
+
+ipysphinx_export_config = "sphinx_ipypublish_all.ext.noexec"
+ipysphinx_show_prompts = False
+
+git_commands = ["git", "rev-parse", "HEAD"]
+try:
+    git_commit = subprocess.check_output(git_commands).decode("utf8").strip()
+except subprocess.CalledProcessError:
+    git_commit = "v{}".format(aiida_crystal17.__version__)
+
+ipysphinx_prolog = r"""
+{{% set docname = env.doc2path(env.docname, base='docs/source') %}}
+
+.. only:: html
+
+    .. role:: raw-html(raw)
+        :format: html
+
+    .. nbinfo::
+
+        This page was generated from `{{{{ docname }}}}`__,
+        with configuration: ``{{{{ env.config.ipysphinx_export_config }}}}``
+
+    __ https://github.com/chrisjsewell/aiida-crystal17/blob/{git_commit}/{{{{ docname }}}}
+
+""".format(git_commit=git_commit)  # noqa: E501
+
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
@@ -79,6 +108,7 @@ intersphinx_mapping = {
 }
 
 intersphinx_aliases = {
+    ('py:class', 'json.encoder.JSONEncoder'): ('py:class', 'json.JSONEncoder'),
     ('py:class', 'aiida.StructureData'):
     ('py:class', 'aiida.orm.nodes.data.structure.StructureData')
 }
@@ -132,8 +162,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-# exclude_patterns = ['doc.rst']
-# ~ exclude_patterns = ['index.rst']
+exclude_patterns = ['**/.ipynb_checkpoints']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
