@@ -2,7 +2,6 @@ import datetime
 import json
 from textwrap import wrap
 from jsonextended import edict
-from aiida import load_profile
 
 
 def unflatten_dict(indict, delimiter="."):
@@ -54,7 +53,14 @@ def display_json(builder, indent=2):
 
 def with_dbenv(func):
     def wrapper(*args, **kwargs):
-        load_profile()
+        try:
+            from aiida import load_profile
+            load_profile()
+        except ImportError:
+            # TODO this is deprecated and can be removed for v1.0.0b3 
+            from aiida import load_dbenv, is_dbenv_loaded
+            if not is_dbenv_loaded():
+                load_dbenv()
         return func(*args, **kwargs)
     return wrapper
 
