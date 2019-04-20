@@ -11,7 +11,6 @@ addons:
   apt:
     packages:
       - graphviz
-      - pandoc
 
 matrix:
   include:
@@ -41,15 +40,18 @@ install:
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
       pip uninstall -y numpy
-      # pip install -U aiida-core==1.0.0b2
       pip install -e .[testing]
       pip install coveralls
     fi
 - |
     if [[ "$TEST_TYPE" == "docs" ]]; then
       pip uninstall -y numpy
-      # pip install -U aiida-core==1.0.0b2
       pip install -e .[docs]
+      url="https://github.com/jgm/pandoc/releases/tag/2.6"
+      path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
+      downloadUrl="https://github.com$path"
+      file=${path##*/}
+      wget $downloadUrl && sudo dpkg -i $file
     fi
 # - |
 #   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
