@@ -13,8 +13,8 @@
 see https://www.graphviz.org/doc/info/attrs.html
 and https://en.wikipedia.org/wiki/X11_color_names
 """
-# TODO it is intended that this module will eventually be incorporated into aiida-core
-# see 
+# TODO this module will eventually be incorporated into aiida-core
+# see https://github.com/aiidateam/aiida_core/pull/2596
 
 from __future__ import division
 from __future__ import print_function
@@ -78,8 +78,10 @@ def default_data_styles(node):
     if hasattr(node, "get_style_default"):
         default = node.get_style_default()
     else:
-        default = {"shape": "polygon", "sides": "4", "color": "black", "style": "solid"}
-    mapping = {"data.code.Code.": {'shape': 'diamond', "color": "orange", "style": "solid"}}
+        default = {"shape": "polygon", "sides": "4",
+                   "color": "black", "style": "solid"}
+    mapping = {"data.code.Code.": {'shape': 'diamond',
+                                   "color": "orange", "style": "solid"}}
     return mapping.get(class_node_type, default)
 
 
@@ -98,7 +100,8 @@ def default_data_sublabels(node):
     elif class_node_type == "data.float.Float.":
         sublabel = "value: {}".format(node.get_attribute("value", ""))
     elif class_node_type == "data.code.Code.":
-        sublabel = "{}@{}".format(os.path.basename(node.get_execname()), node.get_computer_name())
+        sublabel = "{}@{}".format(os.path.basename(
+            node.get_execname()), node.get_computer_name())
     elif class_node_type == "data.singlefile.SinglefileData.":
         sublabel = node.filename
     elif class_node_type == "data.remote.RemoteData.":
@@ -106,8 +109,10 @@ def default_data_sublabels(node):
     elif class_node_type == "data.structure.StructureData.":
         sublabel = node.get_formula()
     elif class_node_type == "data.cif.CifData.":
-        formulae = [str(f).replace(" ", "") for f in node.get_attribute('formulae', []) if f]
-        sg_numbers = [str(s) for s in node.get_attribute('spacegroup_numbers', []) if s]
+        formulae = [str(f).replace(" ", "")
+                    for f in node.get_attribute('formulae', []) if f]
+        sg_numbers = [str(s) for s in node.get_attribute(
+            'spacegroup_numbers', []) if s]
         sublabel_lines = []
         if formulae:
             sublabel_lines.append(", ".join(formulae))
@@ -219,7 +224,8 @@ def _add_graphviz_node(graph,
         node_style = process_style_func(node)
 
         label = [
-            "{} ({})".format(node.__class__.__name__ if node.process_label is None else node.process_label, node.pk)
+            "{} ({})".format(
+                node.__class__.__name__ if node.process_label is None else node.process_label, node.pk)
         ]
 
         if include_sublabels and node.process_state is not None:
@@ -380,10 +386,12 @@ class Graph(object):
         """
         in_node = self._load_node(in_node)
         if in_node.pk not in self._nodes:
-            raise AssertionError("the in_node must have already been added to the graph")
+            raise AssertionError(
+                "the in_node must have already been added to the graph")
         out_node = self._load_node(out_node)
         if out_node.pk not in self._nodes:
-            raise AssertionError("the out_node must have already been added to the graph")
+            raise AssertionError(
+                "the out_node must have already been added to the graph")
 
         if (in_node.pk, out_node.pk) in self.edges and not overwrite:
             return
@@ -407,7 +415,8 @@ class Graph(object):
 
         """
         if annotate_links not in [False, "label", "type", "both"]:
-            raise AssertionError('annotate_links must be one of False, "label", "type" or "both"')
+            raise AssertionError(
+                'annotate_links must be one of False, "label", "type" or "both"')
 
         if link_types:
             if isinstance(link_types, six.string_types):
@@ -424,9 +433,11 @@ class Graph(object):
             elif annotate_links == "type":
                 style['label'] = link_triple.link_type.name
             elif annotate_links == "both":
-                style['label'] = "{}\n{}".format(link_triple.link_type.name, link_triple.link_label)
+                style['label'] = "{}\n{}".format(
+                    link_triple.link_type.name, link_triple.link_label)
             self.add_edge(link_triple.node, node, style=style)
-            nodes.append(link_triple.node.pk if return_pks else link_triple.node)
+            nodes.append(
+                link_triple.node.pk if return_pks else link_triple.node)
 
         return nodes
 
@@ -445,7 +456,8 @@ class Graph(object):
 
         """
         if annotate_links not in [False, "label", "type", "both"]:
-            raise AssertionError('annotate_links must be one of False, "label", "type" or "both"')
+            raise AssertionError(
+                'annotate_links must be one of False, "label", "type" or "both"')
 
         if link_types:
             if isinstance(link_types, six.string_types):
@@ -462,9 +474,11 @@ class Graph(object):
             elif annotate_links == "type":
                 style['label'] = link_triple.link_type.name
             elif annotate_links == "both":
-                style['label'] = "{}\n{}".format(link_triple.link_type.name, link_triple.link_label)
+                style['label'] = "{}\n{}".format(
+                    link_triple.link_type.name, link_triple.link_label)
             self.add_edge(node, link_triple.node, style=style)
-            nodes.append(link_triple.node.pk if return_pks else link_triple.node)
+            nodes.append(
+                link_triple.node.pk if return_pks else link_triple.node)
 
         return nodes
 
@@ -511,7 +525,8 @@ class Graph(object):
 
                 if include_calculation_inputs and isinstance(node,
                                                              BaseFactory("aiida.node", "process.calculation.calcjob")):
-                    self.add_incoming(node, link_types=link_types, annotate_links=annotate_links)
+                    self.add_incoming(node, link_types=link_types,
+                                      annotate_links=annotate_links)
 
             last_nodes = new_nodes
 
@@ -558,7 +573,8 @@ class Graph(object):
 
                 if include_calculation_outputs and isinstance(node,
                                                               BaseFactory("aiida.node", "process.calculation.calcjob")):
-                    self.add_outgoing(node, link_types=link_types, annotate_links=annotate_links)
+                    self.add_outgoing(node, link_types=link_types,
+                                      annotate_links=annotate_links)
 
             last_nodes = new_nodes
 
@@ -604,18 +620,19 @@ class Graph(object):
                     },
                     'tag': "origin"
                 },
-                         {
-                             'cls': target_cls,
-                             'filters': target_filters,
-                             'descendant_of': 'origin',
-                             'tag': "target",
-                             'project': "*"
-                         }]
+                    {
+                    'cls': target_cls,
+                    'filters': target_filters,
+                    'descendant_of': 'origin',
+                    'tag': "target",
+                    'project': "*"
+                }]
             })
 
         for (target_node,) in query.iterall():
             self.add_node(target_node)
-            self.add_edge(origin_node, target_node, style={'style': 'dashed', 'color': 'grey'})
+            self.add_edge(origin_node, target_node, style={
+                          'style': 'dashed', 'color': 'grey'})
 
             if include_target_inputs:
                 self.add_incoming(target_node, annotate_links=annotate_links)

@@ -32,7 +32,7 @@ matrix:
 
 install:
 # Upgrade pip setuptools and wheel
-- pip install -U pip==18.1 wheel setuptools reentry
+- pip install -U pip==18.1 wheel setuptools
 - |
     if [[ "$TEST_TYPE" == "code-style" ]]; then
       pip install "flake8<3.8.0,>=3.7.0"
@@ -40,14 +40,12 @@ install:
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
       pip uninstall -y numpy
-      pip install -U aiida-core==1.0.0b2
       pip install -e .[testing]
       pip install coveralls
     fi
 - |
     if [[ "$TEST_TYPE" == "docs" ]]; then
       pip uninstall -y numpy
-      pip install -U aiida-core==1.0.0b2
       pip install -e .[docs]
     fi
 # - |
