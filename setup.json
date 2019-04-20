@@ -37,9 +37,6 @@
         ]
     },
     "include_package_data": true,
-    "setup_requires": [
-        "reentry"
-    ],
     "reentry_register": true,
     "install_requires": [
         "aiida-core==1.0.0b2",
