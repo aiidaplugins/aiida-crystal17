@@ -60,8 +60,8 @@ install:
 #     cd "$cur_path"
 #   fi
 
-# before_script:
-# - reentry scan
+before_script:
+- reentry scan
 
 script:
 - |
