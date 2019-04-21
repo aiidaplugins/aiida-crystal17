@@ -7,10 +7,10 @@ python:
   version: 3.6
   install:
     # - requirements: docs/rtd_requirements.txt
-    - method: setuptools
+    - method: pip
       path: .
-      # extra_requirements:
-      #     - docs
+      extra_requirements:
+          - docs
 
 # default
 # sphinx:
