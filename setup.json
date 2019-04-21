@@ -43,7 +43,8 @@
         "numpy==1.16.1",
         "ejplugins>=0.9.7",
         "spglib>=1.10.0,<2.0.0",
-        "ase>=3.12.0,<4.0.0"
+        "ase>=3.12.0,<4.0.0",
+        "graphviz"
     ],
     "extras_require": {
         "testing": [
@@ -63,7 +64,6 @@
         ],
         "docs": [
             "sphinx>=1.6,<2",
-            "graphviz",
             "ipypublish>=0.10.0"
         ]
     }
