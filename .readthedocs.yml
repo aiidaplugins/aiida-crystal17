@@ -6,10 +6,11 @@ conda:
 python:
   version: 3.6
   install:
-    - method: setuptools
-      path: .
-      extra_requirements:
-          - docs
+    - requirements: docs/rtd_requirements.txt
+    # - method: setuptools
+    #   path: .
+      # extra_requirements:
+      #     - docs
 
 # default
 # sphinx:
