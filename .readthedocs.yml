@@ -6,9 +6,9 @@ conda:
 python:
   version: 3.6
   install:
-    - requirements: docs/rtd_requirements.txt
-    # - method: setuptools
-    #   path: .
+    # - requirements: docs/rtd_requirements.txt
+    - method: setuptools
+      path: .
       # extra_requirements:
       #     - docs
 
