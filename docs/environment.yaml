@@ -4,12 +4,4 @@ dependencies:
   - python =3.6
   - pandoc
   - python-graphviz
-  - sphinx <2
-  # - ipypublish >=0.10
-  # - reentry >=1.3
-  # - setuptools
-  # - wheel
-  # - pip =9
-  # - pip:
-  #   - reentry>=1.3
-  #   - aiida-core==1.0.0b2
+  - pip =9
