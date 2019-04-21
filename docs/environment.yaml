@@ -4,6 +4,7 @@ dependencies:
   - python =3.6
   - pandoc
   - python-graphviz
-  - pip:
-    - reentry>=1.3
-    - aiida-core==1.0.0b2
+  - reentry >=1.3
+  # - pip:
+  #   - reentry>=1.3
+  #   - aiida-core==1.0.0b2
