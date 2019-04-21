@@ -4,9 +4,9 @@ dependencies:
   - python =3.6
   - pandoc
   - python-graphviz
-  - reentry >=1.3
-  - setuptools
-  - wheel
+  # - reentry >=1.3
+  # - setuptools
+  # - wheel
   - pip =18
   # - pip:
   #   - reentry>=1.3
