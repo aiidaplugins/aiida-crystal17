@@ -12,5 +12,7 @@
 .idea/vcs.xml
 postgres*.log
 .aiida_envs.yaml
-aiida_workdir/
-logfile
+.ropeproject
+_archive/
+.ipynb_checkpoints/
+databases/

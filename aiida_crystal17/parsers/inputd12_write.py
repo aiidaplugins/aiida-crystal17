@@ -2,10 +2,10 @@
 module to write CRYSTAL17 .d12 files
 """
 import six
-from aiida_crystal17.utils import get_keys
-from aiida_crystal17.validation import validate_with_json
+from aiida_crystal17.common import get_keys
+from aiida_crystal17.validation import validate_against_schema
 
-# TODO float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
+# TODO check float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
 # TODO SHRINK where IS=0 and IS1 IS2 IS3 given
 # TODO FIELD/FIELDCON
@@ -27,7 +27,7 @@ def format_value(dct, keys):
         return ""
     if isinstance(value, dict):
         outstr = ""
-        for keyword in value.keys():
+        for keyword in sorted(value.keys()):
             args = value[keyword]
             if isinstance(args, bool):
                 if args:
@@ -45,26 +45,36 @@ def format_value(dct, keys):
 def write_input(indict, basis_sets, atom_props=None):
     """write input of a validated input dictionary
 
-    :param indict: dictionary of input
-    :param basis_sets: list of basis set strings or objects with `content` property
-    :param atom_props: dictionary of atom ids with specific properties ("spin_alpha", "spin_beta", "unfixed", "ghosts")
-    :return:
+    Parameters
+    ----------
+    indict: dict
+        dictionary of inputs
+    basis_sets: list
+        list of basis set strings or objects with `content` property
+    atom_props: dict or None
+        atom ids with specific properties;
+        "spin_alpha", "spin_beta", "unfixed", "ghosts"
+
+    Returns
+    -------
+    str
+
     """
     # validation
-    validate_with_json(indict)
+    validate_against_schema(indict, "inputd12.schema.json")
     if not basis_sets:
         raise ValueError("there must be at least one basis set")
-    elif not (all([isinstance(b, six.string_types) for b in basis_sets])
-              or all([hasattr(b, "content") for b in basis_sets])):
-        raise ValueError(
-            "basis_sets must be either all strings or all objects with a `content` property"
-        )
+    elif not all([isinstance(b, six.string_types) or hasattr(b, "content")
+                  for b in basis_sets]):
+        raise ValueError("basis_sets must be either all strings"
+                         "or all objects with a `content` property")
     if atom_props is None:
         atom_props = {}
     if not set(atom_props.keys()).issubset(
-        ["spin_alpha", "spin_beta", "unfixed", "ghosts"]):
+            ["spin_alpha", "spin_beta", "unfixed", "ghosts"]):
         raise ValueError(
-            "atom_props should only contain: 'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
+            "atom_props should only contain: "
+            "'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'"
         )
     # validate that a index isn't in both spin_alpha and spin_beta
     allspin = atom_props.get("spin_alpha", []) + atom_props.get(
@@ -136,7 +146,7 @@ def _hamiltonian_block(outstr, indict, atom_props):
     outstr += format_value(indict, ["scf", "numerical"])
     outstr += format_value(indict, ["scf", "fock_mixing"])
     outstr += format_value(indict, ["scf", "spinlock"])
-    for keyword in get_keys(indict, ["scf", "post_scf"], []):
+    for keyword in sorted(get_keys(indict, ["scf", "post_scf"], [])):
         outstr += "{}\n".format(keyword)
 
     # Hamiltonian and SCF End
@@ -159,11 +169,11 @@ def _geometry_block(outstr, indict, atom_props):
         if unfixed:
             outstr += "FRAGMENT\n"
             outstr += "{}\n".format(len(unfixed))
-            outstr += " ".join([str(a) for a in sorted(unfixed)]) + " \n"
+            outstr += " ".join([str(a) for a in sorted(unfixed)]) + "\n"
         outstr += format_value(indict, ["geometry", "optimise", "hessian"])
         outstr += format_value(indict, ["geometry", "optimise", "gradient"])
-        for keyword in get_keys(indict, ["geometry", "optimise", "info_print"],
-                                []):
+        for keyword in sorted(get_keys(
+                indict, ["geometry", "optimise", "info_print"], [])):
             outstr += "{}\n".format(keyword)
         outstr += format_value(indict, ["geometry", "optimise", "convergence"])
         outstr += "ENDOPT\n"
@@ -186,10 +196,61 @@ def _basis_set_block(outstr, indict, basis_sets, atom_props):
     if ghosts:
         outstr += "GHOSTS\n"
         outstr += "{}\n".format(len(ghosts))
-        outstr += " ".join([str(a) for a in sorted(ghosts)]) + " \n"
+        outstr += " ".join([str(a) for a in sorted(ghosts)]) + "\n"
 
     # Basis Sets Optional Keywords
     outstr += format_value(indict, ["basis_set"])
     # Basis Sets End
     outstr += "END\n"
     return outstr
+
+
+def create_atom_properties(structure, kinds_data=None):
+    """ create dict of properties for each atom
+
+    :param structure: ``StructureData``
+    :param kinds_data: ``KindData`` atom kind data for each atom
+    :return: dict of atom properties
+    :rtype: dict
+
+    """
+    if kinds_data is None:
+        return {
+            "spin_alpha": [],
+            "spin_beta": [],
+            "ghosts": []
+        }
+
+    if set(kinds_data.data.kind_names) != set(structure.get_kind_names()):
+        raise AssertionError(
+            "kind names are different for structure data and kind data: "
+            "{0} != {1}".format(set(structure.get_kind_names()),
+                                set(kinds_data.data.kind_names)))
+
+    atom_props = {
+        "spin_alpha": [],
+        "spin_beta": [],
+        "fixed": [],
+        "unfixed": [],
+        "ghosts": []
+    }
+
+    kind_dict = kinds_data.kind_dict
+
+    for i, kind_name in enumerate(structure.get_site_kindnames()):
+        if kind_dict[kind_name].get("spin_alpha", False):
+            atom_props["spin_alpha"].append(i + 1)
+        if kind_dict[kind_name].get("spin_beta", False):
+            atom_props["spin_beta"].append(i + 1)
+        if kind_dict[kind_name].get("ghost", False):
+            atom_props["ghost"].append(i + 1)
+        if kind_dict[kind_name].get("fixed", False):
+            atom_props["fixed"].append(i + 1)
+        if not kind_dict[kind_name].get("fixed", False):
+            atom_props["unfixed"].append(i + 1)
+
+    # we only need unfixed if there are fixed
+    if not atom_props.pop("fixed"):
+        atom_props.pop("unfixed")
+
+    return atom_props

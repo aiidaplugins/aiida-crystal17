@@ -2,15 +2,15 @@
 test input schema
 """
 import pytest
-from aiida_crystal17.validation import validate_with_json
+from aiida_crystal17.validation import validate_against_schema
 from jsonschema import ValidationError
 
 
 def test_toplevel_fail():
     with pytest.raises(ValidationError):
-        validate_with_json({})
+        validate_against_schema({}, "inputd12.schema.json")
     with pytest.raises(ValidationError):
-        validate_with_json({"a": 1})
+        validate_against_schema({"a": 1}, "inputd12.schema.json")
 
 
 def test_toplevel_pass():
@@ -22,7 +22,7 @@ def test_toplevel_pass():
             "k_points": [8, 8]
         }
     }
-    validate_with_json(data)
+    validate_against_schema(data, "inputd12.schema.json")
 
 
 def test_full_pass():
@@ -96,4 +96,4 @@ def test_full_pass():
             "post_scf": ["GRADCAL", "PPAN"]
         }
     }
-    validate_with_json(data)
+    validate_against_schema(data, "inputd12.schema.json")

@@ -1,17 +1,13 @@
 import click
 import tabulate
 from click_spinner import spinner as cli_spinner
-from aiida_crystal17.aiida_compatability import cmp_load_verdi_data, get_data_class
-from aiida import load_dbenv, is_dbenv_loaded
-from aiida_crystal17.cmndline import options
 from jsonextended import edict
+from aiida_crystal17.common import get_data_plugin, load_node
+from aiida_crystal17.cmndline import options
+from aiida.cmdline.commands.cmd_verdi import verdi
 
-VERDI_DATA = cmp_load_verdi_data()
 
-# TODO add tests
-
-
-@VERDI_DATA.group('cry17-basis')
+@verdi.group('crystal17.basis')
 def basisset():
     """Commandline interface for working with Crystal Basis Set Data"""
 
@@ -22,13 +18,9 @@ def basisset():
 @click.argument('pk', type=int)
 def show(pk, content):
     """show the contents of a basis set"""
-    if not is_dbenv_loaded():
-        load_dbenv()
-    from aiida.orm import load_node
-
     node = load_node(pk)
 
-    if not isinstance(node, get_data_class('crystal17.basisset')):
+    if not isinstance(node, get_data_plugin('crystal17.basisset')):
         click.echo("The node was not of type 'crystal17.basisset'", err=True)
     else:
         edict.pprint(node.metadata, depth=None, print_func=click.echo)
@@ -43,7 +35,7 @@ def try_grab_description(ctx, param, value):
 
     This is a click parameter callback.
     """
-    basis_data_cls = get_data_class('crystal17.basisset')
+    basis_data_cls = get_data_plugin('crystal17.basisset')
     group_name = ctx.params['name']
     existing_groups = basis_data_cls.get_basis_groups()
     existing_group_names = [group.name for group in existing_groups]
@@ -71,7 +63,7 @@ def try_grab_description(ctx, param, value):
 def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
     """Upload a family of CRYSTAL Basis Set files."""
 
-    basis_data_cls = get_data_class('crystal17.basisset')
+    basis_data_cls = get_data_plugin('crystal17.basisset')
     with cli_spinner():
         nfiles, num_uploaded = basis_data_cls.upload_basisset_family(
             path,
@@ -82,8 +74,8 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
             dry_run=dry_run)
 
     click.echo(
-        'Basis Set files found and added to family: {}, of those {} were newly uploaded'.
-        format(nfiles, num_uploaded))
+        "Basis Set files found and added to family: {}, of those {} "
+        "were newly uploaded".format(nfiles, num_uploaded))
     if dry_run:
         click.echo('No files were uploaded due to --dry-run.')
 
@@ -99,8 +91,9 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
 def listfamilies(element, with_description, list_pks):
     """List available families of CRYSTAL Basis Set files."""
 
-    basis_data_cls = get_data_class('crystal17.basisset')
-    groups = basis_data_cls.get_basis_groups(filter_elements=element)
+    basis_data_cls = get_data_plugin('crystal17.basisset')
+    groups = basis_data_cls.get_basis_groups(
+        filter_elements=None if not element else element)
 
     table = [['Family', 'Num Basis Sets']]
     if with_description:
@@ -108,7 +101,7 @@ def listfamilies(element, with_description, list_pks):
     if list_pks:
         table[0].append('Pks')
     for group in groups:
-        row = [group.name, len(group.nodes)]
+        row = [group.label, len(group.nodes)]
         if with_description:
             row.append(group.description)
         if list_pks:
