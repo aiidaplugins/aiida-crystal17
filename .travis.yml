@@ -65,7 +65,7 @@ install:
 
 before_script:
 - |
-    if [[ "$TEST_TYPE" == "pytest" ]]; then
+    if [[ "$TEST_TYPE" == "pytest" ]] || [[ "$TEST_TYPE" == "docs" ]]; then
       reentry scan
     fi
 
