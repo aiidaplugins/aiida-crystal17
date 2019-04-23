@@ -1,14 +1,15 @@
 import copy
 import tempfile
 
-import jsonschema
 from jsonschema import ValidationError as SchemeError
 import numpy as np
 
 from aiida.common.utils import classproperty
-from aiida.common.exceptions import ValidationError
+# from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
 from aiida.orm import Data
+
+from aiida_crystal17.validation import validate_against_schema
 
 
 class SymmetryData(Data):
@@ -87,26 +88,21 @@ class SymmetryData(Data):
 
         fname = self._ops_filename
         if fname not in self.list_object_names():
-            raise ValidationError("operations not set")
+            raise SchemeError("operations not set")
 
-        try:
-            jsonschema.validate(self.data, self._data_schema)
-        except SchemeError as err:
-            raise ValidationError(err)
+        validate_against_schema(self.get_dict(), self._data_schema)
 
     def set_data(self, data):
         """
         Replace the current data with another one.
 
         :param data: The dictionary to set.
+
         """
         from aiida.common.exceptions import ModificationNotAllowed
 
         # first validate the inputs
-        try:
-            jsonschema.validate(data, self._data_schema)
-        except SchemeError as err:
-            raise ValidationError(err)
+        validate_against_schema(data, self._data_schema)
 
         # store all but the symmetry operations as attributes
         backup_dict = copy.deepcopy(dict(self.attributes))

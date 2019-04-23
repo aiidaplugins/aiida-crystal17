@@ -1,5 +1,5 @@
 ===============
-Getting started
+Getting Started
 ===============
 
 We show below a number of tutorials for the main CRYSTAL17 code
@@ -48,4 +48,4 @@ For test purposes, a ``mock_runcry17`` executable is installed with
 ``aiida-crystal17``, that will return pre-computed output files,
 if parsed specific test input files. When running the test suite,
 this executable will be used in place of ``runcry17``,
-if the global variable ``export MOCK_EXECUTABLES=true`` is set.
+if the global variable ``export MOCK_CRY17_EXECUTABLES=true`` is set.

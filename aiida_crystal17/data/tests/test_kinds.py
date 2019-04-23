@@ -6,7 +6,7 @@ def test_basic(db_test_app):
         "field1": [1, 2, 3]
     }
     node.set_data(data)
-    assert node.data == data
+    assert node.get_dict() == data
     assert node.kind_dict == {
         "A": {"field1": 1},
         "B": {"field1": 2},

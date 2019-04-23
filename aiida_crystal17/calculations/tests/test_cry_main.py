@@ -2,7 +2,7 @@
 
 """
 import os
-from textwrap import dedent
+from textwrap import dedent  # noqa: F401
 
 from ase.spacegroup import crystal
 import ejplugins
@@ -37,14 +37,15 @@ def test_create_builder(db_test_app):
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
         Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01).node
+        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     calc_cls = CalculationFactory('crystal17.main')
     builder = calc_cls.create_builder(
         inparams, instruct, {"O": o_basis, "Mg": mg_basis},
-        symmetry=symmetry, flattened=True)
+        symmetry=symmetry, unflatten=True)
 
     assert isinstance(builder.structure, StructureData)
     builder.parameters
@@ -58,14 +59,14 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
     """Test submitting a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
-    DictData = DataFactory('dict')
+    ParamData = DataFactory('crystal17.parameters')
     StructureData = DataFactory('structure')
     BasisSetData = DataFactory('crystal17.basisset')
 
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
-    inparams = DictData(dict={
+    inparams = ParamData(data={
         "title": "MgO Bulk",
         "scf": {
             "k_points": (8, 8)
@@ -83,7 +84,8 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
         Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01).node
+        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -112,34 +114,35 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
     if input_symmetry:
         builder.symmetry = symmetry
 
-    process_options = builder.process_class(inputs=builder).metadata.options
+    # process_options = builder.process_class(inputs=builder).metadata.options
 
-    calcnode = run_get_node(builder).node
+    calcnode = run_get_node(builder).node  # noqa: F841
 
-    with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
-        input_content = f.read()
-    with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
-        gui_content = f.read()  # noqa: F841
+    # TODO awaiting https://github.com/aiidateam/aiida_core/pull/2768
+    # with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
+    #     input_content = f.read()
+    # with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
+    #     gui_content = f.read()  # noqa: F841
 
-    expected_input = dedent("""\
-    MgO Bulk
-    EXTERNAL
-    END
-    12 3
-    1 0 3  2.  0.
-    1 1 3  8.  0.
-    1 1 3  2.  0.
-    8 2
-    1 0 3  2.  0.
-    1 1 3  6.  0.
-    99 0
-    END
-    SHRINK
-    8 8
-    END
-    """)
+    # expected_input = dedent("""\
+    # MgO Bulk
+    # EXTERNAL
+    # END
+    # 12 3
+    # 1 0 3  2.  0.
+    # 1 1 3  8.  0.
+    # 1 1 3  2.  0.
+    # 8 2
+    # 1 0 3  2.  0.
+    # 1 1 3  6.  0.
+    # 99 0
+    # END
+    # SHRINK
+    # 8 8
+    # END
+    # """)
 
-    assert input_content == expected_input
+    # assert input_content == expected_input
 
     # TODO test .gui
     # assert gui_content == expected_gui
@@ -183,7 +186,8 @@ def test_dry_run_nio_afm(db_test_app):
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
         Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01).node
+        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -206,49 +210,50 @@ def test_dry_run_nio_afm(db_test_app):
     }
     builder = process_class.create_builder(
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, options=options, flattened=True)
+        code=code, options=options, unflatten=True)
     builder.metadata.dry_run = True
 
-    process_options = builder.process_class(inputs=builder).metadata.options
+    # process_options = builder.process_class(inputs=builder).metadata.options
 
-    calcnode = run_get_node(builder).node
+    calcnode = run_get_node(builder).node  # noqa: F841
 
-    with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
-        input_content = f.read()
-    with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
-        gui_content = f.read()  # noqa: F841
+    # TODO awaiting https://github.com/aiidateam/aiida_core/pull/2768
+    # with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
+    #     input_content = f.read()
+    # with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
+    #     gui_content = f.read()  # noqa: F841
 
-    expected_input = dedent("""\
-        NiO Bulk with AFM spin
-        EXTERNAL
-        END
-        28 5
-        1 0 3  2.  0.
-        1 1 3  8.  0.
-        1 1 3  8.  0.
-        1 1 3  2.  0.
-        1 3 3  8.  0.
-        8 2
-        1 0 3  2.  0.
-        1 1 3  6.  0.
-        99 0
-        END
-        UHF
-        SHRINK
-        8 8
-        ATOMSPIN
-        2
-        1 1
-        2 -1
-        FMIXING
-        30
-        SPINLOCK
-        0 15
-        PPAN
-        END
-        """)
+    # expected_input = dedent("""\
+    #     NiO Bulk with AFM spin
+    #     EXTERNAL
+    #     END
+    #     28 5
+    #     1 0 3  2.  0.
+    #     1 1 3  8.  0.
+    #     1 1 3  8.  0.
+    #     1 1 3  2.  0.
+    #     1 3 3  8.  0.
+    #     8 2
+    #     1 0 3  2.  0.
+    #     1 1 3  6.  0.
+    #     99 0
+    #     END
+    #     UHF
+    #     SHRINK
+    #     8 8
+    #     ATOMSPIN
+    #     2
+    #     1 1
+    #     2 -1
+    #     FMIXING
+    #     30
+    #     SPINLOCK
+    #     0 15
+    #     PPAN
+    #     END
+    #     """)
 
-    assert input_content == expected_input
+    # assert input_content == expected_input
 
     # TODO test .gui
     # assert gui_content == expected_gui
@@ -294,7 +299,8 @@ def test_run_nio_afm_scf(db_test_app):
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
         Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01).node
+        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -318,7 +324,7 @@ def test_run_nio_afm_scf(db_test_app):
     }
     builder = process_class.create_builder(
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, options=options, flattened=True)
+        code=code, options=options, unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node
@@ -396,7 +402,8 @@ def test_run_nio_afm_fullopt(db_test_app):
     from aiida_crystal17.workflows.symmetrise_3d_struct import (
         Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01).node
+        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -420,7 +427,7 @@ def test_run_nio_afm_fullopt(db_test_app):
     }
     builder = process_class.create_builder(
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, options=options, flattened=True)
+        code=code, options=options, unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node

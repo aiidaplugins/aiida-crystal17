@@ -1,7 +1,7 @@
 import click
+from jsonextended import edict
 from aiida.cmdline.commands.cmd_verdi import verdi
 from aiida_crystal17.common import load_node, get_data_plugin
-from jsonextended import edict
 
 
 @verdi.group('crystal17.symmetry')

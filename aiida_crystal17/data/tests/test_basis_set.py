@@ -112,8 +112,7 @@ def test_bases_from_struct(db_test_app):
     StructureData = DataFactory("structure")
     struct = StructureData(ase=atoms)
 
-    from aiida_crystal17.data.basis_set import get_basissets_by_kind
-    bases_dict = get_basissets_by_kind(struct, "sto3g")
+    bases_dict = BasisSetData.get_basissets_by_kind(struct, "sto3g")
     # print(bases_dict)
 
     assert set(bases_dict.keys()) == set(["Mg", "Mg1", "O"])

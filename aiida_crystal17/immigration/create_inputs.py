@@ -39,7 +39,7 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out", code
     with folder.open(input_name, mode='r') as f:
         d12content = f.read()
 
-    output_dict, basis_sets, atom_props = extract_data(d12content)
+    param_dict, basis_sets, atom_props = extract_data(d12content)
 
     cryparse = CrystalOutputPlugin()
     with folder.open(output_name, mode='r') as f:
@@ -97,7 +97,7 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out", code
         bases[bdata.element] = bdata
 
     builder = calc_cls.create_builder(
-        output_dict, structure, bases,
+        param_dict, structure, bases,
         symmetry=symmetry, kinds=kinds, code=code)
 
     return builder

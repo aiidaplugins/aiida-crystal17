@@ -56,12 +56,12 @@ class KindData(Data):
         super(KindData, self)._validate()
 
         try:
-            jsonschema.validate(self.data, self._data_schema)
+            jsonschema.validate(self.get_dict(), self._data_schema)
         except SchemeError as err:
             raise ValidationError(err)
 
         kinds = self.data["kind_names"]
-        for key, value in self.data.items():
+        for key, value in self.get_dict().items():
             if len(value) != len(kinds):
                 raise ValidationError(
                     "'{}' array not the same length as 'kind_names'"
@@ -89,7 +89,7 @@ class KindData(Data):
                     "".format(key))
 
         # store all but the symmetry operations as attributes
-        backup_dict = copy.deepcopy(dict(self.attributes))
+        backup_dict = copy.deepcopy(self.get_dict())
 
         try:
             # Clear existing attributes and set the new dictionary
@@ -116,11 +116,22 @@ class KindData(Data):
 
     @property
     def data(self):
+        """Return an instance of `AttributeManager` that transforms the dictionary into an attribute dict.
+
+        .. note:: this will allow one to do `node.dict.key` as well as `node.dict[key]`.
+
+        :return: an instance of the `AttributeResultManager`.
         """
-        Return the data as an AttributeDict
+        from aiida.orm.utils.managers import AttributeManager
+        return AttributeManager(self)
+
+    def get_dict(self):
+        """Return a dictionary with the parameters currently set.
+
+        :rtype: dict
+
         """
-        data = dict(self.attributes)
-        return AttributeDict(data)
+        return dict(self.attributes)
 
     @property
     def kind_dict(self):

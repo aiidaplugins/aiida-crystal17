@@ -31,7 +31,7 @@ def test_basic(db_test_app):
 
 
 def test_fail(db_test_app):
-    from aiida.common.exceptions import ValidationError
+    from jsonschema import ValidationError
     from aiida.plugins import DataFactory
     SymmetryData = DataFactory("crystal17.symmetry")
 

@@ -8,77 +8,13 @@ import os
 import tempfile
 
 import six
-import yaml
+from ruamel.yaml import YAML
 from aiida.common.utils import classproperty
 from aiida.orm import Data
 from aiida_crystal17.common import (
     flatten_dict, unflatten_dict, ATOMIC_NUM2SYMBOL)
 
 BASISGROUP_TYPE = 'crystal17.basisset'
-
-
-def get_basissets_from_structure(structure, family_name, by_kind=False):
-    """
-    Given a family name (a BasisSetFamily group in the DB) and an AiiDA
-    structure, return a dictionary associating each element or kind name
-    (if ``by_kind=True``) with its BasisSetData object.
-
-    :raise aiida.common.exceptions.MultipleObjectsError:
-       if more than one Basis Set for the same element is found in the group.
-    :raise aiida.common.exceptions.NotExistent:
-        if no Basis Set for an element in the group is found in the group.
-    """
-    from aiida.common.exceptions import NotExistent
-
-    family_bases = BasisSetData.get_basis_group_map(family_name)
-
-    basis_list = {}
-    for kind in structure.kinds:
-        symbol = kind.symbol
-        if symbol not in family_bases:
-            raise NotExistent(
-                "No BasisSetData for element {} found in family {}".format(
-                    symbol, family_name))
-        if by_kind:
-            basis_list[kind.name] = family_bases[symbol]
-        else:
-            basis_list[symbol] = family_bases[symbol]
-
-    return basis_list
-
-
-def get_basissets_by_kind(structure, family_name):
-    """
-    Get a dictionary of {kind: basis} for all the kinds within the given
-    structure using the given basis set family name.
-
-    :param structure: The structure that will be used.
-    :param family_name: the name of the group containing the basis sets
-    """
-    from collections import defaultdict
-
-    # A dict {kind_name: basis_object}
-    kind_basis_dict = get_basissets_from_structure(
-        structure, family_name, by_kind=True)
-
-    # We have to group the species by basis, I use the basis PK
-    # basis_dict will just map PK->basis_object
-    basis_dict = {}
-    # Will contain a list of all species of the basis with given PK
-    basis_species = defaultdict(list)
-
-    for kindname, basis in kind_basis_dict.items():
-        basis_dict[basis.pk] = basis
-        basis_species[basis.pk].append(kindname)
-
-    bases = {}
-    for basis_pk in basis_dict:
-        basis = basis_dict[basis_pk]
-        kinds = basis_species[basis_pk]
-        for kind in kinds:
-            bases[kind] = basis
-
-    return bases
 
 
 def _retrieve_basis_sets(files, stop_if_existing):
@@ -271,6 +207,7 @@ def parse_basis(fname):
                 in_yaml = True
                 continue
             else:
+                yaml = YAML(typ='safe')
                 head_data = yaml.load("".join(yaml_lines))
                 head_data = {} if not head_data else head_data
                 if not isinstance(head_data, dict):
@@ -653,7 +590,74 @@ class BasisSetData(Data):
                          'in': filter_elements}}, with_group='group')
 
         query.order_by({Group: {'id': 'asc'}})
+        query.distinct()
         return [_[0] for _ in query.all()]
+
+    @classmethod
+    def get_basissets_from_structure(cls, structure, family_name,
+                                     by_kind=False):
+        """
+        Given a family name (a BasisSetFamily group in the DB) and an AiiDA
+        structure, return a dictionary associating each element or kind name
+        (if ``by_kind=True``) with its BasisSetData object.
+
+        :raise aiida.common.exceptions.MultipleObjectsError:
+            if more than one Basis Set for the same element is found in the group.
+        :raise aiida.common.exceptions.NotExistent:
+            if no Basis Set for an element in the group is found in the group.
+
+        """
+        from aiida.common.exceptions import NotExistent
+
+        family_bases = cls.get_basis_group_map(family_name)
+
+        basis_list = {}
+        for kind in structure.kinds:
+            symbol = kind.symbol
+            if symbol not in family_bases:
+                raise NotExistent(
+                    "No BasisSetData for element {} found in family {}".format(
+                        symbol, family_name))
+            if by_kind:
+                basis_list[kind.name] = family_bases[symbol]
+            else:
+                basis_list[symbol] = family_bases[symbol]
+
+        return basis_list
+
+    @classmethod
+    def get_basissets_by_kind(cls, structure, family_name):
+        """
+        Get a dictionary of {kind: basis} for all the kinds within the given
+        structure using the given basis set family name.
+
+        :param structure: The structure that will be used.
+        :param family_name: the name of the group containing the basis sets
+        """
+        from collections import defaultdict
+
+        # A dict {kind_name: basis_object}
+        kind_basis_dict = cls.get_basissets_from_structure(
+            structure, family_name, by_kind=True)
+
+        # We have to group the species by basis, I use the basis PK
+        # basis_dict will just map PK->basis_object
+        basis_dict = {}
+        # Will contain a list of all species of the basis with given PK
+        basis_species = defaultdict(list)
+
+        for kindname, basis in kind_basis_dict.items():
+            basis_dict[basis.pk] = basis
+            basis_species[basis.pk].append(kindname)
+
+        bases = {}
+        for basis_pk in basis_dict:
+            basis = basis_dict[basis_pk]
+            kinds = basis_species[basis_pk]
+            for kind in kinds:
+                bases[kind] = basis
+
+        return bases
 
     # pylint: disable=too-many-locals,too-many-arguments
     @classmethod

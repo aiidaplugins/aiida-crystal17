@@ -71,7 +71,10 @@ extensions = [
 ]
 
 ipysphinx_export_config = "sphinx_ipypublish_all.ext.noexec"
-ipysphinx_show_prompts = False
+ipysphinx_show_prompts = True
+ipysphinx_input_prompt = "In:"
+ipysphinx_output_prompt = "Out:"
+
 
 git_commands = ["git", "rev-parse", "HEAD"]
 try:
@@ -99,6 +102,7 @@ ipysphinx_prolog = r"""
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
+    'jsonshema': ("https://python-jsonschema.readthedocs.io/en/stable/", None),
     'aiida': ('http://aiida-core.readthedocs.io/en/latest/', None),
     'aiida_quantumespresso':
     ('http://aiida-quantumespresso.readthedocs.io/en/latest/', None),

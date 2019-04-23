@@ -71,10 +71,11 @@ class Symmetrise3DStructure(WorkChain):
                    serializer=lambda x: Float(x),
                    help=("Angle tolerance for symmetry finding, "
                          "in the unit of angle degrees"))
-        spec.input_namespace("compute", required=False, non_db=True)
-        spec.input("compute.primitive", valid_type=bool, default=True,
+        spec.input_namespace("compute", required=False, non_db=True,
+                             help="options for computing primitive and standardized structures")
+        spec.input("compute.primitive", valid_type=bool, default=False,
                    help="whether to convert the structure to its primitive form")
-        spec.input("compute.standardize", valid_type=bool, default=True,
+        spec.input("compute.standardize", valid_type=bool, default=False,
                    help=(
                        "whether to standardize the structure, see"
                        "https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell"))

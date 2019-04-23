@@ -1,10 +1,10 @@
 import click
 import tabulate
 from click_spinner import spinner as cli_spinner
+from jsonextended import edict
 from aiida_crystal17.common import get_data_plugin, load_node
 from aiida_crystal17.cmndline import options
 from aiida.cmdline.commands.cmd_verdi import verdi
-from jsonextended import edict
 
 
 @verdi.group('crystal17.basis')
@@ -101,7 +101,7 @@ def listfamilies(element, with_description, list_pks):
     if list_pks:
         table[0].append('Pks')
     for group in groups:
-        row = [group.name, len(group.nodes)]
+        row = [group.label, len(group.nodes)]
         if with_description:
             row.append(group.description)
         if list_pks:

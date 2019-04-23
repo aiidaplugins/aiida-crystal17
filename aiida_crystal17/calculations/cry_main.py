@@ -7,14 +7,11 @@ import os
 import six
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import InputValidationError
-from aiida.common.utils import classproperty
 from aiida.plugins import DataFactory
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
-from aiida_crystal17.data.basis_set import get_basissets_from_structure
-from aiida_crystal17.validation import read_schema
 from aiida_crystal17.parsers.gui_parse import gui_file_write
-from aiida_crystal17.parsers.inputd12_write import write_input
-from aiida_crystal17.common import unflatten_dict
+from aiida_crystal17.parsers.inputd12_write import (
+    write_input, create_atom_properties)
 
 
 class CryMainCalculation(CryAbstractCalculation):
@@ -29,7 +26,7 @@ class CryMainCalculation(CryAbstractCalculation):
         super(CryMainCalculation, cls).define(spec)
 
         spec.input(
-            'parameters', valid_type=DataFactory('dict'),
+            'parameters', valid_type=DataFactory('crystal17.parameters'),
             required=True,
             help='the input parameters to create the .d12 file content.')
         spec.input(
@@ -56,37 +53,30 @@ class CryMainCalculation(CryAbstractCalculation):
                   "atomic element symbol for which you want to use this "
                   "basis set."))
 
-    @classproperty
-    def settings_schema(cls):
-        """get a copy of the settings schema"""
-        return read_schema("settings")
-
-    @classproperty
-    def input_schema(cls):
-        """get a copy of the settings schema"""
-        return read_schema("inputd12")
-
     # pylint: disable=too-many-arguments
     @classmethod
-    def create_builder(cls, param_dict, structure, bases,
+    def create_builder(cls, parameters, structure, bases,
                        symmetry=None, kinds=None,
-                       code=None, options=None, flattened=False):
+                       code=None, options=None, unflatten=False):
         """ prepare and validate the inputs to the calculation,
         and return a builder pre-populated with the calculation inputs
 
         Parameters
         ----------
-        input: dict
-            giving data to create the input .d12 file
+        parameters: dict or CryInputParamsData
+            input parameters to create the input .d12 file
         structure: aiida.orm.StructureData
             the structure node
-        symmetry: SymmetryData
-            giving symmetry operations, etc
         bases: str or dict
             string of the BasisSetFamily to use,
-            or dict mapping {<symbol>: <basisset>}
-        flattened: bool
-            whether the input dictionary is flattened
+            or dict mapping {<symbol>: <BasisSetData>}
+        symmetry: SymmetryData or None
+            giving symmetry operations, etc
+        options: dict
+            the computation option, e.g.
+            {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1}}
+        unflatten: bool
+            whether to unflatten the input parameters dictionary
 
         Returns
         -------
@@ -94,9 +84,10 @@ class CryMainCalculation(CryAbstractCalculation):
 
         """
         builder = cls.get_builder()
-        if flattened:
-            param_dict = unflatten_dict(param_dict)
-        builder.parameters = DataFactory('dict')(dict=param_dict)
+        param_cls = DataFactory('crystal17.parameters')
+        if not isinstance(parameters, param_cls):
+            parameters = param_cls(data=parameters, unflatten=unflatten)
+        builder.parameters = parameters
         builder.structure = structure
         if symmetry is not None:
             builder.symmetry = symmetry
@@ -108,12 +99,13 @@ class CryMainCalculation(CryAbstractCalculation):
             builder.metadata.options = options
 
         # validate parameters
-        atom_props = cls._create_atom_props(structure, kinds)
-        write_input(param_dict, ["test_basis"], atom_props)
+        atom_props = create_atom_properties(structure, kinds)
+        write_input(parameters.get_dict(), ["test_basis"], atom_props)
 
         # validate basis sets
+        basis_cls = DataFactory('crystal17.basisset')
         if isinstance(bases, six.string_types):
-            symbol_to_basis_map = get_basissets_from_structure(
+            symbol_to_basis_map = basis_cls.get_basissets_from_structure(
                 structure, bases, by_kind=False)
         else:
             elements_required = set([kind.symbol for kind in structure.kinds])
@@ -198,7 +190,7 @@ class CryMainCalculation(CryAbstractCalculation):
         with tempfolder.open(self.metadata.options.external_file_name, 'w') as f:
             f.write(six.u("\n".join(gui_content)))
 
-        atom_props = self._create_atom_props(structure, kinds)
+        atom_props = create_atom_properties(structure, kinds)
 
         # create .d12 input file and place it in tempfolder
         try:
@@ -213,52 +205,3 @@ class CryMainCalculation(CryAbstractCalculation):
             f.write(d12_filecontent)
 
         return True
-
-    @staticmethod
-    def _create_atom_props(structure, kinds_data=None):
-        """ create dict of properties for each atom
-
-        :param atom_kinds: atom kind for each atom
-        :param setting_dict: setting_dict
-        :return:
-        """
-        if kinds_data is None:
-            return {
-                "spin_alpha": [],
-                "spin_beta": [],
-                "ghosts": []
-            }
-
-        if set(kinds_data.data.kind_names) != set(structure.get_kind_names()):
-            raise AssertionError(
-                "kind names are different for structure data and kind data: "
-                "{0} != {1}".format(set(structure.get_kind_names()),
-                                    set(kinds_data.data.kind_names)))
-
-        atom_props = {
-            "spin_alpha": [],
-            "spin_beta": [],
-            "fixed": [],
-            "unfixed": [],
-            "ghosts": []
-        }
-
-        kind_dict = kinds_data.kind_dict
-
-        for i, kind_name in enumerate(structure.get_site_kindnames()):
-            if kind_dict[kind_name].get("spin_alpha", False):
-                atom_props["spin_alpha"].append(i + 1)
-            if kind_dict[kind_name].get("spin_beta", False):
-                atom_props["spin_beta"].append(i + 1)
-            if kind_dict[kind_name].get("ghost", False):
-                atom_props["ghost"].append(i + 1)
-            if kind_dict[kind_name].get("fixed", False):
-                atom_props["fixed"].append(i + 1)
-            if not kind_dict[kind_name].get("fixed", False):
-                atom_props["unfixed"].append(i + 1)
-
-        # we only need unfixed if there are fixed
-        if not atom_props.pop("fixed"):
-            atom_props.pop("unfixed")
-
-        return atom_props

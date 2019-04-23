@@ -3,7 +3,7 @@ module to write CRYSTAL17 .d12 files
 """
 import six
 from aiida_crystal17.common import get_keys
-from aiida_crystal17.validation import validate_with_json
+from aiida_crystal17.validation import validate_against_schema
 
 # TODO check float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
@@ -61,7 +61,7 @@ def write_input(indict, basis_sets, atom_props=None):
 
     """
     # validation
-    validate_with_json(indict)
+    validate_against_schema(indict, "inputd12.schema.json")
     if not basis_sets:
         raise ValueError("there must be at least one basis set")
     elif not all([isinstance(b, six.string_types) or hasattr(b, "content")
@@ -203,3 +203,54 @@ def _basis_set_block(outstr, indict, basis_sets, atom_props):
     # Basis Sets End
     outstr += "END\n"
     return outstr
+
+
+def create_atom_properties(structure, kinds_data=None):
+    """ create dict of properties for each atom
+
+    :param structure: ``StructureData``
+    :param kinds_data: ``KindData`` atom kind data for each atom
+    :return: dict of atom properties
+    :rtype: dict
+
+    """
+    if kinds_data is None:
+        return {
+            "spin_alpha": [],
+            "spin_beta": [],
+            "ghosts": []
+        }
+
+    if set(kinds_data.data.kind_names) != set(structure.get_kind_names()):
+        raise AssertionError(
+            "kind names are different for structure data and kind data: "
+            "{0} != {1}".format(set(structure.get_kind_names()),
+                                set(kinds_data.data.kind_names)))
+
+    atom_props = {
+        "spin_alpha": [],
+        "spin_beta": [],
+        "fixed": [],
+        "unfixed": [],
+        "ghosts": []
+    }
+
+    kind_dict = kinds_data.kind_dict
+
+    for i, kind_name in enumerate(structure.get_site_kindnames()):
+        if kind_dict[kind_name].get("spin_alpha", False):
+            atom_props["spin_alpha"].append(i + 1)
+        if kind_dict[kind_name].get("spin_beta", False):
+            atom_props["spin_beta"].append(i + 1)
+        if kind_dict[kind_name].get("ghost", False):
+            atom_props["ghost"].append(i + 1)
+        if kind_dict[kind_name].get("fixed", False):
+            atom_props["fixed"].append(i + 1)
+        if not kind_dict[kind_name].get("fixed", False):
+            atom_props["unfixed"].append(i + 1)
+
+    # we only need unfixed if there are fixed
+    if not atom_props.pop("fixed"):
+        atom_props.pop("unfixed")
+
+    return atom_props

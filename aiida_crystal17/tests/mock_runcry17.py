@@ -11,7 +11,7 @@ to create a hashkey:
     import hashlib
     input_path = 'path/to/input.d12'
     with open(input_path, "rb") as f:
-        hashkey = hashlib.md5(f.read()).digest()
+        hashkey = hashlib.md5(f.read()).hexdigest()
     hashkey
 
 """
@@ -24,6 +24,7 @@ import aiida_crystal17.tests as tests
 
 stdoutfiles = {
     "f6090e9f0da6098e612cd26cb2f11620": None,
+    "4bfb50cb82980b82aabc6eb00e17f62c": None,
     "ff77b996a5081e64ab2e9970c6cd15cb": None,
     "a7bfd39835be4b6730b0df448f5f6a79": None,
     "5d14a77cb27ee21ad5d151ff3769c094": None,
@@ -33,6 +34,8 @@ stdoutfiles = {
 additional_files = {
     "f6090e9f0da6098e612cd26cb2f11620":
     [("mgo_sto3g_scf.crystal.out", ".out")],
+    "4bfb50cb82980b82aabc6eb00e17f62c":
+    [("mgo_sto3g_external.crystal.out", ".out")],
     "ff77b996a5081e64ab2e9970c6cd15cb":
     [('mgo_sto3g_external.crystal.out', ".out")],
     "a7bfd39835be4b6730b0df448f5f6a79":
