@@ -10,6 +10,7 @@ from jsonextended import edict
 import pytest
 
 
+@pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
 def test_dry_run(db_test_app):
     """Test submitting a calculation"""
     from aiida.engine import run_get_node

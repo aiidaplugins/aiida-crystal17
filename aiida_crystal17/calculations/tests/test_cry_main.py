@@ -51,6 +51,7 @@ def test_create_builder(db_test_app):
     builder.parameters
 
 
+@pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
 @pytest.mark.parametrize(
     "input_symmetry",
     (False, True)
@@ -114,40 +115,41 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
     if input_symmetry:
         builder.symmetry = symmetry
 
-    # process_options = builder.process_class(inputs=builder).metadata.options
+    process_options = builder.process_class(inputs=builder).metadata.options
 
     calcnode = run_get_node(builder).node  # noqa: F841
 
     # TODO awaiting https://github.com/aiidateam/aiida_core/pull/2768
-    # with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
-    #     input_content = f.read()
-    # with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
-    #     gui_content = f.read()  # noqa: F841
+    with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
+        input_content = f.read()
+    with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
+        gui_content = f.read()  # noqa: F841
 
-    # expected_input = dedent("""\
-    # MgO Bulk
-    # EXTERNAL
-    # END
-    # 12 3
-    # 1 0 3  2.  0.
-    # 1 1 3  8.  0.
-    # 1 1 3  2.  0.
-    # 8 2
-    # 1 0 3  2.  0.
-    # 1 1 3  6.  0.
-    # 99 0
-    # END
-    # SHRINK
-    # 8 8
-    # END
-    # """)
+    expected_input = dedent("""\
+    MgO Bulk
+    EXTERNAL
+    END
+    12 3
+    1 0 3  2.  0.
+    1 1 3  8.  0.
+    1 1 3  2.  0.
+    8 2
+    1 0 3  2.  0.
+    1 1 3  6.  0.
+    99 0
+    END
+    SHRINK
+    8 8
+    END
+    """)
 
-    # assert input_content == expected_input
+    assert input_content == expected_input
 
     # TODO test .gui
     # assert gui_content == expected_gui
 
 
+@pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
 def test_dry_run_nio_afm(db_test_app):
     """Test submitting a calculation"""
     from aiida.engine import run_get_node
@@ -213,47 +215,47 @@ def test_dry_run_nio_afm(db_test_app):
         code=code, options=options, unflatten=True)
     builder.metadata.dry_run = True
 
-    # process_options = builder.process_class(inputs=builder).metadata.options
+    process_options = builder.process_class(inputs=builder).metadata.options
 
     calcnode = run_get_node(builder).node  # noqa: F841
 
     # TODO awaiting https://github.com/aiidateam/aiida_core/pull/2768
-    # with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
-    #     input_content = f.read()
-    # with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
-    #     gui_content = f.read()  # noqa: F841
+    with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
+        input_content = f.read()
+    with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
+        gui_content = f.read()  # noqa: F841
 
-    # expected_input = dedent("""\
-    #     NiO Bulk with AFM spin
-    #     EXTERNAL
-    #     END
-    #     28 5
-    #     1 0 3  2.  0.
-    #     1 1 3  8.  0.
-    #     1 1 3  8.  0.
-    #     1 1 3  2.  0.
-    #     1 3 3  8.  0.
-    #     8 2
-    #     1 0 3  2.  0.
-    #     1 1 3  6.  0.
-    #     99 0
-    #     END
-    #     UHF
-    #     SHRINK
-    #     8 8
-    #     ATOMSPIN
-    #     2
-    #     1 1
-    #     2 -1
-    #     FMIXING
-    #     30
-    #     SPINLOCK
-    #     0 15
-    #     PPAN
-    #     END
-    #     """)
+    expected_input = dedent("""\
+        NiO Bulk with AFM spin
+        EXTERNAL
+        END
+        28 5
+        1 0 3  2.  0.
+        1 1 3  8.  0.
+        1 1 3  8.  0.
+        1 1 3  2.  0.
+        1 3 3  8.  0.
+        8 2
+        1 0 3  2.  0.
+        1 1 3  6.  0.
+        99 0
+        END
+        UHF
+        SHRINK
+        8 8
+        ATOMSPIN
+        2
+        1 1
+        2 -1
+        FMIXING
+        30
+        SPINLOCK
+        0 15
+        PPAN
+        END
+        """)
 
-    # assert input_content == expected_input
+    assert input_content == expected_input
 
     # TODO test .gui
     # assert gui_content == expected_gui
