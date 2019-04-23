@@ -1,0 +1,66 @@
+"""
+A parser to read output from a standard CRYSTAL17 run
+"""
+from aiida.common import exceptions
+from aiida.parsers.parser import Parser
+
+from aiida_crystal17.parsers.main_out import parse_main_out
+
+
+class CryMainParser(Parser):
+    """
+    Parser class for parsing (stdout) output of a standard CRYSTAL17 run
+    """
+    def _log_scheduler_errors(self, output_folder):
+        stderr = self.node.get_option("scheduler_stdout")
+        with output_folder.open(stderr) as handle:
+            self.logger.warning("{}:\n{}".format(stderr, handle.read()))
+
+    def parse(self, retrieved_temporary_folder, **kwargs):
+        """
+        Parse outputs, store results in database.
+        """
+        try:
+            output_folder = self.retrieved
+        except exceptions.NotExistent:
+            return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
+
+        mainout_file = self.node.get_option("output_main_file_name")
+        if mainout_file not in output_folder.list_object_names():
+            self._log_scheduler_errors(output_folder)
+            return self.exit_codes.ERROR_OUTPUT_FILE_MISSING
+
+        # parse the stdout file and add nodes
+        self.logger.info("parsing main out file")
+        init_struct = None
+        init_settings = None
+        if "structure" in self.node.inputs:
+            init_struct = self.node.inputs.structure
+        if "symmetry" in self.node.inputs:
+            init_settings = self.node.inputs.symmetry
+        with output_folder.open(mainout_file) as fileobj:
+            parser_result = parse_main_out(
+                fileobj,
+                parser_class=self.__class__.__name__,
+                init_struct=init_struct,
+                init_settings=init_settings)
+
+        errors = parser_result.nodes.results.get_attribute("errors")
+        parser_errors = parser_result.nodes.results.get_attribute(
+            "parser_errors")
+        if parser_errors:
+            self.logger.warning(
+                "the parser raised the following errors:\n{}".format(
+                    "\n\t".join(parser_errors)))
+        if errors:
+            self.logger.warning(
+                "the calculation raised the following errors:\n{}".format(
+                    "\n\t".join(errors)))
+
+        self.out('results', parser_result.nodes.results)
+        if parser_result.nodes.structure is not None:
+            self.out('structure', parser_result.nodes.structure)
+        if parser_result.nodes.symmetry is not None:
+            self.out('symmetry', parser_result.nodes.symmetry)
+
+        return parser_result.exit_code

@@ -17,7 +17,7 @@ with open(setup_path) as f:
 
 # Get version from python package
 sys.path.insert(0, os.path.join(this_path, os.pardir))
-import aiida_crystal17  # pylint: disable=wrong-import-position
+import aiida_crystal17  # noqa
 version = aiida_crystal17.__version__
 
 if version != setup_content['version']:
@@ -29,6 +29,6 @@ if version != setup_content['version']:
     sys.exit(1)
 
 # Overwrite version in setup.json
-#setup_content['version'] = version
-#with open(setup_path, 'w') as f:
-#	json.dump(setup_content, f, indent=4, sort_keys=True)
+# setup_content['version'] = version
+# with open(setup_path, 'w') as f:
+# 	json.dump(setup_content, f, indent=4, sort_keys=True)

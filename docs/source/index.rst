@@ -3,15 +3,18 @@
     :align: center
 
 The aiida-crystal17 plugin for `AiiDA`_
-=====================================================
+=======================================
 
 ``aiida-crystal17`` is available at http://github.com/chrisjsewell/aiida-crystal17
 
 .. toctree::
    :maxdepth: 2
 
-   user_guide/index
-   module_guide/modules
+   user_guide/get_started
+   user_guide/calc_basic
+   user_guide/calc_main
+   user_guide/calc_main_immigrant
+   api_index
 
 If you use this plugin for your research, please cite the Github repository
 (paper to come).

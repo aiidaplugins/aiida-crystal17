@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+dependencies:
+  - python =3.6
+  - pandoc
+  - python-graphviz
+  - pip =9
+  # TODO pip<10 required until readthedocs issues fixed:
+  # https://github.com/rtfd/readthedocs.org/issues/5545 or
+  # https://github.com/rtfd/readthedocs.org/issues/5546

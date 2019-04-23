@@ -2,46 +2,97 @@ import json
 import os
 
 import jsonschema
+import six
+
+SCHEMAPATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def read_schema(name="inputd12"):
-    """read and return an json schema
+def load_schema(path):
+    """read and return a json schema
 
-    :return:
+    if the path is absolute, it will be used as is, otherwise
+    it will be joined with the path to the internal json schema folder
+
+    Parameters
+    ----------
+    path: str
+
+    Returns
+    -------
+    dict
+
     """
-    dirpath = os.path.dirname(os.path.realpath(__file__))
-    jpath = os.path.join(dirpath, "{}.schema.json".format(name))
+    if os.path.isabs(path):
+        jpath = path
+    else:
+        jpath = os.path.join(SCHEMAPATH, path)
+
     with open(jpath) as jfile:
         schema = json.load(jfile)
     return schema
 
 
-def validate_with_json(data, name="inputd12"):
-    """ validate json-type data against a schema
+def load_validator(schema):
+    """create a validator for a schema
 
-    :param data: dictionary
+    Parameters
+    ----------
+    schema : str or dict
+        schema or path to schema
+
+    Returns
+    -------
+    jsonschema.IValidator
+        the validator to use
+
     """
-    schema = read_schema(name)
+    if isinstance(schema, six.string_types):
+        schema = load_schema(schema)
 
-    # validator = jsonschema.validators.extend(
-    #     jsonschema.Draft4Validator,
-    # )
-    validator = jsonschema.Draft4Validator
+    validator_cls = jsonschema.validators.validator_for(schema)
+    validator_cls.check_schema(schema)
 
     # by default, only validates lists
-    validator(schema, types={"array": (list, tuple)}).validate(data)
+    def is_array(checker, instance):
+        return isinstance(instance, (tuple, list))
+
+    type_checker = validator_cls.TYPE_CHECKER.redefine("array", is_array)
+    validator_cls = jsonschema.validators.extend(
+        validator_cls, type_checker=type_checker)
+
+    validator = validator_cls(schema=schema)
+    return validator
 
 
-def validate_with_dict(data, schema):
+def validate_against_schema(data, schema):
     """ validate json-type data against a schema
 
-    :param data: dictionary
-    :param schema: dictionary
-    """
-    # validator = jsonschema.validators.extend(
-    #     jsonschema.Draft4Validator,
-    # )
-    validator = jsonschema.Draft4Validator
+    Parameters
+    ----------
+    path: str or dict
 
-    # by default, only validates lists
-    validator(schema, types={"array": (list, tuple)}).validate(data)
+    Raises
+    ------
+    jsonschema.exceptions.SchemaError
+        if the schema is invalid
+    jsonschema.exceptions.ValidationError
+        if the instance is invalid
+
+    Returns
+    -------
+    bool
+        return True if validated
+
+
+    """
+    validator = load_validator(schema)
+    # validator.validate(data)
+    errors = sorted(validator.iter_errors(data), key=lambda e: e.path)
+    if errors:
+        raise jsonschema.ValidationError(
+            "\n".join(["- {} [key path: '{}']".format(
+                error.message, "/".join([str(p) for p in error.path]))
+                for error in errors])
+        )
+
+    return True
