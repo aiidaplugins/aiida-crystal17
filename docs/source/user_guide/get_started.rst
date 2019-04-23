@@ -14,7 +14,9 @@ for more information on how to perform these steps.
 Installation
 ++++++++++++
 
-To install from conda (recommended)::
+|PyPI| |Conda|
+
+To install from Conda (recommended)::
 
     >> conda install -c conda-forge aiida-crystal17
     >> conda install -c bioconda chainmap==1.0.2
@@ -49,3 +51,8 @@ For test purposes, a ``mock_runcry17`` executable is installed with
 if parsed specific test input files. When running the test suite,
 this executable will be used in place of ``runcry17``,
 if the global variable ``export MOCK_CRY17_EXECUTABLES=true`` is set.
+
+.. |PyPI| image:: https://img.shields.io/pypi/v/aiida-crystal17.svg
+   :target: https://pypi.python.org/pypi/aiida-crystal17/
+.. |Conda| image:: https://anaconda.org/conda-forge/aiida-crystal17/badges/version.svg
+   :target: https://anaconda.org/conda-forge/aiida-crystal17
