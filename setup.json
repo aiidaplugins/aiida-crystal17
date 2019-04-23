@@ -8,10 +8,12 @@
     "classifiers": [
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering :: Chemistry",
-        "Topic :: Scientific/Engineering :: Physics"
+        "Topic :: Scientific/Engineering :: Physics",
+        "Framework :: AiiDA"
     ],
-    "version": "0.4.0",
+    "version": "0.5.0b2",
     "entry_points": {
         "console_scripts": [
             "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main"
