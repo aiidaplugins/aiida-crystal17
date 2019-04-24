@@ -252,7 +252,6 @@ def gui_file_write(structure_data, symmetry_data=None):
 def structure_to_symmetry(structure, symprec=1e-5, angle_tolerance=None,
                           as_cartesian=False):
     """convert a structure data object to a symmetry data dict,
-    that can be parsed to gui_file_write()
 
     Parameters
     ----------
@@ -269,6 +268,8 @@ def structure_to_symmetry(structure, symprec=1e-5, angle_tolerance=None,
     Returns
     -------
     dict
+        keys; 'crystal_type_code', 'centring_code', 'space_group',
+        'operations', 'basis'
 
     """
     structure = convert_structure(structure, "aiida")
@@ -276,6 +277,7 @@ def structure_to_symmetry(structure, symprec=1e-5, angle_tolerance=None,
 
     space_group = dataset["number"]
     crystal_type_code = get_crystal_type_code(dataset["hall_number"])
+    crystal_type_name = get_crystal_type_name(dataset["hall_number"])
     centring_code = get_centering_code(dataset["hall_number"])
 
     operations = []
@@ -289,6 +291,7 @@ def structure_to_symmetry(structure, symprec=1e-5, angle_tolerance=None,
 
     data = {
         "crystal_type_code": crystal_type_code,
+        "crystal_type_name": crystal_type_name,
         "centring_code": centring_code,
         "space_group": space_group,
         "operations": operations,
@@ -299,7 +302,7 @@ def structure_to_symmetry(structure, symprec=1e-5, angle_tolerance=None,
 
 
 def get_crystal_type_code(hall_number):
-    """get crystal centering codes, to convert from primitive to conventional
+    """get crystal type code, denoting the crystal system
 
     Parameters
     ----------
@@ -307,12 +310,28 @@ def get_crystal_type_code(hall_number):
 
     Returns
     -------
-    centering_code: int
+    crystal_type_code: int
 
     """
     sg_number = spglib.get_spacegroup_type(hall_number)["number"]
     crystal_type = get_crystal_system_name(sg_number)
     return CRYSTAL_TYPE_TO_NUM_MAP[crystal_type]
+
+
+def get_crystal_type_name(hall_number):
+    """get crystal type code, denoting the crystal system
+
+    Parameters
+    ----------
+    hall_number: int
+
+    Returns
+    -------
+    crystal_type_name: str
+
+    """
+    sg_number = spglib.get_spacegroup_type(hall_number)["number"]
+    return get_crystal_system_name(sg_number)
 
 
 def get_centering_code(hall_number):

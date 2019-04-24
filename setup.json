@@ -16,7 +16,8 @@
     "version": "0.5.0b2",
     "entry_points": {
         "console_scripts": [
-            "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main"
+            "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main",
+            "mock_gulp = aiida_crystal17.tests.mock_gulp:main"
         ],
         "aiida.data": [
             "crystal17.parameters = aiida_crystal17.data.input_params:CryInputParamsData",
@@ -26,10 +27,14 @@
         ],
         "aiida.calculations": [
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
-            "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation"
+            "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation",
+            "gulp.single = aiida_crystal17.gulp.calculations.gulp_single:GulpSingleCalculation",
+            "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation"
         ],
         "aiida.parsers": [
-            "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser"
+            "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser",
+            "gulp.single = aiida_crystal17.gulp.parsers.parse_main:GulpSingleParser",
+            "gulp.optimize = aiida_crystal17.gulp.parsers.parse_main:GulpOptParser"
         ],
         "aiida.workflows": [
             "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure"
@@ -37,6 +42,10 @@
         "aiida.cmdline.data": [
             "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
             "crystal17.basis = aiida_crystal17.cmndline.basis_set:basisset"
+        ],
+        "gulp.potentials": [
+            "reaxff = aiida_crystal17.gulp.potentials.reaxff:write_gulp",
+            "lj =  aiida_crystal17.gulp.potentials.lj:write_gulp"
         ]
     },
     "include_package_data": true,
@@ -49,7 +58,8 @@
         "spglib>=1.10.0,<2.0.0",
         "ase>=3.12.0,<4.0.0",
         "graphviz",
-        "ruamel.yaml"
+        "ruamel.yaml",
+        "six"
     ],
     "extras_require": {
         "testing": [

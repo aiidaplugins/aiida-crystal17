@@ -15,7 +15,7 @@ def migrate_as_main(
         folder, code, input_name="main.d12", output_name="main.out",
         resources=(('num_mpiprocs_per_machine', 1), ('num_machines', 1)),
         withmpi=False, store_all=False):
-    """Set docstring here.
+    """migrate a calculation
 
     Parameters
     ----------
@@ -44,6 +44,7 @@ def migrate_as_main(
     calc_node.set_process_state("finished")
     calc_node.set_process_label(CryMainCalculation.__name__)
     calc_node.set_attribute("immigrated", True)
+    # {k:v.default for k, v in calc.spec_options.items() if v.has_default()}
     calc_node.set_options({
         'resources': dict(resources),
         'withmpi': withmpi,
@@ -66,6 +67,9 @@ def migrate_as_main(
 
     builder = populate_builder(
         folder, input_name=input_name, output_name=output_name, code=code)
+
+    # spec = CryMainCalculation.spec()
+    # TODO use spec.validate_inputs and spec.validate_outputs
 
     calc_node.add_incoming(
         builder.code, LinkType.INPUT_CALC, "code")

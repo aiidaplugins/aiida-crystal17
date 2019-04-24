@@ -13,7 +13,9 @@ from aiida_crystal17.calculations.cry_main import CryMainCalculation
 
 
 class OutputNodes(Mapping):
-
+    """
+    a mapping of output nodes, with attribute access
+    """
     def __init__(self):
         self._dict = {
             "results": None,
@@ -65,7 +67,7 @@ class OutputNodes(Mapping):
 
 class ParserResult(object):
     def __init__(self):
-        self.exit_code = ExitCode()
+        self.exit_code = ExitCode()  # initialises as exit_code = 0
         self.nodes = OutputNodes()
 
 
@@ -75,12 +77,13 @@ def parse_main_out(fileobj, parser_class,
                    init_settings=None):
     """ parse the main output file and create the required output nodes
 
-    :param abs_path: absolute path of stdout file
+    :param fileobj: handle to main output file
     :param parser_class: a string denoting the parser class
     :param init_struct: input structure
     :param init_settings: input structure settings
 
     :return parse_result
+
     """
     parser_result = ParserResult()
     exit_codes = CryMainCalculation.exit_codes

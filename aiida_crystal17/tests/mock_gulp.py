@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-this is a mock version of runcry17,
+this is a mock version of gulp (v4.5.3),
 which compares an input file to a hash,
 and writes an appropriate outputfile to stdoout
 
@@ -24,24 +24,20 @@ import aiida_crystal17.tests as tests
 
 # map of input file hashes to output files
 hash_map = {
-    "f6090e9f0da6098e612cd26cb2f11620": {
+    "95db701a89083842f917418f7cf59f3d": {
+        "output": [("single_lj_pyrite.gout", ".gout", None)]
+    },
+    "1f639518b936001e435bf032e2f764fe": {
+        "output": [("optimize_lj_pyrite.gout", ".gout", None),
+                   ("optimize_lj_pyrite.cif", ".cif", "output")]
+    },
+    "ec39b0c69c6ef97d2a701f86054702ee": {
         "stdout": None,
-        "output": [("mgo_sto3g_scf.crystal.out", ".out")]},
-    "4bfb50cb82980b82aabc6eb00e17f62c": {
+        "output": [("opt_reaxff_pyrite.gout", ".gout", None),
+                   ("opt_reaxff_pyrite.cif", ".cif", "output")]},
+    "57649b5ce90996cd71e233e2509068b7": {
         "stdout": None,
-        "output": [("mgo_sto3g_external.crystal.out", ".out")]},
-    "ff77b996a5081e64ab2e9970c6cd15cb": {
-        "stdout": None,
-        "output": [('mgo_sto3g_external.crystal.out', ".out")]},
-    "a7bfd39835be4b6730b0df448f5f6a79": {
-        "stdout": None,
-        "output": [("mgo_sto3g_opt.crystal.out", ".out")]},
-    "5d14a77cb27ee21ad5d151ff3769c094": {
-        "stdout": None,
-        "output": [('nio_sto3g_afm.crystal.out', ".out")]},
-    "2eae63d662d8518376a208892be07b1d": {
-        "stdout": None,
-        "output": [('nio_sto3g_afm_opt.crystal.out', ".out")]},
+        "output": [("single_reaxff_pyrite.gout", ".gout", None)]},
 }
 
 
@@ -62,28 +58,32 @@ def main(sys_args=None):
     # runcry17 requires input file name without extension as first arg
     input_name = sys_args[0]
 
-    with open(input_name + ".d12", "rb") as f:
+    with open(input_name + ".gin", "rb") as f:
         content = f.read()
         # hashkey = hashlib.md5(content).digest()
         hashkey = hashlib.md5(content).hexdigest()
 
     if str(hashkey) not in hash_map:
         raise IOError(
-            "contents of {0} not in hash list, hashkey: {1}\n{2}".format(
-                os.path.basename(input_name + ".d12"), str(hashkey), content))
+            "contents of {0} not in hash list, hashkey: {1}".format(
+                os.path.basename(input_name + ".gin"), str(hashkey)))
 
     outfiles = hash_map[hashkey]
 
-    for inname, outext in outfiles.get("output", []):
-        src = os.path.join(test_path, "output_files", inname)
-        dst = os.path.join(".", input_name + outext)
+    for inname, outext, outname in outfiles.get("output", []):
+        src = os.path.join(test_path, "gulp_output_files", inname)
+        if outname is None:
+            dst = os.path.join(".", input_name + outext)
+        else:
+            dst = os.path.join(".", outname + outext)
         copyfile(src, dst)
 
     if outfiles.get("stdout", None) is None:
         sys.stdout.write(
-            "running mock runcry17 for input arg: {}".format(input_name))
+            "running mock gulp for input arg: {}".format(input_name))
     else:
-        outpath = os.path.join(test_path, "output_files", outfiles["stdout"])
+        outpath = os.path.join(
+            test_path, "gulp_output_files", outfiles["stdout"])
         with open(outpath) as f:
             sys.stdout.write(f.read())
 
