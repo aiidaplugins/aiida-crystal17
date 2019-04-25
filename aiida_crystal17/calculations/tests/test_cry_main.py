@@ -11,9 +11,11 @@ import pytest
 from aiida.engine import run_get_node
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests.aiida_test_app import AiidaTestApp  # noqa: F401
 
 
 def test_create_builder(db_test_app):
+    # type: (AiidaTestApp) -> None
     """test preparation of inputs"""
     db_test_app.get_or_create_code('crystal17.main')
 
@@ -57,6 +59,7 @@ def test_create_builder(db_test_app):
     (False, True)
 )
 def test_dry_run_mgo(db_test_app, input_symmetry):
+    # type: (AiidaTestApp, bool) -> None
     """Test submitting a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
@@ -151,6 +154,7 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
 
 @pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
 def test_dry_run_nio_afm(db_test_app):
+    # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
@@ -263,6 +267,7 @@ def test_dry_run_nio_afm(db_test_app):
 
 @pytest.mark.timeout(60)
 def test_run_nio_afm_scf(db_test_app):
+    # type: (AiidaTestApp) -> None
     """Test running a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
@@ -367,6 +372,7 @@ def test_run_nio_afm_scf(db_test_app):
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
 def test_run_nio_afm_fullopt(db_test_app):
+    # type: (AiidaTestApp) -> None
     """Test running a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory

@@ -3,15 +3,18 @@
 """
 import os
 
-import aiida_crystal17
-from aiida_crystal17.tests import TEST_DIR
 import ejplugins
 from jsonextended import edict
 import pytest
 
+import aiida_crystal17
+from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests.aiida_test_app import AiidaTestApp  # noqa: F401
+
 
 @pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
 def test_dry_run(db_test_app):
+    # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
@@ -48,6 +51,7 @@ def test_dry_run(db_test_app):
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
 def test_full_runs(db_test_app, inpath_main, inpath_gui):
+    # type: (AiidaTestApp, str, str) -> None
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
