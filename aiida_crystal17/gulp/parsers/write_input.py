@@ -51,7 +51,7 @@ class InputCreationBase(object):
         """write the content to file_like object
         (path string or object with `write` method)
         """
-        content = self.get_content()
+        content = six.u(self.get_content())
         if isinstance(file_like, six.string_types):
             with io.open(file_like, "w", encoding=self._encoding) as handle:
                 handle.write(content)

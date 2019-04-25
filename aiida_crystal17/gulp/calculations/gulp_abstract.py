@@ -90,7 +90,7 @@ class GulpAbstractCalculation(CalcJob):
             self.inputs.get("symmetry", None)
         )
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write("\n".join(content))
+            f.write(six.u("\n".join(content)))
 
         # Prepare CodeInfo object for aiida,
         # describes how a code has to be executed
