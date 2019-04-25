@@ -12,7 +12,7 @@ from aiida_crystal17.tests.aiida_test_app import AiidaTestApp
 
 
 @pytest.fixture(scope='session')
-def aiida_profile():
+def aiida_environment():
     """setup a test profile for the duration of the tests"""
     # TODO this is required locally for click
     # (see https://click.palletsprojects.com/en/7.x/python3/)
@@ -22,9 +22,8 @@ def aiida_profile():
 
 
 @pytest.fixture(scope='function')
-def db_test_app(aiida_profile):
+def db_test_app(aiida_environment):
     """clear the database after each test"""
-    work_directory = tempfile.mkdtemp()
 
     if os.environ.get("MOCK_CRY17_EXECUTABLES", False):
         print("NB: using mock executable")
@@ -42,6 +41,8 @@ def db_test_app(aiida_profile):
             'gulp.optimize': 'gulp'
         }
 
-    yield AiidaTestApp(aiida_profile, work_directory, executables)
-    aiida_profile.reset_db()
+    work_directory = tempfile.mkdtemp()
+    yield AiidaTestApp(
+        work_directory, executables, environment=aiida_environment)
+    aiida_environment.reset_db()
     shutil.rmtree(work_directory)

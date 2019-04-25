@@ -10,37 +10,32 @@ from ruamel.yaml.compat import StringIO
 
 
 class AiidaTestApp(object):
-    def __init__(self, profile, work_directory, executable_map):
+    def __init__(self, work_directory, executable_map, environment=None):
         """a class providing methods for testing purposes
 
         Parameters
         ----------
-        profile : [type]
-            [description]
         work_directory : str
             path to a local work directory (used when creating computers)
         executable_map : dict
             mapping of computation entry points to the executable name
+        environment : None or aiida.manage.fixtures.FixtureManager
+            manager of a temporary AiiDA environment
 
         """
-        self._profile = profile
+        self._environment = environment
         self._work_directory = work_directory
         self._executables = executable_map
 
     @property
     def work_directory(self):
+        """return path to the work directory"""
         return self._work_directory
 
     @property
-    def profile(self):
-        return self._profile
-
-    @staticmethod
-    def get_backend():
-        from aiida.backends.profile import BACKEND_DJANGO, BACKEND_SQLA
-        if os.environ.get('TEST_AIIDA_BACKEND') == BACKEND_SQLA:
-            return BACKEND_SQLA
-        return BACKEND_DJANGO
+    def environment(self):
+        """return manager of a temporary AiiDA environment"""
+        return self._environment
 
     @staticmethod
     def get_path_to_executable(executable):
@@ -171,11 +166,22 @@ class AiidaTestApp(object):
                               computer_name='localhost', attributes=None):
         """Fixture to generate a mock `CalcJobNode` for testing parsers.
 
-        :param entry_point_name: entry point name of the calculation class
-        :param retrieved: a `FolderData` node containing the file(s) to be parsed
-        :param computer_name: used to get or create a ``Computer``
-        :param attributes: any additional attributes to set on the node
-        :return: `CalcJobNode` instance with the`retrieved` node attached
+        Parameters
+        ----------
+        entry_point_name : str
+            entry point name of the calculation class
+        retrieved : aiida.orm.FolderData
+            containing the file(s) to be parsed
+        computer_name : str
+            used to get or create a ``Computer``, by default 'localhost'
+        attributes : None or dict
+            any additional attributes to set on the node
+
+        Returns
+        -------
+        aiida.orm.CalcJobNode
+            instance with the `retrieved` node linked as outgoing
+
         """
         from aiida.common.links import LinkType
         from aiida.orm import CalcJobNode
@@ -187,9 +193,10 @@ class AiidaTestApp(object):
             'aiida.calculations', entry_point_name)
 
         node = CalcJobNode(computer=computer, process_type=entry_point)
+        spec_options = process.spec().inputs['metadata']['options']
+        # TODO post v1.0.0b2, this can be replaced with process.spec_options
         node.set_options({
-            k: v.default for k, v in process.spec_options.items()
-            if v.has_default()})
+            k: v.default for k, v in spec_options.items() if v.has_default()})
         node.set_option('resources', {'num_machines': 1,
                                       'num_mpiprocs_per_machine': 1})
         node.set_option('max_wallclock_seconds', 1800)
@@ -211,7 +218,7 @@ class AiidaTestApp(object):
 
         Yields
         ------
-        aiida.common.folders import Folder
+        aiida.common.folders.Folder
 
         """
         from aiida.common.folders import Folder
