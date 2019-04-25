@@ -83,14 +83,17 @@ class GulpAbstractCalculation(CalcJob):
                            where the plugin should put all its files.
         """
         input_creation = self.get_input_creation()
-        content = input_creation.create_content(
+        input_creation.create_content(
             self.inputs.structure,
             self.inputs.potential,
             self.inputs.get("parameters", None),
             self.inputs.get("symmetry", None)
         )
+        content = input_creation.get_content()
+        if not isinstance(content, six.text_type):
+            content = six.u(content)
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write(six.u("\n".join(content)))
+            f.write(content)
 
         # Prepare CodeInfo object for aiida,
         # describes how a code has to be executed
