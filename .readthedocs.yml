@@ -6,7 +6,7 @@ conda:
 python:
   version: 3.6
   install:
-    - method: setuptools # pip
+    - method: pip
       path: .
       # extra_requirements:
       #     - docs
