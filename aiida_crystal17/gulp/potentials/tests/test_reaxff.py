@@ -3,7 +3,7 @@ from jsonextended import edict
 
 from aiida_crystal17.tests import TEST_DIR
 from aiida_crystal17.gulp.potentials.reaxff import (
-    read_reaxff_file, write_gulp, write_lammps)
+    read_reaxff_file, write_lammps, PotentialWriterReaxff)
 
 
 def test_parse():
@@ -536,7 +536,9 @@ reaxff4_torsion kcal
 S  core S  core S  core S  core   2.4661  71.9719   0.0100  -8.0000   0.0000 
 """  # noqa: W291
 
-    assert write_gulp(data, species_filter=['Fe', 'S']) == expected
+    string = PotentialWriterReaxff().create_string(
+        data, species_filter=['Fe', 'S'])
+    assert string == expected
 
 
 def test_write_lammps():

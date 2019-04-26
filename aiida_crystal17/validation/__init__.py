@@ -69,7 +69,9 @@ def validate_against_schema(data, schema):
 
     Parameters
     ----------
-    path: str or dict
+    data: dict
+    schema: dict or str
+        schema or path to schema
 
     Raises
     ------

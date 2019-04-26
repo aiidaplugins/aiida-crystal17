@@ -4,7 +4,8 @@ from decimal import Decimal
 
 import numpy as np
 
-from aiida_crystal17.validation import validate_against_schema
+from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
+from aiida_crystal17.validation import load_schema
 
 # TODO can X be in middle of species?
 
@@ -300,7 +301,8 @@ def _read_torsion_info(f):
         species2 = int(values.pop(0))
         species3 = int(values.pop(0))
         species4 = int(values.pop(0))
-        torsion_values.append([species1, species2, species3, species4] + values)
+        torsion_values.append(
+            [species1, species2, species3, species4] + values)
         if len(torsion_values[i]) != len(_torkeys):
             raise Exception(
                 'number of values different than expected for torsion')
@@ -441,205 +443,222 @@ class AttrDict(dict):
         self.__dict__ = self
 
 
-# pylint: disable=too-many-locals
-def write_gulp(data, species_filter=None):
-    """write reaxff data in GULP input format
-
-    :param data: dictionary of data
-    :param species_filter: list of symbols to filter
-    :rtype: str
-
+class PotentialWriterReaxff(PotentialWriterAbstract):
+    """class for creating gulp reaxff type
+    inter-atomic potential inputs
     """
-    validate_against_schema(data, "reaxff.schema.json")
+    _schema = None
 
-    data = copy.deepcopy(data)
+    @classmethod
+    def get_description(cls):
+        return "ReaxFF potential"
 
-    descript = data["descript"]
-    tol_par = data["tolerances"]
-    reaxff_par = data["params"]
-    id_sym_dict = {
-        k: v
-        for k, v in zip(data["species"]['idx'], data["species"]['symbol'])
-    }
-    spec_df = data["species"]
-    spec_df['idxs'] = list(zip(spec_df['idx']))
-    bond_df = data["bonds"]
-    bond_df['idxs'] = list(zip(bond_df['idx1'], bond_df['idx2']))
-    od_df = data["off-diagonals"]
-    od_df['idxs'] = list(zip(od_df['idx1'], od_df['idx2']))
-    hbond_df = data["hbonds"]
-    hbond_df['idxs'] = list(zip(hbond_df['idx2'], hbond_df['idx1'],
-                                hbond_df['idx3']))
-    angle_df = data["angles"]
-    angle_df['idxs'] = list(zip(angle_df['idx2'], angle_df['idx1'],
-                                angle_df['idx3']))
-    torsion_df = data["torsions"]
-    torsion_df['idxs'] = list(zip(torsion_df['idx1'], torsion_df['idx2'],
-                                  torsion_df['idx3'], torsion_df['idx4']))
+    @classmethod
+    def get_schema(cls):
+        if cls._schema is None:
+            cls._schema = load_schema("reaxff.schema.json")
+        return copy.deepcopy(cls._schema)
 
-    # If reaxff2_bo3 = 1 needs to be set to 0 for GULP since this is a dummy value
-    def gulp_conv1(val):
-        return 0.0 if abs(val - 1) < 1e-12 else val
+    # pylint: disable=too-many-locals
+    def _make_string(self, data, species_filter=None):
+        """write reaxff data in GULP input format
 
-    bond_df['reaxff2_bo3'] = [gulp_conv1(i) for i in bond_df["reaxff2_bo3"]]
+        :param data: dictionary of data
+        :param species_filter: list of symbols to filter
+        :rtype: str
 
-    # If reaxff2_bo(5,n) < 0 needs to be set to 0 for GULP since this is a dummy value
-    def gulp_conv2(val):
-        return 0.0 if val < 0.0 else val
+        """
+        data = copy.deepcopy(data)
 
-    bond_df['reaxff2_bo5'] = [gulp_conv2(i) for i in bond_df["reaxff2_bo5"]]
+        descript = data["descript"]
+        tol_par = data["tolerances"]
+        reaxff_par = data["params"]
+        id_sym_dict = {
+            k: v
+            for k, v in zip(data["species"]['idx'], data["species"]['symbol'])
+        }
+        spec_df = data["species"]
+        spec_df['idxs'] = list(zip(spec_df['idx']))
+        bond_df = data["bonds"]
+        bond_df['idxs'] = list(zip(bond_df['idx1'], bond_df['idx2']))
+        od_df = data["off-diagonals"]
+        od_df['idxs'] = list(zip(od_df['idx1'], od_df['idx2']))
+        hbond_df = data["hbonds"]
+        hbond_df['idxs'] = list(zip(hbond_df['idx2'], hbond_df['idx1'],
+                                    hbond_df['idx3']))
+        angle_df = data["angles"]
+        angle_df['idxs'] = list(zip(angle_df['idx2'], angle_df['idx1'],
+                                    angle_df['idx3']))
+        torsion_df = data["torsions"]
+        torsion_df['idxs'] = list(zip(torsion_df['idx1'], torsion_df['idx2'],
+                                      torsion_df['idx3'], torsion_df['idx4']))
 
-    # TODO, this wasn't part of the original script, and should be better understood
-    # but without it, the energies greatly differ to LAMMPS (approx equal otherwise)
-    def gulp_conv3(val):
-        return 0.0 if val > 0.0 else val
+        # If reaxff2_bo3 = 1 needs to be set to 0 for GULP since this is a dummy value
+        def gulp_conv1(val):
+            return 0.0 if abs(val - 1) < 1e-12 else val
 
-    spec_df['reaxff1_radii3'] = [
-        gulp_conv3(i) for i in spec_df['reaxff1_radii3']
-    ]
+        bond_df['reaxff2_bo3'] = [gulp_conv1(i)
+                                  for i in bond_df["reaxff2_bo3"]]
 
-    attr_dicts = _create_attr_dicts(angle_df, bond_df, hbond_df, od_df,
-                                    spec_df, torsion_df)
-    angle_df, bond_df, hbond_df, od_df, spec_df, torsion_df = attr_dicts  # pylint: disable=unbalanced-tuple-unpacking
+        # If reaxff2_bo(5,n) < 0 needs to be set to 0 for GULP since this is a dummy value
+        def gulp_conv2(val):
+            return 0.0 if val < 0.0 else val
 
-    outstr = ""
+        bond_df['reaxff2_bo5'] = [gulp_conv2(i)
+                                  for i in bond_df["reaxff2_bo5"]]
 
-    write_data = _get_write_data_func(id_sym_dict, species_filter)
+        # TODO, this wasn't part of the original script, and should be better understood
+        # but without it, the energies greatly differ to LAMMPS (approx equal otherwise)
+        def gulp_conv3(val):
+            return 0.0 if val > 0.0 else val
 
-    outstr = _write_header(descript, outstr, reaxff_par, species_filter,
-                           tol_par)
+        spec_df['reaxff1_radii3'] = [
+            gulp_conv3(i) for i in spec_df['reaxff1_radii3']
+        ]
 
-    outstr += "#  Species independent parameters \n"
-    outstr += "#\n"
-    outstr += ("reaxff0_bond     {:12.6f} {:12.6f}\n".format(
-        reaxff_par['Overcoordination 1'], reaxff_par['Overcoordination 2']))
-    outstr += (
-        "reaxff0_over     {:12.6f} {:12.6f} {:12.6f} {:12.6f} {:12.6f}\n".
-        format(reaxff_par['Valency overcoordination 2'],
-               reaxff_par['Valency overcoordination 1'],
-               reaxff_par['Undercoordination 1'],
-               reaxff_par['Undercoordination 2'],
-               reaxff_par['Undercoordination 3']))
-    outstr += ("reaxff0_valence  {:12.6f} {:12.6f} {:12.6f} {:12.6f}\n".format(
-        reaxff_par['Valency undercoordination'],
-        reaxff_par['Valency/lone pair'], reaxff_par['Valency angle 1'],
-        reaxff_par['Valency angle 2']))
-    outstr += ("reaxff0_penalty  {:12.6f} {:12.6f} {:12.6f}\n".format(
-        reaxff_par['Double bond/angle'],
-        reaxff_par['Double bond/angle: overcoord 1'],
-        reaxff_par['Double bond/angle: overcoord 2']))
-    outstr += ("reaxff0_torsion  {:12.6f} {:12.6f} {:12.6f} {:12.6f}\n".format(
-        reaxff_par['Torsion/BO'], reaxff_par['Torsion overcoordination 1'],
-        reaxff_par['Torsion overcoordination 2'], reaxff_par['Conjugation']))
-    outstr += "reaxff0_vdw      {:12.6f}\n".format(
-        reaxff_par['vdWaals shielding'])
-    outstr += "reaxff0_lonepair {:12.6f}\n".format(
-        reaxff_par['Valency angle/lone pair'])
+        attr_dicts = _create_attr_dicts(angle_df, bond_df, hbond_df, od_df,
+                                        spec_df, torsion_df)
+        angle_df, bond_df, hbond_df, od_df, spec_df, torsion_df = attr_dicts  # pylint: disable=unbalanced-tuple-unpacking
 
-    outstr += "#\n"
-    outstr += "#  Species parameters \n"
-    outstr += "#\n"
-    outstr += write_data(
-        'reaxff1_radii', spec_df,
-        ['reaxff1_radii1', 'reaxff1_radii2', 'reaxff1_radii3'])
+        outstr = ""
 
-    outstr += write_data(
-        'reaxff1_valence', spec_df,
-        ['reaxff1_valence1', 'reaxff1_valence2', 'reaxff1_valence3',
-         'reaxff1_valence4'])
-    outstr += write_data(
-        'reaxff1_over', spec_df,
-        ['reaxff1_over1', 'reaxff1_over2', 'reaxff1_over3', 'reaxff1_over4'])
-    outstr += write_data('reaxff1_under kcal', spec_df, ['reaxff1_under'])
-    outstr += write_data('reaxff1_lonepair kcal', spec_df,
-                         ['reaxff1_lonepair1', 'reaxff1_lonepair2'])
-    outstr += write_data('reaxff1_angle', spec_df,
-                         ['reaxff1_angle1', 'reaxff1_angle2'])
-    outstr += write_data('reaxff1_morse kcal', spec_df,
-                         ['reaxff1_morse1', 'reaxff1_morse2',
-                          'reaxff1_morse3', 'reaxff1_morse4'])
+        write_data = _get_write_data_func(id_sym_dict, species_filter)
 
-    outstr += "#\n"
-    outstr += "# Element parameters \n"
-    outstr += "#\n"
-    outstr += write_data('reaxff_chi', spec_df, ['reaxff_chi'])
-    outstr += write_data('reaxff_mu', spec_df, ['reaxff_mu'])
-    outstr += write_data('reaxff_gamma', spec_df, ['reaxff_gamma'])
+        outstr = _write_header(descript, outstr, reaxff_par, species_filter,
+                               tol_par)
 
-    outstr += "#\n"
-    outstr += "# Bond parameters \n"
-    outstr += "#\n"
-    outstr += write_data(
-        'reaxff2_bo over bo13', bond_df,
-        ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-         'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        conditions=lambda s: s.reaxff2_bo7 > 0.001 and s.reaxff2_bo8 > 0.001)
-    outstr += write_data(
-        'reaxff2_bo bo13', bond_df,
-        ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-         'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        conditions=lambda s: s.reaxff2_bo7 > 0.001 and s.reaxff2_bo8 <= 0.001)
-    outstr += write_data(
-        'reaxff2_bo over', bond_df,
-        ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-         'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        conditions=lambda s: s.reaxff2_bo7 <= 0.001 and s.reaxff2_bo8 > 0.001)
-    outstr += write_data(
-        'reaxff2_bo', bond_df,
-        ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-         'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        conditions=lambda s: s.reaxff2_bo7 <= 0.001 and s.reaxff2_bo8 <= 0.001)
-    outstr += write_data(
-        'reaxff2_bond kcal', bond_df,
-        ['reaxff2_bond1', 'reaxff2_bond2', 'reaxff2_bond3',
-         'reaxff2_bond4', 'reaxff2_bond5'])
-    outstr += write_data('reaxff2_over', bond_df, ['reaxff2_over'])
-    outstr += write_data(
-        'reaxff2_pen kcal',
-        bond_df, ['reaxff2_bo9'],
-        conditions=lambda s: s.reaxff2_bo9 > 0.0,
-        extra_data=[reaxff_par['Not used 1'], 1.0])
-    outstr += write_data(
-        'reaxff2_morse kcal', od_df,
-        ['reaxff2_morse1', 'reaxff2_morse2', 'reaxff2_morse3',
-         'reaxff2_morse4', 'reaxff2_morse5', 'reaxff2_morse6'])
+        outstr += "#  Species independent parameters \n"
+        outstr += "#\n"
+        outstr += ("reaxff0_bond     {:12.6f} {:12.6f}\n".format(
+            reaxff_par['Overcoordination 1'], reaxff_par['Overcoordination 2']))
+        outstr += (
+            "reaxff0_over     {:12.6f} {:12.6f} {:12.6f} {:12.6f} {:12.6f}\n".
+            format(reaxff_par['Valency overcoordination 2'],
+                   reaxff_par['Valency overcoordination 1'],
+                   reaxff_par['Undercoordination 1'],
+                   reaxff_par['Undercoordination 2'],
+                   reaxff_par['Undercoordination 3']))
+        outstr += ("reaxff0_valence  {:12.6f} {:12.6f} {:12.6f} {:12.6f}\n".format(
+            reaxff_par['Valency undercoordination'],
+            reaxff_par['Valency/lone pair'], reaxff_par['Valency angle 1'],
+            reaxff_par['Valency angle 2']))
+        outstr += ("reaxff0_penalty  {:12.6f} {:12.6f} {:12.6f}\n".format(
+            reaxff_par['Double bond/angle'],
+            reaxff_par['Double bond/angle: overcoord 1'],
+            reaxff_par['Double bond/angle: overcoord 2']))
+        outstr += ("reaxff0_torsion  {:12.6f} {:12.6f} {:12.6f} {:12.6f}\n".format(
+            reaxff_par['Torsion/BO'], reaxff_par['Torsion overcoordination 1'],
+            reaxff_par['Torsion overcoordination 2'], reaxff_par['Conjugation']))
+        outstr += "reaxff0_vdw      {:12.6f}\n".format(
+            reaxff_par['vdWaals shielding'])
+        outstr += "reaxff0_lonepair {:12.6f}\n".format(
+            reaxff_par['Valency angle/lone pair'])
 
-    outstr += "#\n"
-    outstr += "# Angle parameters \n"
-    outstr += "#\n"
-    outstr += write_data(
-        'reaxff3_angle kcal', angle_df,
-        ['reaxff3_angle1', 'reaxff3_angle2', 'reaxff3_angle3',
-         'reaxff3_angle4', 'reaxff3_angle5'],
-        conditions=lambda s: s.reaxff3_angle2 > 0.0)
-    outstr += write_data('reaxff3_penalty kcal', angle_df, ['reaxff3_penalty'])
-    outstr += write_data(
-        'reaxff3_conjugation kcal', angle_df,
-        ['reaxff3_conj'],
-        conditions=lambda s: abs(s.reaxff3_conj) > 1.0E-4,
-        extra_data=[
-            reaxff_par['Valency angle conjugation 1'],
-            reaxff_par['Valency angle conjugation 3'],
-            reaxff_par['Valency angle conjugation 2']
-        ])
+        outstr += "#\n"
+        outstr += "#  Species parameters \n"
+        outstr += "#\n"
+        outstr += write_data(
+            'reaxff1_radii', spec_df,
+            ['reaxff1_radii1', 'reaxff1_radii2', 'reaxff1_radii3'])
 
-    outstr += "#\n"
-    outstr += "# Hydrogen bond parameters \n"
-    outstr += "#\n"
-    outstr += write_data(
-        'reaxff3_hbond kcal', hbond_df,
-        ['reaxff3_hbond1', 'reaxff3_hbond2',
-         'reaxff3_hbond3', 'reaxff3_hbond4'])
+        outstr += write_data(
+            'reaxff1_valence', spec_df,
+            ['reaxff1_valence1', 'reaxff1_valence2', 'reaxff1_valence3',
+             'reaxff1_valence4'])
+        outstr += write_data(
+            'reaxff1_over', spec_df,
+            ['reaxff1_over1', 'reaxff1_over2', 'reaxff1_over3', 'reaxff1_over4'])
+        outstr += write_data('reaxff1_under kcal', spec_df, ['reaxff1_under'])
+        outstr += write_data('reaxff1_lonepair kcal', spec_df,
+                             ['reaxff1_lonepair1', 'reaxff1_lonepair2'])
+        outstr += write_data('reaxff1_angle', spec_df,
+                             ['reaxff1_angle1', 'reaxff1_angle2'])
+        outstr += write_data('reaxff1_morse kcal', spec_df,
+                             ['reaxff1_morse1', 'reaxff1_morse2',
+                              'reaxff1_morse3', 'reaxff1_morse4'])
 
-    outstr += "#\n"
-    outstr += "# Torsion parameters \n"
-    outstr += "#\n"
-    outstr += write_data(
-        'reaxff4_torsion kcal', torsion_df,
-        ['reaxff4_torsion1', 'reaxff4_torsion2', 'reaxff4_torsion3',
-         'reaxff4_torsion4', 'reaxff4_torsion5'])
+        outstr += "#\n"
+        outstr += "# Element parameters \n"
+        outstr += "#\n"
+        outstr += write_data('reaxff_chi', spec_df, ['reaxff_chi'])
+        outstr += write_data('reaxff_mu', spec_df, ['reaxff_mu'])
+        outstr += write_data('reaxff_gamma', spec_df, ['reaxff_gamma'])
 
-    return outstr
+        outstr += "#\n"
+        outstr += "# Bond parameters \n"
+        outstr += "#\n"
+        outstr += write_data(
+            'reaxff2_bo over bo13', bond_df,
+            ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
+             'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
+            conditions=lambda s: s.reaxff2_bo7 > 0.001 and s.reaxff2_bo8 > 0.001)
+        outstr += write_data(
+            'reaxff2_bo bo13', bond_df,
+            ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
+             'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
+            conditions=lambda s: s.reaxff2_bo7 > 0.001 and s.reaxff2_bo8 <= 0.001)
+        outstr += write_data(
+            'reaxff2_bo over', bond_df,
+            ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
+             'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
+            conditions=lambda s: s.reaxff2_bo7 <= 0.001 and s.reaxff2_bo8 > 0.001)
+        outstr += write_data(
+            'reaxff2_bo', bond_df,
+            ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
+             'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
+            conditions=lambda s: s.reaxff2_bo7 <= 0.001 and s.reaxff2_bo8 <= 0.001)
+        outstr += write_data(
+            'reaxff2_bond kcal', bond_df,
+            ['reaxff2_bond1', 'reaxff2_bond2', 'reaxff2_bond3',
+             'reaxff2_bond4', 'reaxff2_bond5'])
+        outstr += write_data('reaxff2_over', bond_df, ['reaxff2_over'])
+        outstr += write_data(
+            'reaxff2_pen kcal',
+            bond_df, ['reaxff2_bo9'],
+            conditions=lambda s: s.reaxff2_bo9 > 0.0,
+            extra_data=[reaxff_par['Not used 1'], 1.0])
+        outstr += write_data(
+            'reaxff2_morse kcal', od_df,
+            ['reaxff2_morse1', 'reaxff2_morse2', 'reaxff2_morse3',
+             'reaxff2_morse4', 'reaxff2_morse5', 'reaxff2_morse6'])
+
+        outstr += "#\n"
+        outstr += "# Angle parameters \n"
+        outstr += "#\n"
+        outstr += write_data(
+            'reaxff3_angle kcal', angle_df,
+            ['reaxff3_angle1', 'reaxff3_angle2', 'reaxff3_angle3',
+             'reaxff3_angle4', 'reaxff3_angle5'],
+            conditions=lambda s: s.reaxff3_angle2 > 0.0)
+        outstr += write_data('reaxff3_penalty kcal',
+                             angle_df, ['reaxff3_penalty'])
+        outstr += write_data(
+            'reaxff3_conjugation kcal', angle_df,
+            ['reaxff3_conj'],
+            conditions=lambda s: abs(s.reaxff3_conj) > 1.0E-4,
+            extra_data=[
+                reaxff_par['Valency angle conjugation 1'],
+                reaxff_par['Valency angle conjugation 3'],
+                reaxff_par['Valency angle conjugation 2']
+            ])
+
+        outstr += "#\n"
+        outstr += "# Hydrogen bond parameters \n"
+        outstr += "#\n"
+        outstr += write_data(
+            'reaxff3_hbond kcal', hbond_df,
+            ['reaxff3_hbond1', 'reaxff3_hbond2',
+             'reaxff3_hbond3', 'reaxff3_hbond4'])
+
+        outstr += "#\n"
+        outstr += "# Torsion parameters \n"
+        outstr += "#\n"
+        outstr += write_data(
+            'reaxff4_torsion kcal', torsion_df,
+            ['reaxff4_torsion1', 'reaxff4_torsion2', 'reaxff4_torsion3',
+             'reaxff4_torsion4', 'reaxff4_torsion5'])
+
+        return outstr
 
 
 def _write_header(descript, outstr, reaxff_par, species_filter, tol_par):

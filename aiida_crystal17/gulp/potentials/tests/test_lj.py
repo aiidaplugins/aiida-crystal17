@@ -1,6 +1,6 @@
 from textwrap import dedent
 import pytest
-from aiida_crystal17.gulp.potentials.lj import write_gulp
+from aiida_crystal17.gulp.potentials.lj import PotentialWriterLJ
 
 
 def test_basic():
@@ -15,7 +15,7 @@ def test_basic():
             }
         }
     }
-    output = write_gulp(data)
+    output = PotentialWriterLJ().create_string(data)
     expected = dedent("""\
         lennard 12 6
         H He 1.0 2.0 12.0""")
@@ -24,9 +24,9 @@ def test_basic():
 
 def test_validation():
     with pytest.raises(Exception):
-        write_gulp({})
+        PotentialWriterLJ().create_string({})
     with pytest.raises(Exception):
-        write_gulp({"atoms": {"abc": {}}})
+        PotentialWriterLJ().create_string({"atoms": {"abc": {}}})
 
 
 def test_additional_args():
@@ -44,7 +44,7 @@ def test_additional_args():
             }
         }
     }
-    output = write_gulp(data)
+    output = PotentialWriterLJ().create_string(data)
     expected = dedent("""\
         lennard 10 5
         Fe B 1.0 2.0 3.0 12.0""")
@@ -68,7 +68,7 @@ def test_multi():
             }
         }
     }
-    output = write_gulp(data)
+    output = PotentialWriterLJ().create_string(data)
     expected = dedent("""\
         lennard 12 6
         H B 3.0 4.0 12.0
@@ -93,7 +93,7 @@ def test_filter():
             }
         }
     }
-    output = write_gulp(data, ["H", "B"])
+    output = PotentialWriterLJ().create_string(data, ["H", "B"])
     expected = dedent("""\
         lennard 12 6
         H B 3.0 4.0 12.0""")

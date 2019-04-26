@@ -14,6 +14,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    user_guide/calc_basic
    user_guide/calc_main
    user_guide/calc_main_immigrant
+   user_guide/calc_gulp
    api_index
 
 If you use this plugin for your research, please cite the Github repository

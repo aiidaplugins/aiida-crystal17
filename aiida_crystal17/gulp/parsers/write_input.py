@@ -302,8 +302,9 @@ class InputCreationBase(object):
         list[str]
 
         """
-        potential_func = load_entry_point("gulp.potentials", pair_style)
-        string = potential_func(parameters, species_filter=species_filter)
+        potential_cls = load_entry_point("gulp.potentials", pair_style)
+        string = potential_cls().create_string(
+            parameters, species_filter=species_filter)
         return string.splitlines()
 
 

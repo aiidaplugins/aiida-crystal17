@@ -41,11 +41,12 @@
         ],
         "aiida.cmdline.data": [
             "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
-            "crystal17.basis = aiida_crystal17.cmndline.basis_set:basisset"
+            "crystal17.basis = aiida_crystal17.cmndline.basis_set:basisset",
+            "gulp.potentials = aiida_crystal17.gulp.cmndline.potentials:potentials"
         ],
         "gulp.potentials": [
-            "reaxff = aiida_crystal17.gulp.potentials.reaxff:write_gulp",
-            "lj =  aiida_crystal17.gulp.potentials.lj:write_gulp"
+            "reaxff = aiida_crystal17.gulp.potentials.reaxff:PotentialWriterReaxff",
+            "lj =  aiida_crystal17.gulp.potentials.lj:PotentialWriterLJ"
         ]
     },
     "include_package_data": true,
