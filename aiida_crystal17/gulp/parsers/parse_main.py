@@ -94,7 +94,8 @@ class GulpOptParser(Parser):
         if cif_file not in output_folder.list_object_names():
             return self.exit_codes.ERROR_CIF_FILE_MISSING
 
-        with output_folder.open(cif_file) as handle:
+        # NOTE files are read as binary, by default, since aiida-core v1.0.0b3
+        with output_folder.open(cif_file, mode="rb") as handle:
             cif = DataFactory('cif')(file=handle)
 
         self.out('structure', cif.get_structure(converter="ase"))

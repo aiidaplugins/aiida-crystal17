@@ -13,7 +13,7 @@
         "Topic :: Scientific/Engineering :: Physics",
         "Framework :: AiiDA"
     ],
-    "version": "0.5.0b2",
+    "version": "0.5.0b3",
     "entry_points": {
         "console_scripts": [
             "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main",
@@ -52,7 +52,7 @@
     "include_package_data": true,
     "reentry_register": true,
     "install_requires": [
-        "aiida-core==1.0.0b2",
+        "aiida-core==1.0.0b3",
         "six",
         "ruamel.yaml",
         "ejplugins>=0.9.7",
