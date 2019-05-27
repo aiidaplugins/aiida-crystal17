@@ -213,20 +213,46 @@ class AiidaTestApp(object):
         return node
 
     @contextmanager
-    def with_folder(self):
+    def sandbox_folder(self):
         """AiiDA folder object context.
 
         Yields
         ------
-        aiida.common.folders.Folder
+        aiida.common.folders.SandboxFolder
 
         """
-        from aiida.common.folders import Folder
-        temp_dir = tempfile.mkdtemp()
-        try:
-            yield Folder(temp_dir)
-        finally:
-            shutil.rmtree(temp_dir)
+        from aiida.common.folders import SandboxFolder
+        with SandboxFolder() as folder:
+            yield folder
+
+    @staticmethod
+    def generate_calcinfo(entry_point_name, folder, inputs=None):
+        """generate a `CalcInfo` instance for testing calculation jobs.
+
+        A new `CalcJob` process instance is instantiated,
+        and `prepare_for_submission` is called to populate the supplied folder,
+        with raw inputs.
+
+        Parameters
+        ----------
+        entry_point_name: str
+        folder: aiida.common.folders.Folder
+        inputs: dict or None
+
+        """
+        from aiida.engine.utils import instantiate_process
+        from aiida.manage.manager import get_manager
+        from aiida.plugins import CalculationFactory
+
+        manager = get_manager()
+        runner = manager.get_runner()
+
+        process_class = CalculationFactory(entry_point_name)
+        process = instantiate_process(runner, process_class, **inputs)
+
+        calc_info = process.prepare_for_submission(folder)
+
+        return calc_info
 
     @staticmethod
     def check_calculation(

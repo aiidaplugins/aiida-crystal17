@@ -53,15 +53,13 @@ def test_create_builder(db_test_app):
     builder.parameters
 
 
-@pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
 @pytest.mark.parametrize(
     "input_symmetry",
     (False, True)
 )
-def test_dry_run_mgo(db_test_app, input_symmetry):
+def test_calcjob_submit_mgo(db_test_app, input_symmetry):
     # type: (AiidaTestApp, bool) -> None
     """Test submitting a calculation"""
-    from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
     ParamData = DataFactory('crystal17.parameters')
     StructureData = DataFactory('structure')
@@ -120,13 +118,27 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
 
     process_options = builder.process_class(inputs=builder).metadata.options
 
-    calcnode = run_get_node(builder).node  # noqa: F841
+    with db_test_app.sandbox_folder() as folder:
+        calc_info = db_test_app.generate_calcinfo(
+            'crystal17.main', folder, builder)
 
-    # TODO awaiting https://github.com/aiidateam/aiida_core/pull/2768
-    with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
-        input_content = f.read()
-    with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
-        gui_content = f.read()  # noqa: F841
+        cmdline_params = ['main']
+        retrieve_list = ['main.out', 'main.gui']
+
+        # Check the attributes of the returned `CalcInfo`
+        assert calc_info.codes_info[0].cmdline_params == cmdline_params
+        assert sorted(calc_info.local_copy_list) == sorted([])
+        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
+
+        assert sorted(folder.get_content_list()) == sorted([
+            process_options.input_file_name, process_options.external_file_name
+        ])
+
+        with folder.open(process_options.input_file_name) as f:
+            input_content = f.read()
+        with folder.open(process_options.external_file_name) as f:
+            gui_content = f.read()  # noqa: F841
 
     expected_input = dedent("""\
     MgO Bulk
@@ -152,8 +164,7 @@ def test_dry_run_mgo(db_test_app, input_symmetry):
     # assert gui_content == expected_gui
 
 
-@pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
-def test_dry_run_nio_afm(db_test_app):
+def test_calcjob_submit_nio_afm(db_test_app):
     # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
     from aiida.engine import run_get_node
@@ -221,13 +232,27 @@ def test_dry_run_nio_afm(db_test_app):
 
     process_options = builder.process_class(inputs=builder).metadata.options
 
-    calcnode = run_get_node(builder).node  # noqa: F841
+    with db_test_app.sandbox_folder() as folder:
+        calc_info = db_test_app.generate_calcinfo(
+            'crystal17.main', folder, builder)
 
-    # TODO awaiting https://github.com/aiidateam/aiida_core/pull/2768
-    with calcnode.open(".submit_folder/" + process_options.input_file_name) as f:
-        input_content = f.read()
-    with calcnode.open(".submit_folder/" + process_options.external_file_name) as f:
-        gui_content = f.read()  # noqa: F841
+        cmdline_params = ['main']
+        retrieve_list = ['main.out', 'main.gui']
+
+        # Check the attributes of the returned `CalcInfo`
+        assert calc_info.codes_info[0].cmdline_params == cmdline_params
+        assert sorted(calc_info.local_copy_list) == sorted([])
+        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
+
+        assert sorted(folder.get_content_list()) == sorted([
+            process_options.input_file_name, process_options.external_file_name
+        ])
+
+        with folder.open(process_options.input_file_name) as f:
+            input_content = f.read()
+        with folder.open(process_options.external_file_name) as f:
+            gui_content = f.read()  # noqa: F841
 
     expected_input = dedent("""\
         NiO Bulk with AFM spin
