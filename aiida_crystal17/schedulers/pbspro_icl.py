@@ -76,7 +76,7 @@ class PbsproICLScheduler(PbsBaseClass):
             select_string += ":ncpus={}".format(num_cores_per_machine)
         else:
             raise ValueError(
-                "num_cores_per_machine must be greater than 0! It is instead '{}'".format(num_cores_per_machine))        
+                "num_cores_per_machine must be greater than 0! It is instead '{}'".format(num_cores_per_machine))
 
         if max_wallclock_seconds is not None:
             try:
