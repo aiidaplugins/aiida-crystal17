@@ -12,7 +12,7 @@ def test_submit_script():
     job_tmpl.uuid = str(uuid.uuid4())
     job_tmpl.shebang = '#!/bin/bash -l'
     job_tmpl.job_resource = scheduler.create_job_resource(
-        num_machines=1, num_cores_per_machine=32)
+        num_machines=1, num_mpiprocs_per_machine=32)
     job_tmpl.max_memory_kb = 2000
     job_tmpl.max_wallclock_seconds = 24.5 * 3600
     job_tmpl.queue_name = "myqueue"

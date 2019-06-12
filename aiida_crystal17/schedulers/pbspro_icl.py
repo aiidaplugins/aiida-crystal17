@@ -17,7 +17,6 @@ from __future__ import division
 from __future__ import absolute_import
 import logging
 from aiida.schedulers.plugins.pbsbaseclasses import PbsBaseClass
-from aiida.schedulers.datastructures import JobResource
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,66 +37,6 @@ _LOGGER = logging.getLogger(__name__)
 # X  Subjob has completed execution or has been deleted.
 
 
-class ICLJobResource(JobResource):
-    """
-    Base class for PBS job resources on the ICL (cx) HPCs
-    """
-    _default_fields = (
-        'num_machines',
-        'num_cores_per_machine'
-    )
-
-    @classmethod
-    def get_valid_keys(cls):
-        """
-        Return a list of valid keys to be passed to the __init__
-        """
-        return super(ICLJobResource, cls).get_valid_keys() + []
-
-    @classmethod
-    def accepts_default_mpiprocs_per_machine(cls):
-        """
-        Return True if this JobResource accepts a 'default_mpiprocs_per_machine'
-        key, False otherwise.
-        """
-        return False
-
-    def __init__(self, **kwargs):
-        """
-        Initialize the job resources from the passed arguments (the valid keys can be
-        obtained with the function self.get_valid_keys()).
-
-        Should raise only ValueError or TypeError on invalid parameters.
-        """
-        super(ICLJobResource, self).__init__()
-
-        if 'num_machines' not in kwargs:
-            raise TypeError('num_machines must be specified')
-        if 'num_cores_per_machine' not in kwargs:
-            raise TypeError('num_cores_per_machine must be specified')
-
-        try:
-            self.num_machines = int(kwargs.pop('num_machines'))
-        except ValueError:
-            raise ValueError("num_machines must an integer")
-
-        try:
-            self.num_cores_per_machine = int(kwargs.pop('num_cores_per_machine'))
-        except ValueError:
-            raise ValueError("num_cores_per_machine must an integer")
-
-        if kwargs:
-            raise TypeError("The following parameters were not recognized for "
-                            "the JobResource: {}".format(kwargs.keys()))
-
-        if self.num_machines <= 0:
-            raise ValueError("num_machine must be >= 1")
-        if self.num_cores_per_machine <= 0:
-            raise ValueError("num_cores_per_machine must be >= 1")
-
-        self.num_mpiprocs_per_machine = None
-
-
 class PbsproICLScheduler(PbsBaseClass):
     """
     Subclass to support the PBSPro scheduler
@@ -111,7 +50,7 @@ class PbsproICLScheduler(PbsBaseClass):
     """
 
     # I don't need to change this from the base class
-    _job_resource_class = ICLJobResource
+    # _job_resource_class =     # _job_resource_class = PbsJobResource
 
     # For the time being I use a common dictionary, should be sufficient
     # for the time being, but I can redefine it if needed.
@@ -131,11 +70,11 @@ class PbsproICLScheduler(PbsBaseClass):
 
         select_string = "select={}".format(num_machines)
 
-        if num_cores_per_machine is not None and num_cores_per_machine > 0:
-            select_string += ":ncpus={}".format(num_cores_per_machine)
+        if num_mpiprocs_per_machine is not None and num_mpiprocs_per_machine > 0:
+            select_string += ":ncpus={}".format(num_mpiprocs_per_machine)
         else:
             raise ValueError(
-                "num_cores_per_machine must be greater than 0! It is instead '{}'".format(num_cores_per_machine))
+                "num_mpiprocs_per_machine must be greater than 0! It is instead '{}'".format(num_mpiprocs_per_machine))
 
         if max_wallclock_seconds is not None:
             try:
