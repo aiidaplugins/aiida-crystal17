@@ -5,5 +5,5 @@ dependencies:
   - pandoc
   - python-graphviz
   - ipypublish >=0.10.1
-  # - pip <19
   - pyyaml ==3.13  # required for aiida-core, and can't be uninstalled by pip
+  # - pip <19

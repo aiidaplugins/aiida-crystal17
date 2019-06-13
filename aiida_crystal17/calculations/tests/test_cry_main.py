@@ -11,7 +11,7 @@ import pytest
 from aiida.engine import run_get_node
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.tests.aiida_test_app import AiidaTestApp  # noqa: F401
+from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
 def test_create_builder(db_test_app):
@@ -217,18 +217,19 @@ def test_calcjob_submit_nio_afm(db_test_app):
 
     # set up calculation
     process_class = code.get_builder().process_class
-    options = {
-        "resources": {
-            "num_machines": 1,
-            "num_mpiprocs_per_machine": 1
-        },
-        "withmpi": False,
-        "max_wallclock_seconds": 60,
-    }
+    metadata = {
+        "dry_run": True,
+        "options": {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 60,
+        }}
     builder = process_class.create_builder(
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, options=options, unflatten=True)
-    builder.metadata.dry_run = True
+        code=code, metadata=metadata, unflatten=True)
 
     process_options = builder.process_class(inputs=builder).metadata.options
 
@@ -346,17 +347,18 @@ def test_run_nio_afm_scf(db_test_app):
 
     # set up calculation
     process_class = code.get_builder().process_class
-    options = {
-        "resources": {
-            "num_machines": 1,
-            "num_mpiprocs_per_machine": 1
-        },
-        "withmpi": False,
-        "max_wallclock_seconds": 30
-    }
+    metadata = {
+        "options": {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 30,
+        }}
     builder = process_class.create_builder(
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, options=options, unflatten=True)
+        code=code, metadata=metadata, unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node
@@ -450,17 +452,18 @@ def test_run_nio_afm_fullopt(db_test_app):
 
     # set up calculation
     process_class = code.get_builder().process_class
-    options = {
-        "resources": {
-            "num_machines": 1,
-            "num_mpiprocs_per_machine": 1
-        },
-        "withmpi": False,
-        "max_wallclock_seconds": 30
-    }
+    metadata = {
+        "options": {
+            "resources": {
+                "num_machines": 1,
+                "num_mpiprocs_per_machine": 1
+            },
+            "withmpi": False,
+            "max_wallclock_seconds": 30,
+        }}
     builder = process_class.create_builder(
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, options=options, unflatten=True)
+        code=code, metadata=metadata, unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node

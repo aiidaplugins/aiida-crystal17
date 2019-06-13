@@ -4,7 +4,7 @@ from jsonextended import edict
 from aiida_crystal17 import __version__
 from aiida_crystal17.gulp.parsers.parse_output import parse_output
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.tests.aiida_test_app import AiidaTestApp  # noqa: F401
+from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
 def test_parse_failed(db_test_app):

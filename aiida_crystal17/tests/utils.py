@@ -5,6 +5,117 @@ import distutils.spawn
 
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
+import six
+
+
+def get_path_to_executable(executable):
+    """ Get path to local executable.
+
+    :param executable: Name of executable in the $PATH variable
+    :type executable: str
+
+    :return: path to executable
+    :rtype: str
+
+    """
+    path = None
+
+    # issue with distutils finding scripts within the python path
+    # (i.e. those created by pip install)
+    script_path = os.path.join(os.path.dirname(sys.executable), executable)
+    if os.path.exists(script_path):
+        path = script_path
+    if path is None:
+        path = distutils.spawn.find_executable(executable)
+    if path is None:
+        raise ValueError(
+            "{} executable not found in PATH.".format(executable))
+
+    return os.path.abspath(path)
+
+
+def get_or_create_local_computer(work_directory, name='localhost'):
+    """Retrieve or setup a local computer
+
+    Parameters
+    ----------
+    work_directory : str
+        path to a local directory for running computations in
+    name : str
+        name of the computer
+
+    Returns
+    -------
+    aiida.orm.computers.Computer
+
+    """
+    from aiida.orm import Computer
+    from aiida.common import NotExistent
+
+    try:
+        computer = Computer.objects.get(name=name)
+    except NotExistent:
+        computer = Computer(
+            name=name,
+            hostname='localhost',
+            description=('localhost computer, '
+                         'set up by aiida_crystal17 tests'),
+            transport_type='local',
+            scheduler_type='direct',
+            workdir=os.path.abspath(work_directory))
+        computer.store()
+        computer.configure()
+
+    return computer
+
+
+def get_or_create_code(entry_point, computer, executable, exec_path=None):
+    """Setup code on localhost computer"""
+    from aiida.orm import Code, Computer
+    from aiida.common import NotExistent
+
+    if isinstance(computer, six.string_types):
+        computer = Computer.objects.get(name=computer)
+
+    try:
+        code = Code.objects.get(
+            label='{}-{}@{}'.format(entry_point, executable, computer.name))
+    except NotExistent:
+        if exec_path is None:
+            exec_path = get_path_to_executable(executable)
+        code = Code(
+            input_plugin_name=entry_point,
+            remote_computer_exec=[computer, exec_path],
+        )
+        code.label = '{}-{}@{}'.format(
+            entry_point, executable, computer.name)
+        code.store()
+
+    return code
+
+
+def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mpi=False,
+                         num_mpiprocs_per_machine=1):
+    """
+    Return an instance of the metadata dictionary with the minimally required parameters
+    for a CalcJob and set to default values unless overridden
+
+    :param max_num_machines: set the number of nodes, default=1
+    :param max_wallclock_seconds: set the maximum number of wallclock seconds, default=1800
+    :param with_mpi: whether to run the calculation with MPI enabled
+    :param num_mpiprocs_per_machine: set the number of cpus per node, default=1
+
+    :rtype: dict 
+    """
+    return {
+        'options': {
+            'resources': {
+                'num_machines': int(max_num_machines),
+                'num_mpiprocs_per_machine': int(num_mpiprocs_per_machine)
+            },
+            'max_wallclock_seconds': int(max_wallclock_seconds),
+            'withmpi': with_mpi,
+        }}
 
 
 class AiidaTestApp(object):
@@ -35,58 +146,12 @@ class AiidaTestApp(object):
         """return manager of a temporary AiiDA environment"""
         return self._environment
 
-    @staticmethod
-    def get_path_to_executable(executable):
-        """ Get path to local executable.
-
-        :param executable: Name of executable in the $PATH variable
-        :type executable: str
-
-        :return: path to executable
-        :rtype: str
-
-        """
-        path = None
-
-        # issue with distutils finding scripts within the python path
-        # (i.e. those created by pip install)
-        script_path = os.path.join(os.path.dirname(sys.executable), executable)
-        if os.path.exists(script_path):
-            path = script_path
-        if path is None:
-            path = distutils.spawn.find_executable(executable)
-        if path is None:
-            raise ValueError(
-                "{} executable not found in PATH.".format(executable))
-
-        return os.path.abspath(path)
-
     def get_or_create_computer(self, name='localhost'):
         """Setup localhost computer"""
-        from aiida.orm import Computer
-        from aiida.common import NotExistent
-
-        try:
-            computer = Computer.objects.get(name=name)
-        except NotExistent:
-
-            computer = Computer(
-                name=name,
-                hostname='localhost',
-                description=('localhost computer, '
-                             'set up by aiida_crystal17 tests'),
-                transport_type='local',
-                scheduler_type='direct',
-                workdir=self.work_directory)
-            computer.store()
-            computer.configure()
-
-        return computer
+        return get_or_create_local_computer(self.work_directory, name)
 
     def get_or_create_code(self, entry_point, computer_name='localhost'):
         """Setup code on localhost computer"""
-        from aiida.orm import Code
-        from aiida.common import NotExistent
 
         computer = self.get_or_create_computer(computer_name)
 
@@ -97,21 +162,11 @@ class AiidaTestApp(object):
                 "Entry point {} not recognized. Allowed values: {}".format(
                     entry_point, self._executables.keys()))
 
-        try:
-            code = Code.objects.get(
-                label='{}-{}@{}'.format(entry_point, executable,
-                                        computer_name))
-        except NotExistent:
-            path = self.get_path_to_executable(executable)
-            code = Code(
-                input_plugin_name=entry_point,
-                remote_computer_exec=[computer, path],
-            )
-            code.label = '{}-{}@{}'.format(
-                entry_point, executable, computer_name)
-            code.store()
+        return get_or_create_code(entry_point, computer, executable)
 
-        return code
+    @staticmethod
+    def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mpi=False):
+        return get_default_metadata(max_num_machines, max_wallclock_seconds, with_mpi)
 
     @staticmethod
     def get_parser_cls(entry_point_name):

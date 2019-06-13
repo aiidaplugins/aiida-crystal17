@@ -1,7 +1,7 @@
 import os  # noqa: F401
 from jsonextended import edict
 from aiida_crystal17 import __version__
-from aiida_crystal17.tests.aiida_test_app import AiidaTestApp  # noqa: F401
+from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 from aiida_crystal17.tests import TEST_DIR  # noqa: F401
 from aiida_crystal17.gulp.parsers.write_input import (  # noqa: F401
     InputCreationSingle, InputCreationOpt)

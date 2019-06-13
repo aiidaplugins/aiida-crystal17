@@ -73,7 +73,8 @@
             "wheel>=0.31",
             "coverage",
             "pytest-cov",
-            "pytest-timeout"
+            "pytest-timeout",
+            "pytest-regressions"
         ],
         "code_style": [
             "flake8<3.8.0,>=3.7.0"

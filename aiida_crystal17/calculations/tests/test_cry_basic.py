@@ -9,7 +9,7 @@ import pytest
 
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.tests.aiida_test_app import AiidaTestApp  # noqa: F401
+from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
 def test_calcjob_submission(db_test_app):

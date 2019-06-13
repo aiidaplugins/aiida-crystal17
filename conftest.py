@@ -8,7 +8,7 @@ import tempfile
 from aiida.manage.fixtures import fixture_manager
 import pytest
 
-from aiida_crystal17.tests.aiida_test_app import AiidaTestApp
+from aiida_crystal17.tests.utils import AiidaTestApp
 
 
 @pytest.fixture(scope='session')
