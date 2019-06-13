@@ -11,9 +11,9 @@ def test_create_single(db_test_app):
     db_test_app.get_or_create_computer()
 
     from aiida.plugins import DataFactory
-    BasisSetData = DataFactory("crystal17.basisset")
+    basisset_data_cls = DataFactory("crystal17.basisset")
 
-    basis = BasisSetData(
+    basis = basisset_data_cls(
         filepath=os.path.join(
             TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
 
@@ -42,7 +42,7 @@ def test_create_single(db_test_app):
     basis.store()
 
     # try retrieving a pre-existing (stored) basis
-    basis, created = BasisSetData.get_or_create(
+    basis, created = basisset_data_cls.get_or_create(
         filepath=os.path.join(TEST_DIR, "input_files", "sto3g",
                               'sto3g_Mg.basis'))
     assert not created
@@ -96,7 +96,6 @@ def test_bases_from_struct(db_test_app):
         "group of sto3g basis sets")
 
     # MgO
-    import ase
     from ase.spacegroup import crystal
     atoms = crystal(
         symbols=[12, 8],
@@ -109,8 +108,8 @@ def test_bases_from_struct(db_test_app):
     atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
     from aiida.plugins import DataFactory
-    StructureData = DataFactory("structure")
-    struct = StructureData(ase=atoms)
+    structure_data_cls = DataFactory("structure")
+    struct = structure_data_cls(ase=atoms)
 
     bases_dict = BasisSetData.get_basissets_by_kind(struct, "sto3g")
     # print(bases_dict)

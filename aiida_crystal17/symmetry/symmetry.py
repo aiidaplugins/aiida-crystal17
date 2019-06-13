@@ -536,9 +536,9 @@ def generate_full_symmops(operations, tolerance=0.3):
         (r00, r01, r02, r10, r11, r12, r20, r21, r22, t0, t1, t2)
 
     """
-    UNIT = np.eye(4)
+    unitary = np.eye(4)
     generators = [operation_to_affine(op) for op in operations
-                  if not np.allclose(operation_to_affine(op), UNIT)]
+                  if not np.allclose(operation_to_affine(op), unitary)]
     if not generators:
         # C1 symmetry breaks assumptions in the algorithm afterwards
         return operations
@@ -552,9 +552,9 @@ def generate_full_symmops(operations, tolerance=0.3):
                 if not np.any(np.all(np.all(d, axis=2), axis=1)):
                     full.append(op)
 
-        d = np.abs(full - UNIT) < tolerance
+        d = np.abs(full - unitary) < tolerance
         if not np.any(np.all(np.all(d, axis=2), axis=1)):
-            full.append(UNIT)
+            full.append(unitary)
 
         return [affine_to_operation(op2) for op2 in full]
 
@@ -571,7 +571,7 @@ def convert_structure(structure, out_type):
     """
     from aiida.plugins import DataFactory
     from aiida.orm.nodes.data.structure import Site, Kind
-    StructureData = DataFactory('structure')
+    structure_data_cls = DataFactory('structure')
 
     if isinstance(structure, dict):
         if "symbols" in structure and "atomic_numbers" not in structure:
@@ -587,7 +587,7 @@ def convert_structure(structure, out_type):
     if out_type == "dict":
         if isinstance(structure, dict):
             return structure
-        if isinstance(structure, StructureData):
+        if isinstance(structure, structure_data_cls):
             return structure_to_dict(structure)
         if isinstance(structure, Atoms):
             return {
@@ -601,7 +601,7 @@ def convert_structure(structure, out_type):
     elif out_type == "ase":
         if isinstance(structure, Atoms):
             return structure
-        if isinstance(structure, StructureData):
+        if isinstance(structure, structure_data_cls):
             return structure.get_ase()
         if isinstance(structure, dict):
             return Atoms(
@@ -612,13 +612,13 @@ def convert_structure(structure, out_type):
                 tags=structure.get("equivalent", None))
         raise TypeError("structure: {}".format(structure))
     elif out_type == "aiida":
-        if isinstance(structure, StructureData):
+        if isinstance(structure, structure_data_cls):
             return structure
         if isinstance(structure, Atoms):
-            return StructureData(ase=structure)
+            return structure_data_cls(ase=structure)
         if isinstance(structure, dict):
             if structure.get("kinds") is not None:
-                struct = StructureData(cell=structure['lattice'])
+                struct = structure_data_cls(cell=structure['lattice'])
                 struct.set_pbc(structure["pbc"])
                 for kind, ccoord in zip(structure["kinds"],
                                         structure['ccoords']):
@@ -636,7 +636,7 @@ def convert_structure(structure, out_type):
                     positions=structure["ccoords"],
                     pbc=structure["pbc"],
                     tags=structure.get("equivalent", None))
-                return StructureData(ase=atoms)
+                return structure_data_cls(ase=atoms)
     raise ValueError("out_type: {}".format(out_type))
 
 

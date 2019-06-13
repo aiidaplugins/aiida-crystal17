@@ -105,7 +105,7 @@ def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mp
     :param with_mpi: whether to run the calculation with MPI enabled
     :param num_mpiprocs_per_machine: set the number of cpus per node, default=1
 
-    :rtype: dict 
+    :rtype: dict
     """
     return {
         'options': {

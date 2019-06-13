@@ -16,11 +16,11 @@ def test_calcjob_submission(db_test_app):
     # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
-    SinglefileData = DataFactory('singlefile')
+    singlefile_data_cls = DataFactory('singlefile')
 
     # Prepare input parameters
     code = db_test_app.get_or_create_code('crystal17.basic')
-    infile = SinglefileData(
+    infile = singlefile_data_cls(
         file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_scf.crystal.d12'))
     infile.store()
@@ -59,7 +59,7 @@ def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
-    SinglefileData = DataFactory('singlefile')
+    singlefile_data_cls = DataFactory('singlefile')
 
     code = db_test_app.get_or_create_code('crystal17.basic')
 
@@ -77,11 +77,11 @@ def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
     }
 
     # Prepare input parameters
-    infile = SinglefileData(
+    infile = singlefile_data_cls(
         file=os.path.join(TEST_DIR, "input_files", inpath_main))
     builder.input_file = infile
     if inpath_gui is not None:
-        ingui = SinglefileData(
+        ingui = singlefile_data_cls(
             file=os.path.join(TEST_DIR, "input_files", inpath_gui))
         builder.input_external = ingui
 

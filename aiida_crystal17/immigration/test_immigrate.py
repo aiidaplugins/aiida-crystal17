@@ -1,8 +1,6 @@
 import os
 from jsonextended import edict
 
-from aiida.common.folders import Folder
-
 from aiida_crystal17.immigration.create_inputs import populate_builder
 from aiida_crystal17.immigration.create_calcjob import create_crymain
 from aiida_crystal17.tests import TEST_DIR
@@ -10,7 +8,7 @@ from aiida_crystal17.tests.utils import get_default_metadata
 
 
 def test_create_builder(db_test_app, data_regression):
-    
+
     inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
     outpath = os.path.join("output_files",
                            'nio_sto3g_afm.crystal.out')
@@ -56,7 +54,7 @@ def test_create_builder(db_test_app, data_regression):
         expected_settings['operations']) == {}
 
 
-def test_full_nio_afm(db_test_app, data_regression):   
+def test_full_nio_afm(db_test_app, data_regression):
 
     inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
     outpath = os.path.join("output_files",

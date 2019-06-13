@@ -207,13 +207,13 @@ def _extract_symmetry(final_data, init_settings, param_data,
             #     parser_result.success = False
         else:
             from aiida.plugins import DataFactory
-            SymmetryData = DataFactory('crystal17.symmetry')
+            symmetry_data_cls = DataFactory('crystal17.symmetry')
             data_dict = {
                 "operations": final_data["primitive_symmops"],
                 "basis": "fractional",
                 "hall_number": None
             }
-            parser_result.nodes.symmetry = SymmetryData(data=data_dict)
+            parser_result.nodes.symmetry = symmetry_data_cls(data=data_dict)
     else:
         param_data["parser_errors"].append(
             "primitive symmops were not found in the output file")

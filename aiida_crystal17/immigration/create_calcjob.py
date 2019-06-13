@@ -2,29 +2,23 @@
 """
 Immigrate a CRYSTAL17 computation that was not run using AiiDa.
 """
-import os
 import six
 
 from aiida.common.datastructures import CalcJobState
 from aiida.common.folders import Folder, SandboxFolder
 from aiida.common.links import LinkType
 from aiida.engine import ProcessState
-from aiida.engine.daemon.execmanager import parse_results
 from aiida.engine.utils import instantiate_process
 from aiida.manage.manager import get_manager
-from aiida.orm import FolderData, RemoteData, CalcJobNode
+from aiida.orm import FolderData, RemoteData
 from aiida.plugins import CalculationFactory
-
-from aiida_crystal17.parsers.main_out import parse_main_out
-from aiida_crystal17.immigration.create_inputs import populate_builder
-from aiida_crystal17.calculations.cry_main import CryMainCalculation
 
 
 def create_crymain(builder, folder, outfile, remote_path=None):
     """Immigrate a main Crystal calculation job that was not run using AiiDa.
 
     Note, it is intended that this function is used in conjunction with
-    aiida_quantumespresso.tools.pwinputparser.create_builder_from_file, to create the builder
+    aiida_crystal17.immigration.create_inputs.populate_builder, to create the builder
 
     :param builder: a populated builder instance for PwCalculation
     :param folder: the folder containing the input and output files

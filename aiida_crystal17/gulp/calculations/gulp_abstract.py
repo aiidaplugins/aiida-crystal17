@@ -55,7 +55,7 @@ class GulpAbstractCalculation(CalcJob):
             help=('additional input parameters '
                   'to create the .gin file content.'))
 
-       # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
+        # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
 
         # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
         spec.exit_code(
