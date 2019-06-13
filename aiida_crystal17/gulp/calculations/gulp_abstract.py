@@ -55,19 +55,26 @@ class GulpAbstractCalculation(CalcJob):
             help=('additional input parameters '
                   'to create the .gin file content.'))
 
+       # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
+
+        # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
         spec.exit_code(
-            130, 'ERROR_NO_RETRIEVED_FOLDER',
+            200, 'ERROR_NO_RETRIEVED_FOLDER',
             message='The retrieved folder data node could not be accessed.')
         spec.exit_code(
-            140, 'ERROR_OUTPUT_FILE_MISSING',
+            210, 'ERROR_OUTPUT_FILE_MISSING',
             message='the main output file was not found')
+
+        # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
         spec.exit_code(
-            200, 'ERROR_GULP_RUN',
-            message='The main gulp output file flagged an error')
-        spec.exit_code(
-            210, 'ERROR_OUTPUT_PARSING',
+            300, 'ERROR_OUTPUT_PARSING',
             message=('An error was flagged trying to parse the '
                      'main gulp output file'))
+
+        # Significant errors but calculation can be used to restart
+        spec.exit_code(
+            400, 'ERROR_GULP_RUN',
+            message='The main gulp output file flagged an error')
 
         spec.output(cls.link_output_results,
                     valid_type=DataFactory('dict'),
