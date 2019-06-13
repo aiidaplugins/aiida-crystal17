@@ -299,9 +299,8 @@ def test_run_nio_afm_scf(db_test_app):
     from aiida.plugins import DataFactory
     structure_data_cls = DataFactory('structure')
     kind_data_cls = DataFactory('crystal17.kinds')
-    BasisSetData = DataFactory('crystal17.basisset')
-    from aiida_crystal17.data.basis_set import BasisSetData
-    upload_basisset_family = BasisSetData.upload_basisset_family
+    basisset_data_cls = DataFactory('crystal17.basisset')
+    upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')

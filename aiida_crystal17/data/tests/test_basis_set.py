@@ -50,8 +50,9 @@ def test_create_single(db_test_app):
 
 def test_create_group(db_test_app):
     db_test_app.get_or_create_computer()
-    from aiida_crystal17.data.basis_set import BasisSetData
-    upload_basisset_family = BasisSetData.upload_basisset_family
+    from aiida.plugins import DataFactory
+    basisset_data_cls = DataFactory("crystal17.basisset")
+    upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"), "sto3g",
@@ -59,14 +60,11 @@ def test_create_group(db_test_app):
 
     assert (nfiles, nuploaded) == (3, 3)
 
-    from aiida.plugins import DataFactory
-    BasisSetData = DataFactory("crystal17.basisset")
-
-    group = BasisSetData.get_basis_group("sto3g")
+    group = basisset_data_cls.get_basis_group("sto3g")
 
     assert group.description == "group of sto3g basis sets"
 
-    groups = BasisSetData.get_basis_groups(filter_elements="O")
+    groups = basisset_data_cls.get_basis_groups(filter_elements="O")
     # print(groups)
     assert len(groups) == 1
 
@@ -88,14 +86,15 @@ def test_create_group(db_test_app):
 
 def test_bases_from_struct(db_test_app):
     db_test_app.get_or_create_computer()
-    from aiida_crystal17.data.basis_set import BasisSetData
-    upload_basisset_family = BasisSetData.upload_basisset_family
+    from aiida_crystal17.data.basis_set import basisset_data_cls
+    upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
         os.path.join(TEST_DIR, "input_files", "sto3g"), "sto3g",
         "group of sto3g basis sets")
 
     # MgO
+    import ase  # noqa: F401
     from ase.spacegroup import crystal
     atoms = crystal(
         symbols=[12, 8],
@@ -111,7 +110,7 @@ def test_bases_from_struct(db_test_app):
     structure_data_cls = DataFactory("structure")
     struct = structure_data_cls(ase=atoms)
 
-    bases_dict = BasisSetData.get_basissets_by_kind(struct, "sto3g")
+    bases_dict = basisset_data_cls.get_basissets_by_kind(struct, "sto3g")
     # print(bases_dict)
 
     assert set(bases_dict.keys()) == set(["Mg", "Mg1", "O"])
