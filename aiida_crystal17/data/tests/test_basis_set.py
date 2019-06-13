@@ -3,14 +3,15 @@ tests BasisSetData
 """
 import os
 
-from aiida_crystal17.tests import TEST_DIR
+from aiida.plugins import DataFactory
 import pytest
+
+from aiida_crystal17.tests import TEST_DIR
 
 
 def test_create_single(db_test_app):
     db_test_app.get_or_create_computer()
 
-    from aiida.plugins import DataFactory
     basisset_data_cls = DataFactory("crystal17.basisset")
 
     basis = basisset_data_cls(
@@ -50,7 +51,6 @@ def test_create_single(db_test_app):
 
 def test_create_group(db_test_app):
     db_test_app.get_or_create_computer()
-    from aiida.plugins import DataFactory
     basisset_data_cls = DataFactory("crystal17.basisset")
     upload_basisset_family = basisset_data_cls.upload_basisset_family
 
@@ -86,7 +86,7 @@ def test_create_group(db_test_app):
 
 def test_bases_from_struct(db_test_app):
     db_test_app.get_or_create_computer()
-    from aiida_crystal17.data.basis_set import basisset_data_cls
+    basisset_data_cls = DataFactory("crystal17.basisset")
     upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
@@ -106,7 +106,6 @@ def test_bases_from_struct(db_test_app):
     # atoms[1].tag = 1
     atoms.set_tags([1, 1, 0, 0, 0, 0, 0, 0])
 
-    from aiida.plugins import DataFactory
     structure_data_cls = DataFactory("structure")
     struct = structure_data_cls(ase=atoms)
 
