@@ -36,9 +36,6 @@
             "gulp.single = aiida_crystal17.gulp.parsers.parse_main:GulpSingleParser",
             "gulp.optimize = aiida_crystal17.gulp.parsers.parse_main:GulpOptParser"
         ],
-        "aiida.schedulers": [
-            "pbspro_icl = aiida_crystal17.schedulers.pbspro_icl:PbsproICLScheduler"
-        ],
         "aiida.workflows": [
             "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure"
         ],
