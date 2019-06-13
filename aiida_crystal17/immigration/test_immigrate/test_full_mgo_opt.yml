@@ -1,0 +1,24 @@
+append_text: ''
+custom_scheduler_commands: ''
+environment_variables: {}
+exit_status: 0
+external_file_name: main.gui
+import_sys_environment: true
+input_file_name: main.d12
+max_wallclock_seconds: 1800
+mpirun_extra_params: []
+output_main_file_name: main.out
+parser_name: crystal17.main
+prepend_text: ''
+process_label: CryMainCalculation
+process_state: finished
+resources:
+  num_machines: 1
+  num_mpiprocs_per_machine: 1
+retrieve_list:
+- main.d12
+- main.out
+scheduler_stderr: _scheduler-stderr.txt
+scheduler_stdout: _scheduler-stdout.txt
+sealed: true
+withmpi: false

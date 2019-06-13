@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "schema for creating GULP lennard-jones potential: E = A/r**m - B/r**n",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["atoms"],
+    "properties": {
+        "m": {
+            "description": "first exponent",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "default": 12
+        },
+        "n": {
+            "description": "second exponent",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "default": 6
+        },
+        "atoms": {
+            "description": "mapping or atomic symbols to parameters, e.g. 'H': {'H': {...}}",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "[A-Z][a-z]?": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                        "[A-Z][a-z]?": {
+                            "type": "object",
+                            "required": ["A", "B", "rmax"],
+                            "properties": {
+                                "A": {
+                                    "description": "fist coefficient (in ev*Angs**m)",
+                                    "type": "number"
+                                },
+                                "B": {
+                                    "description": "second coefficient (in ev*Angs**m)",
+                                    "type": "number"
+                                },
+                                "rmin": {
+                                    "description": "minimum radius cut-off (Angs)",
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "default": 0
+                                },
+                                "rmax": {
+                                    "description": "maximum radius cut-off (Angs)",
+                                    "type": "number",
+                                    "exclusiveMinimum": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }        
+        }
+    }
+}

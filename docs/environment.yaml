@@ -4,7 +4,6 @@ dependencies:
   - python =3.6
   - pandoc
   - python-graphviz
-  - pip =9
-  # TODO pip<10 required until readthedocs issues fixed:
-  # https://github.com/rtfd/readthedocs.org/issues/5545 or
-  # https://github.com/rtfd/readthedocs.org/issues/5546
+  - ipypublish >=0.10.1
+  - pyyaml ==3.13  # required for aiida-core, and can't be uninstalled by pip
+  # - pip <19

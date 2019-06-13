@@ -6,12 +6,17 @@ import tempfile
 
 import ase
 from aiida.common.exceptions import OutputParsingError
+from aiida.common.folders import Folder
+from aiida.plugins import DataFactory, CalculationFactory
+import six
+
 from aiida_crystal17.parsers.inputd12_read import extract_data
 from ejplugins.crystal import CrystalOutputPlugin
 
 
 # pylint: disable=too-many-locals
-def populate_builder(folder, input_name="main.d12", output_name="main.out", code=None):
+def populate_builder(folder, input_name="main.d12", output_name="main.out",
+                     code=None, metadata=None):
     """ create ``crystal17.main`` input nodes from an existing run
 
     NB: none of the nodes are stored, also
@@ -19,22 +24,29 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out", code
 
     Parameters
     ----------
-    inpath: str
-        path to .d12 file
-    outpath: str
-        path to .out file
+    folder: aiida.common.folders.Folder or str
+        folder containing the input and output files
+    input_name: str
+        path to .d12 file (in folder)
+    output_name: str
+        path to .out file (in folder)
+    code: str or aiida.orm.nodes.data.code.Code or None
+    metadata: dict or None
+        calculation metadata
 
     Returns
     -------
     aiida.engine.processes.ProcessBuilder
 
     """
-    from aiida.plugins import DataFactory, CalculationFactory
     calc_cls = CalculationFactory('crystal17.main')
     basis_cls = DataFactory('crystal17.basisset')
     struct_cls = DataFactory('structure')
     symmetry_cls = DataFactory('crystal17.symmetry')
     kind_cls = DataFactory('crystal17.kinds')
+
+    if isinstance(folder, six.string_types):
+        folder = Folder(folder)
 
     with folder.open(input_name, mode='r') as f:
         d12content = f.read()
@@ -98,7 +110,7 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out", code
 
     builder = calc_cls.create_builder(
         param_dict, structure, bases,
-        symmetry=symmetry, kinds=kinds, code=code)
+        symmetry=symmetry, kinds=kinds, code=code, metadata=metadata)
 
     return builder
 

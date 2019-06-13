@@ -110,9 +110,9 @@ def default_data_sublabels(node):
         sublabel = node.get_formula()
     elif class_node_type == "data.cif.CifData.":
         formulae = [str(f).replace(" ", "")
-                    for f in node.get_attribute('formulae', []) if f]
-        sg_numbers = [str(s) for s in node.get_attribute(
-            'spacegroup_numbers', []) if s]
+                    for f in node.get_formulae() or []]
+        sg_numbers = [str(s)
+                      for s in node.get_spacegroup_numbers() or []]
         sublabel_lines = []
         if formulae:
             sublabel_lines.append(", ".join(formulae))
@@ -524,7 +524,7 @@ class Graph(object):
                     self.add_outgoing(node, link_types=link_types, annotate_links=annotate_links, return_pks=False))
 
                 if include_calculation_inputs and isinstance(node,
-                                                             BaseFactory("aiida.node", "process.calculation.calcjob")):
+                                                             BaseFactory("aiida.node", "process.calculation")):
                     self.add_incoming(node, link_types=link_types,
                                       annotate_links=annotate_links)
 
@@ -572,7 +572,7 @@ class Graph(object):
                     self.add_incoming(node, link_types=link_types, annotate_links=annotate_links, return_pks=False))
 
                 if include_calculation_outputs and isinstance(node,
-                                                              BaseFactory("aiida.node", "process.calculation.calcjob")):
+                                                              BaseFactory("aiida.node", "process.calculation")):
                     self.add_outgoing(node, link_types=link_types,
                                       annotate_links=annotate_links)
 
@@ -623,7 +623,7 @@ class Graph(object):
                     {
                     'cls': target_cls,
                     'filters': target_filters,
-                    'descendant_of': 'origin',
+                    'with_ancestors': 'origin',
                     'tag': "target",
                     'project': "*"
                 }]

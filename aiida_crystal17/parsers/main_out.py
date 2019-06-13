@@ -13,7 +13,9 @@ from aiida_crystal17.calculations.cry_main import CryMainCalculation
 
 
 class OutputNodes(Mapping):
-
+    """
+    a mapping of output nodes, with attribute access
+    """
     def __init__(self):
         self._dict = {
             "results": None,
@@ -65,7 +67,7 @@ class OutputNodes(Mapping):
 
 class ParserResult(object):
     def __init__(self):
-        self.exit_code = ExitCode()
+        self.exit_code = ExitCode()  # initialises as exit_code = 0
         self.nodes = OutputNodes()
 
 
@@ -75,12 +77,13 @@ def parse_main_out(fileobj, parser_class,
                    init_settings=None):
     """ parse the main output file and create the required output nodes
 
-    :param abs_path: absolute path of stdout file
+    :param fileobj: handle to main output file
     :param parser_class: a string denoting the parser class
     :param init_struct: input structure
     :param init_settings: input structure settings
 
     :return parse_result
+
     """
     parser_result = ParserResult()
     exit_codes = CryMainCalculation.exit_codes
@@ -204,13 +207,13 @@ def _extract_symmetry(final_data, init_settings, param_data,
             #     parser_result.success = False
         else:
             from aiida.plugins import DataFactory
-            SymmetryData = DataFactory('crystal17.symmetry')
+            symmetry_data_cls = DataFactory('crystal17.symmetry')
             data_dict = {
                 "operations": final_data["primitive_symmops"],
                 "basis": "fractional",
                 "hall_number": None
             }
-            parser_result.nodes.symmetry = SymmetryData(data=data_dict)
+            parser_result.nodes.symmetry = symmetry_data_cls(data=data_dict)
     else:
         param_data["parser_errors"].append(
             "primitive symmops were not found in the output file")
