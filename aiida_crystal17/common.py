@@ -53,14 +53,8 @@ def display_json(builder, indent=2):
 
 def with_dbenv(func):
     def wrapper(*args, **kwargs):
-        try:
-            from aiida import load_profile
-            load_profile()
-        except ImportError:
-            # TODO this is deprecated and can be removed for v1.0.0b3
-            from aiida import load_dbenv, is_dbenv_loaded
-            if not is_dbenv_loaded():
-                load_dbenv()
+        from aiida import load_profile
+        load_profile()
         return func(*args, **kwargs)
     return wrapper
 

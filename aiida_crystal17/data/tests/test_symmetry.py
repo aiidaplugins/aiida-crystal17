@@ -33,11 +33,11 @@ def test_basic(db_test_app):
 def test_fail(db_test_app):
     from jsonschema import ValidationError
     from aiida.plugins import DataFactory
-    SymmetryData = DataFactory("crystal17.symmetry")
+    symmetry_data_cls = DataFactory("crystal17.symmetry")
 
     with pytest.raises(ValidationError):
-        SymmetryData(data={})
+        symmetry_data_cls(data={})
 
-    node = SymmetryData()
+    node = symmetry_data_cls()
     with pytest.raises(ValidationError):
         node.store()

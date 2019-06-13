@@ -2,9 +2,11 @@ import click
 import tabulate
 from click_spinner import spinner as cli_spinner
 from jsonextended import edict
-from aiida_crystal17.common import get_data_plugin, load_node
-from aiida_crystal17.cmndline import options
 from aiida.cmdline.commands.cmd_verdi import verdi
+from aiida.cmdline.params import types
+from aiida.cmdline.utils import decorators
+from aiida_crystal17.common import get_data_plugin
+from aiida_crystal17.cmndline import options
 
 
 @verdi.group('crystal17.basis')
@@ -13,20 +15,18 @@ def basisset():
 
 
 @basisset.command()
+@click.argument(
+    'node',
+    type=types.DataParamType(sub_classes=('aiida.data:crystal17.basisset',)))
 @click.option(
     '--content', '-c', is_flag=True, help="include full basis content")
-@click.argument('pk', type=int)
-def show(pk, content):
-    """show the contents of a basis set"""
-    node = load_node(pk)
-
-    if not isinstance(node, get_data_plugin('crystal17.basisset')):
-        click.echo("The node was not of type 'crystal17.basisset'", err=True)
-    else:
-        edict.pprint(node.metadata, depth=None, print_func=click.echo)
-        if content:
-            click.echo("---")
-            click.echo(node.content)
+@decorators.with_dbenv()
+def show(node, content):
+    """show the contents of a basis set node"""
+    edict.pprint(node.metadata, depth=None, print_func=click.echo)
+    if content:
+        click.echo("---")
+        click.echo(node.content)
 
 
 def try_grab_description(ctx, param, value):
@@ -60,6 +60,7 @@ def try_grab_description(ctx, param, value):
     is_flag=True,
     help='Abort when encountering a previously uploaded Basis Set file')
 @options.DRY_RUN()
+@decorators.with_dbenv()
 def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
     """Upload a family of CRYSTAL Basis Set files."""
 
@@ -88,6 +89,7 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
     help='Filter for families containing potentials for all given elements.')
 @click.option('-d', '--with-description', is_flag=True)
 @click.option('-p', '--list-pks', is_flag=True)
+@decorators.with_dbenv()
 def listfamilies(element, with_description, list_pks):
     """List available families of CRYSTAL Basis Set files."""
 

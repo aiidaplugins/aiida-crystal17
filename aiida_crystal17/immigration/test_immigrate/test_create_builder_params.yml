@@ -1,0 +1,14 @@
+scf:
+  k_points:
+  - 8
+  - 8
+  numerical:
+    FMIXING: 30
+  post_scf:
+  - PPAN
+  single: UHF
+  spinlock:
+    SPINLOCK:
+    - 0
+    - 15
+title: NiO Bulk with AFM spin

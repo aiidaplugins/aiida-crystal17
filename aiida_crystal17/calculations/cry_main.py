@@ -7,7 +7,9 @@ import os
 import six
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import InputValidationError
+from aiida.orm import Code
 from aiida.plugins import DataFactory
+
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 from aiida_crystal17.parsers.gui_parse import gui_file_write
 from aiida_crystal17.parsers.inputd12_write import (
@@ -57,7 +59,7 @@ class CryMainCalculation(CryAbstractCalculation):
     @classmethod
     def create_builder(cls, parameters, structure, bases,
                        symmetry=None, kinds=None,
-                       code=None, options=None, unflatten=False):
+                       code=None, metadata=None, unflatten=False):
         """ prepare and validate the inputs to the calculation,
         and return a builder pre-populated with the calculation inputs
 
@@ -72,9 +74,9 @@ class CryMainCalculation(CryAbstractCalculation):
             or dict mapping {<symbol>: <BasisSetData>}
         symmetry: SymmetryData or None
             giving symmetry operations, etc
-        options: dict
-            the computation option, e.g.
-            {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1}}
+        metadata: dict
+            the computation metadata, e.g.
+            {"options": {"resources": {"num_machines": 1, "num_mpiprocs_per_machine": 1}}}
         unflatten: bool
             whether to unflatten the input parameters dictionary
 
@@ -94,9 +96,11 @@ class CryMainCalculation(CryAbstractCalculation):
         if kinds is not None:
             builder.kinds = kinds
         if code is not None:
+            if isinstance(code, six.string_types):
+                code = Code.get_from_string(code)
             builder.code = code
-        if options is not None:
-            builder.metadata.options = options
+        if metadata is not None:
+            builder.metadata = metadata
 
         # validate parameters
         atom_props = create_atom_properties(structure, kinds)

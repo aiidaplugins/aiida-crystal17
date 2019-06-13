@@ -18,12 +18,12 @@
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-    "python.unitTest.pyTestArgs": [
+    "python.testing.pyTestArgs": [
         "aiida_crystal17"
     ],
-    "python.unitTest.unittestEnabled": false,
-    "python.unitTest.nosetestsEnabled": false,
-    "python.unitTest.pyTestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pyTestEnabled": true,
     "restructuredtext.preview.sphinx.disabled": true,
     "restructuredtext.confPath": "${workspaceFolder}/docs/source"
 }

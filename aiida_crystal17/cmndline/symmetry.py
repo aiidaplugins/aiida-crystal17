@@ -1,6 +1,7 @@
 import click
 from jsonextended import edict
 from aiida.cmdline.commands.cmd_verdi import verdi
+from aiida.cmdline.utils import decorators
 from aiida_crystal17.common import load_node, get_data_plugin
 
 
@@ -13,6 +14,7 @@ def symmetry():
 @click.option(
     '--symmetries', '-s', is_flag=True, help="show full symmetry operations")
 @click.argument('pk', type=int)
+@decorators.with_dbenv()
 def show(pk, symmetries):
     """show the contents of a symmetryData"""
     node = load_node(pk)

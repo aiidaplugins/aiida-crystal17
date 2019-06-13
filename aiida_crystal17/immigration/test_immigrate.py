@@ -2,40 +2,23 @@ import os
 from jsonextended import edict
 
 from aiida_crystal17.immigration.create_inputs import populate_builder
+from aiida_crystal17.immigration.create_calcjob import create_crymain
 from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests.utils import get_default_metadata
 
 
-def test_create_builder(db_test_app):
-    from aiida.orm import FolderData
-    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join(TEST_DIR, "output_files",
+def test_create_builder(db_test_app, data_regression):
+
+    inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join("output_files",
                            'nio_sto3g_afm.crystal.out')
 
-    folder = FolderData()
-    folder.put_object_from_file(inpath, "main.d12")
-    folder.put_object_from_file(outpath, "main.out")
-
     builder = populate_builder(
-        folder, input_name="main.d12", output_name="main.out")
+        TEST_DIR, input_name=inpath, output_name=outpath)
 
     assert set(builder["basissets"].keys()) == set(["Ni", "O"])
 
-    expected_params = {
-        'scf': {
-            'single': 'UHF',
-            'numerical': {
-                'FMIXING': 30
-            },
-            'post_scf': ['PPAN'],
-            'spinlock': {
-                'SPINLOCK': [0, 15]
-            },
-            'k_points': [8, 8]
-        },
-        'title': 'NiO Bulk with AFM spin'
-    }
-
-    assert builder.parameters.get_dict() == expected_params
+    data_regression.check(builder.parameters.attributes, 'test_create_builder_params')
 
     expected_settings = {
         'kinds': {
@@ -71,65 +54,44 @@ def test_create_builder(db_test_app):
         expected_settings['operations']) == {}
 
 
-def test_full_nio_afm(db_test_app):
-    from aiida.plugins import DataFactory
-    from aiida_crystal17.immigration.cry_main import migrate_as_main
+def test_full_nio_afm(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join(TEST_DIR, "output_files",
+    inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join("output_files",
                            'nio_sto3g_afm.crystal.out')
-    folder = DataFactory('folder')()
-    folder.put_object_from_file(inpath, "main.d12")
-    folder.put_object_from_file(outpath, "main.out")
+    code = db_test_app.get_or_create_code('crystal17.main')
 
-    node = migrate_as_main(
-        folder,
-        db_test_app.get_or_create_code('crystal17.main'),
-        store_all=True
-    )
+    builder = populate_builder(TEST_DIR, inpath, outpath, code=code, metadata=get_default_metadata())
+    node = create_crymain(builder, TEST_DIR, outpath)
 
-    print(node.inputs)
+    data_regression.check(node.attributes)
 
     assert set(node.inputs) == set(
         ['basissets__Ni', 'basissets__O',
          'parameters', 'structure', 'symmetry', 'kinds', 'code'])
 
-    node.inputs.structure
-
-    print(node.outputs)
-
     assert set(node.outputs) == set(
         ['results', 'retrieved'])
 
-    # assert node.get_attribute("state") == calc_states.FINISHED
 
+def test_full_mgo_opt(db_test_app, data_regression):
 
-def test_full_mgo_opt(db_test_app):
-    from aiida.plugins import DataFactory
-    from aiida_crystal17.immigration.cry_main import migrate_as_main
-
-    inpath = os.path.join(TEST_DIR, "input_files", 'mgo_sto3g_opt.crystal.d12')
-    outpath = os.path.join(TEST_DIR, "output_files",
+    inpath = os.path.join("input_files", 'mgo_sto3g_opt.crystal.d12')
+    outpath = os.path.join("output_files",
                            'mgo_sto3g_opt.crystal.out')
-    folder = DataFactory('folder')()
-    folder.put_object_from_file(inpath, "main.d12")
-    folder.put_object_from_file(outpath, "main.out")
 
-    node = migrate_as_main(
-        folder,
+    builder = populate_builder(
+        TEST_DIR, inpath, outpath,
         db_test_app.get_or_create_code('crystal17.main'),
-        store_all=True
+        get_default_metadata()
     )
+    node = create_crymain(builder, TEST_DIR, outpath)
 
-    print(node.inputs)
+    data_regression.check(node.attributes)
 
     assert set(node.inputs) == set(
         ['basissets__Mg', 'basissets__O',
          'parameters', 'structure', 'symmetry', 'code'])
-
-    node.inputs.structure
-
-    print(node.outputs)
 
     assert set(node.outputs) == set(
         ['results', 'retrieved', 'structure'])

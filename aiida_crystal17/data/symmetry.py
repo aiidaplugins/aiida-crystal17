@@ -9,7 +9,7 @@ from aiida.common.utils import classproperty
 from aiida.common.extendeddicts import AttributeDict
 from aiida.orm import Data
 
-from aiida_crystal17.validation import validate_against_schema
+from aiida_crystal17.validation import load_schema, validate_against_schema
 
 
 class SymmetryData(Data):
@@ -21,50 +21,16 @@ class SymmetryData(Data):
       are stored as attributes in the database
 
     """
-    _data_schema = {
-        "$schema": "http://json-schema.org/draft-07/schema",
-        "title": "structure symmetry settings",
-        "type": "object",
-        "required": [
-            "hall_number",
-            "operations",
-            "basis"
-        ],
-        "additionalProperties": True,
-        "properties": {
-            "hall_number": {
-                "description": "Hall number defining the symmetry group",
-                "type": ["null", "integer"],
-                "minimum": 1,
-                "maximum": 530,
-            },
-            "operations": {
-                "description": "symmetry operations, should at least include the unity operation",
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                    "description": "each item should be a list of [r00,r10,r20,r01,r11,r21,r02,r12,r22,t0,t1,t2]",
-                    "type": "array",
-                    "minItems": 12,
-                    "maxItems": 12,
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "uniqueItems": True
-            },
-            "basis": {
-                "description": "whether the symmetry operations are fractional or cartesian",
-                "type": "string",
-                "enum": ["fractional", "cartesian"]
-            },
-            "computation": {
-                "description": "details of the computation",
-                "type": "object"
-            }
-        }
-    }
     _ops_filename = "operations.npy"
+    _data_schema = None
+
+    @classproperty
+    def data_schema(cls):
+        """ return the data schema,
+        which is loaded from file the first time it is called"""
+        if cls._data_schema is None:
+            cls._data_schema = load_schema("symmetry.schema.json")
+        return copy.deepcopy(cls._data_schema)
 
     def __init__(self, **kwargs):
         """Stores the symmetry data for a structure
@@ -79,10 +45,6 @@ class SymmetryData(Data):
         if data is not None:
             self.set_data(data)
 
-    @classproperty
-    def data_schema(cls):
-        return copy.deepcopy(cls._data_schema)
-
     def _validate(self):
         super(SymmetryData, self)._validate()
 
@@ -90,7 +52,7 @@ class SymmetryData(Data):
         if fname not in self.list_object_names():
             raise SchemeError("operations not set")
 
-        validate_against_schema(self.get_dict(), self._data_schema)
+        validate_against_schema(self.get_dict(), self.data_schema)
 
     def set_data(self, data):
         """
@@ -102,7 +64,7 @@ class SymmetryData(Data):
         from aiida.common.exceptions import ModificationNotAllowed
 
         # first validate the inputs
-        validate_against_schema(data, self._data_schema)
+        validate_against_schema(data, self.data_schema)
 
         # store all but the symmetry operations as attributes
         backup_dict = copy.deepcopy(dict(self.attributes))

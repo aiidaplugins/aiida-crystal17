@@ -117,6 +117,10 @@ intersphinx_aliases = {
     ('py:class', 'aiida.orm.nodes.data.structure.StructureData')
 }
 
+
+# The master toctree document.
+master_doc = 'index'
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -125,10 +129,6 @@ source_suffix = '.rst'
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
-
-# The master toctree document.
-# ~ master_doc = 'index'
-master_doc = 'index'
 
 # General information about the project.
 project = u'aiida-crystal17'
@@ -191,6 +191,121 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 # keep_warnings = False
+
+# Napoleon Docstring settings
+napoleon_numpy_docstring = True
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = True
+napoleon_use_param = True
+napoleon_use_rtype = True
+
+# Warnings to ignore when using the -n (nitpicky) option
+# We should ignore any python built-in exception, for instance
+nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'),
+                  ('py:exc', 'AttributeError'), ('py:exc', 'BaseException'),
+                  ('py:exc', 'BufferError'), ('py:exc', 'DeprecationWarning'),
+                  ('py:exc', 'EOFError'), ('py:exc', 'EnvironmentError'),
+                  ('py:exc', 'Exception'), ('py:exc', 'FloatingPointError'),
+                  ('py:exc', 'FutureWarning'), ('py:exc', 'GeneratorExit'),
+                  ('py:exc', 'IOError'), ('py:exc', 'ImportError'),
+                  ('py:exc', 'ImportWarning'), ('py:exc', 'IndentationError'),
+                  ('py:exc', 'IndexError'), ('py:exc', 'KeyError'),
+                  ('py:exc', 'KeyboardInterrupt'), ('py:exc', 'LookupError'),
+                  ('py:exc', 'MemoryError'), ('py:exc', 'NameError'),
+                  ('py:exc', 'NotImplementedError'), ('py:exc', 'OSError'),
+                  ('py:exc', 'OverflowError'),
+                  ('py:exc', 'PendingDeprecationWarning'),
+                  ('py:exc', 'ReferenceError'), ('py:exc', 'RuntimeError'),
+                  ('py:exc', 'RuntimeWarning'), ('py:exc', 'StandardError'),
+                  ('py:exc', 'StopIteration'), ('py:exc', 'SyntaxError'),
+                  ('py:exc', 'SyntaxWarning'), ('py:exc', 'SystemError'),
+                  ('py:exc', 'SystemExit'), ('py:exc', 'TabError'),
+                  ('py:exc', 'TypeError'), ('py:exc', 'UnboundLocalError'),
+                  ('py:exc', 'UnicodeDecodeError'),
+                  ('py:exc', 'UnicodeEncodeError'), ('py:exc', 'UnicodeError'),
+                  ('py:exc', 'UnicodeTranslateError'),
+                  ('py:exc', 'UnicodeWarning'), ('py:exc', 'UserWarning'),
+                  ('py:exc', 'VMSError'), ('py:exc', 'ValueError'),
+                  ('py:exc', 'Warning'), ('py:exc', 'WindowsError'),
+                  ('py:exc', 'ZeroDivisionError'),
+                  ('py:obj', 'str'),
+                  ('py:obj', 'list'),
+                  ('py:obj', 'tuple'), ('py:class', 'tuple'),
+                  ('py:obj', 'int'),
+                  ('py:obj', 'float'),
+                  ('py:obj', 'bool'),
+                  ('py:obj', 'Mapping'),
+                  ('py:obj', 'MutableMapping'),
+                  ('py:class', '_abcoll.MutableMapping')]
+
+# autodoc options, see
+# http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
+autoclass_content = 'both'
+
+
+def run_apidoc(_):
+    """Runs sphinx-apidoc when building the documentation.
+    Needs to be done in conf.py in order to include the APIdoc in the
+    build on readthedocs.
+    See also https://github.com/rtfd/readthedocs.org/issues/1139
+    """
+    source_dir = os.path.abspath(os.path.dirname(__file__))
+    apidoc_dir = os.path.join(source_dir, 'apidoc')
+    package_dir = os.path.join(
+        source_dir, os.pardir, os.pardir, 'aiida_crystal17')
+
+    # In #1139, they suggest the route below, but this ended up
+    # calling sphinx-build, not sphinx-apidoc
+    # from sphinx.apidoc import main
+    # main([None, '-e', '-o', apidoc_dir, package_dir, '--force'])
+
+    import subprocess
+    cmd_path = 'sphinx-apidoc'
+    if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+        # If we are, assemble the path manually
+        cmd_path = os.path.abspath(os.path.join(
+            sys.prefix, 'bin', 'sphinx-apidoc'))
+
+    options = [
+        '-o', apidoc_dir, package_dir,
+        '--private',
+        '--force',
+        '--no-toc',
+    ]
+
+    # See https://stackoverflow.com/a/30144019
+    env = os.environ.copy()
+    env["SPHINX_APIDOC_OPTIONS"] = 'members,undoc-members,show-inheritance'
+    subprocess.check_call([cmd_path] + options, env=env)
+
+
+def add_intersphinx_aliases_to_inv(app):
+    """see https://github.com/sphinx-doc/sphinx/issues/5603"""
+    from sphinx.ext.intersphinx import InventoryAdapter
+    inventories = InventoryAdapter(app.builder.env)
+
+    for alias, target in app.config.intersphinx_aliases.items():
+        alias_domain, alias_name = alias
+        target_domain, target_name = target
+        try:
+            found = inventories.main_inventory[target_domain][target_name]
+            try:
+                inventories.main_inventory[alias_domain][alias_name] = found
+            except KeyError:
+                continue
+        except KeyError:
+            continue
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
+    app.add_config_value('intersphinx_aliases', {}, 'env')
+    app.connect('builder-inited', add_intersphinx_aliases_to_inv)
+
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -284,195 +399,5 @@ html_use_opensearch = 'http://aiida-crystal17.readthedocs.io'
 #   'nl', 'no', 'pt', 'ro', 'ru', 'sv', 'tr'
 html_search_language = 'en'
 
-# A dictionary with options for the search language support, empty by default.
-# Now only 'ja' uses this config value
-# html_search_options = {'type': 'default'}
-
-# The name of a javascript file (relative to the configuration directory) that
-# implements a search results scorer. If empty, the default will be used.
-# html_search_scorer = 'scorer.js'
-
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'aiida-crystal17-doc'
-
-# -- Options for LaTeX output ---------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    # 'papersize': 'letterpaper',
-
-    # The font size ('10pt', '11pt' or '12pt').
-    # 'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
-
-    # Latex figure (float) alignment
-    # 'figure_align': 'htbp',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-# latex_documents = [
-# ]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-# latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-# latex_use_parts = False
-
-# If true, show page references after internal links.
-# latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-# latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-# latex_appendices = []
-
-# If false, no module index is generated.
-# latex_domain_indices = True
-
-# -- Options for manual page output ---------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-# man_pages = [
-# ]
-
-# If true, show URL addresses after external links.
-# man_show_urls = False
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-# texinfo_documents = [
-# ]
-
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-# texinfo_no_detailmenu = False
-
-# Napoleon Docstring settings
-napoleon_numpy_docstring = True
-napoleon_include_private_with_doc = False
-napoleon_include_special_with_doc = False
-napoleon_use_admonition_for_examples = False
-napoleon_use_admonition_for_notes = False
-napoleon_use_admonition_for_references = False
-napoleon_use_ivar = True
-napoleon_use_param = True
-napoleon_use_rtype = True
-
-# Warnings to ignore when using the -n (nitpicky) option
-# We should ignore any python built-in exception, for instance
-nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'),
-                  ('py:exc', 'AttributeError'), ('py:exc', 'BaseException'),
-                  ('py:exc', 'BufferError'), ('py:exc', 'DeprecationWarning'),
-                  ('py:exc', 'EOFError'), ('py:exc', 'EnvironmentError'),
-                  ('py:exc', 'Exception'), ('py:exc', 'FloatingPointError'),
-                  ('py:exc', 'FutureWarning'), ('py:exc', 'GeneratorExit'),
-                  ('py:exc', 'IOError'), ('py:exc', 'ImportError'),
-                  ('py:exc', 'ImportWarning'), ('py:exc', 'IndentationError'),
-                  ('py:exc', 'IndexError'), ('py:exc', 'KeyError'),
-                  ('py:exc', 'KeyboardInterrupt'), ('py:exc', 'LookupError'),
-                  ('py:exc', 'MemoryError'), ('py:exc', 'NameError'),
-                  ('py:exc', 'NotImplementedError'), ('py:exc', 'OSError'),
-                  ('py:exc', 'OverflowError'),
-                  ('py:exc', 'PendingDeprecationWarning'),
-                  ('py:exc', 'ReferenceError'), ('py:exc', 'RuntimeError'),
-                  ('py:exc', 'RuntimeWarning'), ('py:exc', 'StandardError'),
-                  ('py:exc', 'StopIteration'), ('py:exc', 'SyntaxError'),
-                  ('py:exc', 'SyntaxWarning'), ('py:exc', 'SystemError'),
-                  ('py:exc', 'SystemExit'), ('py:exc', 'TabError'),
-                  ('py:exc', 'TypeError'), ('py:exc', 'UnboundLocalError'),
-                  ('py:exc', 'UnicodeDecodeError'),
-                  ('py:exc', 'UnicodeEncodeError'), ('py:exc', 'UnicodeError'),
-                  ('py:exc', 'UnicodeTranslateError'),
-                  ('py:exc', 'UnicodeWarning'), ('py:exc', 'UserWarning'),
-                  ('py:exc', 'VMSError'), ('py:exc', 'ValueError'),
-                  ('py:exc', 'Warning'), ('py:exc', 'WindowsError'),
-                  ('py:exc', 'ZeroDivisionError'),
-                  ('py:obj', 'str'),
-                  ('py:obj', 'list'),
-                  ('py:obj', 'tuple'), ('py:class', 'tuple'),
-                  ('py:obj', 'int'),
-                  ('py:obj', 'float'),
-                  ('py:obj', 'bool'),
-                  ('py:obj', 'Mapping'),
-                  ('py:obj', 'MutableMapping'),
-                  ('py:class', '_abcoll.MutableMapping')]
-
-
-def run_apidoc(_):
-    """Runs sphinx-apidoc when building the documentation.
-    Needs to be done in conf.py in order to include the APIdoc in the
-    build on readthedocs.
-    See also https://github.com/rtfd/readthedocs.org/issues/1139
-    """
-    source_dir = os.path.abspath(os.path.dirname(__file__))
-    apidoc_dir = os.path.join(source_dir, 'apidoc')
-    package_dir = os.path.join(
-        source_dir, os.pardir, os.pardir, 'aiida_crystal17')
-
-    # In #1139, they suggest the route below, but this ended up
-    # calling sphinx-build, not sphinx-apidoc
-    # from sphinx.apidoc import main
-    # main([None, '-e', '-o', apidoc_dir, package_dir, '--force'])
-
-    import subprocess
-    cmd_path = 'sphinx-apidoc'
-    if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
-        # If we are, assemble the path manually
-        cmd_path = os.path.abspath(os.path.join(
-            sys.prefix, 'bin', 'sphinx-apidoc'))
-
-    options = [
-        '-o', apidoc_dir, package_dir,
-        '--private',
-        '--force',
-        '--no-toc',
-    ]
-
-    # See https://stackoverflow.com/a/30144019
-    env = os.environ.copy()
-    env["SPHINX_APIDOC_OPTIONS"] = 'members,special-members,private-members,undoc-members,show-inheritance'
-    subprocess.check_call([cmd_path] + options, env=env)
-
-
-def add_intersphinx_aliases_to_inv(app):
-    """see https://github.com/sphinx-doc/sphinx/issues/5603"""
-    from sphinx.ext.intersphinx import InventoryAdapter
-    inventories = InventoryAdapter(app.builder.env)
-
-    for alias, target in app.config.intersphinx_aliases.items():
-        alias_domain, alias_name = alias
-        target_domain, target_name = target
-        try:
-            found = inventories.main_inventory[target_domain][target_name]
-            try:
-                inventories.main_inventory[alias_domain][alias_name] = found
-            except KeyError:
-                continue
-        except KeyError:
-            continue
-
-
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
-    app.add_config_value('intersphinx_aliases', {}, 'env')
-    app.connect('builder-inited', add_intersphinx_aliases_to_inv)

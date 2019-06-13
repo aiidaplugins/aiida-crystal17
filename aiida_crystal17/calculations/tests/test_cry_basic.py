@@ -3,23 +3,24 @@
 """
 import os
 
-import aiida_crystal17
-from aiida_crystal17.tests import TEST_DIR
 import ejplugins
 from jsonextended import edict
 import pytest
 
+import aiida_crystal17
+from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
-@pytest.mark.skip(reason="dry run implemented after v1.0.0b2")
-def test_dry_run(db_test_app):
+
+def test_calcjob_submission(db_test_app):
+    # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
-    from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
-    SinglefileData = DataFactory('singlefile')
+    singlefile_data_cls = DataFactory('singlefile')
 
     # Prepare input parameters
     code = db_test_app.get_or_create_code('crystal17.basic')
-    infile = SinglefileData(
+    infile = singlefile_data_cls(
         file=os.path.join(TEST_DIR, "input_files",
                           'mgo_sto3g_scf.crystal.d12'))
     infile.store()
@@ -29,15 +30,21 @@ def test_dry_run(db_test_app):
     builder.metadata.options.withmpi = False
     builder.metadata.options.resources = {
         "num_machines": 1, "num_mpiprocs_per_machine": 1}
-    builder.metadata.store_provenance = True
     builder.input_file = infile
 
-    builder.metadata.dry_run = True
+    with db_test_app.sandbox_folder() as folder:
+        calc_info = db_test_app.generate_calcinfo(
+            'crystal17.basic', folder, builder)
 
-    outcome = run_get_node(builder)
+        cmdline_params = ['main']
+        local_copy_list = [[infile.uuid, infile.filename, u'main.d12']]
+        retrieve_list = ['main.out', 'main.gui']
 
-    incoming = outcome.node.get_incoming()
-    assert set(incoming.all_link_labels()) == set(['code', 'input_file'])
+        # Check the attributes of the returned `CalcInfo`
+        assert calc_info.codes_info[0].cmdline_params == cmdline_params
+        assert sorted(calc_info.local_copy_list) == sorted(local_copy_list)
+        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
 
 
 @pytest.mark.parametrize("inpath_main,inpath_gui", (
@@ -47,11 +54,12 @@ def test_dry_run(db_test_app):
 ))
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-def test_full_runs(db_test_app, inpath_main, inpath_gui):
+def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
+    # type: (AiidaTestApp, str, str) -> None
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
-    SinglefileData = DataFactory('singlefile')
+    singlefile_data_cls = DataFactory('singlefile')
 
     code = db_test_app.get_or_create_code('crystal17.basic')
 
@@ -69,11 +77,11 @@ def test_full_runs(db_test_app, inpath_main, inpath_gui):
     }
 
     # Prepare input parameters
-    infile = SinglefileData(
+    infile = singlefile_data_cls(
         file=os.path.join(TEST_DIR, "input_files", inpath_main))
     builder.input_file = infile
     if inpath_gui is not None:
-        ingui = SinglefileData(
+        ingui = singlefile_data_cls(
             file=os.path.join(TEST_DIR, "input_files", inpath_gui))
         builder.input_external = ingui
 
