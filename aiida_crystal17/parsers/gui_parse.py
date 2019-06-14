@@ -45,7 +45,7 @@ CRYSTAL_TYPE_TO_NUM_MAP = {
     'tetragonal': 4,
     'hexagonal': 5,
     'rhombohedral': 5,
-    'triganol': 5,
+    'trigonal': 5,
     'cubic': 6
 }
 
