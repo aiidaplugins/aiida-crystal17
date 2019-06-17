@@ -37,7 +37,7 @@ class GulpOptCalculation(GulpAbstractCalculation):
         #            help="name of the str file (i.e. a CRYSTAL98 .gui file)")
 
         spec.input(
-            'symmetry', valid_type=DataFactory('dict'),
+            'symmetry', valid_type=DataFactory('crystal17.symmetry'),
             required=False,
             help=('parameters to create the symmetry section of the '
                   '.gin file content (for constrained optimisation).'))
