@@ -165,6 +165,7 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
         "hall_number": dataset["hall_number"],
         "basis": "fractional",
         "operations": operations,
+        "equivalent_sites": dataset["equivalent_atoms"].tolist(),
         "computation": {
             "symmetry_program": "spglib",
             "symmetry_version": spglib.__version__,

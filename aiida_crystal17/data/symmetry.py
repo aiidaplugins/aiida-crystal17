@@ -172,7 +172,7 @@ class SymmetryData(Data):
 
     @property
     def spacegroup_info(self):
-        """ Translate Hall number to space group type information. 
+        """ Translate Hall number to space group type information.
         Returned as an attribute dict
         """
         info = spglib.get_spacegroup_type(self.hall_number)

@@ -144,6 +144,11 @@ def _parse_main_output(outstr, data):
 
         if ' '.join(fields[:4]) == '**** Optimisation achieved ****':
             data['optimised'] = True
+        elif "Conditions for a minimum have not been satisfied. However" in line:
+            data['optimised'] = True
+            data['warnings'].append(
+                ("Conditions for a minimum have not been satisfied. "
+                 "However no lower point can be found - treat results with caution"))
         elif "No variables to optimise - single point performed" in line:
             data['optimised'] = True
             data['warnings'].append(

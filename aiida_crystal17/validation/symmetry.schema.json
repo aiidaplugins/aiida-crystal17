@@ -35,6 +35,13 @@
             "type": "string",
             "enum": ["fractional", "cartesian"]
         },
+        "equivalent_sites": {
+            "description": "mapping table to equivalent atomic sites",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
         "computation": {
             "description": "details of the computation",
             "type": "object"
