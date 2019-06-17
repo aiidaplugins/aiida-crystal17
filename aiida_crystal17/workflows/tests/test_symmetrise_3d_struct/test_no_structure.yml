@@ -1,0 +1,6 @@
+exit_message: one of either a structure or cif input must be supplied
+exit_status: 300
+process_label: Symmetrise3DStructure
+process_state: finished
+sealed: true
+stepper_state_info: None
