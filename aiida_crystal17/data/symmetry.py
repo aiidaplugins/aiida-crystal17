@@ -3,6 +3,7 @@ import tempfile
 
 from jsonschema import ValidationError as SchemeError
 import numpy as np
+import spglib
 
 from aiida.common.utils import classproperty
 # from aiida.common.exceptions import ValidationError
@@ -168,6 +169,16 @@ class SymmetryData(Data):
     @property
     def hall_number(self):
         return self.get_attribute("hall_number", None)
+
+    @property
+    def spacegroup_info(self):
+        """ Translate Hall number to space group type information. 
+        Returned as an attribute dict
+        """
+        info = spglib.get_spacegroup_type(self.hall_number)
+        if info is None:
+            raise ValueError("the hall number could not be converted")
+        return AttributeDict(info)
 
     def add_path(self, src_abs, dst_path):
         from aiida.common.exceptions import ModificationNotAllowed
