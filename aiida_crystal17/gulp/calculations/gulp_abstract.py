@@ -76,6 +76,9 @@ class GulpAbstractCalculation(CalcJob):
         spec.exit_code(
             400, 'ERROR_GULP_RUN',
             message='The main gulp output file flagged an error')
+        spec.exit_code(
+            410, 'ERROR_NOT_OPTIMISED',
+            message='The main gulp output file did not signal that an expected optimisation completed')
 
         spec.output(cls.link_output_results,
                     valid_type=DataFactory('dict'),

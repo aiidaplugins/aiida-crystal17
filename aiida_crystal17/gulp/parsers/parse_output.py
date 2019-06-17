@@ -60,7 +60,7 @@ class ParserResult(object):
 
 
 # pylint: disable=too-many-locals,too-many-statements
-def parse_output(file_handle, parser_class, exit_codes=None, final=False):
+def parse_output(file_handle, parser_class, exit_codes=None, final=False, optimise=False):
     """ parse the main output file and create the required output nodes
 
     :param file_handle: handle to main output file
@@ -68,6 +68,7 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False):
     :param exit_codes: allowed exit codes
         (defaults to ``GulpAbstractCalculation.exit_codes``)
     :param final: whether to expect a 'final' key in the results_data
+    :param optimise: whether to expect an 'optimised' key in the results_data
 
     :return parse_result
 
@@ -94,6 +95,8 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False):
 
     if results_data['errors']:
         parser_result.exit_code = exit_codes.ERROR_GULP_RUN
+    elif optimise and not results_data.get("optimised", False):
+        parser_result.exit_code = exit_codes.ERROR_NOT_OPTIMISED
 
     idata = None
     fdata = None

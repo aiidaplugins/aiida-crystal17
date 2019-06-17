@@ -69,7 +69,8 @@ class GulpOptParser(Parser):
         self.logger.info("parsing main out file")
         with output_folder.open(mainout_file) as handle:
             parser_result = parse_output(
-                handle, parser_class=self.__class__.__name__, final=True)
+                handle, parser_class=self.__class__.__name__,
+                final=True, optimise=True)
 
         errors = parser_result.nodes.results.get_attribute("errors")
         parser_errors = parser_result.nodes.results.get_attribute(
