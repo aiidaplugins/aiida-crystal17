@@ -107,7 +107,7 @@ class Symmetrise3DStructure(WorkChain):
                 return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
             self.ctx.structure = self.inputs.structure
         elif 'cif' in self.inputs:
-            self.ctx.structure = self.inputs.cif.get_structure()
+            self.ctx.structure = self.inputs.cif.get_structure(converter="ase")
         else:
             return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
 
