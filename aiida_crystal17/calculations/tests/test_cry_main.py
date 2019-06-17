@@ -4,42 +4,34 @@
 import os
 from textwrap import dedent  # noqa: F401
 
-from ase.spacegroup import crystal
 import ejplugins
 from jsonextended import edict
 import pytest
 from aiida.engine import run_get_node
+from aiida.plugins import CalculationFactory, DataFactory, WorkflowFactory
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_DIR
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
-def test_create_builder(db_test_app):
+def test_create_builder(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     """test preparation of inputs"""
     db_test_app.get_or_create_code('crystal17.main')
 
     inparams = {"scf.k_points": (8, 8)}
 
-    from aiida.plugins import DataFactory, CalculationFactory
     structure_data_cls = DataFactory('structure')
     basis_data_cls = DataFactory('crystal17.basisset')
 
-    atoms = crystal(
-        symbols=[12, 8],
-        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-        spacegroup=225,
-        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
-    instruct = structure_data_cls(ase=atoms)
+    instruct = get_structure("MgO")
     mg_basis, _ = basis_data_cls.get_or_create(
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
     o_basis, _ = basis_data_cls.get_or_create(
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
         compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
@@ -57,12 +49,11 @@ def test_create_builder(db_test_app):
     "input_symmetry",
     (False, True)
 )
-def test_calcjob_submit_mgo(db_test_app, input_symmetry):
+def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
     # type: (AiidaTestApp, bool) -> None
     """Test submitting a calculation"""
-    from aiida.plugins import DataFactory
+
     param_data_cls = DataFactory('crystal17.parameters')
-    structure_data_cls = DataFactory('structure')
     basis_data_cls = DataFactory('crystal17.basisset')
 
     code = db_test_app.get_or_create_code('crystal17.main')
@@ -75,18 +66,10 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry):
         }
     })
 
-    # MgO
-    atoms = crystal(
-        symbols=[12, 8],
-        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-        spacegroup=225,
-        cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
-    instruct = structure_data_cls(ase=atoms)
+    instruct = get_structure("MgO")
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
         compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
@@ -164,12 +147,10 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry):
     # assert gui_content == expected_gui
 
 
-def test_calcjob_submit_nio_afm(db_test_app):
+def test_calcjob_submit_nio_afm(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
-    from aiida.engine import run_get_node
-    from aiida.plugins import DataFactory
-    structure_data_cls = DataFactory('structure')
+
     kind_data_cls = DataFactory('crystal17.kinds')
     basis_data_cls = DataFactory('crystal17.basisset')
     upload_basisset_family = basis_data_cls.upload_basisset_family
@@ -187,23 +168,14 @@ def test_calcjob_submit_nio_afm(db_test_app):
         "scf.post_scf": ["PPAN"]
     }
 
-    # Ni0
-    atoms = crystal(
-        symbols=[28, 8],
-        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-        spacegroup=225,
-        cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
-    atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
-    instruct = structure_data_cls(ase=atoms)
+    instruct = get_structure("NiO_afm")
 
     kind_data = kind_data_cls(data={
         "kind_names": ["Ni1", "Ni2", "O"],
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
         compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
@@ -292,12 +264,10 @@ def test_calcjob_submit_nio_afm(db_test_app):
 
 
 @pytest.mark.timeout(60)
-def test_run_nio_afm_scf(db_test_app):
+def test_run_nio_afm_scf(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
-    from aiida.engine import run_get_node
-    from aiida.plugins import DataFactory
-    structure_data_cls = DataFactory('structure')
+
     kind_data_cls = DataFactory('crystal17.kinds')
     basisset_data_cls = DataFactory('crystal17.basisset')
     upload_basisset_family = basisset_data_cls.upload_basisset_family
@@ -315,23 +285,14 @@ def test_run_nio_afm_scf(db_test_app):
         "scf.post_scf": ["PPAN"]
     }
 
-    # Ni0
-    atoms = crystal(
-        symbols=[28, 8],
-        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-        spacegroup=225,
-        cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
-    atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
-    instruct = structure_data_cls(ase=atoms)
+    instruct = get_structure("NiO_afm")
 
     kind_data = kind_data_cls(data={
         "kind_names": ["Ni1", "Ni2", "O"],
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
         compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
@@ -397,12 +358,10 @@ def test_run_nio_afm_scf(db_test_app):
 
 @pytest.mark.timeout(60)
 @pytest.mark.process_execution
-def test_run_nio_afm_fullopt(db_test_app):
+def test_run_nio_afm_fullopt(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
-    from aiida.engine import run_get_node
-    from aiida.plugins import DataFactory
-    structure_data_cls = DataFactory('structure')
+
     kind_data_cls = DataFactory('crystal17.kinds')
     basis_data_cls = DataFactory('crystal17.basisset')
     upload_basisset_family = basis_data_cls.upload_basisset_family
@@ -420,23 +379,14 @@ def test_run_nio_afm_fullopt(db_test_app):
         "scf.post_scf": ["PPAN"]
     }
 
-    # Ni0
-    atoms = crystal(
-        symbols=[28, 8],
-        basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-        spacegroup=225,
-        cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
-    atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
-    instruct = structure_data_cls(ase=atoms)
+    instruct = get_structure("NiO_afm")
 
     kind_data = kind_data_cls(data={
         "kind_names": ["Ni1", "Ni2", "O"],
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
-    from aiida_crystal17.workflows.symmetrise_3d_struct import (
-        Symmetrise3DStructure)
     sym_calc = run_get_node(
-        Symmetrise3DStructure, structure=instruct, symprec=0.01,
+        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
         compute={"primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")

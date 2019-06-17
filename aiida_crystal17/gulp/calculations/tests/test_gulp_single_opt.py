@@ -5,7 +5,7 @@ from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 from aiida_crystal17.tests import TEST_DIR  # noqa: F401
 from aiida_crystal17.gulp.parsers.write_input import (  # noqa: F401
     InputCreationSingle, InputCreationOpt)
-from aiida_crystal17.symmetry import convert_structure, compute_symmetry_dict
+from aiida_crystal17.symmetry import compute_symmetry_dict
 
 
 def write_input_file(icreate, file_like, structure, potential,
@@ -13,23 +13,6 @@ def write_input_file(icreate, file_like, structure, potential,
     icreate.create_content(structure, potential, parameters, symmetry)
     icreate.write_content(file_like)
     return icreate.get_content_hash()
-
-
-def get_pyrite_structure():
-    structure_data = {
-        "lattice": [[5.38, 0.000000, 0.000000],
-                    [0.000000, 5.38, 0.000000],
-                    [0.000000, 0.000000, 5.38]],
-        "fcoords": [[0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5],
-                    [0.5, 0.5, 0.0], [0.338, 0.338, 0.338],
-                    [0.662, 0.662, 0.662], [0.162, 0.662, 0.838],
-                    [0.838, 0.338, 0.162], [0.662, 0.838, 0.162],
-                    [0.338, 0.162, 0.838], [0.838, 0.162, 0.662],
-                    [0.162, 0.838, 0.338]],
-        "symbols": ['Fe'] * 4 + ['S'] * 8,
-        "pbc": [True, True, True]
-    }
-    return convert_structure(structure_data, "aiida")
 
 
 def get_pyrite_potential_lj():
@@ -61,11 +44,11 @@ def get_pyrite_potential_lj():
     }
 
 
-def test_run_single_lj(db_test_app):
+def test_run_single_lj(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
 
-    structure = get_pyrite_structure()
+    structure = get_structure("pyrite")
     potential = db_test_app.get_data_node("dict",
                                           dict=get_pyrite_potential_lj())
 
@@ -106,11 +89,11 @@ def test_run_single_lj(db_test_app):
         calc_node.outputs.results.get_dict(), expected, np_allclose=True) == {}
 
 
-def test_run_optimize_lj(db_test_app):
+def test_run_optimize_lj(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
 
-    structure = get_pyrite_structure()
+    structure = get_structure("pyrite")
     potential = db_test_app.get_data_node("dict",
                                           dict=get_pyrite_potential_lj())
     parameters = db_test_app.get_data_node(
@@ -159,12 +142,12 @@ def test_run_optimize_lj(db_test_app):
         calc_node.outputs.results.get_dict(), expected, np_allclose=True) == {}
 
 
-def test_run_optimize_lj_with_symm(db_test_app):
+def test_run_optimize_lj_with_symm(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
     from aiida.plugins import DataFactory
 
-    structure = get_pyrite_structure()
+    structure = get_structure("pyrite")
     symmetry = DataFactory('crystal17.symmetry')(
         data=compute_symmetry_dict(structure, 0.01, None))
     potential = db_test_app.get_data_node("dict",
