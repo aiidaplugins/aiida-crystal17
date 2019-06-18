@@ -63,6 +63,7 @@ class CryAbstractCalculation(CalcJob):
                     valid_type=DataFactory('dict'),
                     required=True,
                     help='the data extracted from the main output file')
+        spec.default_output_node = cls.link_output_results
         spec.output(cls.link_output_structure,
                     valid_type=DataFactory('structure'),
                     required=False,

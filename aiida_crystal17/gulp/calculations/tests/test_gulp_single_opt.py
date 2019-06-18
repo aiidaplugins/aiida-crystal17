@@ -1,5 +1,6 @@
 import os  # noqa: F401
 from jsonextended import edict
+from aiida.plugins import DataFactory
 from aiida_crystal17 import __version__
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 from aiida_crystal17.tests import TEST_DIR  # noqa: F401
@@ -16,9 +17,10 @@ def write_input_file(icreate, file_like, structure, potential,
 
 
 def get_pyrite_potential_lj():
-    return {
-        "pair_style": "lj",
-        "data": {
+    potential_cls = DataFactory("gulp.potential")
+    return potential_cls(
+        "lj",
+        {
             "atoms": {
                 "Fe": {
                     "Fe": {
@@ -40,8 +42,7 @@ def get_pyrite_potential_lj():
                     }
                 }
             }
-        }
-    }
+        })
 
 
 def test_run_single_lj(db_test_app, get_structure):
@@ -49,8 +50,7 @@ def test_run_single_lj(db_test_app, get_structure):
     from aiida.engine import run_get_node
 
     structure = get_structure("pyrite")
-    potential = db_test_app.get_data_node("dict",
-                                          dict=get_pyrite_potential_lj())
+    potential = get_pyrite_potential_lj()
 
     # file_hash = write_input_file(
     #     InputCreationSingle(),
@@ -94,8 +94,7 @@ def test_run_optimize_lj(db_test_app, get_structure):
     from aiida.engine import run_get_node
 
     structure = get_structure("pyrite")
-    potential = db_test_app.get_data_node("dict",
-                                          dict=get_pyrite_potential_lj())
+    potential = get_pyrite_potential_lj()
     parameters = db_test_app.get_data_node(
         "dict", dict={
             "minimize": {"style": "cg", "max_iterations": 100},
@@ -150,8 +149,7 @@ def test_run_optimize_lj_with_symm(db_test_app, get_structure):
     structure = get_structure("pyrite")
     symmetry = DataFactory('crystal17.symmetry')(
         data=compute_symmetry_dict(structure, 0.01, None))
-    potential = db_test_app.get_data_node("dict",
-                                          dict=get_pyrite_potential_lj())
+    potential = get_pyrite_potential_lj()
     parameters = db_test_app.get_data_node(
         "dict", dict={
             "minimize": {"style": "cg", "max_iterations": 100},

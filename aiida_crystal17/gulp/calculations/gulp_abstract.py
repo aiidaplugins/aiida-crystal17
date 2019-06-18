@@ -46,7 +46,7 @@ class GulpAbstractCalculation(CalcJob):
             help=('atomic structure used to create the '
                   'geometry section of .gin file content.'))
         spec.input(
-            'potential', valid_type=DataFactory('dict'),
+            'potential', valid_type=DataFactory('gulp.potential'),
             required=True,
             help=('parameters to create the '
                   'potential section of the .gin file content.'))
@@ -84,6 +84,7 @@ class GulpAbstractCalculation(CalcJob):
                     valid_type=DataFactory('dict'),
                     required=True,
                     help='the data extracted from the main output file')
+        spec.default_output_node = cls.link_output_results
 
     def prepare_for_submission(self, tempfolder):
         """
