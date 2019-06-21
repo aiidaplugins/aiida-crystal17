@@ -2,6 +2,7 @@
 parse the main.gout file of a GULP run and create the required output nodes
 """
 from collections import Mapping
+import traceback
 
 from aiida.plugins import DataFactory
 from aiida.engine import ExitCode
@@ -89,13 +90,16 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False, optimi
     try:
         _parse_main_output(file_handle.read(), results_data)
     except KeyError as err:
+        traceback.print_exc()
         parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
         results_data['parser_errors'].append("{}".format(err))
         return parser_result
 
-    if results_data['errors']:
+    if "optimised" in results_data and not results_data["optimised"]:
+        parser_result.exit_code = exit_codes.ERROR_NOT_OPTIMISED
+    elif results_data['errors']:
         parser_result.exit_code = exit_codes.ERROR_GULP_RUN
-    elif optimise and not results_data.get("optimised", False):
+    elif optimise and "optimised" not in results_data:
         parser_result.exit_code = exit_codes.ERROR_NOT_OPTIMISED
 
     idata = None

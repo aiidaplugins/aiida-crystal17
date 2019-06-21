@@ -74,7 +74,7 @@ class GulpAbstractCalculation(CalcJob):
         # Significant errors but calculation can be used to restart
         spec.exit_code(
             400, 'ERROR_GULP_RUN',
-            message='The main gulp output file flagged an error')
+            message='The main gulp output file flagged an unknown error')
         spec.exit_code(
             410, 'ERROR_NOT_OPTIMISED',
             message='The main gulp output file did not signal that an expected optimisation completed')

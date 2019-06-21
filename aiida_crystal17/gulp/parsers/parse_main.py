@@ -90,13 +90,11 @@ class GulpOptParser(Parser):
 
         self.out('results', parser_result.nodes.results)
 
-        # we only attempt to retrieve the cif file
-        # if the main file is parsed successfully
-        if parser_result.exit_code.status != 0:
-            return parser_result.exit_code
-
         cif_file = self.node.get_option("out_cif_file_name")
         if cif_file not in output_folder.list_object_names():
+            if parser_result.exit_code.status != 0:
+                # if there was already an error identified, then return that
+                return parser_result.exit_code
             return self.exit_codes.ERROR_CIF_FILE_MISSING
 
         # We do not use this method, since currently different kinds are set for each atom

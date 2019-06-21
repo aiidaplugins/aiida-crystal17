@@ -2,6 +2,7 @@
 parse the main output file and create the required output nodes
 """
 from collections import Mapping
+import traceback
 # TODO remove dependancy on ejplugins?
 import ejplugins
 from aiida_crystal17.symmetry import convert_structure
@@ -120,6 +121,7 @@ def parse_main_out(fileobj, parser_class,
     try:
         data = cryparse.read_file(fileobj, log_warnings=False)
     except IOError as err:
+        traceback.print_exc()
         parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
         results_data["parser_errors"].append(
             "Error parsing CRYSTAL 17 main output: {0}".format(err))
