@@ -1,6 +1,8 @@
 """
 A parser to read output from a standard CRYSTAL17 run
 """
+import warnings
+from ase.io import read as ase_read
 from aiida.common import exceptions
 from aiida.parsers.parser import Parser
 from aiida.plugins import DataFactory
@@ -12,6 +14,7 @@ class GulpSingleParser(Parser):
     """
     Parser class for parsing output of a GULP single point energy calculation
     """
+
     def parse(self, **kwargs):
         """
         Parse outputs, store results in database.
@@ -52,6 +55,7 @@ class GulpOptParser(Parser):
     """
     Parser class for parsing output of a GULP single point energy calculation
     """
+
     def parse(self, **kwargs):
         """
         Parse outputs, store results in database.
@@ -95,10 +99,25 @@ class GulpOptParser(Parser):
         if cif_file not in output_folder.list_object_names():
             return self.exit_codes.ERROR_CIF_FILE_MISSING
 
-        # NOTE files are read as binary, by default, since aiida-core v1.0.0b3
-        with output_folder.open(cif_file, mode="rb") as handle:
-            cif = DataFactory('cif')(file=handle)
+        # We do not use this method, since currently different kinds are set for each atom
+        # see aiidateam/aiida_core#2942
+        # NOTE cif files are read as binary, by default, since aiida-core v1.0.0b3
+        # with output_folder.open(cif_file, mode="rb") as handle:
+        #     cif = DataFactory('cif')(file=handle)
+        # structure = cif.get_structure(converter="ase")
 
-        self.out('structure', cif.get_structure(converter="ase"))
+        with warnings.catch_warnings():
+            # ase.io.read returns a warnings that can be ignored
+            # UserWarning: crystal system 'triclinic' is not interpreted for space group 1.
+            # This may result in wrong setting!
+            warnings.simplefilter("ignore", UserWarning)
+            with output_folder.open(cif_file, mode="r") as handle:
+                atoms = ase_read(handle, index=':', format="cif")[-1]
+        atoms.set_tags(0)
+        structure = DataFactory('structure')(ase=atoms)
+
+        # TODO use kinds from input structure
+
+        self.out('structure', structure)
 
         return parser_result.exit_code
