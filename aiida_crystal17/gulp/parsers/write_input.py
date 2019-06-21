@@ -9,7 +9,7 @@ from aiida.plugins import load_entry_point
 from aiida_crystal17.validation import validate_against_schema
 from aiida_crystal17.gulp.unit_styles import get_pressure
 from aiida_crystal17.symmetry import convert_structure, operation_cart_to_frac
-from aiida_crystal17.parsers.gui_parse import get_crystal_type_name
+from aiida_crystal17.parsers.raw.gui_parse import get_crystal_type_name
 
 
 class InputCreationBase(object):
