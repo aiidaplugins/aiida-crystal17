@@ -17,7 +17,6 @@ class GulpOptCalculation(GulpAbstractCalculation):
     def get_retrieve_list(self):
         """ should return the files to be retrieved """
         return [
-            self.metadata.options.input_file_name,
             self.metadata.options.output_main_file_name,
             self.metadata.options.out_cif_file_name
         ]
