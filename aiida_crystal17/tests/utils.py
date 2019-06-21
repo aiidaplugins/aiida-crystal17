@@ -216,7 +216,7 @@ class AiidaTestApp(object):
         return CalculationFactory(entry_point_name)
 
     def generate_calcjob_node(self, entry_point_name, retrieved,
-                              computer_name='localhost', attributes=None):
+                              computer_name='localhost', options=None):
         """Fixture to generate a mock `CalcJobNode` for testing parsers.
 
         Parameters
@@ -227,8 +227,8 @@ class AiidaTestApp(object):
             containing the file(s) to be parsed
         computer_name : str
             used to get or create a ``Computer``, by default 'localhost'
-        attributes : None or dict
-            any additional attributes to set on the node
+        options : None or dict
+            any additional metadata options to set on the node
 
         Returns
         -------
@@ -254,8 +254,8 @@ class AiidaTestApp(object):
                                       'num_mpiprocs_per_machine': 1})
         node.set_option('max_wallclock_seconds', 1800)
 
-        if attributes:
-            node.set_attributes(attributes)
+        if options:
+            node.set_options(options)
 
         node.store()
 

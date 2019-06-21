@@ -71,7 +71,8 @@ def test_optimize_no_convergence(db_test_app):
     calc_cls = db_test_app.get_calc_cls('gulp.optimize')
     retrieved.put_object_from_file(path, "output.cif")
     parser = GulpOptParser
-    node = db_test_app.generate_calcjob_node('gulp.optimize', retrieved)
+    node = db_test_app.generate_calcjob_node(
+        'gulp.optimize', retrieved, options={"use_input_kinds": False})
     results, calcfunction = parser.parse_from_node(node)
     # print(get_calcjob_report(node))
     # raise
@@ -80,7 +81,7 @@ def test_optimize_no_convergence(db_test_app):
     assert calcfunction.exit_status == calc_cls.exit_codes.ERROR_NOT_OPTIMISED.status
 
     # the output structure should still be passed though
-    # TODO the test does not work in aiida-core 1.0.0b3 (fixed in #2960)
+    # TODO the test does not work in aiida-core <= 1.0.0b3 (fixed in #2960)
     # assert "results" in results
     # assert "structure" in results
 
@@ -94,7 +95,8 @@ def test_optimize_success(db_test_app):
     path = os.path.join(TEST_DIR, 'gulp_output_files', 'opt_reaxff_pyrite.cif')
     retrieved.put_object_from_file(path, "output.cif")
     parser = GulpOptParser
-    node = db_test_app.generate_calcjob_node('gulp.optimize', retrieved)
+    node = db_test_app.generate_calcjob_node(
+        'gulp.optimize', retrieved, options={"use_input_kinds": False})
     results, calcfunction = parser.parse_from_node(node)
     if not calcfunction.is_finished_ok:
         raise AssertionError(calcfunction.attributes)

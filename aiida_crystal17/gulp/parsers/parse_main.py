@@ -92,6 +92,7 @@ class GulpOptParser(Parser):
 
         cif_file = self.node.get_option("out_cif_file_name")
         if cif_file not in output_folder.list_object_names():
+            self.logger.error("the output cif file is missing")
             if parser_result.exit_code.status != 0:
                 # if there was already an error identified, then return that
                 return parser_result.exit_code
@@ -112,10 +113,32 @@ class GulpOptParser(Parser):
             with output_folder.open(cif_file, mode="r") as handle:
                 atoms = ase_read(handle, index=':', format="cif")[-1]
         atoms.set_tags(0)
-        structure = DataFactory('structure')(ase=atoms)
 
-        # TODO use kinds from input structure
+        if self.node.get_option("use_input_kinds"):
 
-        self.out('structure', structure)
+            if "structure" not in self.node.inputs:
+                self.logger.error("the input structure node is not set")
+                if parser_result.exit_code.status != 0:
+                    return parser_result.exit_code
+                return self.exit_codes.ERROR_MISSING_INPUT_STRUCTURE
+
+            in_structure = self.node.inputs.structure
+            in_atoms = in_structure.get_ase()
+
+            if in_atoms.get_chemical_symbols() != atoms.get_chemical_symbols():
+                self.logger.error(
+                    "the input and cif structures have different atomic configurations")
+                if parser_result.exit_code.status != 0:
+                    return parser_result.exit_code
+                return self.exit_codes.ERROR_CIF_INCONSISTENT
+
+            out_structure = in_structure.clone()
+            out_structure.set_cell(atoms.cell)
+            out_structure.reset_sites_positions(atoms.positions)
+
+        else:
+            out_structure = DataFactory('structure')(ase=atoms)
+
+        self.out('structure', out_structure)
 
         return parser_result.exit_code
