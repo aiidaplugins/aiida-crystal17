@@ -263,7 +263,6 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
     # assert gui_content == expected_gui
 
 
-@pytest.mark.timeout(60)
 def test_run_nio_afm_scf(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
@@ -356,7 +355,6 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
     assert edict.diff(attributes, expected_results, np_allclose=True) == {}
 
 
-@pytest.mark.timeout(60)
 @pytest.mark.process_execution
 def test_run_nio_afm_fullopt(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
