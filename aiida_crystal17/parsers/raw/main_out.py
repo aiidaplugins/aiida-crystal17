@@ -2,6 +2,7 @@
 parse the main output file and create the required output nodes
 """
 from collections import Mapping
+import traceback
 # TODO remove dependancy on ejplugins?
 import ejplugins
 from aiida_crystal17.symmetry import convert_structure
@@ -16,6 +17,7 @@ class OutputNodes(Mapping):
     """
     a mapping of output nodes, with attribute access
     """
+
     def __init__(self):
         self._dict = {
             "results": None,
@@ -71,6 +73,23 @@ class ParserResult(object):
         self.nodes = OutputNodes()
 
 
+# a mapping of known error messages to exit codes, in order of importance
+KNOWN_ERRORS = (
+    ("END OF DATA IN INPUT DECK", "ERROR_CRYSTAL_INPUT"),
+    ("FORMAT ERROR IN INPUT DECK", "ERROR_CRYSTAL_INPUT"),
+    ("GEOMETRY DATA FILE NOT FOUND", "ERROR_CRYSTAL_INPUT"),
+    ("Wavefunction file can not be found", "ERROR_WAVEFUNCTION_NOT_FOUND"),  # restart error
+    ("SCF ENDED - TOO MANY CYCLES", "UNCONVERGED_SCF"),
+    ("SCF FAILED", "UNCONVERGED_SCF"),  # usually found after: SCF ENDED - TOO MANY CYCLES
+    ("GEOMETRY OPTIMIZATION FAILED", "UNCONVERGED_GEOMETRY"),  # usually because run out of steps
+    ("CONVERGENCE TESTS UNSATISFIED", "UNCONVERGED_GEOMETRY"),  # usually found after: OPT END - FAILED
+    ("OPT END - FAILED", "UNCONVERGED_GEOMETRY"),
+    ("BASIS SET LINEARLY DEPENDENT", "BASIS_SET_LINEARLY_DEPENDENT"),  # occurs during geometry optimisations
+    ("SCF abnormal end", "ERROR_SCF_ABNORMAL_END"),  # catch all error
+    ("MPI_Abort", "ERROR_MPI_ABORT")
+)
+
+
 # pylint: disable=too-many-locals,too-many-statements
 def parse_main_out(fileobj, parser_class,
                    init_struct=None,
@@ -102,6 +121,7 @@ def parse_main_out(fileobj, parser_class,
     try:
         data = cryparse.read_file(fileobj, log_warnings=False)
     except IOError as err:
+        traceback.print_exc()
         parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
         results_data["parser_errors"].append(
             "Error parsing CRYSTAL 17 main output: {0}".format(err))
@@ -120,8 +140,6 @@ def parse_main_out(fileobj, parser_class,
     # to get (primitive) geometries (+ symmetries) for each opt step
     # Note the above files are only available for optimisation runs
 
-    if data["errors"]:
-        parser_result.exit_code = exit_codes.ERROR_CRYSTAL_RUN
     results_data["errors"] = data["errors"]
     results_data["warnings"] = data["warnings"]
 
@@ -142,9 +160,6 @@ def parse_main_out(fileobj, parser_class,
         results_data["scf_iterations"] = len(init_scf_data)
         # TODO create TrajectoryData from init_scf_data data
     else:
-        # TODO new parsing error codes?
-        # ERROR **** EXTRN **** GEOMETRY DATA FILE NOT FOUND - EXTERNAL KEYWORD NOT ALLOWED
-        # parser_result.exit_code = exit_codes.ERROR_CRYSTAL_RUN
         pass
 
     # optimisation trajectory data
@@ -183,6 +198,20 @@ def parse_main_out(fileobj, parser_class,
     #         arraydata.set_array(name, np.array(array))
     # else:
     #     arraydata = None
+
+    if data["errors"]:
+        # select the most appropriate exit code
+        exit_code = exit_codes.ERROR_CRYSTAL_RUN
+        for known_error_msg, code_name in KNOWN_ERRORS:
+            found = False
+            for error_msg in data["errors"]:
+                if known_error_msg in error_msg:
+                    found = True
+                    break
+            if found:
+                exit_code = exit_codes[code_name]
+                break
+        parser_result.exit_code = exit_code
 
     return parser_result
 

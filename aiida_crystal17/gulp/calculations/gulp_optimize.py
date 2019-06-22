@@ -9,6 +9,7 @@ class GulpOptCalculation(GulpAbstractCalculation):
     AiiDA calculation plugin to run the gulp executable,
     for single point energy calculations
     """
+
     def get_input_creation(self):
         return InputCreationOpt(
             outputs={"cif": self.metadata.options.out_cif_file_name}
@@ -32,19 +33,30 @@ class GulpOptCalculation(GulpAbstractCalculation):
         spec.input('metadata.options.out_cif_file_name',
                    valid_type=six.string_types, default='output.cif',
                    help="name of the cif file to output with final geometry")
+        spec.input('metadata.options.use_input_kinds',
+                   valid_type=bool, default=True,
+                   help=(
+                       "if True, use the atoms kinds from the input structure, "
+                       "when creating the output structure"))
         # spec.input('metadata.options.out_str_file_name',
         #            valid_type=six.string_types, default='output.str',
         #            help="name of the str file (i.e. a CRYSTAL98 .gui file)")
 
         spec.input(
-            'symmetry', valid_type=DataFactory('dict'),
+            'symmetry', valid_type=DataFactory('crystal17.symmetry'),
             required=False,
             help=('parameters to create the symmetry section of the '
                   '.gin file content (for constrained optimisation).'))
 
         spec.exit_code(
-            150, 'ERROR_CIF_FILE_MISSING',
+            250, 'ERROR_CIF_FILE_MISSING',
             message='the output cif file was not found')
+        spec.exit_code(
+            251, 'ERROR_MISSING_INPUT_STRUCTURE',
+            message='an input structure is required to create the output structure of an optimisation')
+        spec.exit_code(
+            252, 'ERROR_CIF_INCONSISTENT',
+            message='the output cif file was not consistent with the input structure')
 
         spec.output(cls.link_output_structure,
                     valid_type=DataFactory('structure'),

@@ -9,6 +9,7 @@ from aiida.manage.fixtures import fixture_manager
 import pytest
 
 from aiida_crystal17.tests.utils import AiidaTestApp
+from aiida_crystal17.tests import TEST_DIR
 
 
 @pytest.fixture(scope='session')
@@ -46,3 +47,55 @@ def db_test_app(aiida_environment):
         work_directory, executables, environment=aiida_environment)
     aiida_environment.reset_db()
     shutil.rmtree(work_directory)
+
+
+@pytest.fixture(scope='function')
+def get_structure():
+    def _get_structure(name):
+        from aiida.plugins import DataFactory
+        from ase.spacegroup import crystal
+        structure_data_cls = DataFactory('structure')
+        if name == "MgO":
+            atoms = crystal(
+                symbols=[12, 8],
+                basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+                spacegroup=225,
+                cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
+            return structure_data_cls(ase=atoms)
+        elif name == "NiO_afm":
+            atoms = crystal(
+                symbols=[28, 8],
+                basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+                spacegroup=225,
+                cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
+            atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
+            return structure_data_cls(ase=atoms)
+        elif name == "pyrite":
+            from aiida_crystal17.symmetry import convert_structure
+            structure_data = {
+                "lattice": [[5.38, 0.000000, 0.000000],
+                            [0.000000, 5.38, 0.000000],
+                            [0.000000, 0.000000, 5.38]],
+                "fcoords": [[0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5],
+                            [0.5, 0.5, 0.0], [0.338, 0.338, 0.338],
+                            [0.662, 0.662, 0.662], [0.162, 0.662, 0.838],
+                            [0.838, 0.338, 0.162], [0.662, 0.838, 0.162],
+                            [0.338, 0.162, 0.838], [0.838, 0.162, 0.662],
+                            [0.162, 0.838, 0.338]],
+                "symbols": ['Fe'] * 4 + ['S'] * 8,
+                "pbc": [True, True, True]
+            }
+            return convert_structure(structure_data, "aiida")
+        raise ValueError(name)
+    return _get_structure
+
+
+@pytest.fixture(scope='function')
+def get_cif():
+    def _get_cif(name):
+        from aiida.plugins import DataFactory
+        cif_data_cls = DataFactory('cif')
+        if name == "pyrite":
+            return cif_data_cls(file=os.path.join(TEST_DIR, "cif_files", "pyrite.cif"))
+        raise ValueError(name)
+    return _get_cif

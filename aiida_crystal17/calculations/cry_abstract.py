@@ -48,21 +48,46 @@ class CryAbstractCalculation(CalcJob):
             message=('An error was flagged trying to parse the '
                      'main crystal output file'))
 
+        spec.exit_code(
+            350, 'ERROR_CRYSTAL_INPUT',
+            message='the input file was could not be read by CRYSTAL')
+        spec.exit_code(
+            351, 'ERROR_WAVEFUNCTION_NOT_FOUND',
+            message='CRYSTAL could not find the required wavefunction file')
+
         # Significant errors but calculation can be used to restart
         spec.exit_code(
-            400, 'ERROR_CRYSTAL_RUN',
-            message='The main crystal output file flagged an error')
+            401, 'UNCONVERGED_SCF',
+            message='SCF convergence did not finalise (usually due to reaching step limit)')
         spec.exit_code(
-            410, 'ERROR_SYMMETRY_INCONSISTENCY',
+            402, 'UNCONVERGED_GEOMETRY',
+            message='Geometry convergence did not finalise (usually due to reaching step limit)')
+        spec.exit_code(
+            410, 'ERROR_SCF_ABNORMAL_END',
+            message='an error was encountered during an SCF computation')
+        spec.exit_code(
+            411, 'BASIS_SET_LINEARLY_DEPENDENT',
+            message='an error encountered usually during geometry optimisation')
+        spec.exit_code(
+            412, 'ERROR_MPI_ABORT',
+            message='an unknown error was encountered, causing the MPI to abort')
+        spec.exit_code(
+            499, 'ERROR_CRYSTAL_RUN',
+            message='The main crystal output file flagged an unhandled error')
+
+        # errors in symmetry node consistency check
+        spec.exit_code(
+            510, 'ERROR_SYMMETRY_INCONSISTENCY',
             message=('inconsistency in the input and output symmetry'))
         spec.exit_code(
-            420, 'ERROR_SYMMETRY_NOT_FOUND',
+            520, 'ERROR_SYMMETRY_NOT_FOUND',
             message=('primitive symmops were not found in the output file'))
 
         spec.output(cls.link_output_results,
                     valid_type=DataFactory('dict'),
                     required=True,
                     help='the data extracted from the main output file')
+        spec.default_output_node = cls.link_output_results
         spec.output(cls.link_output_structure,
                     valid_type=DataFactory('structure'),
                     required=False,

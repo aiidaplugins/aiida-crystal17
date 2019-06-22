@@ -2,6 +2,7 @@
 parse the main.gout file of a GULP run and create the required output nodes
 """
 from collections import Mapping
+import traceback
 
 from aiida.plugins import DataFactory
 from aiida.engine import ExitCode
@@ -60,7 +61,7 @@ class ParserResult(object):
 
 
 # pylint: disable=too-many-locals,too-many-statements
-def parse_output(file_handle, parser_class, exit_codes=None, final=False):
+def parse_output(file_handle, parser_class, exit_codes=None, final=False, optimise=False):
     """ parse the main output file and create the required output nodes
 
     :param file_handle: handle to main output file
@@ -68,6 +69,7 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False):
     :param exit_codes: allowed exit codes
         (defaults to ``GulpAbstractCalculation.exit_codes``)
     :param final: whether to expect a 'final' key in the results_data
+    :param optimise: whether to expect an 'optimised' key in the results_data
 
     :return parse_result
 
@@ -88,12 +90,17 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False):
     try:
         _parse_main_output(file_handle.read(), results_data)
     except KeyError as err:
+        traceback.print_exc()
         parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
         results_data['parser_errors'].append("{}".format(err))
         return parser_result
 
-    if results_data['errors']:
+    if "optimised" in results_data and not results_data["optimised"]:
+        parser_result.exit_code = exit_codes.ERROR_NOT_OPTIMISED
+    elif results_data['errors']:
         parser_result.exit_code = exit_codes.ERROR_GULP_RUN
+    elif optimise and "optimised" not in results_data:
+        parser_result.exit_code = exit_codes.ERROR_NOT_OPTIMISED
 
     idata = None
     fdata = None
@@ -144,6 +151,11 @@ def _parse_main_output(outstr, data):
 
         if ' '.join(fields[:4]) == '**** Optimisation achieved ****':
             data['optimised'] = True
+        elif "Conditions for a minimum have not been satisfied. However" in line:
+            data['optimised'] = True
+            data['warnings'].append(
+                ("Conditions for a minimum have not been satisfied. "
+                 "However no lower point can be found - treat results with caution"))
         elif "No variables to optimise - single point performed" in line:
             data['optimised'] = True
             data['warnings'].append(

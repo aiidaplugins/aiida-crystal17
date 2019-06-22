@@ -28,13 +28,7 @@ def frac_to_cartesian(lattice, fcoords):
         Nx3 array of cartesian coordinate
 
     """
-    ccoords = []
-    for i in fcoords:
-        x = i[0] * lattice[0][0] + i[1] * lattice[1][0] + i[2] * lattice[2][0]
-        y = i[0] * lattice[0][1] + i[1] * lattice[1][1] + i[2] * lattice[2][1]
-        z = i[0] * lattice[0][2] + i[1] * lattice[1][2] + i[2] * lattice[2][2]
-        ccoords.append([x, y, z])
-    return ccoords
+    return np.einsum("ij, jk -> ik", fcoords, lattice).tolist()
 
 
 def cartesian_to_frac(lattice, ccoords):
@@ -53,24 +47,7 @@ def cartesian_to_frac(lattice, ccoords):
         Nx3 array of fractional coordinate
 
     """
-    det3 = np.linalg.det
-
-    latt_tr = np.transpose(lattice)
-
-    fcoords = []
-    det_latt_tr = np.linalg.det(latt_tr)
-    for i in ccoords:
-        a = (det3([[i[0], latt_tr[0][1], latt_tr[0][2]],
-                   [i[1], latt_tr[1][1], latt_tr[1][2]],
-                   [i[2], latt_tr[2][1], latt_tr[2][2]]])) / det_latt_tr
-        b = (det3([[latt_tr[0][0], i[0], latt_tr[0][2]],
-                   [latt_tr[1][0], i[1], latt_tr[1][2]],
-                   [latt_tr[2][0], i[2], latt_tr[2][2]]])) / det_latt_tr
-        c = (det3([[latt_tr[0][0], latt_tr[0][1], i[0]],
-                   [latt_tr[1][0], latt_tr[1][1], i[1]],
-                   [latt_tr[2][0], latt_tr[2][1], i[2]]])) / det_latt_tr
-        fcoords.append([a, b, c])
-    return fcoords
+    return np.linalg.solve(np.array(lattice).T, np.array(ccoords).T).T.tolist()
 
 
 def prepare_for_spglib(structure):
@@ -165,6 +142,7 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
         "hall_number": dataset["hall_number"],
         "basis": "fractional",
         "operations": operations,
+        "equivalent_sites": dataset["equivalent_atoms"].tolist(),
         "computation": {
             "symmetry_program": "spglib",
             "symmetry_version": spglib.__version__,
@@ -510,53 +488,6 @@ def affine_to_operation(affine_matrix):
     rotation = affine_matrix[0:3][:, 0:3].flatten().tolist()
     translation = affine_matrix[0:3][:, 3].tolist()
     return rotation + translation
-
-
-def generate_full_symmops(operations, tolerance=0.3):
-    """Recursive algorithm to permute through all possible combinations of the
-    initially supplied symmetry operations to arrive at a complete set of
-    operations mapping a single atom to all other equivalent atoms in the
-    point group.  This assumes that the initial number already uniquely
-    identifies all operations.
-
-    adapted from pymatgen.symmetry.analyzer.generate_full_symmops
-
-    Parameters
-    ----------
-    operations: list
-        Nx9 representing symmetry operation as a flattened list;
-        (r00, r01, r02, r10, r11, r12, r20, r21, r22, t0, t1, t2)
-    tolerance : float
-        Distance tolerance to consider sites as symmetrically equivalent
-
-    Parameters
-    ----------
-    list
-        Nx9 representing symmetry operation as a flattened list;
-        (r00, r01, r02, r10, r11, r12, r20, r21, r22, t0, t1, t2)
-
-    """
-    unitary = np.eye(4)
-    generators = [operation_to_affine(op) for op in operations
-                  if not np.allclose(operation_to_affine(op), unitary)]
-    if not generators:
-        # C1 symmetry breaks assumptions in the algorithm afterwards
-        return operations
-    else:
-        full = list(generators)
-
-        for g in full:
-            for s in generators:
-                op = np.dot(g, s)
-                d = np.abs(full - op) < tolerance
-                if not np.any(np.all(np.all(d, axis=2), axis=1)):
-                    full.append(op)
-
-        d = np.abs(full - unitary) < tolerance
-        if not np.any(np.all(np.all(d, axis=2), axis=1)):
-            full.append(unitary)
-
-        return [affine_to_operation(op2) for op2 in full]
 
 
 def convert_structure(structure, out_type):

@@ -9,7 +9,7 @@ from aiida.plugins import load_entry_point
 from aiida_crystal17.validation import validate_against_schema
 from aiida_crystal17.gulp.unit_styles import get_pressure
 from aiida_crystal17.symmetry import convert_structure, operation_cart_to_frac
-from aiida_crystal17.parsers.gui_parse import get_crystal_type_name
+from aiida_crystal17.parsers.raw.gui_parse import get_crystal_type_name
 
 
 class InputCreationBase(object):
@@ -234,16 +234,25 @@ class InputCreationBase(object):
 
         # add atomic sites
         lines.append('cartesian')
-        # for site in structure.sites:
-        #     kind = structure.get_kind(site.kind_name)
-        #     lines.append("{0} core {1:.6f} {2:.6f} {3:.6f}".format(
-        #         kind.symbol, *site.position))
-        for site in atoms:
-            lines.append("{0} core {1:.6f} {2:.6f} {3:.6f}".format(
-                site.symbol, *site.position))
 
-        # TODO if symmetry operations are specified,
-        # then only symmetry inequivalent sites should be added?
+        if symmetry_data is not None:
+            # if symmetry operations are specified,
+            # then only symmetry inequivalent sites should be added
+            if "equivalent_sites" not in symmetry_data:
+                raise KeyError("symmetry data does not contain the 'equivalent_sites' key")
+            equivalent = symmetry_data["equivalent_sites"]
+            if atoms.get_number_of_atoms() != len(equivalent):
+                raise ValueError("number of atomic sites != number of symmetry equivalent sites")
+            used_equivalents = []
+            for site, eq in zip(atoms, equivalent):
+                if eq not in used_equivalents:
+                    lines.append("{0} core {1:.6f} {2:.6f} {3:.6f}".format(
+                        site.symbol, *site.position))
+                    used_equivalents.append(eq)
+        else:
+            for site in atoms:
+                lines.append("{0} core {1:.6f} {2:.6f} {3:.6f}".format(
+                    site.symbol, *site.position))
 
         # TODO creating shell models
 

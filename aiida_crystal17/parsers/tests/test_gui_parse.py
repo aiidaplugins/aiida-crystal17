@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from aiida_crystal17.tests import TEST_DIR
-from aiida_crystal17.parsers.gui_parse import (
+from aiida_crystal17.parsers.raw.gui_parse import (
     gui_file_read, gui_file_write, get_centering_code,
     get_crystal_type_code, structure_to_symmetry)
 

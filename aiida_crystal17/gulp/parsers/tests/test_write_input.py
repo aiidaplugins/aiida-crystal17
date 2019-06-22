@@ -65,7 +65,8 @@ def test_create_geometry_with_symm():
         "operations": [
             [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
             [1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0]
-        ]
+        ],
+        "equivalent_sites": [1, 2]
     }
     lines = icreate.create_geometry_lines(structure_data, symmetry_data)
     expected = [
@@ -113,7 +114,8 @@ def test_create_content_basic():
         "operations": [
             [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
             [1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0]
-        ]
+        ],
+        "equivalent_sites": [1, 2]
     }
     lines = icreate.create_content(
         structure_data, potential_data,
