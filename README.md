@@ -1,13 +1,13 @@
 [![Build Status](https://travis-ci.org/chrisjsewell/aiida-crystal17.svg?branch=master)](https://travis-ci.org/chrisjsewell/aiida-crystal17)
 [![Coverage Status](https://coveralls.io/repos/github/chrisjsewell/aiida-crystal17/badge.svg?branch=master)](https://coveralls.io/github/chrisjsewell/aiida-crystal17?branch=master)
-[![Docs status](https://readthedocs.org/projects/aiida-crystal17/badge)](http://aiida-crystal17.readthedocs.io/) 
+[![Docs status](https://readthedocs.org/projects/aiida-crystal17/badge)](http://aiida-crystal17.readthedocs.io/)
 [![PyPI](https://img.shields.io/pypi/v/aiida-crystal17.svg)](https://pypi.python.org/pypi/aiida-crystal17/)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/aiida-crystal17/badges/version.svg)](https://anaconda.org/conda-forge/aiida-crystal17)
 
 # aiida-crystal17
 
 AiiDA plugin for running the [CRYSTAL17](http://www.crystal.unito.it/) code.
-The code is principally tested against CRYSTAL17, 
+The code is principally tested against CRYSTAL17,
 but the output parsing has also been tested against CRYSTAL14.
 
 **Documentation**: https://readthedocs.org/projects/aiida-crystal17
@@ -17,8 +17,7 @@ but the output parsing has also been tested against CRYSTAL14.
 To install from Conda (recommended)::
 
 ```shell
->> conda install -c conda-forge aiida-crystal17
->> conda install -c bioconda chainmap==1.0.2
+>> conda install -c conda-forge aiida-crystal17 aiida-core.services
 ```
 
 To install from pypi::
@@ -54,7 +53,7 @@ To omit tests which call `runcry17`:
 >> pytest -v -m "not process_execution"
 ```
 
-or alternatively to call the `mock_runcry17` executable, 
+or alternatively to call the `mock_runcry17` executable,
 first set the global environmental variable:
 
 ```shell

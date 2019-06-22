@@ -45,7 +45,7 @@ class GulpAbstractCalculation(CalcJob):
             help=('atomic structure used to create the '
                   'geometry section of .gin file content.'))
         spec.input(
-            'potential', valid_type=DataFactory('dict'),
+            'potential', valid_type=DataFactory('gulp.potential'),
             required=True,
             help=('parameters to create the '
                   'potential section of the .gin file content.'))
@@ -74,12 +74,16 @@ class GulpAbstractCalculation(CalcJob):
         # Significant errors but calculation can be used to restart
         spec.exit_code(
             400, 'ERROR_GULP_RUN',
-            message='The main gulp output file flagged an error')
+            message='The main gulp output file flagged an unknown error')
+        spec.exit_code(
+            410, 'ERROR_NOT_OPTIMISED',
+            message='The main gulp output file did not signal that an expected optimisation completed')
 
         spec.output(cls.link_output_results,
                     valid_type=DataFactory('dict'),
                     required=True,
                     help='the data extracted from the main output file')
+        spec.default_output_node = cls.link_output_results
 
     def prepare_for_submission(self, tempfolder):
         """

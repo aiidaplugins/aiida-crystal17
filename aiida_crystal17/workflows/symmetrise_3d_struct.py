@@ -1,5 +1,4 @@
 """a work flow to symmetrise a structure and compute the symmetry operations"""
-from aiida.common.exceptions import ValidationError
 from aiida.plugins import DataFactory
 from aiida.engine import WorkChain, calcfunction
 from aiida_crystal17.symmetry import (
@@ -61,7 +60,8 @@ class Symmetrise3DStructure(WorkChain):
     @classmethod
     def define(cls, spec):
         super(Symmetrise3DStructure, cls).define(spec)
-        spec.input("structure", valid_type=StructureData, required=True)
+        spec.input("structure", valid_type=StructureData, required=False)
+        spec.input("cif", valid_type=DataFactory("cif"), required=False)
         spec.input("symprec", valid_type=Float, required=True,
                    serializer=lambda x: Float(x),
                    help=("Length tolerance for symmetry finding: "
@@ -82,22 +82,51 @@ class Symmetrise3DStructure(WorkChain):
         spec.input("compute.idealize", valid_type=bool, default=False,
                    help=("whether to remove distortions of the unit cell's atomic positions, "
                          "using obtained symmetry operations"))
-        spec.outline(cls.validate, cls.compute)
+
+        spec.outline(
+            cls.validate_inputs,
+            cls.compute
+        )
+
         spec.output("symmetry", valid_type=SymmetryData, required=True)
         spec.output("structure", valid_type=StructureData, required=False)
 
-    def validate(self):
-        # only allow 3d structures
-        if not all(self.inputs.structure.pbc):
-            raise ValidationError(
-                "the structure must be 3D (i.e. have all dimensions pbc=True)")
+        spec.exit_code(300, 'ERROR_INVALID_INPUT_RESOURCES',
+                       message='one of either a structure or cif input must be supplied')
+        spec.exit_code(301, 'ERROR_NON_3D_STRUCTURE',
+                       message='the supplied structure must be 3D (i.e. have all dimensions pbc=True)"')
+        spec.exit_code(302, 'ERROR_SYMMETRY_SETTINGS',
+                       message='symprec/angle_tolerance must be greater than 0.0')
+        spec.exit_code(303, 'ERROR_COMPUTE_OPTIONS',
+                       message='idealize can only be used when standardize=True')
+
+    def validate_inputs(self):
+
+        if 'structure' in self.inputs:
+            if 'cif' in self.inputs:
+                return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
+            self.ctx.structure = self.inputs.structure
+        elif 'cif' in self.inputs:
+            self.ctx.structure = self.inputs.cif.get_structure(converter="ase")
+        else:
+            return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
+
+        if not all(self.ctx.structure.pbc):
+            return self.exit_codes.ERROR_NON_3D_STRUCTURE
 
         if not self.inputs.symprec > 0.0:
-            raise ValidationError("symprec must be greater than 0.0")
+            return self.exit_codes.ERROR_SYMMETRY_SETTINGS
+
+        if "angle_tolerance" in self.inputs:
+            if not self.inputs.angle_tolerance > 0.0:
+                return self.exit_codes.ERROR_SYMMETRY_SETTINGS
+
+        if self.inputs.compute.idealize and not self.inputs.compute.standardize:
+            return self.exit_codes.ERROR_COMPUTE_OPTIONS
 
     def compute(self):
 
-        structure = self.inputs.structure
+        structure = self.ctx.structure
         symprec = self.inputs.symprec
         angtol = self.inputs.get("angle_tolerance", None)
 
@@ -115,8 +144,6 @@ class Symmetrise3DStructure(WorkChain):
             else:
                 new_structure = standard_structure(
                     structure, symprec, angtol)
-        elif self.inputs.compute.idealize:
-            raise ValueError("idealize can only be used when standardize=True")
         elif self.inputs.compute.primitive:
             new_structure = primitive_structure(structure, symprec, angtol)
 

@@ -13,7 +13,7 @@
         "Topic :: Scientific/Engineering :: Physics",
         "Framework :: AiiDA"
     ],
-    "version": "0.5.0b3",
+    "version": "0.6.0b3",
     "entry_points": {
         "console_scripts": [
             "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main",
@@ -23,7 +23,8 @@
             "crystal17.parameters = aiida_crystal17.data.input_params:CryInputParamsData",
             "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData",
             "crystal17.symmetry = aiida_crystal17.data.symmetry:SymmetryData",
-            "crystal17.kinds = aiida_crystal17.data.kinds:KindData"
+            "crystal17.kinds = aiida_crystal17.data.kinds:KindData",
+            "gulp.potential = aiida_crystal17.gulp.data.potential:EmpiricalPotential"
         ],
         "aiida.calculations": [
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",

@@ -52,7 +52,6 @@ def test_calcjob_submission(db_test_app):
     ('mgo_sto3g_opt.crystal.d12', None),
     ('mgo_sto3g_external.crystal.d12', 'mgo_sto3g_external.crystal.gui')
 ))
-@pytest.mark.timeout(60)
 @pytest.mark.process_execution
 def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
     # type: (AiidaTestApp, str, str) -> None

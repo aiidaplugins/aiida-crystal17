@@ -10,7 +10,7 @@ from aiida.common.folders import Folder
 from aiida.plugins import DataFactory, CalculationFactory
 import six
 
-from aiida_crystal17.parsers.inputd12_read import extract_data
+from aiida_crystal17.parsers.raw.inputd12_read import extract_data
 from ejplugins.crystal import CrystalOutputPlugin
 
 

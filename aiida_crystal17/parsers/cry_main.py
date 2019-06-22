@@ -4,7 +4,7 @@ A parser to read output from a standard CRYSTAL17 run
 from aiida.common import exceptions
 from aiida.parsers.parser import Parser
 
-from aiida_crystal17.parsers.main_out import parse_main_out
+from aiida_crystal17.parsers.raw.main_out import parse_main_out
 
 
 class CryMainParser(Parser):

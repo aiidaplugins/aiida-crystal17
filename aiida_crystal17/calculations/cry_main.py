@@ -11,8 +11,8 @@ from aiida.orm import Code
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
-from aiida_crystal17.parsers.gui_parse import gui_file_write
-from aiida_crystal17.parsers.inputd12_write import (
+from aiida_crystal17.parsers.raw.gui_parse import gui_file_write
+from aiida_crystal17.parsers.raw.inputd12_write import (
     write_input, create_atom_properties)
 
 

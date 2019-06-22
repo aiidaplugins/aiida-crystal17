@@ -31,6 +31,10 @@ hash_map = {
         "output": [("optimize_lj_pyrite.gout", ".gout", None),
                    ("optimize_lj_pyrite.cif", ".cif", "output")]
     },
+    "dc0eac053e11561ee13acea272345e20": {
+        "output": [("optimize_lj_pyrite_symm.gout", ".gout", None),
+                   ("optimize_lj_pyrite_symm.cif", ".cif", "output")]
+    },
     "ec39b0c69c6ef97d2a701f86054702ee": {
         "stdout": None,
         "output": [("opt_reaxff_pyrite.gout", ".gout", None),

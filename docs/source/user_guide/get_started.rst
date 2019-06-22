@@ -18,8 +18,7 @@ Installation
 
 To install from Conda (recommended)::
 
-    >> conda install -c conda-forge aiida-crystal17
-    >> conda install -c bioconda chainmap==1.0.2
+    >> conda install -c conda-forge aiida-crystal17 aiida-core.services
 
 To install from pypi::
 
