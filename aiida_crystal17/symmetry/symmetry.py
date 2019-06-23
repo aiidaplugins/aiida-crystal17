@@ -39,21 +39,22 @@ def structure_info(structure, max_srows=None, round_dp=4):
     l, m, n = structure.cell_angles
     cell = [item for sublist in np.round(structure.cell, round_dp)
             for item in sublist]
+    pa, pb, pc = structure.pbc
     header = dedent("""\
-    Structure Summary
+    StructureData Summary
     Lattice
         abc : {0:5.4} {1:5.4} {2:5.4}
      angles : {3:5.4} {4:5.4} {5:5.4}
      volume : {6:5.4}
-          A : {7:5.4} {8:5.4} {9:5.4}
-          B : {10:5.4} {11:5.4} {12:5.4}
-          C : {13:5.4} {14:5.4} {15:5.4}
-        pbc : {16} {17} {18}
+        pbc : {7} {8} {9}
+          A : {10:5.4} {11:5.4} {12:5.4}
+          B : {13:5.4} {14:5.4} {15:5.4}
+          C : {16:5.4} {17:5.4} {18:5.4}
     Kind  Symbols Position
     ----  ------- --------
     """.format(a, b, c, l, m, n,
                structure.get_cell_volume(),
-               *cell, *structure.pbc))
+               pa, pb, pc, *cell))
     slines = []
     for site in structure.sites:
         name = site.kind_name

@@ -1,5 +1,23 @@
-exit_status: 0
-process_label: Symmetrise3DStructure
-process_state: finished
-sealed: true
-stepper_state_info: 1:compute
+basis: fractional
+computation:
+  angle_tolerance: null
+  computation_class: aiida_crystal17.symmetry.symmetry
+  computation_version: 0.6.0b3
+  symmetry_program: spglib
+  symmetry_version: 1.12.2
+  symprec: 0.01
+equivalent_sites:
+- 0
+- 0
+- 0
+- 0
+- 4
+- 4
+- 4
+- 4
+- 4
+- 4
+- 4
+- 4
+hall_number: 501
+num_symops: 24

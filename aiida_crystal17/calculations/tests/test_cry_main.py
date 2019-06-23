@@ -31,8 +31,8 @@ def test_create_builder(db_test_app, get_structure):
         os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
 
     sym_calc = run_get_node(
-        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
-        compute={"primitive": True}).node
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings={"symprec": 0.01, "compute_primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -69,8 +69,8 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
     instruct = get_structure("MgO")
 
     sym_calc = run_get_node(
-        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
-        compute={"primitive": True}).node
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings={"symprec": 0.01, "compute_primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -175,8 +175,8 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     sym_calc = run_get_node(
-        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
-        compute={"primitive": True}).node
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings={"symprec": 0.01, "compute_primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -291,8 +291,8 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     sym_calc = run_get_node(
-        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
-        compute={"primitive": True}).node
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings={"symprec": 0.01, "compute_primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
@@ -384,8 +384,8 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     sym_calc = run_get_node(
-        WorkflowFactory("crystal17.sym3d"), structure=instruct, symprec=0.01,
-        compute={"primitive": True}).node
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings={"symprec": 0.01, "compute_primitive": True}).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 

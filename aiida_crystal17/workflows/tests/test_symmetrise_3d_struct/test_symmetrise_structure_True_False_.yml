@@ -8,16 +8,6 @@ computation:
   symprec: 0.01
 equivalent_sites:
 - 0
-- 0
-- 0
-- 0
-- 4
-- 4
-- 4
-- 4
-- 4
-- 4
-- 4
-- 4
-hall_number: 501
+- 1
+hall_number: 512
 num_symops: 24

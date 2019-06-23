@@ -10,7 +10,8 @@ from aiida_crystal17.symmetry import (
 
 
 def test_struct_info(db_test_app, get_structure):
-    assert isinstance(structure_info(get_structure("MgO")), six.string_types)
+    string = structure_info(get_structure("MgO"))
+    assert isinstance(string, six.string_types)
 
 
 def test_reset_kind_names(db_test_app, get_structure):

@@ -54,6 +54,7 @@ def get_structure():
     def _get_structure(name):
         from aiida.plugins import DataFactory
         from ase.spacegroup import crystal
+        from aiida_crystal17.symmetry import convert_structure
         structure_data_cls = DataFactory('structure')
         if name == "MgO":
             atoms = crystal(
@@ -71,7 +72,6 @@ def get_structure():
             atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
             return structure_data_cls(ase=atoms)
         elif name == "pyrite":
-            from aiida_crystal17.symmetry import convert_structure
             structure_data = {
                 "lattice": [[5.38, 0.000000, 0.000000],
                             [0.000000, 5.38, 0.000000],
@@ -85,6 +85,23 @@ def get_structure():
                 "symbols": ['Fe'] * 4 + ['S'] * 8,
                 "pbc": [True, True, True]
             }
+            return convert_structure(structure_data, "aiida")
+        elif name == "zincblende":
+            structure_data = {
+                'pbc': [True, True, True],
+                'atomic_numbers': [26, 26, 26, 26, 16, 16, 16, 16],
+                'ccoords': [[0.0, 0.0, 0.0],
+                            [2.71, 2.71, 0.0],
+                            [0.0, 2.71, 2.71],
+                            [2.71, 0.0, 2.71],
+                            [1.355, 1.355, 1.355],
+                            [4.065, 4.065, 1.355],
+                            [1.355, 4.065, 4.065],
+                            [4.065, 1.355, 4.065]],
+                'lattice': [[5.42, 0.0, 0.0],
+                            [0.0, 5.42, 0.0],
+                            [0.0, 0.0, 5.42]],
+                'equivalent': [0, 0, 0, 0, 0, 0, 0, 0]}
             return convert_structure(structure_data, "aiida")
         raise ValueError(name)
     return _get_structure
