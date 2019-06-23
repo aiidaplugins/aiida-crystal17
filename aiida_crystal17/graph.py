@@ -27,6 +27,7 @@ from aiida.orm import load_node
 from aiida.orm.querybuilder import QueryBuilder
 from aiida.plugins import BaseFactory
 from aiida.common import LinkType
+from aiida.orm.utils.links import LinkPair
 
 
 def default_link_styles(link_type):
@@ -99,6 +100,10 @@ def default_data_sublabels(node):
         sublabel = "value: {}".format(node.get_attribute("value", ""))
     elif class_node_type == "data.float.Float.":
         sublabel = "value: {}".format(node.get_attribute("value", ""))
+    elif class_node_type == "data.str.Str.":
+        sublabel = "{}".format(node.get_attribute("value", ""))
+    elif class_node_type == "data.bool.Bool.":
+        sublabel = "{}".format(node.get_attribute("value", ""))
     elif class_node_type == "data.code.Code.":
         sublabel = "{}@{}".format(os.path.basename(
             node.get_execname()), node.get_computer_name())
@@ -119,6 +124,8 @@ def default_data_sublabels(node):
         if sg_numbers:
             sublabel_lines.append(", ".join(sg_numbers))
         sublabel = "; ".join(sublabel_lines)
+    elif class_node_type == "data.upf.UpfData.":
+        sublabel = "{}".format(node.get_attribute("element", ""))
     else:
         sublabel = node.get_description()
 
@@ -371,13 +378,15 @@ class Graph(object):
                 include_sublabels=self._include_sublabels)
             self._nodes.add(node.pk)
 
-    def add_edge(self, in_node, out_node, style=None, overwrite=False):
+    def add_edge(self, in_node, out_node, link_pair=None, style=None, overwrite=False):
         """add single node to the graph
 
         :param in_node: node or node pk
         :type in_node: int or aiida.orm.nodes.node.Node
         :param out_node: node or node pk
         :type out_node: int or aiida.orm.nodes.node.Node
+        :param link_pair: defining the relationship between the nodes
+        :type link_pair: None or aiida.orm.utils.links.LinkPair
         :param style: graphviz style parameters (Default value = None)
         :type style: dict or None
         :param overwrite: whether to overrite existing edge (Default value = False)
@@ -393,11 +402,11 @@ class Graph(object):
             raise AssertionError(
                 "the out_node must have already been added to the graph")
 
-        if (in_node.pk, out_node.pk) in self.edges and not overwrite:
+        if (in_node.pk, out_node.pk, link_pair) in self.edges and not overwrite:
             return
 
         style = {} if style is None else style
-        self._edges.add((in_node.pk, out_node.pk))
+        self._edges.add((in_node.pk, out_node.pk, link_pair))
         _add_graphviz_edge(self._graph, in_node, out_node, style)
 
     def add_incoming(self, node, link_types=(), annotate_links=False, return_pks=True):
@@ -427,6 +436,7 @@ class Graph(object):
         nodes = []
         for link_triple in node.get_incoming(link_type=link_types).link_triples:
             self.add_node(link_triple.node)
+            link_pair = LinkPair(link_triple.link_type, link_triple.link_label)
             style = self._link_styles(link_triple.link_type)
             if annotate_links == "label":
                 style['label'] = link_triple.link_label
@@ -435,7 +445,7 @@ class Graph(object):
             elif annotate_links == "both":
                 style['label'] = "{}\n{}".format(
                     link_triple.link_type.name, link_triple.link_label)
-            self.add_edge(link_triple.node, node, style=style)
+            self.add_edge(link_triple.node, node, link_pair, style=style)
             nodes.append(
                 link_triple.node.pk if return_pks else link_triple.node)
 
@@ -468,6 +478,7 @@ class Graph(object):
         nodes = []
         for link_triple in node.get_outgoing(link_type=link_types).link_triples:
             self.add_node(link_triple.node)
+            link_pair = LinkPair(link_triple.link_type, link_triple.link_label)
             style = self._link_styles(link_triple.link_type)
             if annotate_links == "label":
                 style['label'] = link_triple.link_label
@@ -476,7 +487,7 @@ class Graph(object):
             elif annotate_links == "both":
                 style['label'] = "{}\n{}".format(
                     link_triple.link_type.name, link_triple.link_label)
-            self.add_edge(node, link_triple.node, style=style)
+            self.add_edge(node, link_triple.node, link_pair, style=style)
             nodes.append(
                 link_triple.node.pk if return_pks else link_triple.node)
 
@@ -488,7 +499,7 @@ class Graph(object):
                             link_types=(),
                             annotate_links=False,
                             origin_style=(),
-                            include_calculation_inputs=False):
+                            include_process_inputs=False):
         """add nodes and edges from an origin recursively,
         following outgoing links
 
@@ -502,8 +513,8 @@ class Graph(object):
         :type annotate_links: bool or str
         :param origin_style: node style map for origin node (Default value = ())
         :type origin_style: dict or tuple
-        :param include_calculation_inputs:  (Default value = False)
-        :type include_calculation_inputs: bool
+        :param include_process_inputs:  (Default value = False)
+        :type include_process_inputs: bool
 
         """
         # pylint: disable=too-many-arguments
@@ -523,8 +534,7 @@ class Graph(object):
                 new_nodes.extend(
                     self.add_outgoing(node, link_types=link_types, annotate_links=annotate_links, return_pks=False))
 
-                if include_calculation_inputs and isinstance(node,
-                                                             BaseFactory("aiida.node", "process.calculation")):
+                if include_process_inputs and isinstance(node, BaseFactory("aiida.node", "process")):
                     self.add_incoming(node, link_types=link_types,
                                       annotate_links=annotate_links)
 
@@ -536,7 +546,7 @@ class Graph(object):
                           link_types=(),
                           annotate_links=False,
                           origin_style=(),
-                          include_calculation_outputs=False):
+                          include_process_outputs=False):
         """add nodes and edges from an origin recursively,
         following incoming links
 
@@ -550,8 +560,8 @@ class Graph(object):
         :type annotate_links: bool
         :param origin_style: node style map for origin node (Default value = ())
         :type origin_style: dict or tuple
-        :param include_calculation_outputs:  (Default value = False)
-        :type include_calculation_outputs: bool
+        :param include_process_outputs:  (Default value = False)
+        :type include_process_outputs: bool
 
         """
         # pylint: disable=too-many-arguments
@@ -571,8 +581,7 @@ class Graph(object):
                 new_nodes.extend(
                     self.add_incoming(node, link_types=link_types, annotate_links=annotate_links, return_pks=False))
 
-                if include_calculation_outputs and isinstance(node,
-                                                              BaseFactory("aiida.node", "process.calculation")):
+                if include_process_outputs and isinstance(node, BaseFactory("aiida.node", "process")):
                     self.add_outgoing(node, link_types=link_types,
                                       annotate_links=annotate_links)
 
@@ -631,7 +640,7 @@ class Graph(object):
 
         for (target_node,) in query.iterall():
             self.add_node(target_node)
-            self.add_edge(origin_node, target_node, style={
+            self.add_edge(origin_node, target_node, None, style={
                           'style': 'dashed', 'color': 'grey'})
 
             if include_target_inputs:
