@@ -1,9 +1,30 @@
 from ase.spacegroup import crystal
 import numpy as np
+import pytest
+import six
 
 from aiida_crystal17.symmetry import (
     prepare_for_spglib, compute_symmetry_dataset, standardize_cell, find_primitive,
-    operations_cart_to_frac, operations_frac_to_cart, get_hall_number_from_symmetry)
+    operations_cart_to_frac, operations_frac_to_cart, get_hall_number_from_symmetry,
+    structure_info, reset_kind_names)
+
+
+def test_struct_info(db_test_app, get_structure):
+    assert isinstance(structure_info(get_structure("MgO")), six.string_types)
+
+
+def test_reset_kind_names(db_test_app, get_structure):
+    struct = get_structure("NiO_afm")
+    names = ["Ni_u", "Ni_u", "Ni_d", "Ni_d", "O", "O", "O", "O"]
+    new_struct = reset_kind_names(struct, names)
+    assert [s.kind_name for s in new_struct.sites] == names
+
+
+def test_reset_kind_names_fail(db_test_app, get_structure):
+    struct = get_structure("NiO_afm")
+    names = ["Ni_u", "Ni_u", "Ni_d", "Ni_d", "Ni_d", "O", "O", "O"]
+    with pytest.raises(AssertionError):
+        reset_kind_names(struct, names)
 
 
 def test_prepare_for_spglib(db_test_app):

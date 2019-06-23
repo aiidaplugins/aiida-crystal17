@@ -25,5 +25,8 @@
     "python.testing.nosetestsEnabled": false,
     "python.testing.pyTestEnabled": true,
     "restructuredtext.preview.sphinx.disabled": true,
-    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source",
+    "cSpell.words": [
+        "aiida"
+    ]
 }
