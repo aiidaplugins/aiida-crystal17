@@ -171,7 +171,7 @@ def default_process_styles(node):
     node_style = process_map.get(class_node_type, default)
 
     # style process node, based on success/failure of process
-    if node.is_failed:
+    if node.is_failed or node.is_excepted:
         node_style['style'] = 'filled'
         node_style['fillcolor'] = 'red'
     elif node.is_finished_ok:
@@ -245,6 +245,7 @@ def _add_graphviz_node(graph,
     if style_override is not None:
         node_style.update(style_override)
 
+    # coerce node style values to strings
     return graph.node("N{}".format(node.pk), **node_style)
 
 
@@ -260,6 +261,10 @@ def _add_graphviz_edge(graph, in_node, out_node, style=None):
     """
     if style is None:
         style = {}
+
+    # coerce node style values to strings
+    style = {k: str(v) for k, v in style.items()}
+
     return graph.edge("N{}".format(in_node.pk), "N{}".format(out_node.pk), **style)
 
 
@@ -272,6 +277,7 @@ class Graph(object):
                  engine=None,
                  graph_attr=None,
                  global_node_style=None,
+                 global_edge_style=None,
                  include_sublabels=True,
                  link_styles=None,
                  data_styles=None,
@@ -288,6 +294,9 @@ class Graph(object):
         :param global_node_style: styles which will be added to all nodes.
             Note this will override any builtin attributes (Default value = None)
         :type global_node_style: dict or None
+        :param global_edge_style: styles which will be added to all edges.
+            Note this will override any builtin attributes (Default value = None)
+        :type global_edge_style: dict or None
         :param include_sublabels: if True, the note text will include node dependant sub-labels (Default value = True)
         :type include_sublabels: bool
         :param link_styles: callable mapping LinkType to graphviz style dict;
@@ -307,6 +316,9 @@ class Graph(object):
         self._global_node_style = {}
         if global_node_style:
             self._global_node_style = global_node_style
+        self._global_edge_style = {}
+        if global_edge_style:
+            self._global_edge_style = global_edge_style
         self._include_sublabels = include_sublabels
         if link_styles is not None:
             self._link_styles = link_styles
@@ -407,6 +419,8 @@ class Graph(object):
 
         style = {} if style is None else style
         self._edges.add((in_node.pk, out_node.pk, link_pair))
+        style.update(self._global_edge_style)
+
         _add_graphviz_edge(self._graph, in_node, out_node, style)
 
     def add_incoming(self, node, link_types=(), annotate_links=False, return_pks=True):
