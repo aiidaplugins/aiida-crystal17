@@ -246,6 +246,8 @@ def _add_graphviz_node(graph,
         node_style.update(style_override)
 
     # coerce node style values to strings
+    node_style = {k: str(v) for k, v in node_style.items()}
+
     return graph.node("N{}".format(node.pk), **node_style)
 
 
