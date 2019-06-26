@@ -81,9 +81,8 @@ def test_optimize_no_convergence(db_test_app):
     assert calcfunction.exit_status == calc_cls.exit_codes.ERROR_NOT_OPTIMISED.status
 
     # the output structure should still be passed though
-    # TODO the test does not work in aiida-core <= 1.0.0b3 (fixed in #2960)
-    # assert "results" in results
-    # assert "structure" in results
+    assert "results" in results
+    assert "structure" in results
 
 
 def test_optimize_success(db_test_app):
