@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pytest
 
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.parsers.raw.gui_parse import (
     gui_file_read, gui_file_write, get_centering_code,
     get_crystal_type_code, structure_to_symmetry)
@@ -25,7 +25,7 @@ from aiida_crystal17.parsers.raw.gui_parse import (
     )
 )
 def test_gui_file_read(gui_filename, num_symops, space_group):
-    path = os.path.join(TEST_DIR, "gui_test_files", "outputs", gui_filename)
+    path = os.path.join(TEST_FILES, "gui", "out", gui_filename)
     with open(path) as handle:
         lines = handle.read().splitlines()
     structdata, symmdata = gui_file_read(lines)
@@ -69,7 +69,7 @@ def test_structure_to_symmetry(db_test_app, gui_filename,
     """ we test that we can go round trip,
     reading a gui file and comparing the parsed symmetry to the computed one
     """
-    path = os.path.join(TEST_DIR, "gui_test_files", "outputs", gui_filename)
+    path = os.path.join(TEST_FILES, "gui", "out", gui_filename)
     with open(path) as handle:
         lines = handle.read().splitlines()
     structdata, symmdata = gui_file_read(lines)
@@ -102,7 +102,7 @@ def test_structure_to_symmetry_operations(
     """ we test that we can go round trip,
     reading a gui file and comparing the parsed symmetry to the computed one
     """
-    path = os.path.join(TEST_DIR, "gui_test_files", "outputs", gui_filename)
+    path = os.path.join(TEST_FILES, "gui", "out", gui_filename)
     with open(path) as handle:
         lines = handle.read().splitlines()
     structdata, symmdata = gui_file_read(lines)

@@ -6,14 +6,14 @@ from aiida.orm import RemoteData
 
 from aiida_crystal17.immigration.create_inputs import populate_builder
 from aiida_crystal17.immigration.create_calcjob import immigrate_existing
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.tests.utils import get_default_metadata
 
 
 def test_create_builder(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join(TEST_DIR, "output_files",
+    inpath = os.path.join(TEST_FILES, "crystal", "in", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join(TEST_FILES, "crystal", "out",
                            'nio_sto3g_afm.crystal.out')
 
     with SandboxFolder() as folder:
@@ -66,8 +66,8 @@ def test_create_builder(db_test_app, data_regression):
 
 def test_full_nio_afm(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join(TEST_DIR, "output_files",
+    inpath = os.path.join(TEST_FILES, "crystal", "in", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join(TEST_FILES, "crystal", "out",
                            'nio_sto3g_afm.crystal.out')
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -103,8 +103,8 @@ def test_full_nio_afm(db_test_app, data_regression):
 
 def test_full_mgo_opt(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_DIR, "input_files", 'mgo_sto3g_opt.crystal.d12')
-    outpath = os.path.join(TEST_DIR, "output_files",
+    inpath = os.path.join(TEST_FILES, "crystal", "in", 'mgo_sto3g_opt.crystal.d12')
+    outpath = os.path.join(TEST_FILES, "crystal", "out",
                            'mgo_sto3g_opt.crystal.out')
 
     code = db_test_app.get_or_create_code('crystal17.main')

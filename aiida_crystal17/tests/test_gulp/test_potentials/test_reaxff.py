@@ -1,14 +1,14 @@
 import os
 from jsonextended import edict
 
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.gulp.potentials.reaxff import (
     read_reaxff_file, write_lammps, PotentialWriterReaxff)
 
 
 def test_parse():
 
-    fpath = os.path.join(TEST_DIR, 'gulp_input_files', 'FeCrOSCH.reaxff')
+    fpath = os.path.join(TEST_FILES, "gulp", "in", 'FeCrOSCH.reaxff')
     data = read_reaxff_file(fpath)
 
     # print(data)
@@ -424,7 +424,7 @@ def test_parse():
 
 
 def test_write_gulp():
-    fpath = os.path.join(TEST_DIR, 'gulp_input_files', 'FeCrOSCH.reaxff')
+    fpath = os.path.join(TEST_FILES, "gulp", "in", 'FeCrOSCH.reaxff')
     data = read_reaxff_file(fpath)
 
     expected = """#
@@ -543,7 +543,7 @@ S  core S  core S  core S  core   2.4661  71.9719   0.0100  -8.0000   0.0000
 
 def test_write_lammps():
 
-    fpath = os.path.join(TEST_DIR, 'gulp_input_files', 'FeCrOSCH.reaxff')
+    fpath = os.path.join(TEST_FILES, "gulp", "in", 'FeCrOSCH.reaxff')
     data = read_reaxff_file(fpath)
 
     expected2 = """Reactive MD-force field: Cr/O/Fe/S/C/H force field 2014

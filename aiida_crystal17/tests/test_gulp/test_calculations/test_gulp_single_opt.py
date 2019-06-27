@@ -3,7 +3,7 @@ from jsonextended import edict
 from aiida.plugins import DataFactory
 from aiida_crystal17 import __version__
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
-from aiida_crystal17.tests import TEST_DIR  # noqa: F401
+from aiida_crystal17.tests import TEST_FILES  # noqa: F401
 from aiida_crystal17.gulp.parsers.write_input import (  # noqa: F401
     InputCreationSingle, InputCreationOpt)
 from aiida_crystal17.symmetry import compute_symmetry_dict
@@ -54,7 +54,7 @@ def test_run_single_lj(db_test_app, get_structure):
 
     # file_hash = write_input_file(
     #     InputCreationSingle(),
-    #     os.path.join(TEST_DIR, "gulp_input_files", "single_lj_pyrite.gin"),
+    #     os.path.join(TEST_FILES, "gulp", "in", "single_lj_pyrite.gin"),
     #     structure, potential)
     # raise ValueError(file_hash)
 
@@ -102,7 +102,7 @@ def test_run_optimize_lj(db_test_app, get_structure):
 
     # file_hash = write_input_file(
     #     InputCreationOpt({"cif": "output.cif"}),
-    #     os.path.join(TEST_DIR, "gulp_input_files", "optimize_lj_pyrite.gin"),
+    #     os.path.join(TEST_FILES, "gulp", "in", "optimize_lj_pyrite.gin"),
     #     structure, potential, parameters=parameters)
     # raise ValueError(file_hash)
 
@@ -157,7 +157,7 @@ def test_run_optimize_lj_with_symm(db_test_app, get_structure):
 
     # file_hash = write_input_file(
     #     InputCreationOpt({"cif": "output.cif"}),
-    #     os.path.join(TEST_DIR, "gulp_input_files", "optimize_lj_pyrite_symm.gin"),
+    #     os.path.join(TEST_FILES, "gulp", "in", "optimize_lj_pyrite_symm.gin"),
     #     structure, potential, parameters=parameters, symmetry=symmetry)
     # raise ValueError(file_hash)
 

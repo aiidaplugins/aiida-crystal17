@@ -58,7 +58,7 @@ def main(sys_args=None):
         return
 
     # script_path = os.path.dirname(os.path.realpath(__file__))
-    test_path = os.path.dirname(tests.__file__)
+    test_path = os.path.join(os.path.dirname(tests.__file__), "raw_files", "crystal")
     # runcry17 requires input file name without extension as first arg
     input_name = sys_args[0]
 
@@ -75,7 +75,7 @@ def main(sys_args=None):
     outfiles = hash_map[hashkey]
 
     for inname, outext in outfiles.get("output", []):
-        src = os.path.join(test_path, "output_files", inname)
+        src = os.path.join(test_path, "out", inname)
         dst = os.path.join(".", input_name + outext)
         copyfile(src, dst)
 
@@ -83,7 +83,7 @@ def main(sys_args=None):
         sys.stdout.write(
             "running mock runcry17 for input arg: {}".format(input_name))
     else:
-        outpath = os.path.join(test_path, "output_files", outfiles["stdout"])
+        outpath = os.path.join(test_path, "out", outfiles["stdout"])
         with open(outpath) as f:
             sys.stdout.write(f.read())
 

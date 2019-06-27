@@ -9,7 +9,7 @@ from aiida.manage.fixtures import fixture_manager
 import pytest
 
 from aiida_crystal17.tests.utils import AiidaTestApp
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 
 
 @pytest.fixture(scope='session')
@@ -113,6 +113,6 @@ def get_cif():
         from aiida.plugins import DataFactory
         cif_data_cls = DataFactory('cif')
         if name == "pyrite":
-            return cif_data_cls(file=os.path.join(TEST_DIR, "cif_files", "pyrite.cif"))
+            return cif_data_cls(file=os.path.join(TEST_FILES, "cif", "pyrite.cif"))
         raise ValueError(name)
     return _get_cif

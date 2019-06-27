@@ -4,7 +4,7 @@ from textwrap import dedent
 from click.testing import CliRunner
 from aiida_crystal17.cmndline.symmetry import symmetry
 from aiida_crystal17.cmndline.basis_set import basisset
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 
 
 def test_symmetry_show(db_test_app):
@@ -46,7 +46,7 @@ def test_basis_show(db_test_app):
     from aiida.plugins import DataFactory
     basis_cls = DataFactory('crystal17.basisset')
     node, created = basis_cls.get_or_create(
-        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
+        os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_O.basis'))
 
     runner = CliRunner()
     result = runner.invoke(basisset, ['show', str(node.pk)])
@@ -74,7 +74,7 @@ def test_basis_show(db_test_app):
 
 def test_basis_upload(db_test_app):
 
-    path = os.path.join(TEST_DIR, "input_files", "sto3g")
+    path = os.path.join(TEST_FILES, "basis_sets", "sto3g")
     runner = CliRunner()
     result = runner.invoke(basisset, [
         'uploadfamily', '--path', path, '--name', 'sto3g', '--description',

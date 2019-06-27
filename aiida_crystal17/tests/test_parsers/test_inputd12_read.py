@@ -1,6 +1,6 @@
 import os
 
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 import pytest
 from aiida_crystal17.parsers.raw.inputd12_read import extract_data
 from jsonextended import edict
@@ -223,7 +223,7 @@ def test_full_read(input_str):
 
 
 def test_mgo_sto3g_scf():
-    path = os.path.join(TEST_DIR, "input_files", 'mgo_sto3g_scf.crystal.d12')
+    path = os.path.join(TEST_FILES, "crystal", "in", 'mgo_sto3g_scf.crystal.d12')
     with open(path) as f:
         input_str = f.read()
 
@@ -237,7 +237,7 @@ def test_mgo_sto3g_scf():
 
 
 def test_mgo_sto3g_opt():
-    path = os.path.join(TEST_DIR, "input_files", 'mgo_sto3g_opt.crystal.d12')
+    path = os.path.join(TEST_FILES, "crystal", "in", 'mgo_sto3g_opt.crystal.d12')
     with open(path) as f:
         input_str = f.read()
 
@@ -261,7 +261,7 @@ def test_mgo_sto3g_opt():
 
 
 def test_nio_sto3g_afm():
-    path = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
+    path = os.path.join(TEST_FILES, "crystal", "in", 'nio_sto3g_afm.crystal.d12')
     with open(path) as f:
         input_str = f.read()
 

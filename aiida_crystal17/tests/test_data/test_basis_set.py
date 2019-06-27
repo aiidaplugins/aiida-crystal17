@@ -6,7 +6,7 @@ import os
 from aiida.plugins import DataFactory
 import pytest
 
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 
 
 def test_create_single(db_test_app):
@@ -16,7 +16,7 @@ def test_create_single(db_test_app):
 
     basis = basisset_data_cls(
         filepath=os.path.join(
-            TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+            TEST_FILES, "basis_sets", "sto3g", 'sto3g_Mg.basis'))
 
     print(basis.filename)
 
@@ -44,7 +44,7 @@ def test_create_single(db_test_app):
 
     # try retrieving a pre-existing (stored) basis
     basis, created = basisset_data_cls.get_or_create(
-        filepath=os.path.join(TEST_DIR, "input_files", "sto3g",
+        filepath=os.path.join(TEST_FILES, "basis_sets", "sto3g",
                               'sto3g_Mg.basis'))
     assert not created
 
@@ -55,7 +55,7 @@ def test_create_group(db_test_app):
     upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
-        os.path.join(TEST_DIR, "input_files", "sto3g"), "sto3g",
+        os.path.join(TEST_FILES, "basis_sets", "sto3g"), "sto3g",
         "group of sto3g basis sets")
 
     assert (nfiles, nuploaded) == (3, 3)
@@ -71,13 +71,13 @@ def test_create_group(db_test_app):
     # try uploading the files to a second group
     with pytest.raises(ValueError):
         upload_basisset_family(
-            os.path.join(TEST_DIR, "input_files", "sto3g"),
+            os.path.join(TEST_FILES, "basis_sets", "sto3g"),
             "another_sto3g",
             "another group of sto3g basis sets",
             stop_if_existing=True)
 
     nfiles, nuploaded = upload_basisset_family(
-        os.path.join(TEST_DIR, "input_files", "sto3g"),
+        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
         "another_sto3g",
         "another group of sto3g basis sets",
         stop_if_existing=False)
@@ -90,7 +90,7 @@ def test_bases_from_struct(db_test_app):
     upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     nfiles, nuploaded = upload_basisset_family(
-        os.path.join(TEST_DIR, "input_files", "sto3g"), "sto3g",
+        os.path.join(TEST_FILES, "basis_sets", "sto3g"), "sto3g",
         "group of sto3g basis sets")
 
     # MgO

@@ -10,7 +10,7 @@ import pytest
 from aiida.engine import run_get_node
 from aiida.plugins import CalculationFactory, DataFactory, WorkflowFactory
 import aiida_crystal17
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
@@ -26,9 +26,9 @@ def test_create_builder(db_test_app, get_structure):
 
     instruct = get_structure("MgO")
     mg_basis, _ = basis_data_cls.get_or_create(
-        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+        os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_Mg.basis'))
     o_basis, _ = basis_data_cls.get_or_create(
-        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
+        os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_O.basis'))
 
     sym_calc = run_get_node(
         WorkflowFactory("crystal17.sym3d"), structure=instruct,
@@ -75,9 +75,9 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     mg_basis, _ = basis_data_cls.get_or_create(
-        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_Mg.basis'))
+        os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_Mg.basis'))
     o_basis, _ = basis_data_cls.get_or_create(
-        os.path.join(TEST_DIR, "input_files", "sto3g", 'sto3g_O.basis'))
+        os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_O.basis'))
 
     # set up calculation
     builder = code.get_builder()
@@ -181,7 +181,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     upload_basisset_family(
-        os.path.join(TEST_DIR, "input_files", "sto3g"),
+        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
         "sto3g",
         "minimal basis sets",
         stop_if_existing=True,
@@ -297,7 +297,7 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     upload_basisset_family(
-        os.path.join(TEST_DIR, "input_files", "sto3g"),
+        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
         "sto3g",
         "minimal basis sets",
         stop_if_existing=True,
@@ -390,7 +390,7 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
     upload_basisset_family(
-        os.path.join(TEST_DIR, "input_files", "sto3g"),
+        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
         "sto3g",
         "minimal basis sets",
         stop_if_existing=True,

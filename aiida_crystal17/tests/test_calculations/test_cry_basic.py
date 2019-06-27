@@ -8,7 +8,7 @@ from jsonextended import edict
 import pytest
 
 import aiida_crystal17
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
@@ -21,7 +21,7 @@ def test_calcjob_submission(db_test_app):
     # Prepare input parameters
     code = db_test_app.get_or_create_code('crystal17.basic')
     infile = singlefile_data_cls(
-        file=os.path.join(TEST_DIR, "input_files",
+        file=os.path.join(TEST_FILES, "crystal", "in",
                           'mgo_sto3g_scf.crystal.d12'))
     infile.store()
 
@@ -77,11 +77,11 @@ def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
 
     # Prepare input parameters
     infile = singlefile_data_cls(
-        file=os.path.join(TEST_DIR, "input_files", inpath_main))
+        file=os.path.join(TEST_FILES, "crystal", "in", inpath_main))
     builder.input_file = infile
     if inpath_gui is not None:
         ingui = singlefile_data_cls(
-            file=os.path.join(TEST_DIR, "input_files", inpath_gui))
+            file=os.path.join(TEST_FILES, "crystal", "in", inpath_gui))
         builder.input_external = ingui
 
     outcome = run_get_node(builder)

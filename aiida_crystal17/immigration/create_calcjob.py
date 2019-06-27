@@ -2,7 +2,7 @@
 """
 Immigrate a CalcJob that was not run using AiiDa.
 """
-# TODO this should eventually by moved to aiida-core 
+# TODO this should eventually by moved to aiida-core
 # see aiidateam/aiida-quantumespresso#350
 
 from __future__ import absolute_import

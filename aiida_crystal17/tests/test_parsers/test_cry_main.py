@@ -2,7 +2,7 @@ import os
 import pytest
 from aiida.orm import FolderData
 # from aiida.cmdline.utils.common import get_calcjob_report
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -46,7 +46,7 @@ def test_failed_scf_convergence(db_test_app, plugin_name):
 
     retrieved = FolderData()
     retrieved.put_object_from_file(os.path.join(
-        TEST_DIR, "output_files", "FAILED_SCF_bcc_iron.crystal.out"), "main.out")
+        TEST_FILES, "crystal", "out", "FAILED_SCF_bcc_iron.crystal.out"), "main.out")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     parser = db_test_app.get_parser_cls(plugin_name)
@@ -64,7 +64,7 @@ def test_failed_geom_convergence(db_test_app, plugin_name):
 
     retrieved = FolderData()
     retrieved.put_object_from_file(os.path.join(
-        TEST_DIR, "output_files", "FAILED_GEOM_mackinawite_opt.crystal.out"), "main.out")
+        TEST_FILES, "crystal", "out", "FAILED_GEOM_mackinawite_opt.crystal.out"), "main.out")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     parser = db_test_app.get_parser_cls(plugin_name)

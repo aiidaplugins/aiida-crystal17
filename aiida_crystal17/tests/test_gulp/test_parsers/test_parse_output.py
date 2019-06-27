@@ -3,13 +3,13 @@ from jsonextended import edict
 
 from aiida_crystal17 import __version__
 from aiida_crystal17.gulp.parsers.parse_output import parse_output
-from aiida_crystal17.tests import TEST_DIR
+from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
 def test_parse_failed(db_test_app):
     # type: (AiidaTestApp) -> None
-    path = os.path.join(TEST_DIR, 'gulp_output_files', 'empty_error.gout')
+    path = os.path.join(TEST_FILES, "gulp", "out", 'empty_error.gout')
     with open(path) as handle:
         parse_result = parse_output(handle, "test_class")
 
@@ -30,7 +30,7 @@ def test_parse_failed(db_test_app):
 
 def test_parse_opt_reaxff_pyrite(db_test_app):
     # type: (AiidaTestApp) -> None
-    path = os.path.join(TEST_DIR, 'gulp_output_files', 'opt_reaxff_pyrite.gout')
+    path = os.path.join(TEST_FILES, "gulp", "out", 'opt_reaxff_pyrite.gout')
     with open(path) as handle:
         parse_result = parse_output(handle, "test_class", final=True)
 
