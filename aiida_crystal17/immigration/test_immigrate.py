@@ -1,24 +1,34 @@
 import os
 from jsonextended import edict
 
+from aiida.common.folders import SandboxFolder
+from aiida.orm import RemoteData
+
 from aiida_crystal17.immigration.create_inputs import populate_builder
-from aiida_crystal17.immigration.create_calcjob import create_crymain
+from aiida_crystal17.immigration.create_calcjob import immigrate_existing
 from aiida_crystal17.tests import TEST_DIR
 from aiida_crystal17.tests.utils import get_default_metadata
 
 
 def test_create_builder(db_test_app, data_regression):
 
-    inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join("output_files",
+    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join(TEST_DIR, "output_files",
                            'nio_sto3g_afm.crystal.out')
 
-    builder = populate_builder(
-        TEST_DIR, input_name=inpath, output_name=outpath)
+    with SandboxFolder() as folder:
+        folder.insert_path(inpath, 'main.d12')
+        folder.insert_path(outpath, 'main.out')
+
+        remote = RemoteData(remote_path=folder.abspath,
+                            computer=db_test_app.get_or_create_computer())
+
+        builder = populate_builder(remote)
 
     assert set(builder["basissets"].keys()) == set(["Ni", "O"])
 
-    data_regression.check(builder.parameters.attributes, 'test_create_builder_params')
+    data_regression.check(builder.parameters.attributes,
+                          'test_create_builder_params')
 
     expected_settings = {
         'kinds': {
@@ -56,45 +66,72 @@ def test_create_builder(db_test_app, data_regression):
 
 def test_full_nio_afm(db_test_app, data_regression):
 
-    inpath = os.path.join("input_files", 'nio_sto3g_afm.crystal.d12')
-    outpath = os.path.join("output_files",
+    inpath = os.path.join(TEST_DIR, "input_files", 'nio_sto3g_afm.crystal.d12')
+    outpath = os.path.join(TEST_DIR, "output_files",
                            'nio_sto3g_afm.crystal.out')
     code = db_test_app.get_or_create_code('crystal17.main')
 
-    builder = populate_builder(TEST_DIR, inpath, outpath, code=code, metadata=get_default_metadata())
-    node = create_crymain(builder, TEST_DIR, outpath)
+    metadata = get_default_metadata()
+    metadata['options'].update({
+        "input_file_name": 'other.d12',
+        "output_main_file_name": "other2.out"
+    })
 
-    data_regression.check(node.attributes)
+    with SandboxFolder() as folder:
+        folder.insert_path(inpath, 'other.d12')
+        folder.insert_path(outpath, 'other2.out')
+
+        remote = RemoteData(remote_path=folder.abspath,
+                            computer=db_test_app.get_or_create_computer())
+
+        builder = populate_builder(remote, code=code, metadata=metadata)
+
+        node = immigrate_existing(builder, remote)
+
+    attributes = node.attributes
+    attributes["remote_workdir"] = "path/to/remote"
+    attributes.pop("retrieve_singlefile_list", None)  # removed post v1.0.0b4
+
+    data_regression.check(attributes)
 
     assert set(node.inputs) == set(
         ['basissets__Ni', 'basissets__O',
          'parameters', 'structure', 'symmetry', 'kinds', 'code'])
 
-    assert set(node.outputs) == set(
-        ['results', 'retrieved'])
+    assert set(node.outputs) == set(['results', 'remote_folder', 'retrieved'])
 
 
 def test_full_mgo_opt(db_test_app, data_regression):
 
-    inpath = os.path.join("input_files", 'mgo_sto3g_opt.crystal.d12')
-    outpath = os.path.join("output_files",
+    inpath = os.path.join(TEST_DIR, "input_files", 'mgo_sto3g_opt.crystal.d12')
+    outpath = os.path.join(TEST_DIR, "output_files",
                            'mgo_sto3g_opt.crystal.out')
 
-    builder = populate_builder(
-        TEST_DIR, inpath, outpath,
-        db_test_app.get_or_create_code('crystal17.main'),
-        get_default_metadata()
-    )
-    node = create_crymain(builder, TEST_DIR, outpath)
+    code = db_test_app.get_or_create_code('crystal17.main')
 
-    data_regression.check(node.attributes)
+    with SandboxFolder() as folder:
+        folder.insert_path(inpath, 'main.d12')
+        folder.insert_path(outpath, 'main.out')
+
+        remote = RemoteData(remote_path=folder.abspath,
+                            computer=db_test_app.get_or_create_computer())
+
+        builder = populate_builder(remote, code=code, metadata=get_default_metadata())
+
+        node = immigrate_existing(builder, remote)
+
+    attributes = node.attributes
+    attributes["remote_workdir"] = "path/to/remote"
+    attributes.pop("retrieve_singlefile_list", None)  # removed post v1.0.0b4
+
+    data_regression.check(attributes)
 
     assert set(node.inputs) == set(
         ['basissets__Mg', 'basissets__O',
          'parameters', 'structure', 'symmetry', 'code'])
 
     assert set(node.outputs) == set(
-        ['results', 'retrieved', 'structure'])
+        ['results', 'retrieved', 'structure', 'remote_folder'])
 
     expected_instruct_attrs = {
         'cell': [

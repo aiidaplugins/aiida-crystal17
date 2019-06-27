@@ -6,17 +6,15 @@ import tempfile
 
 import ase
 from aiida.common.exceptions import OutputParsingError
-from aiida.common.folders import Folder
+from aiida.common.folders import SandboxFolder
 from aiida.plugins import DataFactory, CalculationFactory
-import six
 
 from aiida_crystal17.parsers.raw.inputd12_read import extract_data
 from ejplugins.crystal import CrystalOutputPlugin
 
 
 # pylint: disable=too-many-locals
-def populate_builder(folder, input_name="main.d12", output_name="main.out",
-                     code=None, metadata=None):
+def populate_builder(remote_data, code=None, metadata=None):
     """ create ``crystal17.main`` input nodes from an existing run
 
     NB: none of the nodes are stored, also
@@ -26,10 +24,8 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out",
     ----------
     folder: aiida.common.folders.Folder or str
         folder containing the input and output files
-    input_name: str
-        path to .d12 file (in folder)
-    output_name: str
-        path to .out file (in folder)
+    remote_data: aiida.orm.RemoteData
+        containing the input and output files required for parsing
     code: str or aiida.orm.nodes.data.code.Code or None
     metadata: dict or None
         calculation metadata
@@ -45,21 +41,43 @@ def populate_builder(folder, input_name="main.d12", output_name="main.out",
     symmetry_cls = DataFactory('crystal17.symmetry')
     kind_cls = DataFactory('crystal17.kinds')
 
-    if isinstance(folder, six.string_types):
-        folder = Folder(folder)
+    # get files
+    in_file_name = calc_cls.spec_options.get('input_file_name').default
+    out_file_name = calc_cls.spec_options.get('output_main_file_name').default
+    if metadata and 'options' in metadata:
+        in_file_name = metadata['options'].get('input_file_name', in_file_name)
+        out_file_name = metadata['options'].get('output_main_file_name', out_file_name)
 
-    with folder.open(input_name, mode='r') as f:
-        d12content = f.read()
+    remote_files = remote_data.listdir()
 
-    param_dict, basis_sets, atom_props = extract_data(d12content)
+    if in_file_name not in remote_files:
+        raise IOError(
+            "The input file '{}' is not contained in the remote_data folder. "
+            "If it has a different name, change "
+            "metadata['options]['input_file_name']".format(in_file_name))
+    if out_file_name not in remote_files:
+        raise IOError(
+            "The output file '{}' is not contained in the remote_data folder. "
+            "If it has a different name, change "
+            "metadata['options]['output_main_file_name']".format(out_file_name))
 
-    cryparse = CrystalOutputPlugin()
-    with folder.open(output_name, mode='r') as f:
-        try:
-            data = cryparse.read_file(f, log_warnings=False)
-        except IOError as err:
-            raise OutputParsingError(
-                "Error in CRYSTAL 17 run output: {}".format(err))
+    with SandboxFolder() as folder:
+        remote_data.getfile(in_file_name,
+                            os.path.join(folder.abspath, in_file_name))
+
+        with folder.open(in_file_name, mode='r') as handle:
+            param_dict, basis_sets, atom_props = extract_data(handle.read())
+
+        remote_data.getfile(out_file_name,
+                            os.path.join(folder.abspath, out_file_name))
+
+        cryparse = CrystalOutputPlugin()
+        with folder.open(out_file_name, mode='r') as handle:
+            try:
+                data = cryparse.read_file(handle, log_warnings=False)
+            except IOError as err:
+                raise OutputParsingError(
+                    "Error in CRYSTAL 17 run output: {}".format(err))
 
     # we retrieve the initial primitive geometry and symmetry
     atoms = _create_atoms(data)

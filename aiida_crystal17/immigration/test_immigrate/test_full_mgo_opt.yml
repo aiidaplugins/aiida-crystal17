@@ -12,12 +12,16 @@ parser_name: crystal17.main
 prepend_text: ''
 process_label: CryMainCalculation
 process_state: finished
+remote_workdir: path/to/remote
 resources:
   num_machines: 1
   num_mpiprocs_per_machine: 1
 retrieve_list:
-- main.d12
 - main.out
+- main.gui
+- _scheduler-stdout.txt
+- _scheduler-stderr.txt
+retrieve_temporary_list: []
 scheduler_stderr: _scheduler-stderr.txt
 scheduler_stdout: _scheduler-stdout.txt
 sealed: true

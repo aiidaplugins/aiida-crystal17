@@ -18,12 +18,12 @@
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-    "python.testing.pyTestArgs": [
+    "python.testing.pytestArgs": [
         "aiida_crystal17"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.pyTestEnabled": true,
+    "python.testing.pytestEnabled": true,
     "restructuredtext.preview.sphinx.disabled": true,
     "restructuredtext.confPath": "${workspaceFolder}/docs/source",
     "cSpell.words": [
