@@ -26,6 +26,8 @@ import aiida_crystal17.tests as tests
 hash_map = {
     "7231636fb32fa896709483defc8841fb": {
         "output": [[("mgo_sto3g_scf", "doss_total_only.f25"), ".f25"]]},
+    "c1c5a85d0d799459f2e20fcb25bec0af": {
+        "output": [[("mgo_sto3g_scf", "fermi_only.outp"), ".out"]]},
 }
 
 

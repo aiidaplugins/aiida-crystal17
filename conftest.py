@@ -33,6 +33,7 @@ def db_test_app(aiida_environment):
             'crystal17.basic': 'mock_runcry17',
             'crystal17.main': 'mock_runcry17',
             'crystal17.doss': 'mock_runprop17',
+            'crystal17.fermi': 'mock_runprop17',
             'gulp.single': 'mock_gulp',
             'gulp.optimize': 'mock_gulp'
         }
@@ -41,6 +42,7 @@ def db_test_app(aiida_environment):
             'crystal17.basic': 'runcry17',
             'crystal17.main': 'runcry17',
             'crystal17.doss': 'runprop17',
+            'crystal17.fermi': 'runprop17',
             'gulp.single': 'gulp',
             'gulp.optimize': 'gulp'
         }

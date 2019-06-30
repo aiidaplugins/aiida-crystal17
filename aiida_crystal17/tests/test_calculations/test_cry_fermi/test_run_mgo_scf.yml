@@ -1,0 +1,40 @@
+calc:
+  append_text: ''
+  custom_scheduler_commands: ''
+  environment_variables: {}
+  exit_status: 0
+  import_sys_environment: true
+  input_file_name: main.fermi.d3
+  input_wf_name: mgo_sto3g_scf.f9
+  max_wallclock_seconds: 30
+  mpirun_extra_params: []
+  output_main_fname: main.fermi.out
+  parser_name: crystal17.fermi
+  prepend_text: ''
+  process_label: CryFermiCalculation
+  process_state: finished
+  resources:
+    num_machines: 1
+    num_mpiprocs_per_machine: 1
+  retrieve_list:
+  - main.fermi.out
+  - main.fermi.outp
+  - _scheduler-stdout.txt
+  - _scheduler-stderr.txt
+  retrieve_temporary_list: []
+  scheduler_state: done
+  scheduler_stderr: _scheduler-stderr.txt
+  scheduler_stdout: _scheduler-stdout.txt
+  sealed: true
+  symlink_wf: true
+  withmpi: false
+fermi: -4.0000737
+results:
+  energy_units: eV
+  errors: []
+  fermi_energy: -4.0000737
+  parser_class: CryFermiParser
+  parser_errors: []
+  parser_version: 0.7.0b4
+  parser_warnings: []
+  warnings: []
