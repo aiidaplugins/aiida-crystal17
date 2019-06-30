@@ -65,6 +65,11 @@ def compute_symmetry(structure, settings):
     return SymmetryData(data=data)
 
 
+@calcfunction
+def cif_to_structure(cif):
+    return cif.get_structure(converter="ase")
+
+
 class Symmetrise3DStructure(WorkChain):
     """modify an AiiDa structure instance and compute its symmetry
 
@@ -165,7 +170,7 @@ class Symmetrise3DStructure(WorkChain):
                 return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
             self.ctx.structure = self.inputs.structure
         elif 'cif' in self.inputs:
-            self.ctx.structure = self.inputs.cif.get_structure(converter="ase")
+            self.ctx.structure = cif_to_structure(self.inputs.cif)
             self.ctx.new_structure = True
         else:
             return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
