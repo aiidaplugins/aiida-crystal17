@@ -48,6 +48,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
     calc_attributes.pop("scheduler_lastchecktime", None)
     calc_attributes.pop("last_jobinfo", None)
     calc_attributes.pop("remote_workdir", None)
+    calc_attributes.pop("retrieve_singlefile_list", None)
 
     results = {k: round(i, 7) if isinstance(i, float) else i
                for k, i in calc_node.outputs.results.attributes.items()}
