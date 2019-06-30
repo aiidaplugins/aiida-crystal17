@@ -56,4 +56,7 @@ def test_success(db_test_app, plugin_name, data_regression):
     assert calcfunction.is_finished_ok, calcfunction.exception
     assert "results" in results
     assert "arrays" in results
-    data_regression.check(results["results"].attributes)
+    results_attr = {k: round(i, 7) if isinstance(i, float) else i
+                    for k, i in results["results"].attributes.items()}
+    data_regression.check({
+        "results": results_attr, "arrays": results["arrays"].attributes})

@@ -71,7 +71,8 @@ def test_calcjob_submit_mgo(db_test_app):
         18 36
         1 0
         DOSS
-        0 100 0 0 1 14 0 -0.247 -0.047
+        0 100 -1 -1 1 14 0
+        -0.247 -0.047
         END""")
 
     assert input_content == expected_input
@@ -122,8 +123,11 @@ def test_run_mgo_scf(db_test_app, data_regression):
     calc_attributes.pop("last_jobinfo", None)
     calc_attributes.pop("remote_workdir", None)
 
+    results = {k: round(i, 7) if isinstance(i, float) else i
+               for k, i in calc_node.outputs.results.attributes.items()}
+
     data_regression.check({
         "calc": calc_attributes,
-        "results": calc_node.outputs.results.attributes,
+        "results": results,
         "arrays": calc_node.outputs.arrays.attributes
     })

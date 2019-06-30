@@ -36,11 +36,11 @@ calc:
   withmpi: false
 results:
   ejplugins_version: 0.11.1
-  energy_max: -1.168990258864791
-  energy_min: -6.7761793467004
+  energy_max: -1.1689903
+  energy_min: -6.7761793
   energy_units: eV
   errors: []
-  fermi_energy: -3.9864952633160198
+  fermi_energy: -3.9864953
   norbitals_total: 14
   npts: 102
   parser_class: CryDossParser
