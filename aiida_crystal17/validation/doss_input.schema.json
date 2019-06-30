@@ -3,12 +3,11 @@
     "description": "density of states (DOSS) input",
     "type": "object",
     "required": [
-        "band_first",
-        "band_last",
-        "energy_gap",
-        "projections",
         "shrink_is",
-        "shrink_isp"
+        "shrink_isp",
+        "band_units",
+        "band_minimum",
+        "band_maximum"
     ],
     "properties": {
         "shrink_is": {
@@ -19,64 +18,62 @@
             "type": "integer",
             "minimum": 1
         },
-        "npt": {
+        "npoints": {
             "description": "number of uniformly spaced energy values where DOSs are calculated",
             "type": "integer",
             "minimum": 1,
             "default": 1000
         },
-        "band_first": {
-            "description": "first band considered in DOS calculation",
-            "type": "integer",
-            "minimum": 1
-        },
-        "band_last": {
-            "description": "last band considered in DOS calculation",
-            "type": "integer",
-            "minimum": 1
-        },
-        "npol": {
+        "npoly": {
             "description": "number of Legendre polynomials used to expand DOSS",
             "type": "integer",
             "minimum": 1,
             "maximum": 25,
             "default": 14
         },
-        "energy_gap": {
-            "description": "Minimum and maximum energy (hartree) values to span for DOSS",
-            "type": ["array", "null"],
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-                "type": "integer"
-            }
+        "band_minimum": {
+            "type": ["integer", "number"]
         },
-        "projections": {
-            "type": "object",
-            "properties": {
-                "atoms": {
-                    "description": "DOS projected onto the set of all AOs of the N atoms",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "array",
-                        "minItems": 1,
-                        "items": {
-                            "type": "integer"
-                        }
-                    }
-                },
-                "orbitals": {
-                    "description": "DOS projected onto a set of N AOs",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "array",
-                        "minItems": 1,
-                        "items": {
-                            "type": "integer"
-                        }
-                    }
+        "band_maximum": {
+            "type": ["integer", "number"]
+        },
+        "band_units": {
+            "type": "string",
+            "enum": [
+                "eV",
+                "hartree",
+                "bands"
+            ]
+        },
+        "atomic_projections": {
+            "description": "DOS projected onto the set of all AOs of the N atoms",
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "integer"
                 }
-            }
+            },
+            "default": null
+        },
+        "orbital_projections": {
+            "description": "DOS projected onto a set of N AOs",
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "integer"
+                }
+            },
+            "default": null
         }
     }
 }
