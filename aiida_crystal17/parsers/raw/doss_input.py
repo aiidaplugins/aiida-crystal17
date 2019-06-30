@@ -107,7 +107,7 @@ def create_doss_content(params):
         inzb = ifnb = -1
         bmin = params["band_minimum"] / 27.21138602
         bmax = params["band_maximum"] / 27.21138602
-        erange = "{} {}" .format(bmin, bmax)
+        erange = "{0:.8f} {1:.8f}" .format(bmin, bmax)
     else:
         raise ValueError("band_units not recognised: {}".format(units))
 

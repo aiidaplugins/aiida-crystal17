@@ -25,8 +25,6 @@ def aiida_environment():
 @pytest.fixture(scope='function')
 def db_test_app(aiida_environment):
     """clear the database after each test"""
-    print(os.environ.get("MOCK_CRY17_EXECUTABLES"))
-
     if os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "false":
         print("NB: using mock executable")
         executables = {

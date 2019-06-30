@@ -215,8 +215,10 @@ class AiidaTestApp(object):
         from aiida.plugins import CalculationFactory
         return CalculationFactory(entry_point_name)
 
-    def generate_calcjob_node(self, entry_point_name, retrieved,
-                              computer_name='localhost', options=None):
+    def generate_calcjob_node(self, entry_point_name, retrieved=None,
+                              computer_name='localhost',
+                              options=None, mark_completed=False,
+                              remote_path=None):
         """Fixture to generate a mock `CalcJobNode` for testing parsers.
 
         Parameters
@@ -229,6 +231,10 @@ class AiidaTestApp(object):
             used to get or create a ``Computer``, by default 'localhost'
         options : None or dict
             any additional metadata options to set on the node
+        remote_path : str
+            path to a folder on the computer
+        mark_completed : bool
+            if True, set the process state to finished, and the exit_status = 0
 
         Returns
         -------
@@ -237,7 +243,8 @@ class AiidaTestApp(object):
 
         """
         from aiida.common.links import LinkType
-        from aiida.orm import CalcJobNode
+        from aiida.engine import ProcessState, ExitCode
+        from aiida.orm import CalcJobNode, RemoteData
         from aiida.plugins.entry_point import format_entry_point_string
 
         process = self.get_calc_cls(entry_point_name)
@@ -245,25 +252,37 @@ class AiidaTestApp(object):
         entry_point = format_entry_point_string(
             'aiida.calculations', entry_point_name)
 
-        node = CalcJobNode(computer=computer, process_type=entry_point)
+        calc_node = CalcJobNode(computer=computer, process_type=entry_point)
         spec_options = process.spec().inputs['metadata']['options']
         # TODO post v1.0.0b2, this can be replaced with process.spec_options
-        node.set_options({
+        calc_node.set_options({
             k: v.default for k, v in spec_options.items() if v.has_default()})
-        node.set_option('resources', {'num_machines': 1,
-                                      'num_mpiprocs_per_machine': 1})
-        node.set_option('max_wallclock_seconds', 1800)
+        calc_node.set_option('resources', {'num_machines': 1,
+                                           'num_mpiprocs_per_machine': 1})
+        calc_node.set_option('max_wallclock_seconds', 1800)
 
         if options:
-            node.set_options(options)
+            calc_node.set_options(options)
 
-        node.store()
+        if mark_completed:
+            calc_node.set_process_state(ProcessState.FINISHED)
+            calc_node.set_exit_status(ExitCode().status)
 
-        retrieved.add_incoming(
-            node, link_type=LinkType.CREATE, link_label='retrieved')
-        retrieved.store()
+        calc_node.store()
 
-        return node
+        if retrieved is not None:
+            retrieved.add_incoming(
+                calc_node, link_type=LinkType.CREATE, link_label='retrieved')
+            retrieved.store()
+
+        if remote_path is not None:
+            remote = RemoteData(remote_path=remote_path,
+                                computer=computer)
+            remote.add_incoming(
+                calc_node, link_type=LinkType.CREATE, link_label="remote")
+            remote.store()
+
+        return calc_node
 
     @contextmanager
     def sandbox_folder(self):
