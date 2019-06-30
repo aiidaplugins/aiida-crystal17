@@ -1,6 +1,3 @@
-import traceback
-
-
 from aiida_crystal17 import __version__
 
 

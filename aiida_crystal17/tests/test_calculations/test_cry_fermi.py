@@ -34,7 +34,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
         }
     }
     builder.shrink_is = Int(18)
-    builder.shrink_isp = Int(36) 
+    builder.shrink_isp = Int(36)
     builder.wf_folder = remote
 
     output = run_get_node(builder)
