@@ -1,0 +1,23 @@
+ejplugins_version: 0.11.1
+energy_max: 13.742002461762269
+energy_min: -21.05298677011166
+energy_units: eV
+errors: []
+fermi_energy: -3.39565443866376
+norbitals_projections:
+- 12
+- 24
+- 30
+- 14
+- 10
+- 24
+- 10
+norbitals_total: 124
+npts: 1002
+parser_class: dummy_parser_class
+parser_errors: []
+parser_version: 0.7.0b4
+parser_warnings: []
+spin: true
+system_type: open shell, conducting system
+warnings: []

@@ -45,7 +45,7 @@ def create_doss_content(params):
     NPT; number of uniformly spaced energy values (from bottom of band INZB to top of band IFNB)
     INZB; band considered in DOS calculation
     IFNB;  last band considered in DOS calculation
-    IPLO; output type (1 = to .d25 file) 
+    IPLO; output type (1 = to .d25 file)
     NPOL; number of Legendre polynomials used to expand DOSS (<= 25)
     NPR; number of printing options to switch on
 

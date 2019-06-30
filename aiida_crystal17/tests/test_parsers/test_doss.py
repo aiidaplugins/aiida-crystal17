@@ -1,6 +1,11 @@
+import os
 from textwrap import dedent
-from aiida_crystal17.parsers.raw.doss import (
+import numpy as np
+import six
+from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.parsers.raw.doss_input import (
     read_doss_contents, create_doss_content)
+from aiida_crystal17.parsers.raw.doss_output_f25 import read_doss_f25_content
 
 
 def test_read_doss_contents(data_regression):
@@ -50,4 +55,18 @@ def test_create_doss_content(file_regression):
             ]
         }
     }
-    file_regression.check("\n".join(create_doss_content(params)))
+    file_regression.check(six.ensure_text(
+        "\n".join(create_doss_content(params))))
+
+
+def test_read_doss_f25_content(data_regression, num_regression):
+    with open(os.path.join(TEST_FILES, "doss", "cubic_rocksalt_orbitals",
+                           "cubic-rocksalt_2x1_pdos.doss.f25")) as handle:
+        data, arrays = read_doss_f25_content(handle, "dummy_parser_class")
+
+    data_regression.check(data)
+    num_regression.check({
+        "energies": np.array(arrays["energies"]),
+        "total_alpha": np.array(arrays["total_alpha"]),
+        "total_beta": np.array(arrays["total_beta"])},
+        default_tolerance=dict(atol=1e-6, rtol=1e-4))

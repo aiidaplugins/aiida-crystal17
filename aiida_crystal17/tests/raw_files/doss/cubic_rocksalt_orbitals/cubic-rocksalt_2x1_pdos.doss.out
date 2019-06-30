@@ -1,0 +1,1219 @@
+date:               Fri  6 Apr 10:00:17 BST 2018
+hostname:           cx1-133-1-19
+system:             Linux cx1-133-1-19 3.10.0-327.36.3.el7.x86_64 #1 SMP Mon Oct 24 16:09:20 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+user:               cjs14
+input:              /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/cubic-rocksalt_2x1_pdos.doss.d3
+output:             /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/cubic-rocksalt_2x1_pdos.doss.out
+executable script:  /work/cjs14/runpropP.v1
+executable dir:     /home/cjs14/../gmallia/CRYSTAL17_cx1/v1.1/bin/Linux-mpiifort_MPP/Xeon___mpi__intel-2018___intel-suite__2016.3/
+executables:     
+                    -rwxr-xr-x 1 gmallia hpc-users 32924160 Dec 30 20:39 crystal
+                    -rwxr-xr-x 1 gmallia hpc-users 57070984 Dec 31 08:57 MPPcrystal
+                    -rwxr-xr-x 1 gmallia hpc-users 33041376 Dec 31 08:57 Pcrystal
+                    -rwxr-xr-x 1 gmallia hpc-users 12073408 Dec 31 08:57 Pproperties
+                    -rwxr-xr-x 1 gmallia hpc-users 11958424 Dec 31 08:55 properties 
+
+Command:            mpiexec  /home/cjs14/../gmallia/CRYSTAL17_cx1/v1.1/bin/Linux-mpiifort_MPP/Xeon___mpi__intel-2018___intel-suite__2016.3//Pproperties
+temporary directory:/var/tmp/pbs.1583850.cx1/cubic-rocksalt_2x1_pdos.doss_5274      
+<qstat -f 1583850.cx1>
+Job Id: 1583850.cx1
+    Job_Name = 18_cubic-rocks
+    Job_Owner = cjs14@login-2-internal.cx1.hpc.ic.ac.uk
+    resources_used.cpupercent = 0
+    resources_used.cput = 00:00:00
+    resources_used.mem = 0kb
+    resources_used.ncpus = 32
+    resources_used.vmem = 0kb
+    resources_used.walltime = 00:00:00
+    job_state = R
+    queue = pqchem
+    server = cx1
+    Checkpoint = u
+    ctime = Fri Apr  6 09:58:21 2018
+    Error_Path = login-2-internal.cx1.hpc.ic.ac.uk:/export101/work/cjs14/iron_s
+	ulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/18_cubic-rocks.e1
+	583850
+    exec_host = cx1-133-1-19/1*16+cx1-133-1-20/0*16
+    exec_vnode = (cx1-133-1-19:ncpus=16:mem=10485760kb)+(cx1-133-1-20:ncpus=16:
+	mem=10485760kb)
+    Hold_Types = n
+    Join_Path = oe
+    Keep_Files = n
+    Mail_Points = a
+    mtime = Fri Apr  6 10:00:14 2018
+    Output_Path = login-2-internal.cx1.hpc.ic.ac.uk:/export101/work/cjs14/iron_
+	sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/18_cubic-rocks.o
+	1583850
+    Priority = 0
+    qtime = Fri Apr  6 09:58:22 2018
+    Rerunable = True
+    Resource_List.mem = 20gb
+    Resource_List.mpiprocs = 32
+    Resource_List.ncpus = 32
+    Resource_List.nodect = 2
+    Resource_List.place = free
+    Resource_List.select = 2:ncpus=16:mem=10gb:mpiprocs=16:ompthreads=1
+    Resource_List.tmpspace = 10gb
+    Resource_List.walltime = 23:59:59
+    stime = Fri Apr  6 10:00:13 2018
+    session_id = 5049
+    jobdir = /home/cjs14
+    substate = 42
+    Variable_List = PBS_O_SYSTEM=Linux,PBS_O_SHELL=/bin/bash,
+	PBS_O_HOME=/home/cjs14,PBS_O_LOGNAME=cjs14,
+	PBS_O_WORKDIR=/export101/work/cjs14/iron_sulfide_compare/crystal/pdos/
+	18_cubic-rocksalt_AFM_std,PBS_O_LANG=en_GB.UTF-8,
+	PBS_O_PATH=/usr/lib64/qt-3.3/bin:/home/cjs14/perl5/bin:/usr/local/bin:
+	/usr/bin:/usr/local/sbin:/usr/sbin:/opt/pbs/bin,
+	PBS_O_MAIL=/var/spool/mail/cjs14,PBS_O_QUEUE=pqchem,
+	PBS_O_HOST=login-2-internal.cx1.hpc.ic.ac.uk
+    comment = Job run at Fri Apr 06 at 10:00 on (cx1-133-1-19:ncpus=16:mem=1048
+	5760kb)+(cx1-133-1-20:ncpus=16:mem=10485760kb)
+    etime = Fri Apr  6 09:58:22 2018
+    run_count = 1
+    Submit_arguments = run.qsub
+    pset = switchgroup=cx1-133-1
+    project = _pbs_project_default
+
+</qstat -f 1583850.cx1>
+wavefunction from /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/cubic-rocksalt_2x1_opt.f9
+file /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/cubic-rocksalt_2x1_opt.OPTINFO copied in /var/tmp/pbs.1583850.cx1/cubic-rocksalt_2x1_pdos.doss_5274/OPTINFO.DAT
+input data /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/cubic-rocksalt_2x1_pdos.doss.d3
+NEWK
+18 36
+1 0
+DOSS
+7 1000 29 55 1 14 0
+12 1 2 3 4 5 6 41 42 43 44 45 46
+24 7 8 9 10 11 12 13 14 15 16 17 18 47 48 49 50 51 52 53 54 55 56 57 58
+30 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73
+14 34 35 36 37 38 39 40 74 75 76 77 78 79 80
+10 81 82 83 84 85 103 104 105 106 107
+24 86 87 88 89 90 91 92 93 94 95 96 97 108 109 110 111 112 113 114 115 116 117 118 119
+10 98 99 100 101 102 120 121 122 123 124
+END
+
+# mpiexec: full path to program is /home/gmallia/CRYSTAL17_cx1/v1.1/bin/Linux-mpiifort_MPP/Xeon___mpi__intel-2018___intel-suite__2016.3/Pproperties
+# mpiexec: program arguments are: 
+# mpiexec: 32 ranks allocated via PBS select
+# mpiexec: 1 OpenMP threads / rank allocated by PBS select
+# mpiexec: Job has shared use of the allocated nodes. Disabling process-pinning
+# mpiexec: launching program...
+
+# mpiexec: machinefile configured as:
+cx1-133-1-19.cx1.hpc.ic.ac.uk:16
+cx1-133-1-20.cx1.hpc.ic.ac.uk:16
+#
+(cx1-133-1-19.cx1.hpc.ic.ac.uk:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
+(cx1-133-1-20.cx1.hpc.ic.ac.uk:16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31)
+ PROCESS           16  OF           32  WORKING
+ PROCESS            1  OF           32  WORKING
+ PROCESS           17  OF           32  WORKING
+ PROCESS            2  OF           32  WORKING
+ PROCESS           18  OF           32  WORKING
+ PROCESS            3  OF           32  WORKING
+ PROCESS           19  OF           32  WORKING
+ PROCESS            4  OF           32  WORKING
+ PROCESS           20  OF           32  WORKING
+ PROCESS            5  OF           32  WORKING
+ PROCESS           22  OF           32  WORKING
+ PROCESS            6  OF           32  WORKING
+ PROCESS           23  OF           32  WORKING
+ PROCESS            8  OF           32  WORKING
+ PROCESS           25  OF           32  WORKING
+ PROCESS           11  OF           32  WORKING
+ PROCESS           27  OF           32  WORKING
+ PROCESS           14  OF           32  WORKING
+ PROCESS           29  OF           32  WORKING
+ PROCESS           15  OF           32  WORKING
+ PROCESS           31  OF           32  WORKING
+ PROCESS            0  OF           32  WORKING
+
+         
+ *******************************************************************************
+ *                                                                             *
+ *                               CRYSTAL17                                     *
+ PROCESS           21  OF           32  WORKING
+ PROCESS           13  OF           32  WORKING
+ PROCESS           24  OF           32  WORKING
+ *                      public : 1.0.1 - Feb 1st, 2017                         *
+ *                       HTTP://WWW.CRYSTAL.UNITO.IT                           *
+ *                                                                             *
+ *                              MAIN AUTHORS                                   *
+ *                                                                             *
+ *  R. DOVESI(1,11), V.R. SAUNDERS(2), C. ROETTI(1,11), R. ORLANDO(1,11),      *
+ *  C.M. ZICOVICH-WILSON(1,3), F. PASCALE(4), B. CIVALLERI(1,11),              *
+ *  K. DOLL(5), N.M. HARRISON(2,6), I.J. BUSH(7), Ph. D'ARCO(8),               *
+ *  M. LLUNELL(9), M. CAUSA'(10), Y. NOEL(8), L. MASCHIO(1,11), A. ERBA(1,11)  *
+ *  M. RE'RAT(14), S. CASASSA(1,11)                                            *
+ *                                                                             *
+ *        CONTRIBUTIONS TO THE CODE HAVE ALSO BEEN GIVEN BY                    *
+ *                                                                             *
+ PROCESS           26  OF           32  WORKING
+ *  M. FERRABONE(1,11), M. DE LA PIERRE(1,11), M. FERRERO(1,11),               *
+ *  J. BAIMA(1,11), E. ALBANESE(1,11), M.F. PEINTINGER(12), R. BAST(13),       *
+ *  B. KIRTMAN(15), V. LACIVITA(1,11), R. DEMICHELIS(1,16)                     *
+ *  G. BRANDEBURG(17), S. SALUSTRO(1,11), G. SANSONE(1,11)                     *
+ *  M.T. RUGGIERO(18)                                                          *
+ *                                                                             *
+ * (1) THEORETICAL CHEMISTRY GROUP - UNIVERSITA' DI TORINO - TORINO (ITALY)    *
+
+ PROCESS           28  OF           32  WORKING
+ * (2) COMPUTATIONAL SCIENCE & ENGINEERING DEPARTMENT - STFC DARESBURY (UK)    *
+ * (3) UNIVERSIDAD AUTONOMA DEL ESTADO DE MORELOS - CUERNAVACA (MEXICO)        *
+ * (4) UNIVERSITE' DE LORRAINE - NANCY (FRANCE)                                *
+ * (5) UNIVERSITAET STUTTGART- STUTTGART (GERMANY)                             *
+ * (6) IMPERIAL COLLEGE - LONDON (UK)                                          *
+ * (7) OXFORD E-RESEARCH CENTRE - OXFORD (UK)                                  *
+ * (8) UPMC - SORBONNE UNIVERSITES - PARIS (FRANCE)                            *
+ * (9) UNIVERSIDAD DE BARCELONA - BARCELONA (SPAIN)                            *
+ *(10) UNIVERSITA' DI NAPOLI "FEDERICO II" - NAPOLI (ITALY)                    *
+ *(11) NIS - NANOSTRUCTURED INTERFACES AND SURFACES - TORINO (ITALY)           *
+ *(12) MPI FUER CHEMISCHE ENERGIEKONVERSION - MUELHEIM AN DER RUHR (GERMANY)   *
+ PROCESS           30  OF           32  WORKING
+ *(13) UNIVERSITY OF TROMSO - TROMSO (NORWAY)                                  *
+ *(14) UNIVERSITE' DE PAU ET DES PAYS DE L'ADOUR - PAU (FRANCE)                *
+ *(15) UNIVERSITY OF CALIFORNIA SANTA BARBARA - SANTA BARBARA (USA)            *
+ *(16) CURTIN UNIVERSITY - PERTH (AUSTRALIA)                                   *
+ *(17) UNIVERSITY COLLEGE LONDON - LONDON (UK)                                 *
+ *(18) CAMBRIDGE UNIVERSITY - CAMBRIDGE (UK)                                   *
+ *                                                                             *
+ *******************************************************************************
+ PROCESS           10  OF           32  WORKING
+ EEEEEEEEEE STARTING  DATE 06 04 2018 TIME 10:00:19.3
+ PROCESS           12  OF           32  WORKING
+ PROCESS            9  OF           32  WORKING
+ PROCESS            7  OF           32  WORKING
+
+ *******************************************************************************
+ Mineralogical Magazine (1969-)' 1995 59 677 683                                 
+ CRYSTAL - PROPERTIES - TYPE OF CALCULATION :  UNRESTRICTED OPEN SHELL
+ *******************************************************************************
+ SPIN POLARIZED SYSTEM: SUMMED SPIN DENSITY   -0.00077066
+
+ KOHN-SHAM HAMILTONIAN
+
+ (EXCHANGE)[CORRELATION] FUNCTIONAL:(HSE06 SR/GGA)[PERDEW-BURKE-ERNZERHOF]
+
+ RANGE-SEPARATED HYBRID FUNCTIONAL 
+ OMEGA (SHORT-RANGE)[LONG-RANGE]:(    0.1100)[    0.0000]
+
+ HYBRID EXCHANGE - PERCENTAGE OF FOCK EXCHANGE    25.0000
+
+ SPIN POLARIZED DFT SELECTED
+
+ DIRECT LATTICE VECTOR COMPONENTS (ANGSTROM)
+        -0.14441    4.97748    4.97748
+         2.41653   -0.00000    2.41653
+         2.41653    2.41653    0.00000
+
+ LATTICE PARAMETERS  (ANGSTROM AND DEGREES) - PRIMITIVE CELL
+       A          B          C         ALPHA      BETA     GAMMA        VOLUME
+    7.04070    3.41749    3.41749     60.0000   60.9619   60.9619      58.97655
+ *******************************************************************************
+ N. OF ATOMS PER CELL         4 COULOMB OVERLAP TOL          (T1) 10**   -7
+ NUMBER OF SHELLS            48 COULOMB PENETRATION TOL      (T2) 10**   -7
+ NUMBER OF AO               124 EXCHANGE OVERLAP TOL         (T3) 10**   -7
+ N. OF ELECTRONS PER CELL    84 EXCHANGE PSEUDO OVP (F(G))   (T4) 10**   -7
+ CORE ELECTRONS PER CELL     56 EXCHANGE PSEUDO OVP (P(G))   (T5) 10**  -14
+ N. OF SYMMETRY OPERATORS    12 POLE ORDER IN MONO ZONE                   4
+ *******************************************************************************
+   ATOM N.AT.  SHELL    X(A)      Y(A)      Z(A)      EXAD       N.ELECT.
+ *******************************************************************************
+    1   26 FE   14     0.000     0.000     0.000   1.598E+00      26.029
+    2   26 FE   14    -0.072     2.489     2.489   1.598E+00      26.028
+    3   16 S    10     2.453    -0.036    -0.036   5.207E-01      15.972
+    4   16 S    10     2.381     2.453     2.453   5.207E-01      15.972
+ *******************************************************************************
+ DE(K)                   0.000E+00  ENERGY LEVEL SHIFTING        0.00000
+ TOTAL ENERGY -3.3230355825656E+03  CONVERGENCE ON ENER       -8.459E-08
+ KIN. ENERGY   3.3193598780515E+03  VIR. COEFF.           1.01844169E+00
+ N. OF SCF CYCLES                3  FERMI ENERGY              -0.125E+00
+ WEIGHT OF F(I) IN F(I+1)      80
+ SHRINK. FACT.(MONKH.)     8  8  8  SHRINKING FACTOR(GILAT NET)       16
+ NUMBER OF K POINTS IN THE IBZ  65  CELL VOLUME (A.U.)        382.562764
+ *******************************************************************************
+
+ GCALCO - MAX INDICES DIRECT LATTICE VECTOR     9    18    18
+ NO.OF VECTORS CREATED 6999 STARS  505 RMAX    87.36392 BOHR
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        0.49 TCPU        0.11
+
+ MATRIX SIZE: P(G)  293328, F(G)   49628, P(G) IRR   21719, F(G) IRR    9083
+ MAX G-VECTOR INDEX FOR 1- AND 2-ELECTRON INTEGRALS 333
+
+
+ CAPPA:IS1  8;IS2  8;IS3  8; K PTS MONK NET  65; SYMMOPS:K SPACE  12;G SPACE  12
+
+
+ CAPPA:IS1 18;IS2 18;IS3 18; K PTS MONK NET 580; SYMMOPS:K SPACE  12;G SPACE  12
+
+ *******************************************************************************
+ RESTART WITH NEW K POINTS NET
+ *******************************************************************************
+ POINTS IN THE IBZ                 580 POINTS(GILAT NET)              4237
+ SHRINK FACTORS(MONK.)        18 18 18 SHRINK FACTOR(GILAT)             36
+ *******************************************************************************
+ *** K POINTS COORDINATES (OBLIQUE COORDINATES IN UNITS OF IS = 18)
+   1-R(  0  0  0)   2-C(  1  0  0)   3-C(  2  0  0)   4-C(  3  0  0)
+   5-C(  4  0  0)   6-C(  5  0  0)   7-C(  6  0  0)   8-C(  7  0  0)
+   9-C(  8  0  0)  10-R(  9  0  0)  11-C(  0  1  0)  12-C(  1  1  0)
+  13-C(  2  1  0)  14-C(  3  1  0)  15-C(  4  1  0)  16-C(  5  1  0)
+  17-C(  6  1  0)  18-C(  7  1  0)  19-C(  8  1  0)  20-C(  9  1  0)
+  21-C( 10  1  0)  22-C( 11  1  0)  23-C( 12  1  0)  24-C( 13  1  0)
+  25-C( 14  1  0)  26-C( 15  1  0)  27-C( 16  1  0)  28-C( 17  1  0)
+  29-C(  0  2  0)  30-C(  1  2  0)  31-C(  2  2  0)  32-C(  3  2  0)
+  33-C(  4  2  0)  34-C(  5  2  0)  35-C(  6  2  0)  36-C(  7  2  0)
+  37-C(  8  2  0)  38-C(  9  2  0)  39-C( 10  2  0)  40-C( 11  2  0)
+  41-C( 12  2  0)  42-C( 13  2  0)  43-C( 14  2  0)  44-C( 15  2  0)
+  45-C( 16  2  0)  46-C( 17  2  0)  47-C(  0  3  0)  48-C(  1  3  0)
+  49-C(  2  3  0)  50-C(  3  3  0)  51-C(  4  3  0)  52-C(  5  3  0)
+  53-C(  6  3  0)  54-C(  7  3  0)  55-C(  8  3  0)  56-C(  9  3  0)
+  57-C( 10  3  0)  58-C( 11  3  0)  59-C( 12  3  0)  60-C( 13  3  0)
+  61-C( 14  3  0)  62-C( 15  3  0)  63-C( 16  3  0)  64-C( 17  3  0)
+  65-C(  0  4  0)  66-C(  1  4  0)  67-C(  2  4  0)  68-C(  3  4  0)
+  69-C(  4  4  0)  70-C(  5  4  0)  71-C(  6  4  0)  72-C(  7  4  0)
+  73-C(  8  4  0)  74-C(  9  4  0)  75-C( 10  4  0)  76-C( 11  4  0)
+  77-C( 12  4  0)  78-C( 13  4  0)  79-C( 14  4  0)  80-C( 15  4  0)
+  81-C( 16  4  0)  82-C( 17  4  0)  83-C(  0  5  0)  84-C(  1  5  0)
+  85-C(  2  5  0)  86-C(  3  5  0)  87-C(  4  5  0)  88-C(  5  5  0)
+  89-C(  6  5  0)  90-C(  7  5  0)  91-C(  8  5  0)  92-C(  9  5  0)
+  93-C( 10  5  0)  94-C( 11  5  0)  95-C( 12  5  0)  96-C( 13  5  0)
+  97-C( 14  5  0)  98-C( 15  5  0)  99-C( 16  5  0) 100-C( 17  5  0)
+ 101-C(  0  6  0) 102-C(  1  6  0) 103-C(  2  6  0) 104-C(  3  6  0)
+ 105-C(  4  6  0) 106-C(  5  6  0) 107-C(  6  6  0) 108-C(  7  6  0)
+ 109-C(  8  6  0) 110-C(  9  6  0) 111-C( 10  6  0) 112-C( 11  6  0)
+ 113-C( 12  6  0) 114-C( 13  6  0) 115-C( 14  6  0) 116-C( 15  6  0)
+ 117-C( 16  6  0) 118-C( 17  6  0) 119-C(  0  7  0) 120-C(  1  7  0)
+ 121-C(  2  7  0) 122-C(  3  7  0) 123-C(  4  7  0) 124-C(  5  7  0)
+ 125-C(  6  7  0) 126-C(  7  7  0) 127-C(  8  7  0) 128-C(  9  7  0)
+ 129-C( 10  7  0) 130-C( 11  7  0) 131-C( 12  7  0) 132-C( 13  7  0)
+ 133-C( 14  7  0) 134-C( 15  7  0) 135-C( 16  7  0) 136-C( 17  7  0)
+ 137-C(  0  8  0) 138-C(  1  8  0) 139-C(  2  8  0) 140-C(  3  8  0)
+ 141-C(  4  8  0) 142-C(  5  8  0) 143-C(  6  8  0) 144-C(  7  8  0)
+ 145-C(  8  8  0) 146-C(  9  8  0) 147-C( 10  8  0) 148-C( 11  8  0)
+ 149-C( 12  8  0) 150-C( 13  8  0) 151-C( 14  8  0) 152-C( 15  8  0)
+ 153-C( 16  8  0) 154-C( 17  8  0) 155-R(  0  9  0) 156-C(  1  9  0)
+ 157-C(  2  9  0) 158-C(  3  9  0) 159-C(  4  9  0) 160-C(  5  9  0)
+ 161-C(  6  9  0) 162-C(  7  9  0) 163-C(  8  9  0) 164-R(  9  9  0)
+ 165-C(  0  2  1) 166-C(  1  2  1) 167-C(  2  2  1) 168-C(  5  2  1)
+ 169-C(  6  2  1) 170-C(  7  2  1) 171-C(  8  2  1) 172-C(  9  2  1)
+ 173-C( 10  2  1) 174-C( 11  2  1) 175-C(  0  3  1) 176-C(  1  3  1)
+ 177-C(  2  3  1) 178-C(  3  3  1) 179-C(  4  3  1) 180-C(  5  3  1)
+ 181-C(  6  3  1) 182-C(  7  3  1) 183-C(  8  3  1) 184-C(  9  3  1)
+ 185-C( 10  3  1) 186-C( 11  3  1) 187-C( 12  3  1) 188-C( 13  3  1)
+ 189-C( 14  3  1) 190-C( 15  3  1) 191-C( 16  3  1) 192-C( 17  3  1)
+ 193-C(  0  4  1) 194-C(  1  4  1) 195-C(  2  4  1) 196-C(  3  4  1)
+ 197-C(  4  4  1) 198-C(  5  4  1) 199-C(  6  4  1) 200-C(  7  4  1)
+ 201-C(  8  4  1) 202-C(  9  4  1) 203-C( 10  4  1) 204-C( 11  4  1)
+ 205-C( 12  4  1) 206-C( 13  4  1) 207-C( 14  4  1) 208-C( 15  4  1)
+ 209-C( 16  4  1) 210-C( 17  4  1) 211-C(  0  5  1) 212-C(  1  5  1)
+ 213-C(  2  5  1) 214-C(  3  5  1) 215-C(  4  5  1) 216-C(  5  5  1)
+ 217-C(  6  5  1) 218-C(  7  5  1) 219-C(  8  5  1) 220-C(  9  5  1)
+ 221-C( 10  5  1) 222-C( 11  5  1) 223-C( 12  5  1) 224-C( 13  5  1)
+ 225-C( 14  5  1) 226-C( 15  5  1) 227-C( 16  5  1) 228-C( 17  5  1)
+ 229-C(  0  6  1) 230-C(  1  6  1) 231-C(  2  6  1) 232-C(  3  6  1)
+ 233-C(  4  6  1) 234-C(  5  6  1) 235-C(  6  6  1) 236-C(  7  6  1)
+ 237-C(  8  6  1) 238-C(  9  6  1) 239-C( 10  6  1) 240-C( 11  6  1)
+ 241-C( 12  6  1) 242-C( 13  6  1) 243-C( 14  6  1) 244-C( 15  6  1)
+ 245-C( 16  6  1) 246-C( 17  6  1) 247-C(  0  7  1) 248-C(  1  7  1)
+ 249-C(  2  7  1) 250-C(  3  7  1) 251-C(  4  7  1) 252-C(  5  7  1)
+ 253-C(  6  7  1) 254-C(  7  7  1) 255-C(  8  7  1) 256-C(  9  7  1)
+ 257-C( 10  7  1) 258-C( 11  7  1) 259-C( 12  7  1) 260-C( 13  7  1)
+ 261-C( 14  7  1) 262-C( 15  7  1) 263-C( 16  7  1) 264-C( 17  7  1)
+ 265-C(  0  8  1) 266-C(  1  8  1) 267-C(  2  8  1) 268-C(  3  8  1)
+ 269-C(  4  8  1) 270-C(  5  8  1) 271-C(  6  8  1) 272-C(  7  8  1)
+ 273-C(  8  8  1) 274-C(  9  8  1) 275-C( 10  8  1) 276-C( 11  8  1)
+ 277-C( 12  8  1) 278-C( 13  8  1) 279-C( 14  8  1) 280-C( 15  8  1)
+ 281-C( 16  8  1) 282-C( 17  8  1) 283-C(  0  9  1) 284-C(  1  9  1)
+ 285-C(  2  9  1) 286-C(  3  9  1) 287-C(  4  9  1) 288-C(  5  9  1)
+ 289-C(  6  9  1) 290-C(  7  9  1) 291-C(  8  9  1) 292-C(  9  9  1)
+ 293-C( 10  9  1) 294-C( 11  9  1) 295-C( 12  9  1) 296-C( 13  9  1)
+ 297-C( 14  9  1) 298-C( 15  9  1) 299-C( 16  9  1) 300-C( 17  9  1)
+ 301-C(  0  4  2) 302-C(  1  4  2) 303-C(  2  4  2) 304-C(  3  4  2)
+ 305-C(  4  4  2) 306-C(  9  4  2) 307-C( 10  4  2) 308-C( 11  4  2)
+ 309-C( 12  4  2) 310-C( 13  4  2) 311-C(  0  5  2) 312-C(  1  5  2)
+ 313-C(  2  5  2) 314-C(  3  5  2) 315-C(  4  5  2) 316-C(  5  5  2)
+ 317-C(  6  5  2) 318-C(  7  5  2) 319-C(  8  5  2) 320-C(  9  5  2)
+ 321-C( 10  5  2) 322-C( 11  5  2) 323-C( 12  5  2) 324-C( 13  5  2)
+ 325-C( 14  5  2) 326-C( 15  5  2) 327-C( 16  5  2) 328-C( 17  5  2)
+ 329-C(  0  6  2) 330-C(  1  6  2) 331-C(  2  6  2) 332-C(  3  6  2)
+ 333-C(  4  6  2) 334-C(  5  6  2) 335-C(  6  6  2) 336-C(  7  6  2)
+ 337-C(  8  6  2) 338-C(  9  6  2) 339-C( 10  6  2) 340-C( 11  6  2)
+ 341-C( 12  6  2) 342-C( 13  6  2) 343-C( 14  6  2) 344-C( 15  6  2)
+ 345-C( 16  6  2) 346-C( 17  6  2) 347-C(  0  7  2) 348-C(  1  7  2)
+ 349-C(  2  7  2) 350-C(  3  7  2) 351-C(  4  7  2) 352-C(  5  7  2)
+ 353-C(  6  7  2) 354-C(  7  7  2) 355-C(  8  7  2) 356-C(  9  7  2)
+ 357-C( 10  7  2) 358-C( 11  7  2) 359-C( 12  7  2) 360-C( 13  7  2)
+ 361-C( 14  7  2) 362-C( 15  7  2) 363-C( 16  7  2) 364-C( 17  7  2)
+ 365-C(  0  8  2) 366-C(  1  8  2) 367-C(  2  8  2) 368-C(  3  8  2)
+ 369-C(  4  8  2) 370-C(  5  8  2) 371-C(  6  8  2) 372-C(  7  8  2)
+ 373-C(  8  8  2) 374-C(  9  8  2) 375-C( 10  8  2) 376-C( 11  8  2)
+ 377-C( 12  8  2) 378-C( 13  8  2) 379-C( 14  8  2) 380-C( 15  8  2)
+ 381-C( 16  8  2) 382-C( 17  8  2) 383-C(  0  9  2) 384-C(  1  9  2)
+ 385-C(  2  9  2) 386-C(  3  9  2) 387-C(  4  9  2) 388-C(  5  9  2)
+ 389-C(  6  9  2) 390-C(  7  9  2) 391-C(  8  9  2) 392-C(  9  9  2)
+ 393-C( 10  9  2) 394-C( 11  9  2) 395-C( 12  9  2) 396-C( 13  9  2)
+ 397-C( 14  9  2) 398-C( 15  9  2) 399-C( 16  9  2) 400-C( 17  9  2)
+ 401-C(  0 10  2) 402-C(  1 10  2) 403-C(  2 10  2) 404-C(  5 10  2)
+ 405-C(  6 10  2) 406-C(  7 10  2) 407-C(  8 10  2) 408-C(  9 10  2)
+ 409-C( 10 10  2) 410-C( 11 10  2) 411-C(  0  6  3) 412-C(  1  6  3)
+ 413-C(  2  6  3) 414-C(  3  6  3) 415-C(  4  6  3) 416-C(  5  6  3)
+ 417-C(  6  6  3) 418-C( 13  6  3) 419-C( 14  6  3) 420-C( 15  6  3)
+ 421-C(  0  7  3) 422-C(  1  7  3) 423-C(  2  7  3) 424-C(  3  7  3)
+ 425-C(  4  7  3) 426-C(  5  7  3) 427-C(  6  7  3) 428-C(  7  7  3)
+ 429-C(  8  7  3) 430-C(  9  7  3) 431-C( 10  7  3) 432-C( 11  7  3)
+ 433-C( 12  7  3) 434-C( 13  7  3) 435-C( 14  7  3) 436-C( 15  7  3)
+ 437-C( 16  7  3) 438-C( 17  7  3) 439-C(  0  8  3) 440-C(  1  8  3)
+ 441-C(  2  8  3) 442-C(  3  8  3) 443-C(  4  8  3) 444-C(  5  8  3)
+ 445-C(  6  8  3) 446-C(  7  8  3) 447-C(  8  8  3) 448-C(  9  8  3)
+ 449-C( 10  8  3) 450-C( 11  8  3) 451-C( 12  8  3) 452-C( 13  8  3)
+ 453-C( 14  8  3) 454-C( 15  8  3) 455-C( 16  8  3) 456-C( 17  8  3)
+ 457-C(  0  9  3) 458-C(  1  9  3) 459-C(  2  9  3) 460-C(  3  9  3)
+ 461-C(  4  9  3) 462-C(  5  9  3) 463-C(  6  9  3) 464-C(  7  9  3)
+ 465-C(  8  9  3) 466-C(  9  9  3) 467-C( 10  9  3) 468-C( 11  9  3)
+ 469-C( 12  9  3) 470-C( 13  9  3) 471-C( 14  9  3) 472-C( 15  9  3)
+ 473-C( 16  9  3) 474-C( 17  9  3) 475-C(  0 10  3) 476-C(  1 10  3)
+ 477-C(  2 10  3) 478-C(  3 10  3) 479-C(  4 10  3) 480-C(  5 10  3)
+ 481-C(  6 10  3) 482-C(  7 10  3) 483-C(  8 10  3) 484-C(  9 10  3)
+ 485-C( 10 10  3) 486-C( 11 10  3) 487-C( 12 10  3) 488-C( 13 10  3)
+ 489-C( 14 10  3) 490-C( 15 10  3) 491-C( 16 10  3) 492-C( 17 10  3)
+ 493-C(  0  8  4) 494-C(  1  8  4) 495-C(  2  8  4) 496-C(  3  8  4)
+ 497-C(  4  8  4) 498-C(  5  8  4) 499-C(  6  8  4) 500-C(  7  8  4)
+ 501-C(  8  8  4) 502-C( 17  8  4) 503-C(  0  9  4) 504-C(  1  9  4)
+ 505-C(  2  9  4) 506-C(  3  9  4) 507-C(  4  9  4) 508-C(  5  9  4)
+ 509-C(  6  9  4) 510-C(  7  9  4) 511-C(  8  9  4) 512-C(  9  9  4)
+ 513-C( 10  9  4) 514-C( 11  9  4) 515-C( 12  9  4) 516-C( 13  9  4)
+ 517-C( 14  9  4) 518-C( 15  9  4) 519-C( 16  9  4) 520-C( 17  9  4)
+ 521-C(  0 10  4) 522-C(  1 10  4) 523-C(  2 10  4) 524-C(  3 10  4)
+ 525-C(  4 10  4) 526-C(  5 10  4) 527-C(  6 10  4) 528-C(  7 10  4)
+ 529-C(  8 10  4) 530-C(  9 10  4) 531-C( 10 10  4) 532-C( 11 10  4)
+ 533-C( 12 10  4) 534-C( 13 10  4) 535-C( 14 10  4) 536-C( 15 10  4)
+ 537-C( 16 10  4) 538-C( 17 10  4) 539-C(  0 11  4) 540-C(  1 11  4)
+ 541-C(  2 11  4) 542-C(  3 11  4) 543-C(  4 11  4) 544-C(  9 11  4)
+ 545-C( 10 11  4) 546-C( 11 11  4) 547-C( 12 11  4) 548-C( 13 11  4)
+ 549-C(  0 10  5) 550-C(  1 10  5) 551-C(  3 10  5) 552-C(  4 10  5)
+ 553-C(  5 10  5) 554-C(  6 10  5) 555-C(  7 10  5) 556-C(  8 10  5)
+ 557-C(  9 10  5) 558-C( 10 10  5) 559-C(  0 11  5) 560-C(  1 11  5)
+ 561-C(  2 11  5) 562-C(  3 11  5) 563-C(  4 11  5) 564-C(  5 11  5)
+ 565-C(  6 11  5) 566-C(  7 11  5) 567-C(  8 11  5) 568-C(  9 11  5)
+ 569-C( 10 11  5) 570-C( 11 11  5) 571-C( 12 11  5) 572-C( 13 11  5)
+ 573-C( 14 11  5) 574-C( 15 11  5) 575-C( 16 11  5) 576-C( 17 11  5)
+ 577-C(  0 12  6) 578-C(  1 12  6) 579-C(  2 12  6) 580-C(  3 12  6)
+
+ FERMI ENERGY AND DENSITY MATRIX CALCULATION ON COMPUTED EIGENVECTORS
+ DENSITY MATRIX AT SCF CYCLE (  3+1)
+
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.2478805E-01 (RES. CHARGE  3.84E-13;IT. 10)
+
+ CORE DENSITY MATRIX CALCULATION
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NEWK        TELAPSE        8.10 TCPU        6.65
+ ###############################################################################
+
+ TOTAL AND PROJECTED DENSITY OF STATES - FOURIER LEGENDRE METHOD
+ FROM BAND   29 TO BAND   55 ENERGY RANGE -0.77241E+00  0.50245E+00
+
+ ###############################################################################
+
+ NUMBER OF LEGENDRE POLYNOMIALS              14
+ NUMBER OF SYMMETRIZED PWS FOR EXPANSION    580
+ NUMBER OF K POINTS OF SECONDARY NET       4237
+ NUMBER OF PROJECTIONS                        7
+ NUMBER OF ENERGY POINTS                    998
+
+ *** PROJECTION   1 ATOMIC ORBITALS     1   2   3   4   5   6  41  42  43  44
+                                       45  46
+
+ *** PROJECTION   2 ATOMIC ORBITALS     7   8   9  10  11  12  13  14  15  16
+                                       17  18  47  48  49  50  51  52  53  54
+                                       55  56  57  58
+
+ *** PROJECTION   3 ATOMIC ORBITALS    19  20  21  22  23  24  25  26  27  28
+                                       29  30  31  32  33  59  60  61  62  63
+                                       64  65  66  67  68  69  70  71  72  73
+
+ *** PROJECTION   4 ATOMIC ORBITALS    34  35  36  37  38  39  40  74  75  76
+                                       77  78  79  80
+
+ *** PROJECTION   5 ATOMIC ORBITALS    81  82  83  84  85 103 104 105 106 107
+
+ *** PROJECTION   6 ATOMIC ORBITALS    86  87  88  89  90  91  92  93  94  95
+                                       96  97 108 109 110 111 112 113 114 115
+                                      116 117 118 119
+
+ *** PROJECTION   7 ATOMIC ORBITALS    98  99 100 101 102 120 121 122 123 124
+
+
+    ALPHA      ELECTRONS
+
+ BAND     INTEGRATED DOSS PER PROJECTION AND TOTAL
+           1         2         3         4         5         6         7         T
+  29   0.15502   0.06457   0.02848   0.00004   0.73028   0.02138   0.00023   1.00000
+  30   0.04347   0.06033   0.06505   0.00004   0.81457   0.01632   0.00022   1.00000
+  31   0.17895   0.02343   0.31700   0.00002   0.01247   0.46662   0.00150   1.00000
+  32   0.05839   0.04715   0.40039   0.00002   0.00961   0.48172   0.00271   1.00000
+  33   0.01532   0.02594   0.67764   0.00002   0.00526   0.27212   0.00370   1.00000
+  34   0.02656   0.02193   0.68034   0.00002   0.00896   0.25837   0.00381   1.00000
+  35   0.01393   0.01817   0.77376   0.00002   0.00743   0.18173   0.00497   1.00000
+  36   0.02463   0.02699   0.68958   0.00003   0.00510   0.24991   0.00377   1.00000
+  37   0.04196   0.03099   0.58936   0.00006   0.00833   0.32658   0.00273   1.00000
+  38   0.04217   0.04403   0.43786   0.00009   0.01148   0.46211   0.00225   1.00000
+  39   0.02314   0.06594   0.31763   0.00013   0.00216   0.58823   0.00278   1.00000
+  40   0.03325   0.04291   0.37016   0.00009   0.01672   0.52720   0.00966   1.00000
+  41   0.00900   0.03969   0.36659   0.00010   0.01391   0.56316   0.00755   1.00000
+  42   0.03451   0.00489   0.87817   0.00003   0.00436   0.06078   0.01726   1.00000
+  43   0.00630   0.01175   0.85987   0.00004   0.00105   0.11404   0.00695   1.00000
+  44   0.07559   0.01074   0.83540   0.00003   0.00862   0.04068   0.02893   1.00000
+  45   0.06569   0.02816   0.78369   0.00004   0.01016   0.08086   0.03140   1.00000
+  46   0.04495   0.03684   0.71670   0.00004   0.01893   0.15209   0.03046   1.00000
+  47   0.40471   0.13569   0.15195   0.00004   0.10232   0.10725   0.09805   1.00000
+  48   0.20052   0.26699   0.08203   0.00008   0.19798   0.12995   0.12244   1.00000
+  49   0.05638   0.36863   0.05957   0.00014   0.12622   0.22187   0.16719   1.00000
+  50   0.02744   0.33661   0.12550   0.00014   0.06960   0.25142   0.18929   1.00000
+  51   0.02598   0.17779   0.27897   0.00015   0.01757   0.28680   0.21274   1.00000
+  52   0.02845   0.13363   0.19286   0.00021   0.04181   0.42076   0.18226   1.00000
+  53   0.05235   0.09054   0.13319   0.00024   0.01521   0.53767   0.17080   1.00000
+  54   0.01344   0.20217   0.11940   0.00024   0.00457   0.47155   0.18863   1.00000
+  55   0.03639   0.19052   0.27158   0.00018   0.02404   0.20255   0.27474   1.00000
+
+ *** INTEGRATED DENSITIES IN THE ENERGY INTERVAL PER PROJECTION AND TOTAL
+       1         2         3         4         5         6         7         T
+    1.73850    2.50704   11.20275    0.00227    2.28872    7.49370    1.76702   27.00000
+
+ *** ENERGY  PROJECTED DENSITY OF STATES - FULL SCALE =    74.60737 AU
+
+  -0.76603  7 5                                                                                                                     
+  -0.75454  7   1 5                                                                                                                 
+  -0.74306  7   1    5                                                                                                              
+  -0.73157  72  1         5                                                                                                         
+  -0.72009  7 2 1                 5                                                                                                 
+  -0.70860  76 2                                    5                                                                               
+  -0.69711  76 1   3                                                                                      5                         
+  -0.68563  723                 5                                                                                                   
+  -0.67414  7                                                                                                                       
+  -0.66266  7                                                                                                                       
+  -0.65117  7                                                                                                                       
+  -0.63969  7                                                                                                                       
+  -0.62820  7                                                                                                                       
+  -0.61672  7                                                                                                                       
+  -0.60523  7                                                                                                                       
+  -0.59375  7                                                                                                                       
+  -0.58226  7                                                                                                                       
+  -0.57078  7                                                                                                                       
+  -0.55929  7                                                                                                                       
+  -0.54781  7                                                                                                                       
+  -0.53632  7                                                                                                                       
+  -0.52484  7                                                                                                                       
+  -0.51335  7                                                                                                                       
+  -0.50187  7                                                                                                                       
+  -0.49038  7                                                                                                                       
+  -0.47890  7                                                                                                                       
+  -0.46741  7                                                                                                                       
+  -0.45592  7                                                                                                                       
+  -0.44444  7 31 6                                                                                                                  
+  -0.43295  7    3     6                                                                                                            
+  -0.42147  72       1       3        6                                                                                             
+  -0.40998  7  2   1                 3            6                                                                                 
+  -0.39850  7  2         3               6                                                                                          
+  -0.38701  75 12                                 6                         3                                                       
+  -0.37553  7 12                                    6                                                                              3
+  -0.36404  72                6                      3                                                                              
+  -0.35256  72            6                     3                                                                                   
+  -0.34107  7 2                 6                                                3                                                  
+  -0.32959  7 21                 6                                                                               3                  
+  -0.31810  721               6                                       3                                                             
+  -0.30662  7 21                  6         3                                                                                       
+  -0.29513  7  2                          3  6                                                                                      
+  -0.28365  7 12                 3            6                                                                                     
+  -0.27216  712         3             6                                                                                             
+  -0.26068  712       3         6                                                                                                   
+  -0.24919  712          3           6                                                                                              
+  -0.23771  712                3           6                                                                                        
+  -0.22622  75 2                         3          6                                                                               
+  -0.21474  75 2                        3              6                                                                            
+  -0.20325  7 2               3            6                                                                                        
+  -0.19176  7   3    6                                                                                                              
+  -0.18028  736                                                                                                                     
+  -0.16879  7                                                                                                                       
+  -0.15731  7                                                                                                                       
+  -0.14582  76                                 3                                                                                    
+  -0.13434  571  6                                                            3                                                     
+  -0.12285  71   6                                      3                                                                           
+  -0.11137  7     6                                           3                                                                     
+  -0.09988  7   6                                  3                                                                                
+  -0.08840  7  3                                                                                                                    
+  -0.07691  7                                                                                                                       
+  -0.06543  73                                                                                                                      
+  -0.05394  57  1                              3                                                                                    
+  -0.04246  57 6 1                                              3                                                                   
+  -0.03097  5 27  16                                                                                                    3           
+  -0.01949  5 7 1 6                              3                                                                                  
+  -0.00800  45721       6                                                3                                                          
+   0.00348  571  6               3                                                                                                  
+   0.01497  7 61     3                                                                                                              
+   0.02645  76  3                                                                                                                   
+   0.03794  673  1                                                                                                                  
+   0.04943  67    1                                                                                                                 
+   0.06091  472   1                                                                                                                 
+   0.07240  472    1                                                                                                                
+   0.08388  467 2   1                                                                                                               
+   0.09537  4 675  2 1                                                                                                              
+   0.10685  4  37  5 2                                                                                                              
+   0.11834  4  3 765  2                                                                                                             
+   0.12982  4  37 65 2                                                                                                              
+   0.14131  4 3 765  2                                                                                                              
+   0.15279  431 76    2                                                                                                             
+   0.16428  43 576     2                                                                                                            
+   0.17576  43  57 6     2                                                                                                          
+   0.18725  43  5 76      2                                                                                                         
+   0.19873  4 35 7 6     2                                                                                                          
+   0.21022  41 5   7  6 2                                                                                                           
+   0.22170  415       27   6 3                                                                                                      
+   0.23319  45       27 3   6                                                                                                       
+   0.24467  51      37      6                                                                                                       
+   0.25616  45       237        6                                                                                                   
+   0.26764  45       237        6                                                                                                   
+   0.27913  45      27       6                                                                                                      
+   0.29061  45      237           6                                                                                                 
+   0.30210  45     23 7                 6                                                                                           
+   0.31359  5     23 7                 6                                                                                            
+   0.32507  51    3 7            6                                                                                                  
+   0.33656  51  3 7          6                                                                                                      
+   0.34804  5 1 37        6                                                                                                         
+   0.35953  51 27    6                                                                                                              
+   0.37101  5  276                                                                                                                  
+   0.38250  5 267                                                                                                                   
+   0.39398  5 67                                                                                                                    
+   0.40547  5 67                                                                                                                    
+   0.41695  5 67                                                                                                                    
+   0.42844  5 7                                                                                                                     
+   0.43992  5 7                                                                                                                     
+   0.45141  5 726                                                                                                                   
+   0.46289  51 726                                                                                                                  
+   0.47438  5 76                                                                                                                    
+   0.48586  67                                                                                                                      
+
+ *** ENERGY      TOTAL DENSITY OF STATES - FULL SCALE =   103.97520 AU
+
+  -0.76603  |   T                                                                                                                   
+  -0.75454  |      T                                                                                                                
+  -0.74306  |          T                                                                                                            
+  -0.73157  |              T                                                                                                        
+  -0.72009  |                     T                                                                                                 
+  -0.70860  |                                   T                                                                                   
+  -0.69711  |                                                                                 T                                     
+  -0.68563  |                T                                                                                                      
+  -0.67414  T                                                                                                                       
+  -0.66266  T                                                                                                                       
+  -0.65117  T                                                                                                                       
+  -0.63969  T                                                                                                                       
+  -0.62820  T                                                                                                                       
+  -0.61672  T                                                                                                                       
+  -0.60523  T                                                                                                                       
+  -0.59375  T                                                                                                                       
+  -0.58226  T                                                                                                                       
+  -0.57078  T                                                                                                                       
+  -0.55929  T                                                                                                                       
+  -0.54781  T                                                                                                                       
+  -0.53632  T                                                                                                                       
+  -0.52484  T                                                                                                                       
+  -0.51335  T                                                                                                                       
+  -0.50187  T                                                                                                                       
+  -0.49038  T                                                                                                                       
+  -0.47890  T                                                                                                                       
+  -0.46741  T                                                                                                                       
+  -0.45592  T                                                                                                                       
+  -0.44444  |       T                                                                                                               
+  -0.43295  |               T                                                                                                       
+  -0.42147  |                                      T                                                                                
+  -0.40998  |                                                     T                                                                 
+  -0.39850  |                                  T                                                                                    
+  -0.38701  |                                                                               T                                       
+  -0.37553  |                                                                                                                      T
+  -0.36404  |                                             T                                                                         
+  -0.35256  |                                      T                                                                                
+  -0.34107  |                                                                   T                                                   
+  -0.32959  |                                                                                           T                           
+  -0.31810  |                                                         T                                                             
+  -0.30662  |                                          T                                                                            
+  -0.29513  |                                                  T                                                                    
+  -0.28365  |                                           T                                                                           
+  -0.27216  |                              T                                                                                        
+  -0.26068  |                       T                                                                                               
+  -0.24919  |                              T                                                                                        
+  -0.23771  |                                        T                                                                              
+  -0.22622  |                                                     T                                                                 
+  -0.21474  |                                                      T                                                                
+  -0.20325  |                                     T                                                                                 
+  -0.19176  |         T                                                                                                             
+  -0.18028  | T                                                                                                                     
+  -0.16879  T                                                                                                                       
+  -0.15731  T                                                                                                                       
+  -0.14582  |                           T                                                                                           
+  -0.13434  |                                                     T                                                                 
+  -0.12285  |                                    T                                                                                  
+  -0.11137  |                                         T                                                                             
+  -0.09988  |                               T                                                                                       
+  -0.08840  | T                                                                                                                     
+  -0.07691  T                                                                                                                       
+  -0.06543  |T                                                                                                                      
+  -0.05394  |                              T                                                                                        
+  -0.04246  |                                             T                                                                         
+  -0.03097  |                                                                                           T                           
+  -0.01949  |                                     T                                                                                 
+  -0.00800  |                                                            T                                                          
+   0.00348  |                      T                                                                                                
+   0.01497  |           T                                                                                                           
+   0.02645  |       T                                                                                                               
+   0.03794  |       T                                                                                                               
+   0.04943  |       T                                                                                                               
+   0.06091  |         T                                                                                                             
+   0.07240  |           T                                                                                                           
+   0.08388  |              T                                                                                                        
+   0.09537  |                     T                                                                                                 
+   0.10685  |                          T                                                                                            
+   0.11834  |                               T                                                                                       
+   0.12982  |                          T                                                                                            
+   0.14131  |                      T                                                                                                
+   0.15279  |                   T                                                                                                   
+   0.16428  |                    T                                                                                                  
+   0.17576  |                       T                                                                                               
+   0.18725  |                        T                                                                                              
+   0.19873  |                       T                                                                                               
+   0.21022  |                             T                                                                                         
+   0.22170  |                                         T                                                                             
+   0.23319  |                                    T                                                                                  
+   0.24467  |                               T                                                                                       
+   0.25616  |                                     T                                                                                 
+   0.26764  |                                      T                                                                                
+   0.27913  |                                T                                                                                      
+   0.29061  |                                     T                                                                                 
+   0.30210  |                                        T                                                                              
+   0.31359  |                                     T                                                                                 
+   0.32507  |                              T                                                                                        
+   0.33656  |                        T                                                                                              
+   0.34804  |                      T                                                                                                
+   0.35953  |                T                                                                                                      
+   0.37101  |           T                                                                                                           
+   0.38250  |         T                                                                                                             
+   0.39398  |       T                                                                                                               
+   0.40547  |      T                                                                                                                
+   0.41695  |       T                                                                                                               
+   0.42844  |      T                                                                                                                
+   0.43992  |      T                                                                                                                
+   0.45141  |         T                                                                                                             
+   0.46289  |            T                                                                                                          
+   0.47438  |        T                                                                                                              
+   0.48586  |   T                                                                                                                   
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      1   12    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      2   24    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      3   30    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      4   14    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      5   10    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      6   24    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      7   10    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      8  124    0    0    0    0
+
+
+    BETA       ELECTRONS
+
+ BAND     INTEGRATED DOSS PER PROJECTION AND TOTAL
+           1         2         3         4         5         6         7         T
+  29   0.15509   0.06458   0.02849   0.00004   0.73020   0.02137   0.00023   1.00000
+  30   0.04350   0.06035   0.06506   0.00004   0.81452   0.01631   0.00022   1.00000
+  31   0.17905   0.02343   0.31720   0.00002   0.01246   0.46634   0.00150   1.00000
+  32   0.05840   0.04716   0.40068   0.00002   0.00960   0.48143   0.00271   1.00000
+  33   0.01533   0.02593   0.67789   0.00002   0.00526   0.27187   0.00370   1.00000
+  34   0.02652   0.02193   0.68063   0.00002   0.00896   0.25812   0.00380   1.00000
+  35   0.01393   0.01815   0.77399   0.00002   0.00743   0.18152   0.00496   1.00000
+  36   0.02464   0.02697   0.68991   0.00003   0.00510   0.24959   0.00376   1.00000
+  37   0.04201   0.03099   0.58936   0.00006   0.00834   0.32651   0.00273   1.00000
+  38   0.04222   0.04405   0.43760   0.00009   0.01149   0.46230   0.00226   1.00000
+  39   0.02320   0.06601   0.31724   0.00013   0.00216   0.58848   0.00278   1.00000
+  40   0.03327   0.04297   0.36999   0.00009   0.01669   0.52734   0.00965   1.00000
+  41   0.00901   0.03973   0.36643   0.00010   0.01389   0.56330   0.00754   1.00000
+  42   0.03443   0.00490   0.87820   0.00003   0.00435   0.06083   0.01726   1.00000
+  43   0.00638   0.01172   0.86005   0.00004   0.00104   0.11381   0.00696   1.00000
+  44   0.07505   0.01062   0.83641   0.00003   0.00855   0.04061   0.02873   1.00000
+  45   0.06627   0.02831   0.78238   0.00004   0.01024   0.08117   0.03158   1.00000
+  46   0.04497   0.03689   0.71637   0.00004   0.01895   0.15232   0.03047   1.00000
+  47   0.40484   0.13574   0.15188   0.00004   0.10221   0.10725   0.09804   1.00000
+  48   0.20058   0.26704   0.08205   0.00008   0.19791   0.12995   0.12239   1.00000
+  49   0.05638   0.36873   0.05958   0.00014   0.12620   0.22183   0.16714   1.00000
+  50   0.02747   0.33674   0.12538   0.00014   0.06958   0.25145   0.18924   1.00000
+  51   0.02599   0.17770   0.27898   0.00015   0.01761   0.28690   0.21267   1.00000
+  52   0.02841   0.13387   0.19289   0.00021   0.04182   0.42050   0.18229   1.00000
+  53   0.05239   0.09060   0.13324   0.00024   0.01522   0.53752   0.17079   1.00000
+  54   0.01363   0.20216   0.11929   0.00024   0.00456   0.47162   0.18851   1.00000
+  55   0.03640   0.19062   0.27159   0.00018   0.02403   0.20251   0.27466   1.00000
+
+ *** INTEGRATED DENSITIES IN THE ENERGY INTERVAL PER PROJECTION AND TOTAL
+       1         2         3         4         5         6         7         T
+    1.73937    2.50790   11.20275    0.00227    2.28838    7.49276    1.76658   27.00000
+
+ *** ENERGY  PROJECTED DENSITY OF STATES - FULL SCALE =    74.48935 AU
+
+  -0.76603  7 5                                                                                                                     
+  -0.75454  7   1 5                                                                                                                 
+  -0.74306  7   1    5                                                                                                              
+  -0.73157  72  1         5                                                                                                         
+  -0.72009  7 2 1                 5                                                                                                 
+  -0.70860  76 2                                    5                                                                               
+  -0.69711  76 1   3                                                                                      5                         
+  -0.68563  723                  5                                                                                                  
+  -0.67414  7                                                                                                                       
+  -0.66266  7                                                                                                                       
+  -0.65117  7                                                                                                                       
+  -0.63969  7                                                                                                                       
+  -0.62820  7                                                                                                                       
+  -0.61672  7                                                                                                                       
+  -0.60523  7                                                                                                                       
+  -0.59375  7                                                                                                                       
+  -0.58226  7                                                                                                                       
+  -0.57078  7                                                                                                                       
+  -0.55929  7                                                                                                                       
+  -0.54781  7                                                                                                                       
+  -0.53632  7                                                                                                                       
+  -0.52484  7                                                                                                                       
+  -0.51335  7                                                                                                                       
+  -0.50187  7                                                                                                                       
+  -0.49038  7                                                                                                                       
+  -0.47890  7                                                                                                                       
+  -0.46741  7                                                                                                                       
+  -0.45592  7                                                                                                                       
+  -0.44444  7 31 6                                                                                                                  
+  -0.43295  7    3     6                                                                                                            
+  -0.42147  72       1       3        6                                                                                             
+  -0.40998  7  2   1                 3            6                                                                                 
+  -0.39850  7  2         3               6                                                                                          
+  -0.38701  75 12                                 6                         3                                                       
+  -0.37553  7 12                                    6                                                                              3
+  -0.36404  72                6                      3                                                                              
+  -0.35256  72            6                      3                                                                                  
+  -0.34107  7 2                 6                                                3                                                  
+  -0.32959  7 21                 6                                                                               3                  
+  -0.31810  721               6                                       3                                                             
+  -0.30662  7 21                  6         3                                                                                       
+  -0.29513  7  2                          3  6                                                                                      
+  -0.28365  7 12                 3            6                                                                                     
+  -0.27216  712         3             6                                                                                             
+  -0.26068  712       3         6                                                                                                   
+  -0.24919  712          3           6                                                                                              
+  -0.23771  712                3           6                                                                                        
+  -0.22622  75 2                         3          6                                                                               
+  -0.21474  75 2                        3              6                                                                            
+  -0.20325  7 2               3            6                                                                                        
+  -0.19176  7   3    6                                                                                                              
+  -0.18028  736                                                                                                                     
+  -0.16879  7                                                                                                                       
+  -0.15731  7                                                                                                                       
+  -0.14582  76                                  3                                                                                   
+  -0.13434  571  6                                                            3                                                     
+  -0.12285  71   6                                      3                                                                           
+  -0.11137  7     6                                           3                                                                     
+  -0.09988  7   6                                  3                                                                                
+  -0.08840  7  3                                                                                                                    
+  -0.07691  7                                                                                                                       
+  -0.06543  73                                                                                                                      
+  -0.05394  57  1                               3                                                                                   
+  -0.04246  57 6 1                                                 3                                                                
+  -0.03097  5 27  16                                                                                                3               
+  -0.01949  5 7 1 6                              3                                                                                  
+  -0.00800  45721       6                                                3                                                          
+   0.00348  571  6               3                                                                                                  
+   0.01497  7 61     3                                                                                                              
+   0.02645  76  3                                                                                                                   
+   0.03794  673  1                                                                                                                  
+   0.04943  67    1                                                                                                                 
+   0.06091  472   1                                                                                                                 
+   0.07240  472    1                                                                                                                
+   0.08388  467 2   1                                                                                                               
+   0.09537  4 675  2 1                                                                                                              
+   0.10685  4  37  5 2                                                                                                              
+   0.11834  4  3 765  2                                                                                                             
+   0.12982  4  37 65 2                                                                                                              
+   0.14131  4 3 765  2                                                                                                              
+   0.15279  431 76    2                                                                                                             
+   0.16428  43 576     2                                                                                                            
+   0.17576  43  57 6     2                                                                                                          
+   0.18725  4 3 5 76      2                                                                                                         
+   0.19873  4135 7 6     2                                                                                                          
+   0.21022  41 5   73 6 2                                                                                                           
+   0.22170  415       27   6 3                                                                                                      
+   0.23319  45       27 3   6                                                                                                       
+   0.24467  51      37      6                                                                                                       
+   0.25616  45       237        6                                                                                                   
+   0.26764  45       237        6                                                                                                   
+   0.27913  45      27       6                                                                                                      
+   0.29061  45      237           6                                                                                                 
+   0.30210  45     23 7                 6                                                                                           
+   0.31359  5     23 7                 6                                                                                            
+   0.32507  51    3 7            6                                                                                                  
+   0.33656  51  3 7          6                                                                                                      
+   0.34804  5 1 37        6                                                                                                         
+   0.35953  51 27    6                                                                                                              
+   0.37101  5  276                                                                                                                  
+   0.38250  5 267                                                                                                                   
+   0.39398  5 67                                                                                                                    
+   0.40547  5 67                                                                                                                    
+   0.41695  5 67                                                                                                                    
+   0.42844  5 7                                                                                                                     
+   0.43992  5 7                                                                                                                     
+   0.45141  5 726                                                                                                                   
+   0.46289  51 726                                                                                                                  
+   0.47438  5 76                                                                                                                    
+   0.48586  67                                                                                                                      
+
+ *** ENERGY      TOTAL DENSITY OF STATES - FULL SCALE =   103.78845 AU
+
+  -0.76603  |   T                                                                                                                   
+  -0.75454  |      T                                                                                                                
+  -0.74306  |          T                                                                                                            
+  -0.73157  |              T                                                                                                        
+  -0.72009  |                     T                                                                                                 
+  -0.70860  |                                   T                                                                                   
+  -0.69711  |                                                                                 T                                     
+  -0.68563  |                T                                                                                                      
+  -0.67414  T                                                                                                                       
+  -0.66266  T                                                                                                                       
+  -0.65117  T                                                                                                                       
+  -0.63969  T                                                                                                                       
+  -0.62820  T                                                                                                                       
+  -0.61672  T                                                                                                                       
+  -0.60523  T                                                                                                                       
+  -0.59375  T                                                                                                                       
+  -0.58226  T                                                                                                                       
+  -0.57078  T                                                                                                                       
+  -0.55929  T                                                                                                                       
+  -0.54781  T                                                                                                                       
+  -0.53632  T                                                                                                                       
+  -0.52484  T                                                                                                                       
+  -0.51335  T                                                                                                                       
+  -0.50187  T                                                                                                                       
+  -0.49038  T                                                                                                                       
+  -0.47890  T                                                                                                                       
+  -0.46741  T                                                                                                                       
+  -0.45592  T                                                                                                                       
+  -0.44444  |       T                                                                                                               
+  -0.43295  |               T                                                                                                       
+  -0.42147  |                                      T                                                                                
+  -0.40998  |                                                     T                                                                 
+  -0.39850  |                                   T                                                                                   
+  -0.38701  |                                                                               T                                       
+  -0.37553  |                                                                                                                      T
+  -0.36404  |                                            T                                                                          
+  -0.35256  |                                      T                                                                                
+  -0.34107  |                                                                   T                                                   
+  -0.32959  |                                                                                           T                           
+  -0.31810  |                                                         T                                                             
+  -0.30662  |                                          T                                                                            
+  -0.29513  |                                                  T                                                                    
+  -0.28365  |                                           T                                                                           
+  -0.27216  |                              T                                                                                        
+  -0.26068  |                       T                                                                                               
+  -0.24919  |                              T                                                                                        
+  -0.23771  |                                        T                                                                              
+  -0.22622  |                                                     T                                                                 
+  -0.21474  |                                                      T                                                                
+  -0.20325  |                                     T                                                                                 
+  -0.19176  |         T                                                                                                             
+  -0.18028  | T                                                                                                                     
+  -0.16879  T                                                                                                                       
+  -0.15731  T                                                                                                                       
+  -0.14582  |                            T                                                                                          
+  -0.13434  |                                                     T                                                                 
+  -0.12285  |                                    T                                                                                  
+  -0.11137  |                                         T                                                                             
+  -0.09988  |                               T                                                                                       
+  -0.08840  | T                                                                                                                     
+  -0.07691  T                                                                                                                       
+  -0.06543  |T                                                                                                                      
+  -0.05394  |                              T                                                                                        
+  -0.04246  |                                               T                                                                       
+  -0.03097  |                                                                                        T                              
+  -0.01949  |                                     T                                                                                 
+  -0.00800  |                                                            T                                                          
+   0.00348  |                      T                                                                                                
+   0.01497  |           T                                                                                                           
+   0.02645  |       T                                                                                                               
+   0.03794  |       T                                                                                                               
+   0.04943  |       T                                                                                                               
+   0.06091  |         T                                                                                                             
+   0.07240  |           T                                                                                                           
+   0.08388  |              T                                                                                                        
+   0.09537  |                     T                                                                                                 
+   0.10685  |                          T                                                                                            
+   0.11834  |                               T                                                                                       
+   0.12982  |                          T                                                                                            
+   0.14131  |                      T                                                                                                
+   0.15279  |                   T                                                                                                   
+   0.16428  |                    T                                                                                                  
+   0.17576  |                       T                                                                                               
+   0.18725  |                        T                                                                                              
+   0.19873  |                       T                                                                                               
+   0.21022  |                             T                                                                                         
+   0.22170  |                                         T                                                                             
+   0.23319  |                                    T                                                                                  
+   0.24467  |                               T                                                                                       
+   0.25616  |                                     T                                                                                 
+   0.26764  |                                      T                                                                                
+   0.27913  |                                T                                                                                      
+   0.29061  |                                     T                                                                                 
+   0.30210  |                                        T                                                                              
+   0.31359  |                                     T                                                                                 
+   0.32507  |                              T                                                                                        
+   0.33656  |                        T                                                                                              
+   0.34804  |                      T                                                                                                
+   0.35953  |                T                                                                                                      
+   0.37101  |           T                                                                                                           
+   0.38250  |         T                                                                                                             
+   0.39398  |       T                                                                                                               
+   0.40547  |      T                                                                                                                
+   0.41695  |       T                                                                                                               
+   0.42844  |      T                                                                                                                
+   0.43992  |      T                                                                                                                
+   0.45141  |         T                                                                                                             
+   0.46289  |            T                                                                                                          
+   0.47438  |        T                                                                                                              
+   0.48586  |   T                                                                                                                   
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      1   12    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      2   24    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      3   30    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      4   14    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      5   10    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      6   24    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      7   10    0    0    0    0
+
+ 1002 DATA WRITTEN ON UNIT 25 WITH THE FOLLOWING HEADER :
+ -%-3DOSS      8  124    0    0    0    0
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT DOSS        TELAPSE       20.06 TCPU       18.57
+ ENDPROP   
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE       20.06 TCPU       18.57
+ EEEEEEEEEE TERMINATION  DATE 06 04 2018 TIME 10:00:38.8
+NODE    0 CPU TIME =        18.569
+NODE    1 CPU TIME =        18.062
+NODE    2 CPU TIME =        16.050
+NODE    3 CPU TIME =        16.561
+NODE    4 CPU TIME =        18.015
+NODE    5 CPU TIME =        13.645
+NODE    6 CPU TIME =        16.647
+NODE    7 CPU TIME =        16.398
+NODE    8 CPU TIME =        18.279
+NODE    9 CPU TIME =        15.227
+NODE   10 CPU TIME =        15.274
+NODE   11 CPU TIME =        14.530
+NODE   12 CPU TIME =        16.134
+NODE   13 CPU TIME =        16.995
+NODE   14 CPU TIME =        17.043
+NODE   15 CPU TIME =        17.469
+NODE   16 CPU TIME =        14.121
+NODE   17 CPU TIME =        14.573
+NODE   18 CPU TIME =        15.007
+NODE   19 CPU TIME =        14.359
+NODE   20 CPU TIME =        14.717
+NODE   21 CPU TIME =        13.554
+NODE   22 CPU TIME =        14.002
+NODE   23 CPU TIME =        14.245
+NODE   24 CPU TIME =        14.371
+NODE   25 CPU TIME =        15.043
+NODE   26 CPU TIME =        13.912
+NODE   27 CPU TIME =        14.661
+NODE   28 CPU TIME =        13.992
+NODE   29 CPU TIME =        13.968
+NODE   30 CPU TIME =        15.760
+NODE   31 CPU TIME =        13.859
+    TOTAL CPU TIME =       495.043
+Fri  6 Apr 10:00:42 BST 2018
+Disk usage:total 498380
+-rw------- 1 cjs14 hpc-users   218629 Apr  6 10:00 DOSS.DAT
+-rw------- 1 cjs14 hpc-users  7612960 Apr  6 10:00 fort.10.pe00
+-rw------- 1 cjs14 hpc-users  7478472 Apr  6 10:00 fort.10.pe01
+-rw------- 1 cjs14 hpc-users  7419784 Apr  6 10:00 fort.10.pe02
+-rw------- 1 cjs14 hpc-users  7897856 Apr  6 10:00 fort.10.pe03
+-rw------- 1 cjs14 hpc-users  7775168 Apr  6 10:00 fort.10.pe04
+-rw------- 1 cjs14 hpc-users  7667208 Apr  6 10:00 fort.10.pe05
+-rw------- 1 cjs14 hpc-users  7555528 Apr  6 10:00 fort.10.pe06
+-rw------- 1 cjs14 hpc-users  7635464 Apr  6 10:00 fort.10.pe07
+-rw------- 1 cjs14 hpc-users  7768392 Apr  6 10:00 fort.10.pe08
+-rw------- 1 cjs14 hpc-users  7482240 Apr  6 10:00 fort.10.pe09
+-rw------- 1 cjs14 hpc-users  7332296 Apr  6 10:00 fort.10.pe10
+-rw------- 1 cjs14 hpc-users  7380424 Apr  6 10:00 fort.10.pe11
+-rw------- 1 cjs14 hpc-users  7736456 Apr  6 10:00 fort.10.pe12
+-rw------- 1 cjs14 hpc-users  7885832 Apr  6 10:00 fort.10.pe13
+-rw------- 1 cjs14 hpc-users  7359912 Apr  6 10:00 fort.10.pe14
+-rw------- 1 cjs14 hpc-users  7261896 Apr  6 10:00 fort.10.pe15
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe00
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe01
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe02
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe03
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe04
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe05
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe06
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe07
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe08
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe09
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe10
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe11
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe12
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe13
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe14
+-rw------- 1 cjs14 hpc-users   794064 Apr  6 10:00 fort.11.pe15
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe00
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe01
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe02
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe03
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe04
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe05
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe06
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe07
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe08
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe09
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe10
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe11
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe12
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe13
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe14
+-rw------- 1 cjs14 hpc-users 14079768 Apr  6 10:00 fort.13.pe15
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe00
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe01
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe02
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe03
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe04
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe05
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe06
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe07
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe08
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe09
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe10
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe11
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe12
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe13
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe14
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.15.pe15
+-rw------- 1 cjs14 hpc-users   196832 Apr  6 10:00 fort.25
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe00
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe01
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe02
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe03
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe04
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe05
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe06
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe07
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe08
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe09
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe10
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe11
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe12
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe13
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe14
+-rw------- 1 cjs14 hpc-users        0 Apr  6 10:00 fort.26.pe15
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe00
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe01
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe02
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe03
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe04
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe05
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe06
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe07
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe08
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe09
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe10
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe11
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe12
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe13
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe14
+-rw------- 1 cjs14 hpc-users   397032 Apr  6 10:00 fort.3.pe15
+-rw------- 1 cjs14 hpc-users    45936 Apr  6 10:00 fort.61.pe00
+-rw------- 1 cjs14 hpc-users    47392 Apr  6 10:00 fort.61.pe01
+-rw------- 1 cjs14 hpc-users    49760 Apr  6 10:00 fort.61.pe02
+-rw------- 1 cjs14 hpc-users    42112 Apr  6 10:00 fort.61.pe03
+-rw------- 1 cjs14 hpc-users    42752 Apr  6 10:00 fort.61.pe04
+-rw------- 1 cjs14 hpc-users    46208 Apr  6 10:00 fort.61.pe05
+-rw------- 1 cjs14 hpc-users    42560 Apr  6 10:00 fort.61.pe06
+-rw------- 1 cjs14 hpc-users    44384 Apr  6 10:00 fort.61.pe07
+-rw------- 1 cjs14 hpc-users    43008 Apr  6 10:00 fort.61.pe08
+-rw------- 1 cjs14 hpc-users    46176 Apr  6 10:00 fort.61.pe09
+-rw------- 1 cjs14 hpc-users    53536 Apr  6 10:00 fort.61.pe10
+-rw------- 1 cjs14 hpc-users    55488 Apr  6 10:00 fort.61.pe11
+-rw------- 1 cjs14 hpc-users    46592 Apr  6 10:00 fort.61.pe12
+-rw------- 1 cjs14 hpc-users    44960 Apr  6 10:00 fort.61.pe13
+-rw------- 1 cjs14 hpc-users    54144 Apr  6 10:00 fort.61.pe14
+-rw------- 1 cjs14 hpc-users    51040 Apr  6 10:00 fort.61.pe15
+-rw------- 1 cjs14 hpc-users    25808 Apr  6 10:00 fort.62.pe00
+-rw------- 1 cjs14 hpc-users    20992 Apr  6 10:00 fort.62.pe01
+-rw------- 1 cjs14 hpc-users    28160 Apr  6 10:00 fort.62.pe02
+-rw------- 1 cjs14 hpc-users    14176 Apr  6 10:00 fort.62.pe03
+-rw------- 1 cjs14 hpc-users    24096 Apr  6 10:00 fort.62.pe04
+-rw------- 1 cjs14 hpc-users    16864 Apr  6 10:00 fort.62.pe05
+-rw------- 1 cjs14 hpc-users    22784 Apr  6 10:00 fort.62.pe06
+-rw------- 1 cjs14 hpc-users    18336 Apr  6 10:00 fort.62.pe07
+-rw------- 1 cjs14 hpc-users    24320 Apr  6 10:00 fort.62.pe08
+-rw------- 1 cjs14 hpc-users    21280 Apr  6 10:00 fort.62.pe09
+-rw------- 1 cjs14 hpc-users    31968 Apr  6 10:00 fort.62.pe10
+-rw------- 1 cjs14 hpc-users    20128 Apr  6 10:00 fort.62.pe11
+-rw------- 1 cjs14 hpc-users    26400 Apr  6 10:00 fort.62.pe12
+-rw------- 1 cjs14 hpc-users    21600 Apr  6 10:00 fort.62.pe13
+-rw------- 1 cjs14 hpc-users    27936 Apr  6 10:00 fort.62.pe14
+-rw------- 1 cjs14 hpc-users    18656 Apr  6 10:00 fort.62.pe15
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe00
+-rw------- 1 cjs14 hpc-users  8733856 Apr  6 10:00 fort.8.pe01
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe02
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe03
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe04
+-rw------- 1 cjs14 hpc-users  8733856 Apr  6 10:00 fort.8.pe05
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe06
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe07
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe08
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe09
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe10
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe11
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe12
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe13
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe14
+-rw------- 1 cjs14 hpc-users  8856864 Apr  6 10:00 fort.8.pe15
+-rw------- 1 cjs14 hpc-users   834484 Apr  6 10:00 fort.9
+-rw------- 1 cjs14 hpc-users      453 Apr  6 10:00 INPUT
+-rw------- 1 cjs14 hpc-users   715717 Apr  6 10:00 OPTINFO.DAT
+487	/var/tmp/pbs.1583850.cx1/cubic-rocksalt_2x1_pdos.doss_5274/
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/sda8      950707968 7646112 943061856   1% /tmp
+/dev/sda8      950707968 7646112 943061856   1% /tmp
+Fri  6 Apr 10:00:42 BST 2018
+cx1-133-1-19.cx1.hpc.ic.ac.uk
+cx1-133-1-20.cx1.hpc.ic.ac.uk
+ 
+TEMPORARY          SAVED (in /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std)
+fort.9             cubic-rocksalt_2x1_pdos.doss.f9834484   Apr 6 10:00
+DOSS.DAT           cubic-rocksalt_2x1_pdos.doss.DOSS218629   Apr 6 10:00
+OPTINFO.DAT        cubic-rocksalt_2x1_pdos.doss.OPTINFO715717   Apr 6 10:00
+ 
+file fort.25 saved as /export101/work/cjs14/iron_sulfide_compare/crystal/pdos/18_cubic-rocksalt_AFM_std/cubic-rocksalt_2x1_pdos.doss.f25
