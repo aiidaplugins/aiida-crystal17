@@ -263,6 +263,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
     # assert gui_content == expected_gui
 
 
+@pytest.mark.process_execution
 def test_run_nio_afm_scf(db_test_app, get_structure):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""

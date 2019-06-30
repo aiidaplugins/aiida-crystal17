@@ -17,6 +17,7 @@
     "entry_points": {
         "console_scripts": [
             "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main",
+            "mock_runprop17 = aiida_crystal17.tests.mock_runprop17:main",
             "mock_gulp = aiida_crystal17.tests.mock_gulp:main"
         ],
         "aiida.data": [
@@ -29,11 +30,13 @@
         "aiida.calculations": [
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
             "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation",
+            "crystal17.doss = aiida_crystal17.calculations.cry_doss:CryDossCalculation",
             "gulp.single = aiida_crystal17.gulp.calculations.gulp_single:GulpSingleCalculation",
             "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation"
         ],
         "aiida.parsers": [
             "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser",
+            "crystal17.doss = aiida_crystal17.parsers.cry_doss:CryDossParser",
             "gulp.single = aiida_crystal17.gulp.parsers.parse_main:GulpSingleParser",
             "gulp.optimize = aiida_crystal17.gulp.parsers.parse_main:GulpOptParser"
         ],

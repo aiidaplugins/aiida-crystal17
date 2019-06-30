@@ -12,7 +12,7 @@ def read_doss_contents(content):
     assert lines[2].rstrip() == "1 0"
     assert lines[3].rstrip() == "DOSS"
     settings = lines[4].split()
-    assert len(settings) == 7 or len(settings) == 9
+    assert len(settings) >= 7
     npro = int(settings[0])
     params["npoints"] = int(settings[1])
     band_first = int(settings[2])
@@ -20,26 +20,27 @@ def read_doss_contents(content):
     iplo = int(settings[4])  # noqa: F841
     params["npoly"] = int(settings[5])
     npr = int(settings[6])  # noqa: F841
-    if len(settings) == 9:
-        assert band_first == 0 and band_last == 0
-        params["band_minimum"] = float(settings[7])
-        params["band_maximum"] = float(settings[8])
-        params["band_units"] = "hartree"
-    else:
+    if band_first >= 0 and band_last >= 0:
         params["band_minimum"] = band_first
         params["band_maximum"] = band_last
         params["band_units"] = "bands"
+        proj_index = 5
+    else:
+        params["band_minimum"] = float(lines[5].split()[0])
+        params["band_maximum"] = float(lines[5].split()[1])
+        params["band_units"] = "hartree"
+        proj_index = 6
 
     params["atomic_projections"] = []
     params["orbital_projections"] = []
 
-    for line in lines[5:5 + npro]:
+    for line in lines[proj_index:proj_index + npro]:
         values = [int(i) for i in line.split()]
         if values[0] > 0:
             params["orbital_projections"].append(values[1:])
         else:
             params["atomic_projections"].append(values[1:])
-    assert lines[5 + npro].rstrip() == "END"
+    assert lines[proj_index + npro].rstrip() == "END"
 
     validate_against_schema(params, "doss_input.schema.json")
 
@@ -95,30 +96,31 @@ def create_doss_content(params):
     if units == "bands":
         inzb = int(params["band_minimum"])
         ifnb = int(params["band_maximum"])
-        assert inzb > 0 and ifnb > 0
-        bmin = ""
-        bmax = ""
+        assert inzb >= 0 and ifnb >= 0
+        erange = None
     elif units == "hartree":
-        inzb = ifnb = 0
+        inzb = ifnb = -1
         bmin = params["band_minimum"]
         bmax = params["band_maximum"]
+        erange = "{} {}" .format(bmin, bmax)
     elif units == "eV":
-        inzb = ifnb = 0
+        inzb = ifnb = -1
         bmin = params["band_minimum"] / 27.21138602
         bmax = params["band_maximum"] / 27.21138602
+        erange = "{} {}" .format(bmin, bmax)
     else:
         raise ValueError("band_units not recognised: {}".format(units))
 
-    settings_line = "{npro} {npt} {inzb} {ifnb} {iplo} {npol} {npr} {bmin} {bmax}".format(
+    lines.append("{npro} {npt} {inzb} {ifnb} {iplo} {npol} {npr}".format(
         npro=npro,
         npt=params.get("npoints", 1000),
         inzb=inzb, ifnb=ifnb,
         iplo=1,  # output type (1=fort.25, 2=DOSS.DAT)
         npol=params.get("npoly", 14),
         npr=0,  # number of printing options
-        bmin=bmin, bmax=bmax
-    )
-    lines.append(settings_line.rstrip())
+    ))
+    if erange is not None:
+        lines.append(erange)
 
     for atoms in proj_atoms:
         lines.append("{} {}".format(

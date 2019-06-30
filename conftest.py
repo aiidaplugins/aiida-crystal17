@@ -25,12 +25,14 @@ def aiida_environment():
 @pytest.fixture(scope='function')
 def db_test_app(aiida_environment):
     """clear the database after each test"""
+    print(os.environ.get("MOCK_CRY17_EXECUTABLES"))
 
-    if os.environ.get("MOCK_CRY17_EXECUTABLES", True):
+    if os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "false":
         print("NB: using mock executable")
         executables = {
             'crystal17.basic': 'mock_runcry17',
             'crystal17.main': 'mock_runcry17',
+            'crystal17.doss': 'mock_runprop17',
             'gulp.single': 'mock_gulp',
             'gulp.optimize': 'mock_gulp'
         }
@@ -38,6 +40,7 @@ def db_test_app(aiida_environment):
         executables = {
             'crystal17.basic': 'runcry17',
             'crystal17.main': 'runcry17',
+            'crystal17.doss': 'runprop17',
             'gulp.single': 'gulp',
             'gulp.optimize': 'gulp'
         }

@@ -1,0 +1,52 @@
+arrays:
+  array|energies:
+  - 102
+  array|total:
+  - 102
+calc:
+  append_text: ''
+  custom_scheduler_commands: ''
+  environment_variables: {}
+  exit_status: 0
+  import_sys_environment: true
+  input_file_name: main.doss.d3
+  input_wf_name: mgo_sto3g_scf.f9
+  max_wallclock_seconds: 30
+  mpirun_extra_params: []
+  output_f25_fname: main.doss.f25
+  output_main_fname: main.doss.out
+  parser_name: crystal17.doss
+  prepend_text: ''
+  process_label: CryDossCalculation
+  process_state: finished
+  resources:
+    num_machines: 1
+    num_mpiprocs_per_machine: 1
+  retrieve_list:
+  - main.doss.out
+  - main.doss.f25
+  - _scheduler-stdout.txt
+  - _scheduler-stderr.txt
+  retrieve_temporary_list: []
+  scheduler_state: done
+  scheduler_stderr: _scheduler-stderr.txt
+  scheduler_stdout: _scheduler-stdout.txt
+  sealed: true
+  symlink_wf: true
+  withmpi: false
+results:
+  ejplugins_version: 0.11.1
+  energy_max: -1.168990258864791
+  energy_min: -6.7761793467004
+  energy_units: eV
+  errors: []
+  fermi_energy: -3.9864952633160198
+  norbitals_total: 14
+  npts: 102
+  parser_class: CryDossParser
+  parser_errors: []
+  parser_version: 0.7.0b4
+  parser_warnings: []
+  spin: false
+  system_type: closed shell, insulating system
+  warnings: []
