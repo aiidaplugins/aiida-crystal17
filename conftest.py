@@ -26,7 +26,7 @@ def aiida_environment():
 def db_test_app(aiida_environment):
     """clear the database after each test"""
 
-    if os.environ.get("MOCK_CRY17_EXECUTABLES", False):
+    if os.environ.get("MOCK_CRY17_EXECUTABLES", True):
         print("NB: using mock executable")
         executables = {
             'crystal17.basic': 'mock_runcry17',
