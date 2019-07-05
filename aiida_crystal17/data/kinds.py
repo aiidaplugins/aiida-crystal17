@@ -35,13 +35,11 @@ class KindData(Data):
 
     }
 
-    def __init__(self, **kwargs):
-        """Stores the symmetry data for a structure
+    def __init__(self, data=None, **kwargs):
+        """Stores the kind data for a structure
 
-        - symmetry operations are stored on file (in the style of ArrayData)
-        - the rest of the values are stored as attributes in the database
+        :param data: the data to set, e.g. `{'kind_names': ['Fe'], 'spin_alpha': [True], 'spin_beta': [False]}`
 
-        :param data: the data to set
         """
         data = kwargs.pop('data', None)
         super(KindData, self).__init__(**kwargs)
