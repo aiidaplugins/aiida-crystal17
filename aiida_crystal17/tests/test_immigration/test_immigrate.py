@@ -17,7 +17,7 @@ def test_create_builder(db_test_app, data_regression):
                            'nio_sto3g_afm.crystal.out')
 
     with SandboxFolder() as folder:
-        folder.insert_path(inpath, 'main.d12')
+        folder.insert_path(inpath, 'INPUT')
         folder.insert_path(outpath, 'main.out')
 
         remote = RemoteData(remote_path=folder.abspath,
@@ -110,7 +110,7 @@ def test_full_mgo_opt(db_test_app, data_regression):
     code = db_test_app.get_or_create_code('crystal17.main')
 
     with SandboxFolder() as folder:
-        folder.insert_path(inpath, 'main.d12')
+        folder.insert_path(inpath, 'INPUT')
         folder.insert_path(outpath, 'main.out')
 
         remote = RemoteData(remote_path=folder.abspath,

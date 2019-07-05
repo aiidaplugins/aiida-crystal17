@@ -36,14 +36,12 @@ def test_calcjob_submission(db_test_app):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.basic', folder, builder)
 
-        cmdline_params = ['main']
-        local_copy_list = [[infile.uuid, infile.filename, u'main.d12']]
-        retrieve_list = ['main.out', 'main.gui']
-
         # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == cmdline_params
-        assert sorted(calc_info.local_copy_list) == sorted(local_copy_list)
-        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert calc_info.codes_info[0].cmdline_params == []
+        assert sorted(calc_info.local_copy_list) == sorted(
+            [[infile.uuid, infile.filename, u'INPUT']]
+        )
+        assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.34'])
         assert sorted(calc_info.retrieve_temporary_list) == sorted([])
 
 

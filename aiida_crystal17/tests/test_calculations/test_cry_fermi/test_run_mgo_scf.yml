@@ -4,11 +4,11 @@ calc:
   environment_variables: {}
   exit_status: 0
   import_sys_environment: true
-  input_file_name: main.fermi.d3
+  input_file_name: INPUT
   input_wf_name: mgo_sto3g_scf.f9
   max_wallclock_seconds: 30
   mpirun_extra_params: []
-  output_main_fname: main.fermi.out
+  output_main_file_name: main.out
   parser_name: crystal17.fermi
   prepend_text: ''
   process_label: CryFermiCalculation
@@ -17,8 +17,7 @@ calc:
     num_machines: 1
     num_mpiprocs_per_machine: 1
   retrieve_list:
-  - main.fermi.out
-  - main.fermi.outp
+  - main.out
   - _scheduler-stdout.txt
   - _scheduler-stderr.txt
   retrieve_temporary_list: []
@@ -26,7 +25,7 @@ calc:
   scheduler_stderr: _scheduler-stderr.txt
   scheduler_stdout: _scheduler-stdout.txt
   sealed: true
-  symlink_wf: true
+  symlink_wf: false
   withmpi: false
 fermi: -4.0000737
 results:

@@ -1,0 +1,88 @@
+files:
+    # input only
+    # can actually just pass these to crystal": crystal < input.d12 >> output.log
+    # ("INPUT", ".d12"),
+    # ("INPUT", ".d3"),
+
+    # optional input
+    "BASISSETS.DAT": .basissets
+
+    # optional input / output (will be overwritten during run)
+    "fort.20": .f20  # This is the restart version of fort.f9 (used by GUESSP or GUESSF in SCF input)
+    "fort.9": .f9  # This is used as input for properties only
+    "fort.34": .gui  # geometry input file (used by EXTERNAL in geom)
+    "fort.35": .gui2  # auxiliary geometry input file (used by EXTERNAL in geom with FIXINDEX)
+    "fort.13": .f13  # reducible density matrix written by a previous run (used by RESTART in FREQCALC)
+    "fort.32": _dat.info3d
+    "fort.28": .f28  # POLARI data (Berry phase approach)
+    "fort.80": .f80  # Wannier functions
+    "BORN.DAT": .born  # born tensor charges
+    "FREQINFO.DAT": .freqinfo  # complete info for freq restart (used by RESTART in FREQCALC)
+    "ELASINFO.DAT": .elasinfo  # complete info for elastcon restart (used by RESTART in ELASTCON)
+    "EOSINFO.DAT": .eosinfo  # complete info for eos restart (used by RESTART in EOS)
+    "HESSOPT.DAT": .hessopt  # formatted hessian (used by RESTART in OPTGEOM)
+    "HESSFREQ.DAT": .hessfreq  # formatted hessian (used by RESTART in OPTGEOM for transition state search)
+    "OPTINFO.DAT": .optinfo  # complete info for opt restart (used by RESTART in OPTGEOM)
+    "POINTCHG.INP": .POINTCHG  # (used by POINTCHG in geometry input)
+    "TENS_IR.DAT": .tensdir  # (used by RESTART in FREQCALC with INTRAMAN)
+    "TENS_RAMAN.DAT": .tensraman
+    "XMETRO.COR": .xmetro
+
+    # outputs only
+    "fort.25": .f25  # isovalue maps (used by charge(+spin) density (ECHG), electrostatic potential (POTM), electron momentum density (EMDPDM))
+    "fort.37": .loc
+    "fort.78": .f78  # data for dual basis-set calculations
+    "fort.f98": .f98
+    "CONFIGURATIONS.DAT": .configurations
+    "FINDSYM.DAT": .FINDSYM  # input to the program findsym
+    "FULLEJMOL.DAT": .fullejmol
+    "GAUSSIAN.DAT": .gjf
+    "GEOMETRY.CIF": .cif  # note can use CIFPRT/CIFPRTSYM in geometry block (for 3-D)
+    "IRDIEL.DAT": .irdiel
+    "IRREFR.DAT": .irrefr
+    "IRSPEC.DAT": .irspec
+    "NANOJMOL.DAT": .nanojmol
+    "PHONBANDS.DAT": .phonbands
+    "PPAN.DAT": .ppan  # Mulliken population analysis data
+    "RAMSPEC.DAT": .ramanspec
+    "REFLECTANCE.DAT": .REFLECTANCE
+    "SCFOUT.LOG": .SCFLOG  # SCF output in case of multiple points calculations
+    "STRUC.INCOOR": .STRUC  # cell parameters and atom coordinates
+
+    # output properties only
+    "fort.27": .pol  # data from polari
+    "fort.31": _dat.prop3d
+    "fort.33": .xyz
+    "fort.92": .com
+    "3DEMDTOTAL.DAT": _dat.3DEMDTOTAL
+    "3DEMDANISO.DAT": _dat.3DEMDANISO
+    "ADP.DAT": .adp
+    "CP.DAT": _dat.CP
+    "BAND.DAT": _dat.BAND
+    "DENS_CUBE.DAT": _dat.DENS_CUBE
+    "DIEL.DAT": _dat.DIEL
+    "DOSS.DAT": _dat.DOSS
+    "EMDLM.DAT": _dat.EMDLM
+    "GRED.DAT": _dat.GRED
+    "KAPPA.DAT": "_KAPPA.DAT"
+    "KRED.DAT": _dat.KRED
+    "LINEA.DAT": _dat.LINEA
+    "MOLDRAW.DAT": .mol
+    "POT_CUBE.DAT": _dat.POT_CUBE
+    "POTC.DAT": _dat.POTC
+    "PROF.DAT": _dat.PROF
+    "RHOLINE.DAT": _dat.RHOLINE
+    "SEEBECK.DAT": "_SEEBECK.DAT"
+    "SIGMA.DAT": "_SIGMA.DAT"
+    "SIGMAS.DAT": "_SIGMAS.DAT"
+    "SPIN_CUBE.DAT": _dat.SPIN_CUBE
+    "TDF.DAT": "_TDF.DAT"
+    "WFEMD.DAT": _dat.WFEMD
+
+    # TODO Topond Plot Files
+
+folders:
+    "opta*": .optstory
+    "optc*": .optstory
+    "SCAN*": .scanstory
+

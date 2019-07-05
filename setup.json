@@ -16,8 +16,8 @@
     "version": "0.7.0b4",
     "entry_points": {
         "console_scripts": [
-            "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main",
-            "mock_runprop17 = aiida_crystal17.tests.mock_runprop17:main",
+            "mock_crystal17 = aiida_crystal17.tests.mock_crystal17:main",
+            "mock_properties17 = aiida_crystal17.tests.mock_properties17:main",
             "mock_gulp = aiida_crystal17.tests.mock_gulp:main"
         ],
         "aiida.data": [
@@ -63,7 +63,6 @@
         "ruamel.yaml",
         "ejplugins>=0.9.7",
         "jsonextended>=0.7.10",
-        "numpy==1.16.1",
         "spglib>=1.10.0,<2.0.0",
         "ase>=3.12.0,<4.0.0",
         "PyCifRW==4.2.1; python_version < '3'",

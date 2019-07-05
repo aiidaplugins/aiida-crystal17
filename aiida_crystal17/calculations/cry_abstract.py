@@ -1,8 +1,10 @@
 """
 Plugin to create a CRYSTAL17 output file from a supplied input file.
 """
+import os
 import six
 
+from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.engine import CalcJob
 from aiida.plugins import DataFactory
 
@@ -23,9 +25,7 @@ class CryAbstractCalculation(CalcJob):
         super(CryAbstractCalculation, cls).define(spec)
 
         spec.input('metadata.options.input_file_name',
-                   valid_type=six.string_types, default='main.d12')
-        spec.input('metadata.options.external_file_name',
-                   valid_type=six.string_types, default='main.gui')
+                   valid_type=six.string_types, default='INPUT')
         spec.input('metadata.options.output_main_file_name',
                    valid_type=six.string_types, default='main.out')
 
@@ -97,8 +97,40 @@ class CryAbstractCalculation(CalcJob):
                     required=False,
                     help='the symmetry data from the calculation')
 
-        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
-        # spec.input(
-        #     'parent_folder', valid_type=RemoteData, required=False,
-        #     help=('Use a remote folder as parent folder (for '
-        #           'restarts and similar.'))
+    def create_calc_info(
+            self, tempfolder,
+            local_copy_list=None, remote_copy_list=None, remote_symlink_list=None,
+            retrieve_list=None, retrieve_temporary_list=None):
+        """Prepare CalcInfo object for aiida,
+        to describe how the computation will be executed and recovered
+        """
+        # Prepare CodeInfo object for aiida,
+        # describes how a code has to be executed
+        codeinfo = CodeInfo()
+        codeinfo.code_uuid = self.inputs.code.uuid
+        if self.metadata.options.withmpi:
+            # parallel versions of crystal (Pcrystal, Pproperties & MPPcrystal)
+            # read data specifically from a file called INPUT
+            if self.metadata.options.input_file_name != "INPUT":
+                tempfolder.insert_path(
+                    os.path.join(tempfolder.abspath,
+                                 self.metadata.options.input_file_name),
+                    dest_name="INPUT",
+                )
+        else:
+            codeinfo.stdin_name = self.metadata.options.input_file_name
+        codeinfo.stdout_name = self.metadata.options.output_main_file_name
+        codeinfo.cmdline_params = []
+        codeinfo.withmpi = self.metadata.options.withmpi
+
+        # Prepare CalcInfo object for aiida
+        calcinfo = CalcInfo()
+        calcinfo.uuid = self.uuid
+        calcinfo.codes_info = [codeinfo]
+        calcinfo.local_copy_list = local_copy_list or []
+        calcinfo.remote_copy_list = remote_copy_list or []
+        calcinfo.remote_symlink_list = remote_symlink_list or []
+        calcinfo.retrieve_list = retrieve_list or []
+        calcinfo.retrieve_temporary_list = retrieve_temporary_list or []
+
+        return calcinfo

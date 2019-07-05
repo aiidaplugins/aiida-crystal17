@@ -9,7 +9,7 @@ from aiida.manage.fixtures import fixture_manager
 import pytest
 
 from aiida_crystal17.tests.utils import AiidaTestApp
-from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.tests import TEST_FILES, get_test_structure
 
 
 @pytest.fixture(scope='session')
@@ -28,24 +28,25 @@ def db_test_app(aiida_environment):
     if os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "false":
         print("NB: using mock executable")
         executables = {
-            'crystal17.basic': 'mock_runcry17',
-            'crystal17.main': 'mock_runcry17',
-            'crystal17.doss': 'mock_runprop17',
-            'crystal17.fermi': 'mock_runprop17',
+            'crystal17.basic': 'mock_crystal17',
+            'crystal17.main': 'mock_crystal17',
+            'crystal17.doss': 'mock_properties17',
+            'crystal17.fermi': 'mock_properties17',
             'gulp.single': 'mock_gulp',
             'gulp.optimize': 'mock_gulp'
         }
     else:
         executables = {
-            'crystal17.basic': 'runcry17',
-            'crystal17.main': 'runcry17',
-            'crystal17.doss': 'runprop17',
-            'crystal17.fermi': 'runprop17',
+            'crystal17.basic': 'crystal17',
+            'crystal17.main': 'crystal17',
+            'crystal17.doss': 'properties17',
+            'crystal17.fermi': 'properties17',
             'gulp.single': 'gulp',
             'gulp.optimize': 'gulp'
         }
 
     work_directory = tempfile.mkdtemp()
+    # work_directory = "test_workdir"
     yield AiidaTestApp(
         work_directory, executables, environment=aiida_environment)
     aiida_environment.reset_db()
@@ -54,60 +55,7 @@ def db_test_app(aiida_environment):
 
 @pytest.fixture(scope='function')
 def get_structure():
-    def _get_structure(name):
-        from aiida.plugins import DataFactory
-        from ase.spacegroup import crystal
-        from aiida_crystal17.symmetry import convert_structure
-        structure_data_cls = DataFactory('structure')
-        if name == "MgO":
-            atoms = crystal(
-                symbols=[12, 8],
-                basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-                spacegroup=225,
-                cellpar=[4.21, 4.21, 4.21, 90, 90, 90])
-            return structure_data_cls(ase=atoms)
-        elif name == "NiO_afm":
-            atoms = crystal(
-                symbols=[28, 8],
-                basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
-                spacegroup=225,
-                cellpar=[4.164, 4.164, 4.164, 90, 90, 90])
-            atoms.set_tags([1, 1, 2, 2, 0, 0, 0, 0])
-            return structure_data_cls(ase=atoms)
-        elif name == "pyrite":
-            structure_data = {
-                "lattice": [[5.38, 0.000000, 0.000000],
-                            [0.000000, 5.38, 0.000000],
-                            [0.000000, 0.000000, 5.38]],
-                "fcoords": [[0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5],
-                            [0.5, 0.5, 0.0], [0.338, 0.338, 0.338],
-                            [0.662, 0.662, 0.662], [0.162, 0.662, 0.838],
-                            [0.838, 0.338, 0.162], [0.662, 0.838, 0.162],
-                            [0.338, 0.162, 0.838], [0.838, 0.162, 0.662],
-                            [0.162, 0.838, 0.338]],
-                "symbols": ['Fe'] * 4 + ['S'] * 8,
-                "pbc": [True, True, True]
-            }
-            return convert_structure(structure_data, "aiida")
-        elif name == "zincblende":
-            structure_data = {
-                'pbc': [True, True, True],
-                'atomic_numbers': [26, 26, 26, 26, 16, 16, 16, 16],
-                'ccoords': [[0.0, 0.0, 0.0],
-                            [2.71, 2.71, 0.0],
-                            [0.0, 2.71, 2.71],
-                            [2.71, 0.0, 2.71],
-                            [1.355, 1.355, 1.355],
-                            [4.065, 4.065, 1.355],
-                            [1.355, 4.065, 4.065],
-                            [4.065, 1.355, 4.065]],
-                'lattice': [[5.42, 0.0, 0.0],
-                            [0.0, 5.42, 0.0],
-                            [0.0, 0.0, 5.42]],
-                'equivalent': [0, 0, 0, 0, 0, 0, 0, 0]}
-            return convert_structure(structure_data, "aiida")
-        raise ValueError(name)
-    return _get_structure
+    return get_test_structure
 
 
 @pytest.fixture(scope='function')

@@ -26,14 +26,14 @@ class CryDossParser(Parser):
         except exceptions.NotExistent:
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
 
-        output_f25_fname = self.node.get_option("output_f25_fname")
-        if output_f25_fname not in output_folder.list_object_names():
+        output_isovalue_fname = self.node.get_option("output_isovalue_fname")
+        if output_isovalue_fname not in output_folder.list_object_names():
             return self.exit_codes.ERROR_OUTPUT_FILE_MISSING
 
-        self.logger.info("parsing file: {}".format(output_f25_fname))
+        self.logger.info("parsing file: {}".format(output_isovalue_fname))
 
         try:
-            with output_folder.open(output_f25_fname) as handle:
+            with output_folder.open(output_isovalue_fname) as handle:
                 data, arrays = read_doss_f25_content(
                     handle, self.__class__.__name__)
         except Exception:
@@ -61,6 +61,6 @@ class CryDossParser(Parser):
         if parser_errors:
             return self.exit_codes.ERROR_OUTPUT_PARSING
         elif errors:
-            return self.exit_codes.ERROR_DOSS_RUN
+            return self.exit_codes.ERROR_CRYSTAL_RUN
 
         return ExitCode()

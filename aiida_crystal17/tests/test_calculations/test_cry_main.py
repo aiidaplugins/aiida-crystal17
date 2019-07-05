@@ -105,13 +105,10 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.main', folder, builder)
 
-        cmdline_params = ['main']
-        retrieve_list = ['main.out', 'main.gui']
-
         # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == cmdline_params
+        assert calc_info.codes_info[0].cmdline_params == []
         assert sorted(calc_info.local_copy_list) == sorted([])
-        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.34'])
         assert sorted(calc_info.retrieve_temporary_list) == sorted([])
 
         assert sorted(folder.get_content_list()) == sorted([
@@ -209,13 +206,10 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.main', folder, builder)
 
-        cmdline_params = ['main']
-        retrieve_list = ['main.out', 'main.gui']
-
         # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == cmdline_params
+        assert calc_info.codes_info[0].cmdline_params == []
         assert sorted(calc_info.local_copy_list) == sorted([])
-        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.34'])
         assert sorted(calc_info.retrieve_temporary_list) == sorted([])
 
         assert sorted(folder.get_content_list()) == sorted([

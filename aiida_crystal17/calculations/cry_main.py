@@ -2,10 +2,8 @@
 Plugin to create a CRYSTAL17 output file,
 from input files created via data nodes
 """
-import os
-
 import six
-from aiida.common.datastructures import (CalcInfo, CodeInfo)
+
 from aiida.common.exceptions import InputValidationError
 from aiida.orm import Code
 from aiida.plugins import DataFactory
@@ -26,6 +24,11 @@ class CryMainCalculation(CryAbstractCalculation):
     def define(cls, spec):
 
         super(CryMainCalculation, cls).define(spec)
+
+        spec.input('metadata.options.external_file_name',
+                   valid_type=six.string_types, default='fort.34')
+        # TODO this has to be fort.34 for crystal exec (but not for parser),
+        # so maybe should be fixed
 
         spec.input(
             'parameters', valid_type=DataFactory('crystal17.parameters'),
@@ -54,6 +57,12 @@ class CryMainCalculation(CryAbstractCalculation):
                   "an additional parameter ('element') specifying the "
                   "atomic element symbol for which you want to use this "
                   "basis set."))
+
+        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
+        # spec.input(
+        #     'parent_folder', valid_type=RemoteData, required=False,
+        #     help=('Use a remote folder as parent folder (for '
+        #           'restarts and similar.'))
 
     # pylint: disable=too-many-arguments
     @classmethod
@@ -153,29 +162,13 @@ class CryMainCalculation(CryAbstractCalculation):
             self.inputs.get("kinds", None)
         )
 
-        # Prepare CodeInfo object for aiida,
-        # describes how a code has to be executed
-        code = self.inputs.code
-        codeinfo = CodeInfo()
-        codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = [
-            os.path.splitext(self.metadata.options.input_file_name)[0]
-        ]
-        codeinfo.withmpi = self.metadata.options.withmpi
-
-        # Prepare CalcInfo object for aiida
-        calcinfo = CalcInfo()
-        calcinfo.uuid = self.uuid
-        calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = []
-        calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [
-            self.metadata.options.output_main_file_name,
-            self.metadata.options.external_file_name
-        ]
-        calcinfo.retrieve_temporary_list = []
-
-        return calcinfo
+        return self.create_calc_info(
+            tempfolder,
+            retrieve_list=[
+                self.metadata.options.output_main_file_name,
+                self.metadata.options.external_file_name
+            ]
+        )
 
     # pylint: disable=too-many-arguments
     def _create_input_files(self, basissets, structure, parameters,

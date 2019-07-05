@@ -50,13 +50,10 @@ def test_calcjob_submit_mgo(db_test_app):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.doss', folder, builder)
 
-        cmdline_params = ['main.doss', 'mgo_sto3g_scf']
-        retrieve_list = ['main.doss.out', 'main.doss.f25']
-
         # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == cmdline_params
+        assert calc_info.codes_info[0].cmdline_params == []
         assert sorted(calc_info.local_copy_list) == sorted([])
-        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
+        assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.25'])
         assert sorted(calc_info.retrieve_temporary_list) == sorted([])
 
         assert sorted(folder.get_content_list()) == sorted([

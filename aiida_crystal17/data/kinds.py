@@ -41,7 +41,6 @@ class KindData(Data):
         :param data: the data to set, e.g. `{'kind_names': ['Fe'], 'spin_alpha': [True], 'spin_beta': [False]}`
 
         """
-        data = kwargs.pop('data', None)
         super(KindData, self).__init__(**kwargs)
         if data is not None:
             self.set_data(data)
