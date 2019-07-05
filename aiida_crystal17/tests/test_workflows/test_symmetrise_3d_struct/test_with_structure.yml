@@ -4,7 +4,7 @@ computation:
   computation_class: aiida_crystal17.symmetry.symmetry
   computation_version: 0.7.0b4
   symmetry_program: spglib
-  symmetry_version: 1.12.2
+  symmetry_version: 1.13.0
   symprec: 0.01
 equivalent_sites:
 - 0
