@@ -57,19 +57,29 @@ class CryAbstractCalculation(CalcJob):
 
         # Significant errors but calculation can be used to restart
         spec.exit_code(
-            401, 'UNCONVERGED_SCF',
+            400, 'ERROR_OUT_OF_WALLTIME',
+            message='The calculation stopped prematurely because it ran out of walltime.')
+        spec.exit_code(
+            401, 'ERROR_OUT_OF_MEMORY',
+            message='The calculation stopped prematurely because it ran out of memory.')
+        spec.exit_code(
+            402, 'ERROR_OUT_OF_VMEMORY',
+            message='The calculation stopped prematurely because it ran out of virtual memory.')
+
+        spec.exit_code(
+            411, 'UNCONVERGED_SCF',
             message='SCF convergence did not finalise (usually due to reaching step limit)')
         spec.exit_code(
-            402, 'UNCONVERGED_GEOMETRY',
+            412, 'UNCONVERGED_GEOMETRY',
             message='Geometry convergence did not finalise (usually due to reaching step limit)')
         spec.exit_code(
-            410, 'ERROR_SCF_ABNORMAL_END',
-            message='an error was encountered during an SCF computation')
-        spec.exit_code(
-            411, 'BASIS_SET_LINEARLY_DEPENDENT',
+            413, 'BASIS_SET_LINEARLY_DEPENDENT',
             message='an error encountered usually during geometry optimisation')
         spec.exit_code(
-            412, 'ERROR_MPI_ABORT',
+            414, 'ERROR_SCF_ABNORMAL_END',
+            message='an error was encountered during an SCF computation')
+        spec.exit_code(
+            415, 'ERROR_MPI_ABORT',
             message='an unknown error was encountered, causing the MPI to abort')
         spec.exit_code(
             499, 'ERROR_CRYSTAL_RUN',

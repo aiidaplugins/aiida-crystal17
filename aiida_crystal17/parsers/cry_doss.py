@@ -11,6 +11,7 @@ from aiida.orm import Dict, ArrayData
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17.parsers.raw.doss_output_f25 import read_doss_f25_content
+from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
 class CryDossParser(Parser):
@@ -26,9 +27,16 @@ class CryDossParser(Parser):
         except exceptions.NotExistent:
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
 
+        sterr_file = self.node.get_option("scheduler_stderr")
+        if sterr_file in output_folder.list_object_names():
+            with output_folder.open(sterr_file) as fileobj:
+                pbs_error = parse_pbs_stderr(fileobj)
+            if pbs_error is not None:
+                return self.exit_codes[pbs_error]
+
         output_isovalue_fname = self.node.get_option("output_isovalue_fname")
         if output_isovalue_fname not in output_folder.list_object_names():
-            return self.exit_codes.ERROR_OUTPUT_FILE_MISSING
+            return self.exit_codes.ERROR_ISOVALUE_FILE_MISSING
 
         self.logger.info("parsing file: {}".format(output_isovalue_fname))
 

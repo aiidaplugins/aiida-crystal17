@@ -9,6 +9,7 @@ from aiida.orm import Float, Dict
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17.parsers.raw.newk_output import read_newk_content
+from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
 class CryFermiParser(Parser):
@@ -23,6 +24,13 @@ class CryFermiParser(Parser):
             output_folder = self.retrieved
         except exceptions.NotExistent:
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
+
+        sterr_file = self.node.get_option("scheduler_stderr")
+        if sterr_file in output_folder.list_object_names():
+            with output_folder.open(sterr_file) as fileobj:
+                pbs_error = parse_pbs_stderr(fileobj)
+            if pbs_error is not None:
+                return self.exit_codes[pbs_error]
 
         output_main_file_name = self.node.get_option("output_main_file_name")
         if output_main_file_name not in output_folder.list_object_names():

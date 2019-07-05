@@ -18,7 +18,7 @@ def test_missing_output(db_test_app, plugin_name):
 
     assert calcfunction.is_finished, calcfunction.exception
     assert calcfunction.is_failed, calcfunction.exit_status
-    assert calcfunction.exit_status == calc_node.process_class.exit_codes.ERROR_OUTPUT_FILE_MISSING.status
+    assert calcfunction.exit_status == calc_node.process_class.exit_codes.ERROR_ISOVALUE_FILE_MISSING.status
 
 
 @pytest.mark.parametrize('plugin_name', [

@@ -40,6 +40,10 @@ class CryDossCalculation(CryAbstractCalculation):
             required=True,
             help='the folder containing the wavefunction fort.9 file')
 
+        spec.exit_code(
+            352, 'ERROR_ISOVALUE_FILE_MISSING',
+            message='parser could not find the output isovalue (fort.25) file')
+
         spec.output("results",
                     valid_type=DataFactory('dict'),
                     required=True,

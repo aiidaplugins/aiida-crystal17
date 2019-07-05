@@ -5,6 +5,7 @@ from aiida.common import exceptions
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17.parsers.raw.main_out import parse_main_out
+from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
 class CryMainParser(Parser):
@@ -19,6 +20,13 @@ class CryMainParser(Parser):
             output_folder = self.retrieved
         except exceptions.NotExistent:
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
+
+        sterr_file = self.node.get_option("scheduler_stderr")
+        if sterr_file in output_folder.list_object_names():
+            with output_folder.open(sterr_file) as fileobj:
+                pbs_error = parse_pbs_stderr(fileobj)
+            if pbs_error is not None:
+                return self.exit_codes[pbs_error]
 
         mainout_file = self.node.get_option("output_main_file_name")
         if mainout_file not in output_folder.list_object_names():
