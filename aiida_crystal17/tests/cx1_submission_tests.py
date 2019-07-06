@@ -148,7 +148,6 @@ def submit_nio_afm_fullopt():
         params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
         code=code, metadata=metadata, unflatten=True)
 
-    calc_node = submit(builder)
     with disable_caching():
         calc_node = submit(builder)
 
