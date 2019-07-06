@@ -21,8 +21,7 @@ def test_calcjob_submission(db_test_app):
     # Prepare input parameters
     code = db_test_app.get_or_create_code('crystal17.basic')
     infile = singlefile_data_cls(
-        file=os.path.join(TEST_FILES, "crystal", "in",
-                          'mgo_sto3g_scf.crystal.d12'))
+        file=os.path.join(TEST_FILES, "crystal", "mgo_sto3g_scf", 'INPUT'))
     infile.store()
 
     # set up calculation
@@ -45,13 +44,13 @@ def test_calcjob_submission(db_test_app):
         assert sorted(calc_info.retrieve_temporary_list) == sorted([])
 
 
-@pytest.mark.parametrize("inpath_main,inpath_gui", (
-    ('mgo_sto3g_scf.crystal.d12', None),
-    ('mgo_sto3g_opt.crystal.d12', None),
-    ('mgo_sto3g_external.crystal.d12', 'mgo_sto3g_external.crystal.gui')
+@pytest.mark.parametrize("infolder,external_geom", (
+    ('mgo_sto3g_scf', False),
+    ('mgo_sto3g_opt', False),
+    ('mgo_sto3g_scf_external', True)
 ))
 @pytest.mark.process_execution
-def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
+def test_calcjob_run(db_test_app, infolder, external_geom):
     # type: (AiidaTestApp, str, str) -> None
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
@@ -72,14 +71,14 @@ def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
             "max_wallclock_seconds": 60
         }
     }
-
+# .crystal.ingui # .crystal.d12
     # Prepare input parameters
     infile = singlefile_data_cls(
-        file=os.path.join(TEST_FILES, "crystal", "in", inpath_main))
+        file=os.path.join(TEST_FILES, "crystal", infolder, "INPUT"))
     builder.input_file = infile
-    if inpath_gui is not None:
+    if external_geom:
         ingui = singlefile_data_cls(
-            file=os.path.join(TEST_FILES, "crystal", "in", inpath_gui))
+            file=os.path.join(TEST_FILES, "crystal", infolder, "fort.34"))
         builder.input_external = ingui
 
     outcome = run_get_node(builder)
@@ -90,14 +89,14 @@ def test_calcjob_run(db_test_app, inpath_main, inpath_gui):
         calc_node, ["results", "structure", "symmetry"])
 
     results = calc_node.get_outgoing().get_node_by_label('results')
-    compare_expected_results(inpath_main, results)
+    compare_expected_results(infolder, results)
 
     structure = calc_node.get_outgoing().get_node_by_label('structure')
-    compare_expected_structure(inpath_main, structure)
+    compare_expected_structure(infolder, structure)
 
 
-def compare_expected_results(infile, result_node):
-    if infile == "mgo_sto3g_scf.crystal.d12":
+def compare_expected_results(infolder, result_node):
+    if infolder == "mgo_sto3g_scf":
         expected = {
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
@@ -118,7 +117,7 @@ def compare_expected_results(infile, result_node):
             'scf_iterations': 7,
             'volume': 18.65461527264623,
         }
-    elif infile == "mgo_sto3g_external.crystal.d12":
+    elif infolder == "mgo_sto3g_scf_external":
         expected = {
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
@@ -141,7 +140,7 @@ def compare_expected_results(infile, result_node):
             'mulliken_charges': [0.777, -0.777],
             'mulliken_electrons': [11.223, 8.777],
         }
-    elif infile == "mgo_sto3g_opt.crystal.d12":
+    elif infolder == "mgo_sto3g_opt":
         expected = {
             'parser_version': str(aiida_crystal17.__version__),
             'ejplugins_version': str(ejplugins.__version__),
@@ -164,7 +163,7 @@ def compare_expected_results(infile, result_node):
             'volume': 14.652065094424696,
         }
     else:
-        raise ValueError()
+        raise ValueError(infolder)
 
     attributes = result_node.get_dict()
     attributes.pop('wall_time_seconds', None)
@@ -173,8 +172,8 @@ def compare_expected_results(infile, result_node):
 
 
 def compare_expected_structure(infile, structure):
-    if infile in ["mgo_sto3g_scf.crystal.d12",
-                  "mgo_sto3g_external.crystal.d12"]:
+    if infile in ["mgo_sto3g_scf",
+                  "mgo_sto3g_scf_external"]:
         expected = {
             'cell': [[0.0, 2.105, 2.105],
                      [2.105, 0.0, 2.105],
@@ -194,7 +193,7 @@ def compare_expected_structure(infile, structure):
             'sites': [{'kind_name': 'Mg', 'position': [0.0, 0.0, 0.0]},
                       {'kind_name': 'O', 'position': [2.105, 2.105, 2.105]}]
         }
-    elif infile == "mgo_sto3g_opt.crystal.d12":
+    elif infile == "mgo_sto3g_opt":
         expected = {
             'cell': [[0.0, 1.94218061274, 1.94218061274],
                      [1.94218061274, 0.0, 1.94218061274],

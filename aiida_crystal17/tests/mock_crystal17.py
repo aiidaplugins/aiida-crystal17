@@ -28,22 +28,22 @@ import aiida_crystal17.tests as tests
 hash_map = {
     "f6090e9f0da6098e612cd26cb2f11620": {
         "output": (),
-        "stdout": ("out", "mgo_sto3g_scf.crystal.out")},
+        "stdout": ("mgo_sto3g_scf", "main.out")},
     "4bfb50cb82980b82aabc6eb00e17f62c": {
         "output": (),
-        "stdout": ("out", "mgo_sto3g_external.crystal.out")},
+        "stdout": ("mgo_sto3g_scf_external", "main.out")},
     "ff77b996a5081e64ab2e9970c6cd15cb": {
         "output": (),
-        "stdout": ("out", 'mgo_sto3g_external.crystal.out')},
+        "stdout": ("mgo_sto3g_scf_external", 'main.out')},
     "a7bfd39835be4b6730b0df448f5f6a79": {
         "output": (),
-        "stdout": ("out", "mgo_sto3g_opt.crystal.out")},
+        "stdout": ("mgo_sto3g_opt", "main.out")},
     "5d14a77cb27ee21ad5d151ff3769c094": {
         "output": (),
-        "stdout": ("out", 'nio_sto3g_afm.crystal.out')},
+        "stdout": ("nio_sto3g_afm_scf", 'main.out')},
     "2eae63d662d8518376a208892be07b1d": {
         "output": (),
-        "stdout": ("out", 'nio_sto3g_afm_opt.crystal.out')},
+        "stdout": ("nio_sto3g_afm_opt", 'main.out')},
 }
 
 

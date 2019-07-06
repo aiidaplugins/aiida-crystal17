@@ -223,7 +223,7 @@ def test_full_read(input_str):
 
 
 def test_mgo_sto3g_scf():
-    path = os.path.join(TEST_FILES, "crystal", "in", 'mgo_sto3g_scf.crystal.d12')
+    path = os.path.join(TEST_FILES, "crystal", "mgo_sto3g_scf", 'INPUT')
     with open(path) as f:
         input_str = f.read()
 
@@ -237,7 +237,7 @@ def test_mgo_sto3g_scf():
 
 
 def test_mgo_sto3g_opt():
-    path = os.path.join(TEST_FILES, "crystal", "in", 'mgo_sto3g_opt.crystal.d12')
+    path = os.path.join(TEST_FILES, "crystal", "mgo_sto3g_opt", 'INPUT')
     with open(path) as f:
         input_str = f.read()
 
@@ -261,7 +261,7 @@ def test_mgo_sto3g_opt():
 
 
 def test_nio_sto3g_afm():
-    path = os.path.join(TEST_FILES, "crystal", "in", 'nio_sto3g_afm.crystal.d12')
+    path = os.path.join(TEST_FILES, "crystal", "nio_sto3g_afm_scf", 'INPUT')
     with open(path) as f:
         input_str = f.read()
 

@@ -68,7 +68,7 @@ def test_failed_scf_convergence(db_test_app, plugin_name):
 
     retrieved = FolderData()
     retrieved.put_object_from_file(os.path.join(
-        TEST_FILES, "crystal", "out", "FAILED_SCF_bcc_iron.crystal.out"), "main.out")
+        TEST_FILES, "crystal", "failed", "FAILED_SCF_bcc_iron.out"), "main.out")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     parser = db_test_app.get_parser_cls(plugin_name)
@@ -86,7 +86,8 @@ def test_failed_geom_convergence(db_test_app, plugin_name):
 
     retrieved = FolderData()
     retrieved.put_object_from_file(os.path.join(
-        TEST_FILES, "crystal", "out", "FAILED_GEOM_mackinawite_opt.crystal.out"), "main.out")
+        TEST_FILES, "crystal", "failed", "FAILED_GEOM_mackinawite_opt.out"),
+        "main.out")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     parser = db_test_app.get_parser_cls(plugin_name)
