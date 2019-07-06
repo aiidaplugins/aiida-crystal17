@@ -9,10 +9,10 @@ import pytest
 
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
+from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 
-def test_calcjob_submission(db_test_app):
+def test_calcjob_submission(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test submitting a calculation"""
     from aiida.plugins import DataFactory
@@ -35,13 +35,7 @@ def test_calcjob_submission(db_test_app):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.basic', folder, builder)
 
-        # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == []
-        assert sorted(calc_info.local_copy_list) == sorted(
-            [[infile.uuid, infile.filename, u'INPUT']]
-        )
-        assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.34'])
-        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
+    data_regression.check(sanitize_calc_info(calc_info))
 
 
 @pytest.mark.parametrize("infolder,external_geom", (

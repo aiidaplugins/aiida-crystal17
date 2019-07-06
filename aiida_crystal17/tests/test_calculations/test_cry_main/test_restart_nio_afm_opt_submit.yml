@@ -5,8 +5,8 @@ calc_info:
   - fort.34
   remote_symlink_list: []
   retrieve_list:
-  - main.out
   - fort.34
+  - main.out
   retrieve_temporary_list: []
 code_infos:
 - cmdline_params: []

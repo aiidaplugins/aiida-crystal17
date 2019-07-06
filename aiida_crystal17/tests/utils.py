@@ -126,8 +126,9 @@ def sanitize_calc_info(calc_info):
     calc_info_dict.pop("uuid", None)
     code_info_dicts = [dict(c) for c in calc_info_dict.pop("codes_info")]
     [c.pop("code_uuid", None) for c in code_info_dicts]
-    calc_info_dict = {k: [v[-1] if isinstance(v, (tuple, list)) else v
-                          for v in vs] for k, vs in calc_info_dict.items()}
+    calc_info_dict = {
+        k: sorted([v[-1] if isinstance(v, (tuple, list)) else v for v in vs])
+        for k, vs in calc_info_dict.items()}
     return {
         "calc_info": calc_info_dict,
         "code_infos": code_info_dicts

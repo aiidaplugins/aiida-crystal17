@@ -1,5 +1,6 @@
 calc_info:
-  local_copy_list: []
+  local_copy_list:
+  - INPUT
   remote_copy_list: []
   remote_symlink_list: []
   retrieve_list:
