@@ -130,6 +130,9 @@ class CryAbstractCalculation(CalcJob):
         else:
             codeinfo.stdin_name = self.metadata.options.input_file_name
         codeinfo.stdout_name = self.metadata.options.output_main_file_name
+        # serial version output to stdout, but parallel version output to stderr!
+        # so we join the files
+        codeinfo.join_files = True
         codeinfo.cmdline_params = []
         codeinfo.withmpi = self.metadata.options.withmpi
 

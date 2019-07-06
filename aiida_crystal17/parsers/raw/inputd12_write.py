@@ -130,6 +130,9 @@ def _hamiltonian_block(outstr, indict, atom_props):
     outstr += "SHRINK\n"
     outstr += "{0} {1}\n".format(
         *get_keys(indict, ["scf", "k_points"], raise_error=True))
+    # RESTART
+    if get_keys(indict, ["scf", "restart"], False):
+        outstr += "GUESSP\n"
     # ATOMSPIN
     spins = []
     for anum in atom_props.get("spin_alpha", []):
@@ -162,7 +165,7 @@ def _geometry_block(outstr, indict, atom_props):
         outstr += "{}\n".format(keyword)
     for keyword in get_keys(indict, ["geometry", "info_external"], []):
         outstr += "{}\n".format(keyword)
-    if "optimise" in indict.get("geometry", {}):
+    if indict.get("geometry", {}).get("optimise", False):
         outstr += "OPTGEOM\n"
         outstr += format_value(indict, ["geometry", "optimise", "type"])
         unfixed = atom_props.get("unfixed", [])

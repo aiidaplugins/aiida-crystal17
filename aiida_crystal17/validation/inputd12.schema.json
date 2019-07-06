@@ -68,6 +68,11 @@
                 "CVOLOPT"
               ]
             },
+            "restart": {
+              "description": "whether to insert the RESTART command (requires an OPTINFO.DAT file to be present)",
+              "type": "boolean",
+              "default": false
+            },
             "hessian": {
               "description": "the initial hessian matrix to use",
               "type": "string",
@@ -75,7 +80,8 @@
                 "HESSIDEN",
                 "HESSMOD1",
                 "HESSMOD2",
-                "HESSNUM"
+                "HESSNUM",
+                "HESSOPT"
               ]
             },
             "gradient": {
@@ -358,6 +364,11 @@
             }
           }
         },
+        "restart": {
+          "description": "whether to insert the GUESSP command (requires a fort.20 file to be present)",
+          "type": "boolean",
+          "default": false
+        },
         "numerical": {
           "definition": "Numerical accuracy and computational parameters control",
           "type": "object",
@@ -591,6 +602,7 @@
             "type": "string",
             "uniqueItems": true,
             "enum": [
+              "FULLTIME",
               "POSTSCF",
               "EXCHGENE",
               "GRADCAL",

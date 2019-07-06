@@ -11,6 +11,7 @@ import time
 
 from aiida.common import NotExistent
 from aiida.engine import run_get_node, submit
+from aiida.manage.caching import disable_caching
 from aiida.orm import Computer, Code, Group
 from aiida.orm.utils.builders.computer import ComputerBuilder
 from aiida.orm.utils.builders.code import CodeBuilder
@@ -148,6 +149,8 @@ def submit_nio_afm_fullopt():
         code=code, metadata=metadata, unflatten=True)
 
     calc_node = submit(builder)
+    with disable_caching():
+        calc_node = submit(builder)
 
     # great a group to store all the nodes we create in
     group, created = Group.objects.get_or_create(

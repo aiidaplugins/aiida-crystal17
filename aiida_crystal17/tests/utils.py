@@ -95,7 +95,7 @@ def get_or_create_code(entry_point, computer, executable, exec_path=None):
 
 
 def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mpi=False,
-                         num_mpiprocs_per_machine=1):
+                         num_mpiprocs_per_machine=1, dry_run=False):
     """
     Return an instance of the metadata dictionary with the minimally required parameters
     for a CalcJob and set to default values unless overridden
@@ -114,8 +114,24 @@ def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mp
                 'num_mpiprocs_per_machine': int(num_mpiprocs_per_machine)
             },
             'max_wallclock_seconds': int(max_wallclock_seconds),
-            'withmpi': with_mpi,
-        }}
+            'withmpi': with_mpi
+        },
+        'dry_run': dry_run}
+
+
+def sanitize_calc_info(calc_info):
+    """ convert a CalcInfo object to a regular dict,
+    with no run specific data (i.e. uuids or folder paths)"""
+    calc_info_dict = dict(calc_info)
+    calc_info_dict.pop("uuid", None)
+    code_info_dicts = [dict(c) for c in calc_info_dict.pop("codes_info")]
+    [c.pop("code_uuid", None) for c in code_info_dicts]
+    calc_info_dict = {k: [v[-1] if isinstance(v, (tuple, list)) else v
+                          for v in vs] for k, vs in calc_info_dict.items()}
+    return {
+        "calc_info": calc_info_dict,
+        "code_infos": code_info_dicts
+    }
 
 
 class AiidaTestApp(object):
@@ -165,8 +181,10 @@ class AiidaTestApp(object):
         return get_or_create_code(entry_point, computer, executable)
 
     @staticmethod
-    def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mpi=False):
-        return get_default_metadata(max_num_machines, max_wallclock_seconds, with_mpi)
+    def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800,
+                             with_mpi=False, dry_run=False):
+        return get_default_metadata(max_num_machines, max_wallclock_seconds,
+                                    with_mpi, dry_run=dry_run)
 
     @staticmethod
     def get_parser_cls(entry_point_name):

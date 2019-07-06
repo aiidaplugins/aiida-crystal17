@@ -2,10 +2,11 @@
 Plugin to create a CRYSTAL17 output file,
 from input files created via data nodes
 """
+import os
 import six
 
 from aiida.common.exceptions import InputValidationError
-from aiida.orm import Code
+from aiida.orm import Code, RemoteData
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
@@ -25,11 +26,6 @@ class CryMainCalculation(CryAbstractCalculation):
 
         super(CryMainCalculation, cls).define(spec)
 
-        spec.input('metadata.options.external_file_name',
-                   valid_type=six.string_types, default='fort.34')
-        # TODO this has to be fort.34 for crystal exec (but not for parser),
-        # so maybe should be fixed
-
         spec.input(
             'parameters', valid_type=DataFactory('crystal17.parameters'),
             required=True,
@@ -37,8 +33,7 @@ class CryMainCalculation(CryAbstractCalculation):
         spec.input(
             'structure', valid_type=DataFactory('structure'),
             required=True,
-            help=('the structure used to construct the input .gui file '
-                  '(fort.34)'))
+            help='structure used to construct the input fort.34 (gui) file')
         spec.input(
             'symmetry', valid_type=DataFactory('crystal17.symmetry'),
             required=False,
@@ -58,11 +53,10 @@ class CryMainCalculation(CryAbstractCalculation):
                   "atomic element symbol for which you want to use this "
                   "basis set."))
 
-        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
-        # spec.input(
-        #     'parent_folder', valid_type=RemoteData, required=False,
-        #     help=('Use a remote folder as parent folder (for '
-        #           'restarts and similar.'))
+        spec.input(
+            'parent_folder', valid_type=RemoteData, required=False,
+            help=('An optional working directory, '
+                  'of a previously completed calculation to restart from'))
 
     # pylint: disable=too-many-arguments
     @classmethod
@@ -153,52 +147,132 @@ class CryMainCalculation(CryAbstractCalculation):
                     ', '.join(self.inputs.basissets.keys()),
                     ', '.join(list(symbols))))
 
-        self._create_input_files(
-            self.inputs.basissets,
-            self.inputs.structure,
-            self.inputs.parameters,
-            tempfolder,
-            self.inputs.get("symmetry", None),
-            self.inputs.get("kinds", None)
-        )
+        # set the initial parameters
+        parameters = self.inputs.parameters.get_dict()
+        restart_fnames = []
+        remote_copy_list = []
 
-        return self.create_calc_info(
-            tempfolder,
-            retrieve_list=[
-                self.metadata.options.output_main_file_name,
-                self.metadata.options.external_file_name
-            ]
-        )
+        # deal with restarts
+        if "parent_folder" in self.inputs:
+            restart_fnames, remote_copy_list = self._check_restart(
+                self.inputs.parent_folder)
+            parameters = self._modify_parameters(parameters, restart_fnames)
 
-    # pylint: disable=too-many-arguments
-    def _create_input_files(self, basissets, structure, parameters,
-                            tempfolder, symmetry=None, kinds=None):
-        """ create input files in temporary folder
-
-        :param basissets:
-        :param structure:
-        :param parameters:
-        :param setting:
-        :param tempfolder:
-
-        """
-        # create .gui external geometry file and place it in tempfolder
-        gui_content = gui_file_write(structure, symmetry)
-        with tempfolder.open(self.metadata.options.external_file_name, 'w') as f:
-            f.write(six.u("\n".join(gui_content)))
-
-        atom_props = create_atom_properties(structure, kinds)
+        # create fort.34 external geometry file and place it in tempfolder
+        if "fort.34" not in restart_fnames:
+            gui_content = gui_file_write(self.inputs.structure,
+                                         self.inputs.get("symmetry", None))
+            with tempfolder.open("fort.34", 'w') as f:
+                f.write(six.u("\n".join(gui_content)))
 
         # create .d12 input file and place it in tempfolder
+        atom_props = create_atom_properties(
+            self.inputs.structure, self.inputs.get("kinds", None))
         try:
-            d12_filecontent = write_input(parameters.get_dict(),
-                                          list(basissets.values()), atom_props)
+            d12_filecontent = write_input(
+                parameters, list(self.inputs.basissets.values()), atom_props)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
                 "an input file could not be created from the parameters: {}".
                 format(err))
-
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
             f.write(d12_filecontent)
 
-        return True
+        # setup the calculation info
+        return self.create_calc_info(
+            tempfolder,
+            remote_copy_list=remote_copy_list,
+            retrieve_list=[
+                self.metadata.options.output_main_file_name,
+                "fort.34"
+            ]
+        )
+
+    def _check_restart(self, parent_folder):
+        """assess the parent folder, to decide what files should be copied
+
+        Parameters
+        ----------
+        parent_folder : aiida.orm.nodes.data.remote.RemoteData
+
+        Returns
+        -------
+        list: restart_fnames
+        list: remote_copy_list
+
+        Notes
+        -----
+
+        - fort.9 provides restart for SCF (with GUESSP),
+          but is only output at the end of a successful run
+        - HESSOPT.DAT can be used to initialise the hessian matrix (HESSOPT),
+          and is updated after every optimisation step
+        - OPTINFO.DAT is meant for geometry restarts (with RESTART) but,
+          on both crystal and Pcrystal, a read file error is encountered.
+        - optcxxx or optaxxx are available after every optimisation step
+
+        """
+        # open a transport to the parent computer, and find viable restart files
+        trans = parent_folder.get_authinfo().get_transport()
+        restart_fnames = {}
+        remote_copy_list = []
+        max_step = -1
+        with trans:
+            if not trans.isdir(parent_folder.get_remote_path()):
+                raise IOError("the parent_folders remote path does not exist "
+                              "on the remote computer")
+            trans.chdir(parent_folder.get_remote_path())
+            for fname in trans.listdir():
+                if trans.isdir(fname):
+                    continue
+                if fname == "HESSOPT.DAT" and trans.get_attribute(fname).st_size > 0:
+                    restart_fnames[fname] = fname
+                elif fname == "fort.9" and trans.get_attribute(fname).st_size > 0:
+                    restart_fnames["fort.20"] = "fort.9"
+                elif ((fname.startswith("optc") or fname.startswith("opta")) and trans.get_attribute(fname).st_size > 0):
+                    try:
+                        opt_step = int(fname[4:])
+                    except ValueError:
+                        continue
+                    if opt_step > max_step:
+                        max_step = opt_step
+                        restart_fnames["fort.34"] = fname
+
+            if "fort.34" in restart_fnames:
+                # TODO read in file to structure,
+                # and test it is consistent with the input structure
+                # (and symmetry)
+                # or better, ensure these optc files are saved as a TrajectoryData
+                pass
+
+        for oname, iname in restart_fnames.items():
+            remote_copy_list.append((
+                parent_folder.computer.uuid,
+                os.path.join(parent_folder.get_remote_path(), iname),
+                oname))
+
+        return restart_fnames, remote_copy_list
+
+    def _modify_parameters(self, parameters, restart_fnames):
+        """ modify the parameters,
+        according to what restart files are available
+        """
+        if not restart_fnames:
+            return parameters
+
+        if "fort.20" in restart_fnames:
+            parameters["scf"]["restart"] = True
+
+        if "HESSOPT.DAT" in restart_fnames:
+            if parameters.get("geometry", {}).get("optimise", False):
+                if isinstance(parameters["geometry"]["optimise"], bool):
+                    parameters["geometry"]["optimise"] = {}
+                parameters["geometry"]["optimise"]["hessian"] = "HESSOPT"
+
+        if "OPTINFO.DAT" in restart_fnames:
+            if parameters.get("geometry", {}).get("optimise", False):
+                if isinstance(parameters["geometry"]["optimise"], bool):
+                    parameters["geometry"]["optimise"] = {}
+                parameters["geometry"]["optimise"]["restart"] = True
+
+        return parameters

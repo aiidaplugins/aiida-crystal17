@@ -20,7 +20,7 @@ files:
     "FREQINFO.DAT": .freqinfo  # complete info for freq restart (used by RESTART in FREQCALC)
     "ELASINFO.DAT": .elasinfo  # complete info for elastcon restart (used by RESTART in ELASTCON)
     "EOSINFO.DAT": .eosinfo  # complete info for eos restart (used by RESTART in EOS)
-    "HESSOPT.DAT": .hessopt  # formatted hessian (used by RESTART in OPTGEOM)
+    "HESSOPT.DAT": .hessopt  # formatted hessian (used by HESSOPT in OPTGEOM)
     "HESSFREQ.DAT": .hessfreq  # formatted hessian (used by RESTART in OPTGEOM for transition state search)
     "OPTINFO.DAT": .optinfo  # complete info for opt restart (used by RESTART in OPTGEOM)
     "POINTCHG.INP": .POINTCHG  # (used by POINTCHG in geometry input)
