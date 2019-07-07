@@ -45,12 +45,12 @@ def db_test_app(aiida_environment):
             'gulp.optimize': 'gulp'
         }
 
-    # work_directory = tempfile.mkdtemp()
-    work_directory = "test_workdir"
+    work_directory = tempfile.mkdtemp()
+    # work_directory = "test_workdir"
     yield AiidaTestApp(
         work_directory, executables, environment=aiida_environment)
     aiida_environment.reset_db()
-    # shutil.rmtree(work_directory)
+    shutil.rmtree(work_directory)
 
 
 @pytest.fixture(scope='function')

@@ -128,7 +128,7 @@ class BaseRestartWorkChain(WorkChain):
 
     def run_calculation(self):
         """Run the next calculation, taking the input dictionary from the context at `self.ctx.inputs`."""
-        from aiida_quantumespresso.utils.mapping import prepare_process_inputs
+        from aiida_crystal17.common.mapping import prepare_process_inputs
 
         self.ctx.iteration += 1
 
