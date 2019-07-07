@@ -55,9 +55,15 @@ class CryMainCalculation(CryAbstractCalculation):
                   "basis set."))
 
         spec.input(
-            'parent_folder', valid_type=RemoteData, required=False,
+            'wf_folder', valid_type=RemoteData, required=False,
             help=('An optional working directory, '
-                  'of a previously completed calculation to restart from'))
+                  'of a previously completed calculation, '
+                  'containing a fort.9 wavefunction file to restart from'))
+
+        # TODO allow for input of HESSOPT.DAT file
+
+        # Note: OPTINFO.DAT is also meant for geometry restarts (with RESTART),
+        #       but on both crystal and Pcrystal, a read file error is encountered trying to use it.
 
         spec.output(
             'optimisation',
@@ -158,11 +164,20 @@ class CryMainCalculation(CryAbstractCalculation):
         restart_fnames = []
         remote_copy_list = []
 
-        # deal with restarts
-        if "parent_folder" in self.inputs:
-            restart_fnames, remote_copy_list = self._check_restart(
-                self.inputs.parent_folder)
-            parameters = self._modify_parameters(parameters, restart_fnames)
+        # deal with scf restarts
+        if "wf_folder" in self.inputs:
+            # TODO it would be good to check if the fort.9 exists and is not empty
+            # (fort.9 is present but empty if crystal is killed by SIGTERM (e.g. when walltime reached))
+            # but this would involve connecting to the remote computer, which could fail
+            # Ideally would want to use the process exponential backoff & pause functionality
+            remote_copy_list.append((
+                self.inputs.wf_folder.computer.uuid,
+                os.path.join(self.inputs.wf_folder.get_remote_path(), 'fort.9'),
+                'fort.20'))
+            restart_fnames.append('fort.20')
+
+        # modify parameters to use restart files
+        parameters = self._modify_parameters(parameters, restart_fnames)
 
         # create fort.34 external geometry file and place it in tempfolder
         gui_content = gui_file_write(self.inputs.structure,
@@ -196,58 +211,6 @@ class CryMainCalculation(CryAbstractCalculation):
         )
 
     @staticmethod
-    def _check_restart(parent_folder):
-        """assess the parent folder, to decide what files should be copied
-
-        Parameters
-        ----------
-        parent_folder : aiida.orm.nodes.data.remote.RemoteData
-
-        Returns
-        -------
-        list: restart_fnames
-        list: remote_copy_list
-
-        Notes
-        -----
-
-        - fort.9 provides restart for SCF (with GUESSP),
-          but is only output at the end of a successful run
-        - HESSOPT.DAT can be used to initialise the hessian matrix (HESSOPT),
-          and is updated after every optimisation step
-        - OPTINFO.DAT is meant for geometry restarts (with RESTART) but,
-          on both crystal and Pcrystal, a read file error is encountered.
-
-        """
-        # open a transport to the parent computer, and find viable restart files
-        trans = parent_folder.get_authinfo().get_transport()
-        restart_fnames = {}
-        remote_copy_list = []
-        # TODO this will fail if not connected to the remote path,
-        # but if the calculation is part of a workflow this would be unwanted
-        # (i.e. should be paused until connection is established)
-        with trans:
-            if not trans.isdir(parent_folder.get_remote_path()):
-                raise IOError("the parent_folders remote path does not exist "
-                              "on the remote computer")
-            trans.chdir(parent_folder.get_remote_path())
-            for fname in trans.listdir():
-                if trans.isdir(fname):
-                    continue
-                if fname == "HESSOPT.DAT" and trans.get_attribute(fname).st_size > 0:
-                    restart_fnames[fname] = fname
-                elif fname == "fort.9" and trans.get_attribute(fname).st_size > 0:
-                    restart_fnames["fort.20"] = "fort.9"
-
-        for oname, iname in restart_fnames.items():
-            remote_copy_list.append((
-                parent_folder.computer.uuid,
-                os.path.join(parent_folder.get_remote_path(), iname),
-                oname))
-
-        return restart_fnames, remote_copy_list
-
-    @staticmethod
     def _modify_parameters(parameters, restart_fnames):
         """ modify the parameters,
         according to what restart files are available
@@ -264,7 +227,6 @@ class CryMainCalculation(CryAbstractCalculation):
                     parameters["geometry"]["optimise"] = {}
                 parameters["geometry"]["optimise"]["hessian"] = "HESSOPT"
 
-        # Note this is currently not used
         if "OPTINFO.DAT" in restart_fnames:
             if parameters.get("geometry", {}).get("optimise", False):
                 if isinstance(parameters["geometry"]["optimise"], bool):
@@ -272,3 +234,47 @@ class CryMainCalculation(CryAbstractCalculation):
                 parameters["geometry"]["optimise"]["restart"] = True
 
         return parameters
+
+    @staticmethod
+    def _check_remote(remote_folder, file_names):
+        """tests if files are present and note empty on a remote folder
+
+        Parameters
+        ----------
+        remote_folder : aiida.orm.nodes.data.remote.RemoteData
+        file_names: list[str]
+
+        Returns
+        -------
+        result: dict
+            {<file_name>: bool, ...}
+
+        Raises
+        ------
+        IOError
+            if the remote_folder's path does not exist on the remote computer
+
+        """
+        result = {}
+        # open a transport to the parent computer, and find viable restart files
+        # TODO this will fail if not connected to the remote path,
+        # but if the calculation is part of a workflow this would be unwanted
+        # (i.e. should be paused until connection is established)
+        trans = remote_folder.get_authinfo().get_transport()
+        with trans:
+            if not trans.isdir(remote_folder.get_remote_path()):
+                raise IOError(
+                    "the remote_folder's path does not exist on the remote computer")
+            trans.chdir(remote_folder.get_remote_path())
+            remote_fnames = trans.listdir()
+            for file_name in file_names:
+                if file_name not in remote_fnames:
+                    result[file_name] = False
+                elif trans.isdir(file_name):
+                    result[file_name] = False
+                elif trans.get_attribute(file_name).st_size <= 0:
+                    result[file_name] = False
+                else:
+                    result[file_name] = True
+
+        return result

@@ -131,7 +131,7 @@ def _hamiltonian_block(outstr, indict, atom_props):
     outstr += "{0} {1}\n".format(
         *get_keys(indict, ["scf", "k_points"], raise_error=True))
     # RESTART
-    if get_keys(indict, ["scf", "restart"], False):
+    if get_keys(indict, ["scf", "GUESSP"], False):
         outstr += "GUESSP\n"
     # ATOMSPIN
     spins = []

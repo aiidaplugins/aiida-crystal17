@@ -63,6 +63,17 @@ hash_map = {
         "580bba20ba3e73342ddeb05d26e96164": {
             "output": (),
             "stdout": ("nio_sto3g_afm_opt_walltime2", 'main.out')}
+    },
+    "549d584022bc77572cebf56cd9cccb3e": {
+        None: {
+            "output": [(("nio_sto3g_afm_scf_maxcyc", "fort.9"),
+                        ("fort.9",))],
+            "stdout": ("nio_sto3g_afm_scf_maxcyc", 'main.out')}
+    },
+    "580e34966940b27f707d24e51ce659ed": {
+        None: {
+            "output": (),
+            "stdout": ("nio_sto3g_afm_scf_maxcyc2", 'main.out')}
     }
 }
 

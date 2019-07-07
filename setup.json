@@ -43,7 +43,8 @@
             "gulp.optimize = aiida_crystal17.gulp.parsers.parse_main:GulpOptParser"
         ],
         "aiida.workflows": [
-            "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure"
+            "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure",
+            "crystal17.main.base = aiida_crystal17.workflows.crystal_main.base:CryMainBaseWorkChain"
         ],
         "aiida.cmdline.data": [
             "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",

@@ -157,15 +157,14 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_fam
     data_regression.check(sanitize_calc_info(calc_info))
 
 
-def test_restart_nio_afm_opt_submit(db_test_app, get_structure, upload_basis_set_family,
-                                    file_regression, data_regression):
-
+def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family,
+                           file_regression, data_regression):
+    """ test restarting from a previous fort.9 file"""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
     params = {
         "title": "NiO Bulk with AFM spin",
-        "geometry.optimise.type": "FULLOPTG",
         "scf.single": "UHF",
         "scf.k_points": (8, 8),
         "scf.spinlock.SPINLOCK": (0, 15),
@@ -196,8 +195,8 @@ def test_restart_nio_afm_opt_submit(db_test_app, get_structure, upload_basis_set
 
     remote = orm.RemoteData(
         computer=code.computer,
-        remote_path=os.path.join(TEST_FILES, "crystal", "nio_sto3g_afm_opt_walltime"))
-    builder.parent_folder = remote
+        remote_path=os.path.join(TEST_FILES, "crystal", "nio_sto3g_afm_scf_maxcyc"))
+    builder.wf_folder = remote
 
     process_options = builder.process_class(inputs=builder).metadata.options
 

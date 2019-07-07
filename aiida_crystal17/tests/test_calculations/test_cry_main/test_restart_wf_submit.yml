@@ -1,7 +1,7 @@
 calc_info:
   local_copy_list: []
   remote_copy_list:
-  - HESSOPT.DAT
+  - fort.20
   remote_symlink_list: []
   retrieve_list:
   - HESSOPT.DAT

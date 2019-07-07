@@ -1,0 +1,10 @@
+
+============================================
+
+        Job resource usage summary 
+
+                 Memory (GB)    NCPUs
+ Requested  :         1             8
+ Used       :         0 (peak)   7.60 (ave)
+
+============================================

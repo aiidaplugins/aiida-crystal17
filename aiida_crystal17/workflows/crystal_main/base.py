@@ -73,6 +73,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
         """
         super(CryMainBaseWorkChain, self).setup()
         self.ctx.inputs = AttributeDict(self.exposed_inputs(CryCalculation, self._calc_namespace))
+        self.ctx.use_fort9_restart = False
 
     def validate_parameters(self):
         """Validate inputs that might depend on each other and cannot be validated by the spec.
@@ -124,21 +125,26 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
     def prepare_calculation(self):
         """Prepare the inputs for the next calculation.
 
-        If a `restart_calc` has been set in the context, its `remote_folder` will be used as the `parent_folder` input
+        If a `restart_calc` has been set in the context, its `remote_folder` will be used as the `wf_folder` input
         for the next calculation.
         """
         if self.ctx.restart_calc:
+
+            self.ctx.inputs.pop('wf_folder', None)
+
             if "optimisation" in self.ctx.restart_calc.outputs:
                 # use the last recorded structure of an optimisation
                 self.ctx.inputs.structure = self.ctx.restart_calc.outputs.optimisation.get_step_structure(
                     -1, custom_kinds=self.ctx.inputs.structure.kinds)
                 # TODO could also use HESSOPT.DAT
 
-            self.ctx.inputs.pop('parent_folder', None)
-
-        # TODO currently this checks the content of the restart folder
-        # which could be an issue if the connection is lost
-        # self.ctx.inputs.parent_folder = self.ctx.restart_calc.outputs.remote_folder
+            if self.ctx.use_fort9_restart:
+                # TODO it would be good to check if the fort.9 is present & non-empty
+                # but should use the exponential-backoff / pause functionality, to connect to the remote
+                # or, at least test for a crystal read failure, and restart without it
+                # the failure looks like: 'io error\nRead_int_1d', which isn't particularly helpful
+                self.ctx.inputs.wf_folder = self.ctx.restart_calc.outputs.remote_folder
+                self.ctx.use_fort9_restart = False
 
     def report_error_handled(self, calculation, action):
         """Report an action taken for a calculation that has failed.
@@ -167,9 +173,10 @@ def _handle_out_of_walltime(self, calculation):
     if calculation.exit_status == CryCalculation.spec().exit_codes.ERROR_OUT_OF_WALLTIME.status:
         if not self.ctx.is_optimisation:
             self.report_error_handled(
-                calculation, 'there is currently no restart facility for a non-optimisation calculation')
+                calculation, 'there is currently no restart facility for a killed scf calculation')
             return ErrorHandlerReport(True, True, self.exit_codes.ERROR_UNRECOVERABLE_FAILURE)
         self.ctx.restart_calc = calculation
+        self.ctx.use_fort9_restart = False  # the fort.9 is wiped in-between SCF
         self.report_error_handled(calculation, 'simply restart from the last calculation')
         return ErrorHandlerReport(True, True)
 
@@ -181,9 +188,10 @@ def _handle_electronic_convergence_not_achieved(self, calculation):
     if calculation.exit_status == CryCalculation.spec().exit_codes.UNCONVERGED_SCF.status:
         factor = self.defaults.delta_factor_fmixing
         fmixing = self.ctx.inputs.parameters['scf'].get('numerical', {}).get('FMIXING', self.defaults.fmixing)
-        fmixing_new = fmixing * factor
+        fmixing_new = int(fmixing * factor)
 
         self.ctx.restart_calc = calculation
+        self.ctx.use_fort9_restart = True
         self.ctx.inputs.parameters['scf'].setdefault('numerical', {})['FMIXING'] = fmixing_new
 
         action = 'reduced fmixing from {} to {} and restarting from last calculation'.format(fmixing, fmixing_new)
@@ -196,5 +204,6 @@ def _handle_geometric_convergence_not_achieved(self, calculation):
     """In the case of `UNCONVERGED_GEOMETRY`, restart from the last recorded configuration."""
     if calculation.exit_status == CryCalculation.spec().exit_codes.UNCONVERGED_GEOMETRY.status:
         self.ctx.restart_calc = calculation
+        self.ctx.use_fort9_restart = True
         self.report_error_handled(calculation, 'simply restart from the last calculation')
         return ErrorHandlerReport(True, True)

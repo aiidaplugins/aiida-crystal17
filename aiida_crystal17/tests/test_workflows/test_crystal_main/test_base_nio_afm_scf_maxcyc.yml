@@ -1,0 +1,21 @@
+calc_node:
+  exit_status: 0
+  process_label: CryMainBaseWorkChain
+  process_state: finished
+  sealed: true
+  stepper_state_info: 5:results
+incoming:
+- clean_workdir
+- cry__basissets__Ni
+- cry__basissets__O
+- cry__code
+- cry__kinds
+- cry__parameters
+- cry__structure
+- cry__symmetry
+- max_iterations
+outgoing:
+- iteration_01
+- iteration_02
+- remote_folder
+- results
