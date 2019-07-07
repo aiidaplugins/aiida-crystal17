@@ -40,17 +40,23 @@ class CryAbstractCalculation(CalcJob):
             message='The retrieved folder data node could not be accessed.')
         spec.exit_code(
             210, 'ERROR_OUTPUT_FILE_MISSING',
-            message='the main output file was not found')
+            message='the main (stdout) output file was not found')
+        spec.exit_code(
+            211, 'ERROR_TEMP_FOLDER_MISSING',
+            message='the temporary retrieved folder was not found')
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
         spec.exit_code(
-            300, 'ERROR_OUTPUT_PARSING',
+            300, 'ERROR_PARSING_STDOUT',
             message=('An error was flagged trying to parse the '
-                     'main crystal output file'))
+                     'crystal exec stdout file'))
+        spec.exit_code(
+            301, 'ERROR_PARSING_OPTIMISATION_GEOMTRIES',
+            message=("An error occurred parsing the 'opta'/'optc' geomerty files"))
 
         spec.exit_code(
             350, 'ERROR_CRYSTAL_INPUT',
-            message='the input file was could not be read by CRYSTAL')
+            message='the input file could not be read by CRYSTAL')
         spec.exit_code(
             351, 'ERROR_WAVEFUNCTION_NOT_FOUND',
             message='CRYSTAL could not find the required wavefunction file')

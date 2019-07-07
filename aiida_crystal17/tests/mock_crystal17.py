@@ -44,6 +44,13 @@ hash_map = {
     "2eae63d662d8518376a208892be07b1d": {
         "output": (),
         "stdout": ("nio_sto3g_afm_opt", 'main.out')},
+    "6e68e432a1b852bb82d1d09af40b23ab": {
+        "output": [(("nio_sto3g_afm_opt_walltime", "optc{:03}".format(n + 1)),
+                    ("optc{:03}".format(n + 1),))
+                   for n in range(18) if n != 6] + [
+                       (("nio_sto3g_afm_opt_walltime", "HESSOPT.DAT"),
+                        ("HESSOPT.DAT"),)],
+        "stdout": ("nio_sto3g_afm_opt_walltime", 'main.out')}
 }
 
 
@@ -68,9 +75,9 @@ def main(sys_args=None):
 
     outfiles = hash_map[hashkey]
 
-    for inname, outname in outfiles.get("output", []):
-        src = os.path.join(test_path, *inname)
-        dst = os.path.join(".", outname)
+    for inpath, outpath in outfiles.get("output", []):
+        src = os.path.join(test_path, *inpath)
+        dst = os.path.join(".", *outpath)
         copyfile(src, dst)
 
     if outfiles.get("stdout", None) is not None:

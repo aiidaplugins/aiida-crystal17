@@ -43,7 +43,7 @@ class CryFermiParser(Parser):
                 data = read_newk_content(handle, self.__class__.__name__)
         except Exception:
             traceback.print_exc()
-            return self.exit_codes.ERROR_OUTPUT_PARSING
+            return self.exit_codes.ERROR_PARSING_STDOUT
 
         errors = data.get("errors", [])
         parser_errors = data.get("parser_errors", [])
@@ -62,7 +62,7 @@ class CryFermiParser(Parser):
             self.out('fermi_energy', Float(data["fermi_energy"]))
 
         if parser_errors:
-            return self.exit_codes.ERROR_OUTPUT_PARSING
+            return self.exit_codes.ERROR_PARSING_STDOUT
         elif errors:
             return self.exit_codes.ERROR_CRYSTAL_RUN
 

@@ -46,7 +46,7 @@ class CryDossParser(Parser):
                     handle, self.__class__.__name__)
         except Exception:
             traceback.print_exc()
-            return self.exit_codes.ERROR_OUTPUT_PARSING
+            return self.exit_codes.ERROR_PARSING_STDOUT
 
         errors = data.get("errors", [])
         parser_errors = data.get("parser_errors", [])
@@ -67,7 +67,7 @@ class CryDossParser(Parser):
             self.out('arrays', array_data)
 
         if parser_errors:
-            return self.exit_codes.ERROR_OUTPUT_PARSING
+            return self.exit_codes.ERROR_PARSING_STDOUT
         elif errors:
             return self.exit_codes.ERROR_CRYSTAL_RUN
 

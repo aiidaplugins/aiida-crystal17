@@ -91,7 +91,7 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False, optimi
         _parse_main_output(file_handle.read(), results_data)
     except KeyError as err:
         traceback.print_exc()
-        parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
+        parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
         results_data['parser_errors'].append("{}".format(err))
         return parser_result
 
@@ -108,12 +108,12 @@ def parse_output(file_handle, parser_class, exit_codes=None, final=False, optimi
         idata = results_data.pop('initial')
     else:
         results_data['parser_errors'].append("expected 'initial' data")
-        parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
+        parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
     if 'final' in results_data:
         fdata = results_data.pop('final')
     elif final:
         results_data['parser_errors'].append("expected 'final' data")
-        parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
+        parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
 
     if final:
         if idata:

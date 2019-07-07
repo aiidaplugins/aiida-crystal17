@@ -67,7 +67,7 @@ class GulpAbstractCalculation(CalcJob):
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
         spec.exit_code(
-            300, 'ERROR_OUTPUT_PARSING',
+            300, 'ERROR_PARSING_STDOUT',
             message=('An error was flagged trying to parse the '
                      'main gulp output file'))
 

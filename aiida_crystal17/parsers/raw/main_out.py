@@ -8,7 +8,6 @@ import ejplugins
 from aiida_crystal17.symmetry import convert_structure
 from ejplugins.crystal import CrystalOutputPlugin
 from aiida.plugins import DataFactory
-from aiida.engine import ExitCode
 from aiida_crystal17 import __version__
 from aiida_crystal17.calculations.cry_main import CryMainCalculation
 
@@ -69,7 +68,7 @@ class OutputNodes(Mapping):
 
 class ParserResult(object):
     def __init__(self):
-        self.exit_code = ExitCode()  # initialises as exit_code = 0
+        self.exit_code = None
         self.nodes = OutputNodes()
 
 
@@ -122,7 +121,7 @@ def parse_main_out(fileobj, parser_class,
         data = cryparse.read_file(fileobj, log_warnings=False)
     except IOError as err:
         traceback.print_exc()
-        parser_result.exit_code = exit_codes.ERROR_OUTPUT_PARSING
+        parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
         results_data["parser_errors"].append(
             "Error parsing CRYSTAL 17 main output: {0}".format(err))
         parser_result.nodes.results = DataFactory("dict")(dict=results_data)

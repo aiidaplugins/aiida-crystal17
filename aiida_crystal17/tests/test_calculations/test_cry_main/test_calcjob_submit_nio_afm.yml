@@ -5,7 +5,8 @@ calc_info:
   retrieve_list:
   - fort.34
   - main.out
-  retrieve_temporary_list: []
+  retrieve_temporary_list:
+  - opt[ac][0-9][0-9][0-9]
 code_infos:
 - cmdline_params: []
   join_files: true

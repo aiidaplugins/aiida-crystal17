@@ -6,7 +6,7 @@ import os
 import six
 
 from aiida.common.exceptions import InputValidationError
-from aiida.orm import Code, RemoteData
+from aiida.orm import Code, RemoteData, TrajectoryData
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
@@ -57,6 +57,11 @@ class CryMainCalculation(CryAbstractCalculation):
             'parent_folder', valid_type=RemoteData, required=False,
             help=('An optional working directory, '
                   'of a previously completed calculation to restart from'))
+
+        spec.output(
+            'optimisation',
+            valid_type=TrajectoryData, required=False,
+            help="atomic configurations, for each optimisation step")
 
     # pylint: disable=too-many-arguments
     @classmethod
@@ -159,11 +164,10 @@ class CryMainCalculation(CryAbstractCalculation):
             parameters = self._modify_parameters(parameters, restart_fnames)
 
         # create fort.34 external geometry file and place it in tempfolder
-        if "fort.34" not in restart_fnames:
-            gui_content = gui_file_write(self.inputs.structure,
-                                         self.inputs.get("symmetry", None))
-            with tempfolder.open("fort.34", 'w') as f:
-                f.write(six.u("\n".join(gui_content)))
+        gui_content = gui_file_write(self.inputs.structure,
+                                     self.inputs.get("symmetry", None))
+        with tempfolder.open("fort.34", 'w') as f:
+            f.write(six.u("\n".join(gui_content)))
 
         # create .d12 input file and place it in tempfolder
         atom_props = create_atom_properties(
@@ -185,7 +189,8 @@ class CryMainCalculation(CryAbstractCalculation):
             retrieve_list=[
                 self.metadata.options.output_main_file_name,
                 "fort.34"
-            ]
+            ],
+            retrieve_temporary_list=["opt[ac][0-9][0-9][0-9]"]
         )
 
     def _check_restart(self, parent_folder):
@@ -209,14 +214,12 @@ class CryMainCalculation(CryAbstractCalculation):
           and is updated after every optimisation step
         - OPTINFO.DAT is meant for geometry restarts (with RESTART) but,
           on both crystal and Pcrystal, a read file error is encountered.
-        - optcxxx or optaxxx are available after every optimisation step
 
         """
         # open a transport to the parent computer, and find viable restart files
         trans = parent_folder.get_authinfo().get_transport()
         restart_fnames = {}
         remote_copy_list = []
-        max_step = -1
         with trans:
             if not trans.isdir(parent_folder.get_remote_path()):
                 raise IOError("the parent_folders remote path does not exist "
@@ -229,21 +232,6 @@ class CryMainCalculation(CryAbstractCalculation):
                     restart_fnames[fname] = fname
                 elif fname == "fort.9" and trans.get_attribute(fname).st_size > 0:
                     restart_fnames["fort.20"] = "fort.9"
-                elif ((fname.startswith("optc") or fname.startswith("opta")) and trans.get_attribute(fname).st_size > 0):
-                    try:
-                        opt_step = int(fname[4:])
-                    except ValueError:
-                        continue
-                    if opt_step > max_step:
-                        max_step = opt_step
-                        restart_fnames["fort.34"] = fname
-
-            if "fort.34" in restart_fnames:
-                # TODO read in file to structure,
-                # and test it is consistent with the input structure
-                # (and symmetry)
-                # or better, ensure these optc files are saved as a TrajectoryData
-                pass
 
         for oname, iname in restart_fnames.items():
             remote_copy_list.append((
