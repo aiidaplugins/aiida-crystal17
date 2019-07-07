@@ -371,9 +371,9 @@ def register_error_handler(cls, priority=None):
     Decorator that will turn any function in an error handler for workchain that inherits from
     the :class:`.BaseRestartWorkChain`. The function expects two arguments, a workchain class and a priority.
     The decorator will add the function as a class method to the workchain class and add an :class:`.ErrorHandler`
-    tuple to the :attr:`.BaseRestartWorkChain._error_handlers` attribute of the workchain. During failed calculation
+    tuple to the `BaseRestartWorkChain._error_handlers` attribute of the workchain. During failed calculation
     handling the :meth:`.inspect_calculation` outline method will call the `_handle_calculation_failure` which will loop
-    over all error handler in the :attr:`.BaseRestartWorkChain._error_handlers`, sorted with respect to the priority in
+    over all error handler in the `BaseRestartWorkChain._error_handlers`, sorted with respect to the priority in
     reverse. If the workchain class defines a :attr:`.BaseRestartWorkChain._verbose` attribute and is set to `True`, a
     report message will be fired when the error handler is executed.
 
