@@ -20,6 +20,7 @@ class CryMainParser(Parser):
     """
     Parser class for parsing (stdout) output of a standard CRYSTAL17 run
     """
+
     def parse(self, retrieved_temporary_folder=None, **kwargs):
         """
         Parse outputs, store results in database.
@@ -47,7 +48,8 @@ class CryMainParser(Parser):
                 scheduler_exit_code = self.exit_codes[pbs_error]
 
         # parse temporary folder
-        temp_folder_exit_code = self.parse_temporary_folder(retrieved_temporary_folder)
+        temp_folder_exit_code = self.parse_temporary_folder(
+            retrieved_temporary_folder)
 
         # parse the stdout file
         stdout_fname = self.node.get_option("output_main_file_name")
@@ -111,13 +113,28 @@ class CryMainParser(Parser):
             return self.exit_codes.ERROR_TEMP_FOLDER_MISSING
 
         # parse optimisation steps
+        if "structure" in self.node.inputs:
+            in_symbols = self.node.inputs.structure.get_ase().get_chemical_symbols()
+
         structures = {}
         for path in glob.iglob(os.path.join(retrieved_temporary_folder, "opt[ac][0-9][0-9][0-9]")):
             opt_step = int(path[-3:])
             try:
                 with open(path) as handle:
                     struct_dict, sym = gui_file_read(handle.readlines())
-                structures[opt_step] = convert_structure(struct_dict, 'aiida')
+                structure = convert_structure(struct_dict, 'aiida')
+                if "structure" in self.node.inputs:
+                    out_symbols = structure.get_ase().get_chemical_symbols()
+                    if out_symbols != in_symbols:
+                        raise AssertionError(
+                            "structure symbols are not compatible: "
+                            "{} != {}".format(out_symbols, in_symbols))
+                    new_structure = self.node.inputs.structure.clone()
+                    new_structure.reset_cell(structure.cell)
+                    new_structure.reset_sites_positions(
+                        [s.position for s in structure.sites])
+                    structure = new_structure
+                structures[opt_step] = structure
                 # TODO could also get energy from this file
             except Exception:
                 self.logger.error("error parsing: {}".format(path))
@@ -135,7 +152,8 @@ class CryMainParser(Parser):
         try:
             traj_data.set_structurelist([structures[s] for s in sorted_steps])
         except Exception:
-            self.logger.error("an error occurred setting the optimisation trajectory")
+            self.logger.error(
+                "an error occurred setting the optimisation trajectory")
             traceback.print_exc()
             return self.exit_codes.ERROR_PARSING_OPTIMISATION_GEOMTRIES
         self.out('optimisation', traj_data)

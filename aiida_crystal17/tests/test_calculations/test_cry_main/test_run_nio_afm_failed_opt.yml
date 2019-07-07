@@ -40,8 +40,8 @@ optimisation:
   array|steps:
   - 9
   symbols:
-  - Ni
-  - Ni
+  - Ni1
+  - Ni2
   - O
   - O
 outputs:
