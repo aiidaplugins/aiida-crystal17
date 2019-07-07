@@ -88,7 +88,8 @@ def submit_nio_afm_fullopt():
 
     code = get_cx1_crystal_code(
         "/work/cjs14/aiida_v100b3_runs",
-        '/rds/general/user/gmallia/home/CRYSTAL17_cx1/v2/bin/Linux-mpiifort_MPP/C17-v2_mod_Xeon___mpi__intel-2018___intel-suite__2016.3/Pcrystal',
+        ('/rds/general/user/gmallia/home/CRYSTAL17_cx1/v2/bin/Linux-mpiifort_MPP/'
+         'C17-v2_mod_Xeon___mpi__intel-2018___intel-suite__2016.3/Pcrystal'),
         key_filename="/Users/cjs14/.ssh/id_rsa")
 
     kind_data_cls = DataFactory('crystal17.kinds')

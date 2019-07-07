@@ -4,6 +4,7 @@ calc_info:
   - HESSOPT.DAT
   remote_symlink_list: []
   retrieve_list:
+  - HESSOPT.DAT
   - fort.34
   - main.out
   retrieve_temporary_list:

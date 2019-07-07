@@ -2,7 +2,6 @@
 
 """
 import os
-from textwrap import dedent  # noqa: F401
 
 import ejplugins
 from jsonextended import edict
@@ -19,16 +18,6 @@ from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa
 from aiida_crystal17.data.kinds import KindData
 from aiida_crystal17.data.basis_set import BasisSetData
 from aiida_crystal17.data.input_params import CryInputParamsData
-
-
-def upload_basis_set_sto3g():
-    """ upload the sto3g basis set"""
-    BasisSetData.upload_basisset_family(
-        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
-        "sto3g",
-        "minimal basis sets",
-        stop_if_existing=True,
-        extension=".basis")
 
 
 def test_create_builder(db_test_app, get_structure):
@@ -114,7 +103,7 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure,
     data_regression.check(sanitize_calc_info(calc_info))
 
 
-def test_calcjob_submit_nio_afm(db_test_app, get_structure,
+def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_family,
                                 data_regression, file_regression):
     """Test submitting a calculation"""
 
@@ -143,7 +132,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure,
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basis_set_sto3g()
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
@@ -168,7 +157,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure,
     data_regression.check(sanitize_calc_info(calc_info))
 
 
-def test_restart_nio_afm_opt_submit(db_test_app, get_structure,
+def test_restart_nio_afm_opt_submit(db_test_app, get_structure, upload_basis_set_family,
                                     file_regression, data_regression):
 
     code = db_test_app.get_or_create_code('crystal17.main')
@@ -196,7 +185,7 @@ def test_restart_nio_afm_opt_submit(db_test_app, get_structure,
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basis_set_sto3g()
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
@@ -223,7 +212,7 @@ def test_restart_nio_afm_opt_submit(db_test_app, get_structure,
 
 
 @pytest.mark.process_execution
-def test_run_nio_afm_scf(db_test_app, get_structure):
+def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
 
@@ -252,7 +241,7 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basis_set_sto3g()
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
@@ -308,7 +297,7 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
 @pytest.mark.process_execution
 @pytest.mark.skipif(os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "true",
                     reason="the calculation takes about 50 minutes to run")
-def test_run_nio_afm_fullopt(db_test_app, get_structure):
+def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
 
@@ -337,7 +326,7 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basis_set_sto3g()
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
@@ -419,7 +408,7 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
 
 @pytest.mark.skipif(os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "true",
                     reason="the calculation was run on a HPC")
-def test_run_nio_afm_failed_opt(db_test_app, get_structure, data_regression):
+def test_run_nio_afm_failed_opt(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the optimisation fails,
     due to reaching walltime"""
@@ -449,7 +438,7 @@ def test_run_nio_afm_failed_opt(db_test_app, get_structure, data_regression):
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basis_set_sto3g()
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class

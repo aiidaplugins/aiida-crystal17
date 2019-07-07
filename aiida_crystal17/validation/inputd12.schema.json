@@ -364,7 +364,7 @@
             }
           }
         },
-        "restart": {
+        "GUESSP": {
           "description": "whether to insert the GUESSP command (requires a fort.20 file to be present)",
           "type": "boolean",
           "default": false

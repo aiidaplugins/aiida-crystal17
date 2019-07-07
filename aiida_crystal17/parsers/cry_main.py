@@ -122,6 +122,7 @@ class CryMainParser(Parser):
             try:
                 with open(path) as handle:
                     struct_dict, sym = gui_file_read(handle.readlines())
+                    # TODO could also get energy from this file
                 structure = convert_structure(struct_dict, 'aiida')
                 if "structure" in self.node.inputs:
                     out_symbols = structure.get_ase().get_chemical_symbols()
@@ -135,7 +136,6 @@ class CryMainParser(Parser):
                         [s.position for s in structure.sites])
                     structure = new_structure
                 structures[opt_step] = structure
-                # TODO could also get energy from this file
             except Exception:
                 self.logger.error("error parsing: {}".format(path))
                 traceback.print_exc()

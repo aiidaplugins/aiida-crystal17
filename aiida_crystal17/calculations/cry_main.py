@@ -6,7 +6,7 @@ import os
 import six
 
 from aiida.common.exceptions import InputValidationError
-from aiida.orm import Code, RemoteData, TrajectoryData
+from aiida.orm import Code, RemoteData, StructureData, TrajectoryData
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
@@ -29,9 +29,10 @@ class CryMainCalculation(CryAbstractCalculation):
         spec.input(
             'parameters', valid_type=DataFactory('crystal17.parameters'),
             required=True,
+            serializer=lambda x: DataFactory('crystal17.parameters')(data=x),
             help='the input parameters to create the .d12 file content.')
         spec.input(
-            'structure', valid_type=DataFactory('structure'),
+            'structure', valid_type=StructureData,
             required=True,
             help='structure used to construct the input fort.34 (gui) file')
         spec.input(
@@ -188,12 +189,14 @@ class CryMainCalculation(CryAbstractCalculation):
             remote_copy_list=remote_copy_list,
             retrieve_list=[
                 self.metadata.options.output_main_file_name,
-                "fort.34"
+                "fort.34",
+                "HESSOPT.DAT"
             ],
             retrieve_temporary_list=["opt[ac][0-9][0-9][0-9]"]
         )
 
-    def _check_restart(self, parent_folder):
+    @staticmethod
+    def _check_restart(parent_folder):
         """assess the parent folder, to decide what files should be copied
 
         Parameters
@@ -220,6 +223,9 @@ class CryMainCalculation(CryAbstractCalculation):
         trans = parent_folder.get_authinfo().get_transport()
         restart_fnames = {}
         remote_copy_list = []
+        # TODO this will fail if not connected to the remote path,
+        # but if the calculation is part of a workflow this would be unwanted
+        # (i.e. should be paused until connection is established)
         with trans:
             if not trans.isdir(parent_folder.get_remote_path()):
                 raise IOError("the parent_folders remote path does not exist "
@@ -241,7 +247,8 @@ class CryMainCalculation(CryAbstractCalculation):
 
         return restart_fnames, remote_copy_list
 
-    def _modify_parameters(self, parameters, restart_fnames):
+    @staticmethod
+    def _modify_parameters(parameters, restart_fnames):
         """ modify the parameters,
         according to what restart files are available
         """
@@ -249,7 +256,7 @@ class CryMainCalculation(CryAbstractCalculation):
             return parameters
 
         if "fort.20" in restart_fnames:
-            parameters["scf"]["restart"] = True
+            parameters["scf"]["GUESSP"] = True
 
         if "HESSOPT.DAT" in restart_fnames:
             if parameters.get("geometry", {}).get("optimise", False):
@@ -257,6 +264,7 @@ class CryMainCalculation(CryAbstractCalculation):
                     parameters["geometry"]["optimise"] = {}
                 parameters["geometry"]["optimise"]["hessian"] = "HESSOPT"
 
+        # Note this is currently not used
         if "OPTINFO.DAT" in restart_fnames:
             if parameters.get("geometry", {}).get("optimise", False):
                 if isinstance(parameters["geometry"]["optimise"], bool):

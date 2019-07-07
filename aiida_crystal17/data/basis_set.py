@@ -10,7 +10,7 @@ import tempfile
 import six
 from ruamel.yaml import YAML
 from aiida.common.utils import classproperty
-from aiida.orm import Data
+from aiida.orm import Data, Str
 from aiida_crystal17.common import (
     flatten_dict, unflatten_dict, ATOMIC_NUM2SYMBOL)
 
@@ -658,6 +658,45 @@ class BasisSetData(Data):
                 bases[kind] = basis
 
         return bases
+
+    @classmethod
+    def prepare_and_validate_inputs(cls, structure, basissets=None, basis_family=None):
+        """validate and prepare a dictionary mapping elements of the structure
+        to a BasisSetData node, for use as input to a calculation
+
+        Parameters
+        ----------
+        structure : aiida.StructureData
+        basissets : dict
+            a dictionary where keys are the symbol names and value are BasisSetData nodes
+        basis_family : str
+            basis set family name to use
+
+        Raises
+        ------
+        ValueError
+            if neither basissets or basis_family is specified or if no BasisSetData is found for
+            every element in the structure
+
+        """
+        if basissets and basis_family:
+            raise ValueError('you cannot specify both "basissets" and "basis_family"')
+        elif basissets is None and basis_family is None:
+            raise ValueError('neither an explicit basissets dictionary nor a basis_family was specified')
+        elif basis_family:
+            if isinstance(basis_family, Str):
+                basis_family = basis_family.value
+            basissets = cls.get_basissets_from_structure(structure, basis_family, by_kind=False)
+
+        elements_required = set([kind.symbol for kind in structure.kinds])
+        if set(basissets.keys()) != elements_required:
+            err_msg = (
+                "Mismatch between the defined basissets and the list of "
+                "elements of the structure. Basissets: {}; elements: {}".
+                format(set(basissets.keys()), elements_required))
+            raise ValueError(err_msg)
+
+        return basissets
 
     # pylint: disable=too-many-locals,too-many-arguments
     @classmethod

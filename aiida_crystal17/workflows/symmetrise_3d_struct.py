@@ -142,8 +142,9 @@ class Symmetrise3DStructure(WorkChain):
                     "default": False
                 },
                 "standardize_cell": {
-                    "description": ("whether to standardize the structure, see "
-                                    "https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell"),
+                    "description": (
+                        "whether to standardize the structure, see "
+                        "https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell"),
                     "type": "boolean",
                     "default": False
                 },

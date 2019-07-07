@@ -45,12 +45,12 @@ def db_test_app(aiida_environment):
             'gulp.optimize': 'gulp'
         }
 
-    work_directory = tempfile.mkdtemp()
-    # work_directory = "test_workdir"
+    # work_directory = tempfile.mkdtemp()
+    work_directory = "test_workdir"
     yield AiidaTestApp(
         work_directory, executables, environment=aiida_environment)
     aiida_environment.reset_db()
-    shutil.rmtree(work_directory)
+    # shutil.rmtree(work_directory)
 
 
 @pytest.fixture(scope='function')
@@ -67,3 +67,18 @@ def get_cif():
             return cif_data_cls(file=os.path.join(TEST_FILES, "cif", "pyrite.cif"))
         raise ValueError(name)
     return _get_cif
+
+
+@pytest.fixture(scope='function')
+def upload_basis_set_family():
+    """ upload the a basis set family"""
+    from aiida_crystal17.data.basis_set import BasisSetData
+
+    def _upload(name="sto3g"):
+        return BasisSetData.upload_basisset_family(
+            os.path.join(TEST_FILES, "basis_sets", name),
+            name,
+            "minimal basis sets",
+            stop_if_existing=True,
+            extension=".basis")
+    return _upload

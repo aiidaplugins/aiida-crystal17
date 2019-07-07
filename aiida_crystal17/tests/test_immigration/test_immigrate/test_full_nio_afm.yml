@@ -18,6 +18,7 @@ resources:
 retrieve_list:
 - other2.out
 - fort.34
+- HESSOPT.DAT
 - _scheduler-stdout.txt
 - _scheduler-stderr.txt
 retrieve_temporary_list:

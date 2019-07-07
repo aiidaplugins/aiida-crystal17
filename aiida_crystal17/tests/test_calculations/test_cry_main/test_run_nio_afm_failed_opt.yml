@@ -2,8 +2,8 @@ calc_node:
   append_text: ''
   custom_scheduler_commands: ''
   environment_variables: {}
-  exit_message: An error was flagged trying to parse the crystal exec stdout file
-  exit_status: 300
+  exit_message: The calculation stopped prematurely because it ran out of walltime.
+  exit_status: 400
   import_sys_environment: true
   input_file_name: INPUT
   max_wallclock_seconds: 1800
@@ -17,6 +17,7 @@ calc_node:
     num_machines: 1
     num_mpiprocs_per_machine: 1
   retrieve_list:
+  - HESSOPT.DAT
   - _scheduler-stderr.txt
   - _scheduler-stdout.txt
   - fort.34
@@ -30,15 +31,15 @@ calc_node:
   withmpi: false
 optimisation:
   array|cells:
-  - 9
+  - 16
   - 3
   - 3
   array|positions:
-  - 9
+  - 16
   - 4
   - 3
   array|steps:
-  - 9
+  - 16
   symbols:
   - Ni1
   - Ni2
@@ -54,8 +55,7 @@ results:
   errors: []
   parser_class: CryMainParser
   parser_errors:
-  - 'Error parsing CRYSTAL 17 main output: couldn''t find start of program run (denoted
-    *****)'
+  - 'Error parsing CRYSTAL 17 main output: found start of optimisation but not end'
   parser_version: 0.7.0b4
   parser_warnings: []
   warnings: []

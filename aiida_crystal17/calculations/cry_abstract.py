@@ -50,7 +50,7 @@ class CryAbstractCalculation(CalcJob):
             300, 'ERROR_PARSING_STDOUT',
             message=('An error was flagged trying to parse the '
                      'crystal exec stdout file'))
-        spec.exit_code(
+        spec.exit_code(  # TODO is this an unrecoverable error?
             301, 'ERROR_PARSING_OPTIMISATION_GEOMTRIES',
             message=("An error occurred parsing the 'opta'/'optc' geomerty files"))
 
@@ -91,7 +91,7 @@ class CryAbstractCalculation(CalcJob):
             499, 'ERROR_CRYSTAL_RUN',
             message='The main crystal output file flagged an unhandled error')
 
-        # errors in symmetry node consistency check
+        # errors in symmetry node consistency checks
         spec.exit_code(
             510, 'ERROR_SYMMETRY_INCONSISTENCY',
             message=('inconsistency in the input and output symmetry'))
