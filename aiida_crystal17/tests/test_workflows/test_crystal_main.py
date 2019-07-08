@@ -12,7 +12,7 @@ from aiida_crystal17.data.kinds import KindData
 from aiida_crystal17.workflows.crystal_main.base import CryMainBaseWorkChain
 
 
-@pytest.mark.skipif(os.environ.get("TRAVIS", False), reason="awaiting fix for aiidateam/aiida-core#3143")
+@pytest.mark.skipif("TRAVIS" in os.environ, reason="awaiting fix for aiidateam/aiida-core#3143")
 @pytest.mark.process_execution
 def test_base_nio_afm_scf_maxcyc(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
