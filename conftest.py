@@ -74,11 +74,11 @@ def upload_basis_set_family():
     """ upload the a basis set family"""
     from aiida_crystal17.data.basis_set import BasisSetData
 
-    def _upload(name="sto3g"):
+    def _upload(folder_name="sto3g", group_name="sto3g", stop_if_existing=True):
         return BasisSetData.upload_basisset_family(
-            os.path.join(TEST_FILES, "basis_sets", name),
-            name,
+            os.path.join(TEST_FILES, "basis_sets", folder_name),
+            group_name,
             "minimal basis sets",
-            stop_if_existing=True,
+            stop_if_existing=stop_if_existing,
             extension=".basis")
     return _upload

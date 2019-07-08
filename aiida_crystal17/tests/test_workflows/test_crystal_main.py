@@ -77,7 +77,7 @@ def test_base_nio_afm_scf_maxcyc(db_test_app, get_structure, upload_basis_set_fa
 def test_base_nio_afm_opt_walltime(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the optimisation fails, on the 1st iteration,
-    due to reaching walltime"""
+    due to reaching walltime """
 
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -104,18 +104,18 @@ def test_base_nio_afm_opt_walltime(db_test_app, get_structure, upload_basis_set_
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basis_set_family()
+    upload_basis_set_family(group_name="sto3g2", stop_if_existing=False)
 
     # set up calculation
     process_class = code.get_builder().process_class
     calc_builder = process_class.create_builder(
-        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data, code=code,
+        params, instruct, "sto3g2", symmetry=symmetry, kinds=kind_data, code=code,
         metadata=db_test_app.get_default_metadata(),  # with_mpi=True
         unflatten=True)
 
     wc_builder = CryMainBaseWorkChain.get_builder()
     wc_builder.cry = dict(calc_builder)
-    wc_builder.clean_workdir = False
+    wc_builder.clean_workdir = True
 
     outputs, wc_node = run_get_node(wc_builder)
     print(get_workchain_report(wc_node, 'REPORT'))

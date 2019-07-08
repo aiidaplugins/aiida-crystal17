@@ -374,7 +374,7 @@ def register_error_handler(cls, priority=None):
     tuple to the `BaseRestartWorkChain._error_handlers` attribute of the workchain. During failed calculation
     handling the :meth:`.inspect_calculation` outline method will call the `_handle_calculation_failure` which will loop
     over all error handler in the `BaseRestartWorkChain._error_handlers`, sorted with respect to the priority in
-    reverse. If the workchain class defines a :attr:`.BaseRestartWorkChain._verbose` attribute and is set to `True`, a
+    reverse. If the workchain class defines a `BaseRestartWorkChain._verbose` attribute and is set to `True`, a
     report message will be fired when the error handler is executed.
 
     Requirements on the function signature of error handling functions. The function to which the
