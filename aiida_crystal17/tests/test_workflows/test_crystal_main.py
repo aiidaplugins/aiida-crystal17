@@ -51,11 +51,13 @@ def test_init_steps(db_test_app, get_structure_and_symm, upload_basis_set_family
     wc_builder.kpoints_distance = 0.5
     wc_builder.kpoints_force_parity = True
 
-    wkchain, context = db_test_app.generate_context(
+    wkchain, step_outcomes, context = db_test_app.generate_context(
         CryMainBaseWorkChain, wc_builder,
         ["setup", "validate_parameters", "validate_basis_sets", "validate_resources"])
 
     data_regression.check(context)
+
+    assert all([o is None for o in step_outcomes])
 
 
 @pytest.mark.process_execution

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from aiida import orm
 from aiida.common import AttributeDict
 from aiida.common.exceptions import InputValidationError
@@ -117,7 +118,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
                 self.ctx.inputs.structure, self.inputs.kpoints_distance.value, force_parity)
             # TODO check / deal with non-zero offsets
             is_value = kpoints.get_kpoints_mesh()[0]
-            isp_value = max(is_value) * 2
+            isp_value = int(max(is_value) * 2)
             if is_value[0] == is_value[1] == is_value[2]:
                 is_value = is_value[0]
 

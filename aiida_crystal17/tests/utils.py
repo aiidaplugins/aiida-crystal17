@@ -434,11 +434,12 @@ class AiidaTestApp(object):
         runner = manager.get_runner()
 
         wkchain = instantiate_process(runner, wkchain_cls, **inputs)
+        step_outcomes = []
         for step in outline_steps:
-            getattr(wkchain, step)()
+            step_outcomes.append(getattr(wkchain, step)())
 
         context = yaml.dump(wkchain.ctx, Dumper=ContextDumper)
-        return wkchain, yaml.load(context)
+        return wkchain, step_outcomes, yaml.load(context)
 
     @staticmethod
     def check_calculation(
