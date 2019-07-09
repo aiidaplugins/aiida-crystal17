@@ -1,0 +1,54 @@
+calc_name: CryMainCalculation
+inputs:
+  basissets:
+    Ni: <class 'aiida_crystal17.data.basis_set.BasisSetData'>
+    O: <class 'aiida_crystal17.data.basis_set.BasisSetData'>
+  code: <class 'aiida.orm.nodes.data.code.Code'>
+  kinds: <class 'aiida_crystal17.data.kinds.KindData'>
+  metadata:
+    call_link_label: CALL
+    dry_run: false
+    options:
+      append_text: ''
+      custom_scheduler_commands: ''
+      environment_variables: {}
+      import_sys_environment: true
+      input_file_name: INPUT
+      max_wallclock_seconds: 1800
+      mpirun_extra_params: []
+      output_main_file_name: main.out
+      parser_name: crystal17.main
+      prepend_text: ''
+      resources:
+        num_machines: 1
+        num_mpiprocs_per_machine: 1
+      scheduler_stderr: _scheduler-stderr.txt
+      scheduler_stdout: _scheduler-stdout.txt
+      withmpi: false
+    store_provenance: true
+  parameters:
+    scf:
+      k_points:
+      - - 6
+        - 6
+        - 4
+      - 12
+      numerical:
+        FMIXING: 50
+        MAXCYCLE: 10
+      post_scf:
+      - PPAN
+      single: UHF
+      spinlock:
+        SPINLOCK:
+        - 0
+        - 15
+    title: NiO Bulk with AFM spin
+  structure: <class 'aiida.orm.nodes.data.structure.StructureData'>
+  symmetry: <class 'aiida_crystal17.data.symmetry.SymmetryData'>
+is_finished: false
+is_optimisation: false
+iteration: 0
+restart_calc: null
+unexpected_failure: false
+use_fort9_restart: false

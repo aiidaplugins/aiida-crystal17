@@ -408,6 +408,39 @@ class AiidaTestApp(object):
         return calc_info
 
     @staticmethod
+    def generate_context(wkchain_cls, inputs, outline_steps):
+        """instantiate a WorkChain,
+        call a list of methods (that should be part of `spec.outline`),
+        then return a sanitized version of the workchain context for testing
+        """
+        import yaml
+        from aiida.engine.utils import instantiate_process
+        from aiida.common.extendeddicts import AttributeDict
+        from aiida.manage.manager import get_manager
+        from aiida.orm import Node
+
+        class ContextDumper(yaml.Dumper):
+            """Custom yaml dumper for a process context.
+            """
+            def represent_data(self, data):
+                if isinstance(data, Node):
+                    data = str(data.__class__)
+                if isinstance(data, AttributeDict):
+                    data = dict(data)
+
+                return super(ContextDumper, self).represent_data(data)
+
+        manager = get_manager()
+        runner = manager.get_runner()
+
+        wkchain = instantiate_process(runner, wkchain_cls, **inputs)
+        for step in outline_steps:
+            getattr(wkchain, step)()
+
+        context = yaml.dump(wkchain.ctx, Dumper=ContextDumper)
+        return wkchain, yaml.load(context)
+
+    @staticmethod
     def check_calculation(
             calc_node, expected_outgoing_labels,
             error_include=(("results", "errors"),

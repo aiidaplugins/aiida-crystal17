@@ -59,3 +59,18 @@ def get_test_structure(name):
             'equivalent': [0, 0, 0, 0, 0, 0, 0, 0]}
         return convert_structure(structure_data, "aiida")
     raise ValueError(name)
+
+
+def get_test_structure_and_symm(name, symprec=0.01, primitive=True):
+    """ return an aiida.StructureData
+    and related aiida_crystal17.SymmetryData (computed by the `crystal17.sym3d` WorkChain)
+    for testing """
+    from aiida.engine import run_get_node
+    from aiida.orm import Dict
+    from aiida.plugins import WorkflowFactory
+    instruct = get_test_structure(name)
+    sym_calc = run_get_node(
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings=Dict(dict={"symprec": symprec, "compute_primitive": primitive})
+        ).node
+    return sym_calc.outputs.structure, sym_calc.outputs.symmetry

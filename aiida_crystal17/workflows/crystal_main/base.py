@@ -1,14 +1,21 @@
 from aiida import orm
 from aiida.common import AttributeDict
+from aiida.common.exceptions import InputValidationError
 from aiida.engine import while_
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import CalculationFactory, DataFactory
 
 from aiida_crystal17.workflows.common.restart import BaseRestartWorkChain, ErrorHandlerReport, register_error_handler
+from aiida_crystal17.common.kpoints import create_kpoints_from_distance
 
 CryCalculation = CalculationFactory('crystal17.main')
 CryInputParamsData = DataFactory('crystal17.parameters')
 BasisSetsData = DataFactory('crystal17.basisset')
+
+
+def _validate_kpoint_distance(float_data):
+    if float_data and not float_data.value > 0:
+        raise InputValidationError("kpoints_distance must be greater than 0")
 
 
 class CryMainBaseWorkChain(BaseRestartWorkChain):
@@ -35,6 +42,18 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
                        'An alternative to specifying the basis sets manually: one can specify the name '
                        'of an existing basis set family and the work chain will generate the basis sets automatically '
                        'based on the input structure.'))
+        spec.input('kpoints_distance', valid_type=orm.Float, required=False, serializer=to_aiida_type,
+                   validator=_validate_kpoint_distance,
+                   help=(
+                       'The minimum desired distance in 1/Å between k-points in reciprocal space. '
+                       'The explicit k-points will be generated automatically by the input structure, and '
+                       'will replace the SHRINK IS value in the input parameters.'
+                       'Note: This methods assumes the PRIMITIVE unit cell is provided'))
+        spec.input('kpoints_force_parity', valid_type=orm.Bool, required=False, serializer=to_aiida_type,
+                   help=(
+                       'Optional input when constructing the k-points based on a desired `kpoints_distance`. '
+                       'Setting this to `True` will force the k-point mesh to have an even number of points '
+                       'along each lattice vector except for any non-periodic directions.'))
 
         # TODO include option for symmetry calculation
         spec.outline(
@@ -91,6 +110,23 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
         # check if the run is an optimisation and store in context
         optimise = self.ctx.inputs.parameters.get('geometry', {}).get('optimise', False)
         self.ctx.is_optimisation = True if optimise else False
+
+        if 'kpoints_distance' in self.inputs:
+            force_parity = self.inputs.get('kpoints_force_parity', orm.Bool(False)).value
+            kpoints = create_kpoints_from_distance(
+                self.ctx.inputs.structure, self.inputs.kpoints_distance.value, force_parity)
+            # TODO check / deal with non-zero offsets
+            is_value = kpoints.get_kpoints_mesh()[0]
+            isp_value = max(is_value) * 2
+            if is_value[0] == is_value[1] == is_value[2]:
+                is_value = is_value[0]
+
+            curr_kpoints = list(self.ctx.inputs.parameters["scf"]["k_points"])
+            if curr_kpoints != [is_value, isp_value]:
+                self.report("changing the intput kpoints ({0}) to the computed kpoints ({1})".format(
+                    curr_kpoints, [is_value, isp_value]
+                ))
+                self.ctx.inputs.parameters["scf"]["k_points"] = [is_value, isp_value]
 
     def validate_basis_sets(self):
         """Validate the inputs related to basis sets.

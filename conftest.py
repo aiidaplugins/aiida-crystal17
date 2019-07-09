@@ -9,7 +9,7 @@ from aiida.manage.fixtures import fixture_manager
 import pytest
 
 from aiida_crystal17.tests.utils import AiidaTestApp
-from aiida_crystal17.tests import TEST_FILES, get_test_structure
+from aiida_crystal17.tests import TEST_FILES, get_test_structure, get_test_structure_and_symm
 
 
 @pytest.fixture(scope='session')
@@ -56,6 +56,11 @@ def db_test_app(aiida_environment):
 @pytest.fixture(scope='function')
 def get_structure():
     return get_test_structure
+
+
+@pytest.fixture(scope='function')
+def get_structure_and_symm():
+    return get_test_structure_and_symm
 
 
 @pytest.fixture(scope='function')
