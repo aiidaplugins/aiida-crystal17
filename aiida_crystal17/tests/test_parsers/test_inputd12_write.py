@@ -230,6 +230,5 @@ SHRINK
 0 16
 10 8 2
 END
-END
 """
     assert outstr == expected

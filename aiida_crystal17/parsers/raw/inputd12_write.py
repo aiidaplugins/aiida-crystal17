@@ -134,7 +134,6 @@ def _hamiltonian_block(outstr, indict, atom_props):
     else:
         outstr += "0 {0}\n".format(k_isp)
         outstr += "{0} {1} {2}\n".format(k_is[0], k_is[1], k_is[2])
-        outstr += "END\n"
     # RESTART
     if get_keys(indict, ["scf", "GUESSP"], False):
         outstr += "GUESSP\n"
