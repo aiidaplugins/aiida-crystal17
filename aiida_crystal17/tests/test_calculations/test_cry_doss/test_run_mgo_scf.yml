@@ -45,7 +45,7 @@ results:
   npts: 102
   parser_class: CryDossParser
   parser_errors: []
-  parser_version: 0.7.0b4
+  parser_version: 0.7.1b4
   parser_warnings: []
   spin: false
   system_type: closed shell, insulating system
