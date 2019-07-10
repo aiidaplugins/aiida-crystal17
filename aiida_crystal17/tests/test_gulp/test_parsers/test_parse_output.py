@@ -9,7 +9,7 @@ from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 def test_parse_failed(db_test_app):
     # type: (AiidaTestApp) -> None
-    path = os.path.join(TEST_FILES, "gulp", "out", 'empty_error.gout')
+    path = os.path.join(TEST_FILES, "gulp", "failed", 'empty_error.gout')
     with open(path) as handle:
         parse_result = parse_output(handle, "test_class")
 
@@ -30,7 +30,7 @@ def test_parse_failed(db_test_app):
 
 def test_parse_opt_reaxff_pyrite(db_test_app):
     # type: (AiidaTestApp) -> None
-    path = os.path.join(TEST_FILES, "gulp", "out", 'opt_reaxff_pyrite.gout')
+    path = os.path.join(TEST_FILES, "gulp", "opt_reaxff_pyrite", 'main.gout')
     with open(path) as handle:
         parse_result = parse_output(handle, "test_class", final=True)
 

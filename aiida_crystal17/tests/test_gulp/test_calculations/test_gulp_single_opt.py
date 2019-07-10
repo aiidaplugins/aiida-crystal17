@@ -52,12 +52,6 @@ def test_run_single_lj(db_test_app, get_structure):
     structure = get_structure("pyrite")
     potential = get_pyrite_potential_lj()
 
-    # file_hash = write_input_file(
-    #     InputCreationSingle(),
-    #     os.path.join(TEST_FILES, "gulp", "in", "single_lj_pyrite.gin"),
-    #     structure, potential)
-    # raise ValueError(file_hash)
-
     code = db_test_app.get_or_create_code('gulp.single')
     builder = code.get_builder()
     builder._update({"metadata": {
@@ -99,12 +93,6 @@ def test_run_optimize_lj(db_test_app, get_structure):
         "dict", dict={
             "minimize": {"style": "cg", "max_iterations": 100},
             "relax": {"type": "conp"}})
-
-    # file_hash = write_input_file(
-    #     InputCreationOpt({"cif": "output.cif"}),
-    #     os.path.join(TEST_FILES, "gulp", "in", "optimize_lj_pyrite.gin"),
-    #     structure, potential, parameters=parameters)
-    # raise ValueError(file_hash)
 
     code = db_test_app.get_or_create_code('gulp.optimize')
     builder = code.get_builder()
@@ -154,12 +142,6 @@ def test_run_optimize_lj_with_symm(db_test_app, get_structure):
         "dict", dict={
             "minimize": {"style": "cg", "max_iterations": 100},
             "relax": {"type": "conp"}})
-
-    # file_hash = write_input_file(
-    #     InputCreationOpt({"cif": "output.cif"}),
-    #     os.path.join(TEST_FILES, "gulp", "in", "optimize_lj_pyrite_symm.gin"),
-    #     structure, potential, parameters=parameters, symmetry=symmetry)
-    # raise ValueError(file_hash)
 
     code = db_test_app.get_or_create_code('gulp.optimize')
     builder = code.get_builder()

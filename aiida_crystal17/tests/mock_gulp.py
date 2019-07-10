@@ -25,23 +25,23 @@ import aiida_crystal17.tests as tests
 # map of input file hashes to output files
 hash_map = {
     "95db701a89083842f917418f7cf59f3d": {
-        "output": [("single_lj_pyrite.gout", ".gout", None)]
+        "output": [(("single_lj_pyrite", "main.gout"), "{inname}.gout")]
     },
     "1f639518b936001e435bf032e2f764fe": {
-        "output": [("optimize_lj_pyrite.gout", ".gout", None),
-                   ("optimize_lj_pyrite.cif", ".cif", "output")]
+        "output": [(("optimize_lj_pyrite", "main.gout"), "{inname}.gout"),
+                   (("optimize_lj_pyrite", "output.cif"), "output.cif")]
     },
     "dc0eac053e11561ee13acea272345e20": {
-        "output": [("optimize_lj_pyrite_symm.gout", ".gout", None),
-                   ("optimize_lj_pyrite_symm.cif", ".cif", "output")]
+        "output": [(("optimize_lj_pyrite_symm", "main.gout"), "{inname}.gout"),
+                   (("optimize_lj_pyrite_symm", "output.cif"), "output.cif")]
     },
     "ec39b0c69c6ef97d2a701f86054702ee": {
         "stdout": None,
-        "output": [("opt_reaxff_pyrite.gout", ".gout", None),
-                   ("opt_reaxff_pyrite.cif", ".cif", "output")]},
+        "output": [(("opt_reaxff_pyrite", "main.gout"), "{inname}.gout"),
+                   (("opt_reaxff_pyrite", "output.cif"), "output.cif")]},
     "57649b5ce90996cd71e233e2509068b7": {
         "stdout": None,
-        "output": [("single_reaxff_pyrite.gout", ".gout", None)]},
+        "output": [(("single_reaxff_pyrite", "main.gout"), "{inname}.gout")]},
 }
 
 
@@ -74,12 +74,9 @@ def main(sys_args=None):
 
     outfiles = hash_map[hashkey]
 
-    for inname, outext, outname in outfiles.get("output", []):
-        src = os.path.join(test_path, "out", inname)
-        if outname is None:
-            dst = os.path.join(".", input_name + outext)
-        else:
-            dst = os.path.join(".", outname + outext)
+    for opath, dest_file in outfiles.get("output", []):
+        src = os.path.join(test_path, *opath)
+        dst = os.path.join(".", dest_file.format(inname=input_name))
         copyfile(src, dst)
 
     if outfiles.get("stdout", None) is None:
@@ -87,7 +84,7 @@ def main(sys_args=None):
             "running mock gulp for input arg: {}".format(input_name))
     else:
         outpath = os.path.join(
-            test_path, "out", outfiles["stdout"])
+            test_path, *outfiles["stdout"])
         with open(outpath) as f:
             sys.stdout.write(f.read())
 
