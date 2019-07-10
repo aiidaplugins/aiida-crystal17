@@ -33,7 +33,10 @@ def read_newk_content(fileobj, parser_class):
 
             break
 
-    results_data["fermi_energy"] = fermi * 27.21138602
+    if fermi is None:
+        results_data["parser_errors"].append("could not find 'FERMI ENERGY'")
+    else:
+        results_data["fermi_energy"] = fermi * 27.21138602
     results_data["energy_units"] = "eV"
 
     # TODO read more data

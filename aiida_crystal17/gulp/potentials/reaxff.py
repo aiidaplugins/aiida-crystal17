@@ -518,7 +518,7 @@ class PotentialWriterReaxff(PotentialWriterAbstract):
 
         attr_dicts = _create_attr_dicts(angle_df, bond_df, hbond_df, od_df,
                                         spec_df, torsion_df)
-        angle_df, bond_df, hbond_df, od_df, spec_df, torsion_df = attr_dicts  # pylint: disable=unbalanced-tuple-unpacking
+        angle_df, bond_df, hbond_df, od_df, spec_df, torsion_df = attr_dicts
 
         outstr = ""
 

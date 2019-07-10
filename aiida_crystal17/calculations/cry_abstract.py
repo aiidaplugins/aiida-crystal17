@@ -1,8 +1,10 @@
 """
 Plugin to create a CRYSTAL17 output file from a supplied input file.
 """
+import os
 import six
 
+from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.engine import CalcJob
 from aiida.plugins import DataFactory
 
@@ -23,9 +25,7 @@ class CryAbstractCalculation(CalcJob):
         super(CryAbstractCalculation, cls).define(spec)
 
         spec.input('metadata.options.input_file_name',
-                   valid_type=six.string_types, default='main.d12')
-        spec.input('metadata.options.external_file_name',
-                   valid_type=six.string_types, default='main.gui')
+                   valid_type=six.string_types, default='INPUT')
         spec.input('metadata.options.output_main_file_name',
                    valid_type=six.string_types, default='main.out')
 
@@ -40,42 +40,58 @@ class CryAbstractCalculation(CalcJob):
             message='The retrieved folder data node could not be accessed.')
         spec.exit_code(
             210, 'ERROR_OUTPUT_FILE_MISSING',
-            message='the main output file was not found')
+            message='the main (stdout) output file was not found')
+        spec.exit_code(
+            211, 'ERROR_TEMP_FOLDER_MISSING',
+            message='the temporary retrieved folder was not found')
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
         spec.exit_code(
-            300, 'ERROR_OUTPUT_PARSING',
+            300, 'ERROR_PARSING_STDOUT',
             message=('An error was flagged trying to parse the '
-                     'main crystal output file'))
+                     'crystal exec stdout file'))
+        spec.exit_code(  # TODO is this an unrecoverable error?
+            301, 'ERROR_PARSING_OPTIMISATION_GEOMTRIES',
+            message=("An error occurred parsing the 'opta'/'optc' geomerty files"))
 
         spec.exit_code(
             350, 'ERROR_CRYSTAL_INPUT',
-            message='the input file was could not be read by CRYSTAL')
+            message='the input file could not be read by CRYSTAL')
         spec.exit_code(
             351, 'ERROR_WAVEFUNCTION_NOT_FOUND',
             message='CRYSTAL could not find the required wavefunction file')
 
         # Significant errors but calculation can be used to restart
         spec.exit_code(
-            401, 'UNCONVERGED_SCF',
+            400, 'ERROR_OUT_OF_WALLTIME',
+            message='The calculation stopped prematurely because it ran out of walltime.')
+        spec.exit_code(
+            401, 'ERROR_OUT_OF_MEMORY',
+            message='The calculation stopped prematurely because it ran out of memory.')
+        spec.exit_code(
+            402, 'ERROR_OUT_OF_VMEMORY',
+            message='The calculation stopped prematurely because it ran out of virtual memory.')
+
+        spec.exit_code(
+            411, 'UNCONVERGED_SCF',
             message='SCF convergence did not finalise (usually due to reaching step limit)')
         spec.exit_code(
-            402, 'UNCONVERGED_GEOMETRY',
+            412, 'UNCONVERGED_GEOMETRY',
             message='Geometry convergence did not finalise (usually due to reaching step limit)')
         spec.exit_code(
-            410, 'ERROR_SCF_ABNORMAL_END',
-            message='an error was encountered during an SCF computation')
-        spec.exit_code(
-            411, 'BASIS_SET_LINEARLY_DEPENDENT',
+            413, 'BASIS_SET_LINEARLY_DEPENDENT',
             message='an error encountered usually during geometry optimisation')
         spec.exit_code(
-            412, 'ERROR_MPI_ABORT',
+            414, 'ERROR_SCF_ABNORMAL_END',
+            message='an error was encountered during an SCF computation')
+        spec.exit_code(
+            415, 'ERROR_MPI_ABORT',
             message='an unknown error was encountered, causing the MPI to abort')
         spec.exit_code(
             499, 'ERROR_CRYSTAL_RUN',
             message='The main crystal output file flagged an unhandled error')
 
-        # errors in symmetry node consistency check
+        # errors in symmetry node consistency checks
         spec.exit_code(
             510, 'ERROR_SYMMETRY_INCONSISTENCY',
             message=('inconsistency in the input and output symmetry'))
@@ -97,8 +113,43 @@ class CryAbstractCalculation(CalcJob):
                     required=False,
                     help='the symmetry data from the calculation')
 
-        # TODO retrieve .f9 / .f98 from remote folder (for GUESSP or RESTART)
-        # spec.input(
-        #     'parent_folder', valid_type=RemoteData, required=False,
-        #     help=('Use a remote folder as parent folder (for '
-        #           'restarts and similar.'))
+    def create_calc_info(
+            self, tempfolder,
+            local_copy_list=None, remote_copy_list=None, remote_symlink_list=None,
+            retrieve_list=None, retrieve_temporary_list=None):
+        """Prepare CalcInfo object for aiida,
+        to describe how the computation will be executed and recovered
+        """
+        # Prepare CodeInfo object for aiida,
+        # describes how a code has to be executed
+        codeinfo = CodeInfo()
+        codeinfo.code_uuid = self.inputs.code.uuid
+        if self.metadata.options.withmpi:
+            # parallel versions of crystal (Pcrystal, Pproperties & MPPcrystal)
+            # read data specifically from a file called INPUT
+            if self.metadata.options.input_file_name != "INPUT":
+                tempfolder.insert_path(
+                    os.path.join(tempfolder.abspath,
+                                 self.metadata.options.input_file_name),
+                    dest_name="INPUT",
+                )
+        else:
+            codeinfo.stdin_name = self.metadata.options.input_file_name
+        codeinfo.stdout_name = self.metadata.options.output_main_file_name
+        # serial version output to stdout, but parallel version output to stderr!
+        # so we join the files
+        codeinfo.join_files = True
+        codeinfo.cmdline_params = []
+        codeinfo.withmpi = self.metadata.options.withmpi
+
+        # Prepare CalcInfo object for aiida
+        calcinfo = CalcInfo()
+        calcinfo.uuid = self.uuid
+        calcinfo.codes_info = [codeinfo]
+        calcinfo.local_copy_list = local_copy_list or []
+        calcinfo.remote_copy_list = remote_copy_list or []
+        calcinfo.remote_symlink_list = remote_symlink_list or []
+        calcinfo.retrieve_list = retrieve_list or []
+        calcinfo.retrieve_temporary_list = retrieve_temporary_list or []
+
+        return calcinfo

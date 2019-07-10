@@ -9,12 +9,12 @@ calc:
   environment_variables: {}
   exit_status: 0
   import_sys_environment: true
-  input_file_name: main.doss.d3
+  input_file_name: INPUT
   input_wf_name: mgo_sto3g_scf.f9
   max_wallclock_seconds: 30
   mpirun_extra_params: []
-  output_f25_fname: main.doss.f25
-  output_main_fname: main.doss.out
+  output_isovalue_fname: fort.25
+  output_main_file_name: main.out
   parser_name: crystal17.doss
   prepend_text: ''
   process_label: CryDossCalculation
@@ -23,8 +23,8 @@ calc:
     num_machines: 1
     num_mpiprocs_per_machine: 1
   retrieve_list:
-  - main.doss.out
-  - main.doss.f25
+  - main.out
+  - fort.25
   - _scheduler-stdout.txt
   - _scheduler-stderr.txt
   retrieve_temporary_list: []
@@ -45,7 +45,7 @@ results:
   npts: 102
   parser_class: CryDossParser
   parser_errors: []
-  parser_version: 0.7.0b4
+  parser_version: 0.7.1b4
   parser_warnings: []
   spin: false
   system_type: closed shell, insulating system

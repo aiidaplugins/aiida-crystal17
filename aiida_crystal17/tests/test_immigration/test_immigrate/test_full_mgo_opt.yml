@@ -2,9 +2,8 @@ append_text: ''
 custom_scheduler_commands: ''
 environment_variables: {}
 exit_status: 0
-external_file_name: main.gui
 import_sys_environment: true
-input_file_name: main.d12
+input_file_name: INPUT
 max_wallclock_seconds: 1800
 mpirun_extra_params: []
 output_main_file_name: main.out
@@ -18,10 +17,12 @@ resources:
   num_mpiprocs_per_machine: 1
 retrieve_list:
 - main.out
-- main.gui
+- fort.34
+- HESSOPT.DAT
 - _scheduler-stdout.txt
 - _scheduler-stderr.txt
-retrieve_temporary_list: []
+retrieve_temporary_list:
+- opt[ac][0-9][0-9][0-9]
 scheduler_stderr: _scheduler-stderr.txt
 scheduler_stdout: _scheduler-stdout.txt
 sealed: true

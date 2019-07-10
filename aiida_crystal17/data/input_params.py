@@ -19,6 +19,17 @@ class CryInputParamsData(Data):
             cls._data_schema = load_schema("inputd12.schema.json")
         return copy.deepcopy(cls._data_schema)
 
+    @classmethod
+    def validate_parameters(cls, dct):
+        """validate an input dictionary
+
+        Parameters
+        ----------
+        dct : dict
+
+        """
+        validate_against_schema(dct, cls.data_schema)
+
     def __init__(self, **kwargs):
         """Stores the symmetry data for a structure
 
@@ -38,7 +49,7 @@ class CryInputParamsData(Data):
     def _validate(self):
         super(CryInputParamsData, self)._validate()
 
-        validate_against_schema(self.get_dict(), self.data_schema)
+        self.validate_parameters(self.get_dict())
 
         return True
 
@@ -51,7 +62,7 @@ class CryInputParamsData(Data):
         from aiida.common.exceptions import ModificationNotAllowed
 
         # first validate the inputs
-        validate_against_schema(data, self.data_schema)
+        self.validate_parameters(data)
 
         # store all but the symmetry operations as attributes
         backup_dict = copy.deepcopy(dict(self.attributes))

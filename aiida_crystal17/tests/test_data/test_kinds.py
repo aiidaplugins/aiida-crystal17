@@ -19,3 +19,9 @@ def test_basic(db_test_app):
             "C": 3
         }
     }
+
+
+def test_entry_point(db_test_app):
+    """test the plugin entry point works"""
+    from aiida.plugins import DataFactory
+    DataFactory('crystal17.kinds')

@@ -207,3 +207,28 @@ ATOMSPIN
 END
 """
     assert outstr == expected
+
+
+def test_is_as_list():
+    """ test if the IS value is given as a list"""
+    indict = {
+        "scf": {
+            "k_points": [[10, 8, 2], 16]
+        }
+    }
+
+    outstr = write_input(indict, ["basis_set1", "basis_set2"])
+
+    expected = """CRYSTAL run
+EXTERNAL
+END
+basis_set1
+basis_set2
+99 0
+END
+SHRINK
+0 16
+10 8 2
+END
+"""
+    assert outstr == expected

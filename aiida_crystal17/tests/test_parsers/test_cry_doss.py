@@ -13,12 +13,11 @@ def test_missing_output(db_test_app, plugin_name):
     retrieved = FolderData()
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    parser = db_test_app.get_parser_cls(plugin_name)
-    results, calcfunction = parser.parse_from_node(calc_node)
+    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
 
     assert calcfunction.is_finished, calcfunction.exception
     assert calcfunction.is_failed, calcfunction.exit_status
-    assert calcfunction.exit_status == calc_node.process_class.exit_codes.ERROR_OUTPUT_FILE_MISSING.status
+    assert calcfunction.exit_status == calc_node.process_class.exit_codes.ERROR_ISOVALUE_FILE_MISSING.status
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -27,16 +26,15 @@ def test_missing_output(db_test_app, plugin_name):
 def test_empty_output(db_test_app, plugin_name):
 
     retrieved = FolderData()
-    with retrieved.open('main.doss.f25', 'w'):
+    with retrieved.open('fort.25', 'w'):
         pass
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    parser = db_test_app.get_parser_cls(plugin_name)
-    results, calcfunction = parser.parse_from_node(calc_node)
+    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
 
     assert calcfunction.is_finished, calcfunction.exception
     assert calcfunction.is_failed, calcfunction.exit_status
-    assert calcfunction.exit_status == calc_node.process_class.exit_codes.ERROR_OUTPUT_PARSING.status
+    assert calcfunction.exit_status == calc_node.process_class.exit_codes.ERROR_PARSING_STDOUT.status
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -47,11 +45,10 @@ def test_success(db_test_app, plugin_name, data_regression):
     retrieved = FolderData()
     retrieved.put_object_from_file(os.path.join(
         TEST_FILES, "doss", "cubic_rocksalt_orbitals",
-        "cubic-rocksalt_2x1_pdos.doss.f25"), "main.doss.f25")
+        "cubic-rocksalt_2x1_pdos.doss.f25"), "fort.25")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    parser = db_test_app.get_parser_cls(plugin_name)
-    results, calcfunction = parser.parse_from_node(calc_node)
+    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
 
     assert calcfunction.is_finished_ok, calcfunction.exception
     assert "results" in results

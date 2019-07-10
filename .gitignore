@@ -16,3 +16,4 @@ postgres*.log
 _archive/
 .ipynb_checkpoints/
 databases/
+test_workdir/

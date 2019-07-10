@@ -11,6 +11,7 @@ from aiida.orm import Dict, ArrayData
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17.parsers.raw.doss_output_f25 import read_doss_f25_content
+from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
 class CryDossParser(Parser):
@@ -26,19 +27,26 @@ class CryDossParser(Parser):
         except exceptions.NotExistent:
             return self.exit_codes.ERROR_NO_RETRIEVED_FOLDER
 
-        output_f25_fname = self.node.get_option("output_f25_fname")
-        if output_f25_fname not in output_folder.list_object_names():
-            return self.exit_codes.ERROR_OUTPUT_FILE_MISSING
+        sterr_file = self.node.get_option("scheduler_stderr")
+        if sterr_file in output_folder.list_object_names():
+            with output_folder.open(sterr_file) as fileobj:
+                pbs_error = parse_pbs_stderr(fileobj)
+            if pbs_error is not None:
+                return self.exit_codes[pbs_error]
 
-        self.logger.info("parsing file: {}".format(output_f25_fname))
+        output_isovalue_fname = self.node.get_option("output_isovalue_fname")
+        if output_isovalue_fname not in output_folder.list_object_names():
+            return self.exit_codes.ERROR_ISOVALUE_FILE_MISSING
+
+        self.logger.info("parsing file: {}".format(output_isovalue_fname))
 
         try:
-            with output_folder.open(output_f25_fname) as handle:
+            with output_folder.open(output_isovalue_fname) as handle:
                 data, arrays = read_doss_f25_content(
                     handle, self.__class__.__name__)
         except Exception:
             traceback.print_exc()
-            return self.exit_codes.ERROR_OUTPUT_PARSING
+            return self.exit_codes.ERROR_PARSING_STDOUT
 
         errors = data.get("errors", [])
         parser_errors = data.get("parser_errors", [])
@@ -59,8 +67,8 @@ class CryDossParser(Parser):
             self.out('arrays', array_data)
 
         if parser_errors:
-            return self.exit_codes.ERROR_OUTPUT_PARSING
+            return self.exit_codes.ERROR_PARSING_STDOUT
         elif errors:
-            return self.exit_codes.ERROR_DOSS_RUN
+            return self.exit_codes.ERROR_CRYSTAL_RUN
 
         return ExitCode()

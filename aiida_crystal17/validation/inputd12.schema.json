@@ -68,6 +68,11 @@
                 "CVOLOPT"
               ]
             },
+            "restart": {
+              "description": "whether to insert the RESTART command (requires an OPTINFO.DAT file to be present)",
+              "type": "boolean",
+              "default": false
+            },
             "hessian": {
               "description": "the initial hessian matrix to use",
               "type": "string",
@@ -75,7 +80,8 @@
                 "HESSIDEN",
                 "HESSMOD1",
                 "HESSMOD2",
-                "HESSNUM"
+                "HESSNUM",
+                "HESSOPT"
               ]
             },
             "gradient": {
@@ -178,13 +184,26 @@
       },
       "properties": {
         "k_points": {
+          "description": "The IS and ISP value to use for SHRINK, IS can be a single value or a value for each direction",
           "type": "array",
           "minItems": 2,
           "maxItems": 2,
-          "items": {
-            "type": "integer",
-            "minimum": 1
-          }
+          "items": [
+            {
+              "type": ["integer", "array"],
+              "minimum": 1,
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ]
         },
         "single": {
           "type": "string",
@@ -357,6 +376,11 @@
               }
             }
           }
+        },
+        "GUESSP": {
+          "description": "whether to insert the GUESSP command (requires a fort.20 file to be present)",
+          "type": "boolean",
+          "default": false
         },
         "numerical": {
           "definition": "Numerical accuracy and computational parameters control",
@@ -591,6 +615,7 @@
             "type": "string",
             "uniqueItems": true,
             "enum": [
+              "FULLTIME",
               "POSTSCF",
               "EXCHGENE",
               "GRADCAL",

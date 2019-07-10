@@ -23,9 +23,8 @@ from __future__ import absolute_import
 import os
 import six
 from graphviz import Digraph
-from aiida.orm import load_node
+from aiida.orm import load_node, Data, ProcessNode
 from aiida.orm.querybuilder import QueryBuilder
-from aiida.plugins import BaseFactory
 from aiida.common import LinkType
 from aiida.orm.utils.links import LinkPair
 
@@ -216,7 +215,7 @@ def _add_graphviz_node(graph,
     """
     # pylint: disable=too-many-arguments
     node_style = {}
-    if isinstance(node, BaseFactory("aiida.node", "data")):
+    if isinstance(node, Data):
 
         node_style = data_style_func(node)
         label = ["{} ({})".format(node.__class__.__name__, node.pk)]
@@ -226,7 +225,7 @@ def _add_graphviz_node(graph,
                 label.append(sublabel)
         node_style["label"] = "\n".join(label)
 
-    elif isinstance(node, BaseFactory("aiida.node", "process")):
+    elif isinstance(node, ProcessNode):
 
         node_style = process_style_func(node)
 
@@ -550,7 +549,7 @@ class Graph(object):
                 new_nodes.extend(
                     self.add_outgoing(node, link_types=link_types, annotate_links=annotate_links, return_pks=False))
 
-                if include_process_inputs and isinstance(node, BaseFactory("aiida.node", "process")):
+                if include_process_inputs and isinstance(node, ProcessNode):
                     self.add_incoming(node, link_types=link_types,
                                       annotate_links=annotate_links)
 
@@ -597,7 +596,7 @@ class Graph(object):
                 new_nodes.extend(
                     self.add_incoming(node, link_types=link_types, annotate_links=annotate_links, return_pks=False))
 
-                if include_process_outputs and isinstance(node, BaseFactory("aiida.node", "process")):
+                if include_process_outputs and isinstance(node, ProcessNode):
                     self.add_outgoing(node, link_types=link_types,
                                       annotate_links=annotate_links)
 

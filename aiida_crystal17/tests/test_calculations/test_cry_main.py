@@ -2,32 +2,34 @@
 
 """
 import os
-from textwrap import dedent  # noqa: F401
 
 import ejplugins
 from jsonextended import edict
 import pytest
+
+from aiida import orm
 from aiida.engine import run_get_node
+from aiida.cmdline.utils.common import get_calcjob_report  # noqa: F401
 from aiida.plugins import CalculationFactory, DataFactory, WorkflowFactory
+
 import aiida_crystal17
 from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
+from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
+from aiida_crystal17.data.kinds import KindData
+from aiida_crystal17.data.basis_set import BasisSetData
+from aiida_crystal17.data.input_params import CryInputParamsData
 
 
 def test_create_builder(db_test_app, get_structure):
-    # type: (AiidaTestApp) -> None
     """test preparation of inputs"""
     db_test_app.get_or_create_code('crystal17.main')
 
     inparams = {"scf.k_points": (8, 8)}
 
-    structure_data_cls = DataFactory('structure')
-    basis_data_cls = DataFactory('crystal17.basisset')
-
     instruct = get_structure("MgO")
-    mg_basis, _ = basis_data_cls.get_or_create(
+    mg_basis, _ = BasisSetData.get_or_create(
         os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_Mg.basis'))
-    o_basis, _ = basis_data_cls.get_or_create(
+    o_basis, _ = BasisSetData.get_or_create(
         os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_O.basis'))
 
     sym_calc = run_get_node(
@@ -41,7 +43,7 @@ def test_create_builder(db_test_app, get_structure):
         inparams, instruct, {"O": o_basis, "Mg": mg_basis},
         symmetry=symmetry, unflatten=True)
 
-    assert isinstance(builder.structure, structure_data_cls)
+    assert isinstance(builder.structure, orm.StructureData)
     builder.parameters
 
 
@@ -49,17 +51,14 @@ def test_create_builder(db_test_app, get_structure):
     "input_symmetry",
     (False, True)
 )
-def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
-    # type: (AiidaTestApp, bool) -> None
+def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure,
+                            data_regression, file_regression):
     """Test submitting a calculation"""
-
-    param_data_cls = DataFactory('crystal17.parameters')
-    basis_data_cls = DataFactory('crystal17.basisset')
 
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
-    inparams = param_data_cls(data={
+    inparams = CryInputParamsData(data={
         "title": "MgO Bulk",
         "scf": {
             "k_points": (8, 8)
@@ -70,29 +69,18 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
 
     sym_calc = run_get_node(
         WorkflowFactory("crystal17.sym3d"), structure=instruct,
-        settings=DataFactory("dict")(dict={"symprec": 0.01, "compute_primitive": True})).node
+        settings=orm.Dict(dict={"symprec": 0.01, "compute_primitive": True})).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    mg_basis, _ = basis_data_cls.get_or_create(
+    mg_basis, _ = BasisSetData.get_or_create(
         os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_Mg.basis'))
-    o_basis, _ = basis_data_cls.get_or_create(
+    o_basis, _ = BasisSetData.get_or_create(
         os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_O.basis'))
 
     # set up calculation
     builder = code.get_builder()
-    builder._update({"metadata": {
-        "options": {
-            "withmpi": False,
-            "resources": {
-                "num_machines": 1,
-                "num_mpiprocs_per_machine": 1,
-            },
-            "max_wallclock_seconds": 30
-        },
-        "dry_run": True
-    }})
-
+    builder.metadata = db_test_app.get_default_metadata(dry_run=True)
     builder.parameters = inparams
     builder.structure = instruct
     builder.basissets = {"Mg": mg_basis, "O": o_basis}
@@ -105,55 +93,19 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.main', folder, builder)
 
-        cmdline_params = ['main']
-        retrieve_list = ['main.out', 'main.gui']
-
-        # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == cmdline_params
-        assert sorted(calc_info.local_copy_list) == sorted([])
-        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
-        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
-
-        assert sorted(folder.get_content_list()) == sorted([
-            process_options.input_file_name, process_options.external_file_name
-        ])
-
         with folder.open(process_options.input_file_name) as f:
             input_content = f.read()
-        with folder.open(process_options.external_file_name) as f:
+        with folder.open('fort.34') as f:
             gui_content = f.read()  # noqa: F841
+            # TODO test fort.34 (but rounded)
 
-    expected_input = dedent("""\
-    MgO Bulk
-    EXTERNAL
-    END
-    12 3
-    1 0 3  2.  0.
-    1 1 3  8.  0.
-    1 1 3  2.  0.
-    8 2
-    1 0 3  2.  0.
-    1 1 3  6.  0.
-    99 0
-    END
-    SHRINK
-    8 8
-    END
-    """)
-
-    assert input_content == expected_input
-
-    # TODO test .gui
-    # assert gui_content == expected_gui
+    file_regression.check(input_content)
+    data_regression.check(sanitize_calc_info(calc_info))
 
 
-def test_calcjob_submit_nio_afm(db_test_app, get_structure):
-    # type: (AiidaTestApp) -> None
+def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_family,
+                                data_regression, file_regression):
     """Test submitting a calculation"""
-
-    kind_data_cls = DataFactory('crystal17.kinds')
-    basis_data_cls = DataFactory('crystal17.basisset')
-    upload_basisset_family = basis_data_cls.upload_basisset_family
 
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')
@@ -170,38 +122,24 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
 
     instruct = get_structure("NiO_afm")
 
-    kind_data = kind_data_cls(data={
+    kind_data = KindData(data={
         "kind_names": ["Ni1", "Ni2", "O"],
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     sym_calc = run_get_node(
         WorkflowFactory("crystal17.sym3d"), structure=instruct,
-        settings=DataFactory("dict")(dict={"symprec": 0.01, "compute_primitive": True})).node
+        settings=orm.Dict(dict={"symprec": 0.01, "compute_primitive": True})).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basisset_family(
-        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
-        "sto3g",
-        "minimal basis sets",
-        stop_if_existing=True,
-        extension=".basis")
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
-    metadata = {
-        "dry_run": True,
-        "options": {
-            "resources": {
-                "num_machines": 1,
-                "num_mpiprocs_per_machine": 1
-            },
-            "withmpi": False,
-            "max_wallclock_seconds": 60,
-        }}
     builder = process_class.create_builder(
-        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, metadata=metadata, unflatten=True)
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data, code=code,
+        metadata=db_test_app.get_default_metadata(dry_run=True),
+        unflatten=True)
 
     process_options = builder.process_class(inputs=builder).metadata.options
 
@@ -209,68 +147,73 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure):
         calc_info = db_test_app.generate_calcinfo(
             'crystal17.main', folder, builder)
 
-        cmdline_params = ['main']
-        retrieve_list = ['main.out', 'main.gui']
-
-        # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == cmdline_params
-        assert sorted(calc_info.local_copy_list) == sorted([])
-        assert sorted(calc_info.retrieve_list) == sorted(retrieve_list)
-        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
-
-        assert sorted(folder.get_content_list()) == sorted([
-            process_options.input_file_name, process_options.external_file_name
-        ])
-
         with folder.open(process_options.input_file_name) as f:
             input_content = f.read()
-        with folder.open(process_options.external_file_name) as f:
+        with folder.open('fort.34') as f:
             gui_content = f.read()  # noqa: F841
+            # TODO test fort.34 (but rounded)
 
-    expected_input = dedent("""\
-        NiO Bulk with AFM spin
-        EXTERNAL
-        END
-        28 5
-        1 0 3  2.  0.
-        1 1 3  8.  0.
-        1 1 3  8.  0.
-        1 1 3  2.  0.
-        1 3 3  8.  0.
-        8 2
-        1 0 3  2.  0.
-        1 1 3  6.  0.
-        99 0
-        END
-        UHF
-        SHRINK
-        8 8
-        ATOMSPIN
-        2
-        1 1
-        2 -1
-        FMIXING
-        30
-        SPINLOCK
-        0 15
-        PPAN
-        END
-        """)
+    file_regression.check(input_content)
+    data_regression.check(sanitize_calc_info(calc_info))
 
-    assert input_content == expected_input
 
-    # TODO test .gui
-    # assert gui_content == expected_gui
+def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family,
+                           file_regression, data_regression):
+    """ test restarting from a previous fort.9 file"""
+    code = db_test_app.get_or_create_code('crystal17.main')
+
+    # Prepare input parameters
+    params = {
+        "title": "NiO Bulk with AFM spin",
+        "scf.single": "UHF",
+        "scf.k_points": (8, 8),
+        "scf.spinlock.SPINLOCK": (0, 15),
+        "scf.numerical.FMIXING": 30,
+        "scf.post_scf": ["PPAN"]
+    }
+
+    instruct = get_structure("NiO_afm")
+
+    kind_data = KindData(data={
+        "kind_names": ["Ni1", "Ni2", "O"],
+        "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
+
+    sym_calc = run_get_node(
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings=DataFactory("dict")(dict={"symprec": 0.01, "compute_primitive": True})).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
+
+    upload_basis_set_family()
+
+    # set up calculation
+    process_class = code.get_builder().process_class
+    builder = process_class.create_builder(
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data, code=code,
+        metadata=db_test_app.get_default_metadata(with_mpi=True),
+        unflatten=True)
+
+    remote = orm.RemoteData(
+        computer=code.computer,
+        remote_path=os.path.join(TEST_FILES, "crystal", "nio_sto3g_afm_scf_maxcyc"))
+    builder.wf_folder = remote
+
+    process_options = builder.process_class(inputs=builder).metadata.options
+
+    with db_test_app.sandbox_folder() as folder:
+        calc_info = db_test_app.generate_calcinfo(
+            'crystal17.main', folder, builder)
+        with folder.open(process_options.input_file_name) as f:
+            input_content = f.read()
+
+    file_regression.check(input_content)
+    data_regression.check(sanitize_calc_info(calc_info))
 
 
 @pytest.mark.process_execution
-def test_run_nio_afm_scf(db_test_app, get_structure):
+def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
-
-    kind_data_cls = DataFactory('crystal17.kinds')
-    basisset_data_cls = DataFactory('crystal17.basisset')
-    upload_basisset_family = basisset_data_cls.upload_basisset_family
 
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')
@@ -287,23 +230,17 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
 
     instruct = get_structure("NiO_afm")
 
-    kind_data = kind_data_cls(data={
+    kind_data = KindData(data={
         "kind_names": ["Ni1", "Ni2", "O"],
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
     sym_calc = run_get_node(
         WorkflowFactory("crystal17.sym3d"), structure=instruct,
-        settings=DataFactory("dict")(dict={"symprec": 0.01, "compute_primitive": True})).node
+        settings=orm.Dict(dict={"symprec": 0.01, "compute_primitive": True})).node
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basisset_family(
-        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
-        "sto3g",
-        "minimal basis sets",
-        stop_if_existing=True,
-        extension=".basis")
-    # basis_map = basis_data_cls.get_basis_group_map("sto3g")
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
@@ -357,13 +294,11 @@ def test_run_nio_afm_scf(db_test_app, get_structure):
 
 
 @pytest.mark.process_execution
-def test_run_nio_afm_fullopt(db_test_app, get_structure):
+@pytest.mark.skipif(os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "true",
+                    reason="the calculation takes about 50 minutes to run")
+def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
-
-    kind_data_cls = DataFactory('crystal17.kinds')
-    basis_data_cls = DataFactory('crystal17.basisset')
-    upload_basisset_family = basis_data_cls.upload_basisset_family
 
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -380,7 +315,7 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
 
     instruct = get_structure("NiO_afm")
 
-    kind_data = kind_data_cls(data={
+    kind_data = KindData(data={
         "kind_names": ["Ni1", "Ni2", "O"],
         "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
 
@@ -390,28 +325,14 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
     instruct = sym_calc.get_outgoing().get_node_by_label("structure")
     symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
 
-    upload_basisset_family(
-        os.path.join(TEST_FILES, "basis_sets", "sto3g"),
-        "sto3g",
-        "minimal basis sets",
-        stop_if_existing=True,
-        extension=".basis")
-    # basis_map = basis_data_cls.get_basis_group_map("sto3g")
+    upload_basis_set_family()
 
     # set up calculation
     process_class = code.get_builder().process_class
-    metadata = {
-        "options": {
-            "resources": {
-                "num_machines": 1,
-                "num_mpiprocs_per_machine": 1
-            },
-            "withmpi": False,
-            "max_wallclock_seconds": 30,
-        }}
     builder = process_class.create_builder(
-        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data,
-        code=code, metadata=metadata, unflatten=True)
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data, code=code,
+        metadata=db_test_app.get_default_metadata(),
+        unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node
@@ -482,3 +403,63 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure):
 
     assert edict.diff(outstruct_node.attributes,
                       expected_struct, np_allclose=True) == {}
+
+
+@pytest.mark.skipif(os.environ.get("MOCK_CRY17_EXECUTABLES", True) != "true",
+                    reason="the calculation was run on a HPC")
+def test_run_nio_afm_failed_opt(db_test_app, get_structure, upload_basis_set_family, data_regression):
+    # type: (AiidaTestApp) -> None
+    """Test running a calculation where the optimisation fails,
+    due to reaching walltime"""
+
+    code = db_test_app.get_or_create_code('crystal17.main')
+
+    # Prepare input parameters
+    params = {
+        "title": "NiO Bulk with AFM spin",
+        "geometry.optimise.type": "FULLOPTG",
+        "scf.single": "UHF",
+        "scf.k_points": (8, 8),
+        "scf.spinlock.SPINLOCK": (0, 15),
+        "scf.numerical.FMIXING": 50,
+        "scf.post_scf": ["PPAN"]
+    }
+
+    instruct = get_structure("NiO_afm")
+
+    kind_data = KindData(data={
+        "kind_names": ["Ni1", "Ni2", "O"],
+        "spin_alpha": [True, False, False], "spin_beta": [False, True, False]})
+
+    sym_calc = run_get_node(
+        WorkflowFactory("crystal17.sym3d"), structure=instruct,
+        settings=DataFactory("dict")(dict={"symprec": 0.01, "compute_primitive": True})).node
+    instruct = sym_calc.get_outgoing().get_node_by_label("structure")
+    symmetry = sym_calc.get_outgoing().get_node_by_label("symmetry")
+
+    upload_basis_set_family()
+
+    # set up calculation
+    process_class = code.get_builder().process_class
+    builder = process_class.create_builder(
+        params, instruct, "sto3g", symmetry=symmetry, kinds=kind_data, code=code,
+        metadata=db_test_app.get_default_metadata(),
+        unflatten=True)
+
+    outputs, calc_node = run_get_node(builder)
+    # print(get_calcjob_report(calc_node))
+    assert "optimisation" in outputs
+    assert "results" in outputs
+
+    calc_attributes = calc_node.attributes
+    for key in ["job_id", "last_jobinfo", "remote_workdir",
+                "scheduler_lastchecktime", "retrieve_singlefile_list"]:
+        calc_attributes.pop(key, None)
+    calc_attributes["retrieve_list"] = sorted(calc_attributes["retrieve_list"])
+
+    data_regression.check({
+        "calc_node": calc_attributes,
+        "outputs": sorted(outputs.keys()),
+        "results": outputs["results"].attributes,
+        "optimisation": outputs["optimisation"].attributes
+    })
