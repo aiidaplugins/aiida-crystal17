@@ -1,0 +1,535 @@
+ashift:
+  - signature: 'atomic_symbol value '
+    flags: 1
+atomab:
+  - signature: '<Atomic_symbol/atomic_number> A B '
+    flags: 2
+axilrod-teller:
+  - signature: 'atom1 atom2 atom3 K <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(2-3)> rmax(2-3) '
+    flags: 1
+bacoscross:
+  - signature: 'atom1 atom2 atom3 K1 K2 r1 r2 theta0 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 5
+bacross:
+  - signature: 'atom1 atom2 atom3 K1 K2 r1 r2 theta0 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 5
+bagcross:
+  - signature: 'atom1  atom2 atom3 K r1 r2 theta0 m n p <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 4
+balcross:
+  - signature: 'atom1 atom2 atom3 K r1 r2 isign n m p <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 3
+baskes:
+  - signature: 'atom1 atom2 Ec A alpha r0 Z1 wF d <rmin> rmax '
+    flags: 5
+  - signature: 'atom1 atom2 Ec A alpha r0 Z1 wF d gamma lambda <rmin> rmax '
+    flags: 7
+bcoscross:
+  - signature: 'atom1 atom2 atom3 K b m n r1 r2 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 4
+bcross:
+  - signature: 'atom1 atom2 atom3 K r1 r2 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 3
+becke_johnson_c6:
+  - signature: 'atom1 atom2 C6 r0 <rmin> rmax '
+    flags: 2
+boattractive:
+  - signature: 'atom1 <atom2> alpha m n lambda '
+    flags: 3
+  - signature: 'atom1 <atom2> alpha m n lambda c d h '
+    flags: 6
+  - signature: atom1 <atom2> alpha m n lambda c1 c2 c3
+      c4 c5 h '
+    flags: 9
+  - signature: 'atom1 <atom2> alpha m n lambda c0 c1 c2 c3
+      c4 '
+    flags: 8
+bocoordination:
+  - signature: 'atom1 c1 c2 z0 E0 '
+    flags: 4
+borepulsive:
+  - signature: 'atom1 <atom2> alpha m n lambda '
+    flags: 3
+  - signature: 'atom1 <atom2> alpha m n lambda c d h '
+    flags: 6
+  - signature: 'atom1 <atom2> alpha m n lambda c1 c2 c3 c4 c5 h '
+    flags: 9
+  - signature: 'atom1 <atom2> alpha m n lambda c0 c1 c2 c3 c4 '
+    flags: 8
+botwobody:
+  - signature: 'atom1 atom2 A B za zb rtaper rmax '
+    flags: 4
+  - signature: 'atom1 atom2 chiR chiA '
+    flags: 2
+bsm:
+  # if harmonic
+  - signature: 'atom_symbol/atomic_number <core/shel> K r0 '
+    flags: 2
+  # if exponential / single_exponential
+  - signature: 'atom_symbol/atomic_number <core/shel> K rho r0 '
+    flags: 3
+buck4:
+  - signature: 'atom1 atom2 A rho C <rmin> cut1 rminimum cut2 rmax '
+    flags: 4
+buckingham:
+  - signature: 'atom1 atom2 A rho C <rmin> rmax '
+    flags: 3
+buffered_lj:
+  - signature: 'atom1 atom2 epsilon r0 delta gamma <rmin> rmax '
+    flags: 4
+cartesian:
+  - signature: 'at no. x y z <charge> <occupancy> <radius> '
+    flags: 3
+  - signature: 'at.sym. <species_type> x y z <charge> <occupancy> <radius> '
+    flags: 3
+cell:
+  - signature: 'a b c alpha beta gamma '
+    flags: 6
+cfm_fermi:
+  - signature: 'atom1 atom2 k zeta r0 R w rmax '
+    flags: 5
+cfm_gaussian:
+  - signature: 'atom1 atom2 k zeta r0 R w rmax '
+    flags: 5
+cfm_harmonic:
+  - signature: 'atom1 atom2 k r0 R w rmax '
+    flags: 4
+cfm_power:
+  - signature: 'atom1 atom2 A power R w rmax '
+    flags: 4
+cosh-spring:
+  - signature: 'atom1 k2 d '
+    flags: 2
+coulomb_subtract:
+  - signature: 'atom1 atom2 <scale> <rmin> rmax '
+    flags: 1
+covexp:
+  - signature: 'atom1 atom2 D a r0 <rmin> rmax '
+    flags: 3
+damped_dispersion:
+  - signature: 'atom1 atom2 C6 C8 C10 <b6> <b8> <b10> <rmin> rmax '
+    flags: 6
+eam_alloy:
+  - signature: 'atom scale '
+    flags: 1
+eam_density:
+  - signature: 'atom1 <atom2> C (power law) '
+    flags: 1
+  - signature: 'atom1 <atom2> C rn (fractional power law) '
+    flags: 2
+  - signature: 'atom1 <atom2> A B r0 (exponential) '
+    flags: 3
+  - signature: 'atom1 <atom2> A B r0 (gaussian) '
+    flags: 3
+  - signature: 'atom1 <atom2> A r0 (quadratic) '
+    flags: 2
+  - signature: 'atom1 <atom2> A r0 (cubic) '
+    flags: 2
+  - signature: 'atom1 <atom2> A r0 (quartic) '
+    flags: 2
+  - signature: 'atom1 <atom2> A beta (voter) '
+    flags: 2
+  - signature: 'atom1 <atom2> A beta (evoter) '
+    flags: 2
+  - signature: 'atom1 <atom2> c0 c1 c2 c3 c4 c5 r0 (mei-davenport) '
+    flags: 7
+  - signature: 'atom1 <atom2> A beta r0 (baskes) '
+    flags: 3
+  - signature: 'atom1 <atom2> c sigma gamma r0 delta (vbo) '
+    flags: 5
+  - signature: 'atom1 <atom2> A B C D rmin r0 (spline) '
+    flags: 4
+eam_potential_shift:
+  - signature: 'atom1 atom2 g beta <rmin> rmax '
+    flags: 2
+edip_coordination:
+  - signature: 'species <core/shell> alpha flow fhigh '
+    flags: 1
+  - signature: 'species <core/shell> alpha flow fhigh Zdih Zrep c0 plow phigh '
+    flags: 4
+edip_threebody:
+  - signature: 'lambda0 lambda Z0 gamma gamma q '
+    flags: 6
+  - signature: 'lambda0 lambda Z0 gamma gamma q kq '
+    flags: 7
+  - signature: 'lambda mu eta gamma gamma q '
+    flags: 6
+edip_twobody:
+  - signature: 'species1 <core/shel> species2 <core/shel> epsilon B p beta sigma a a` '
+    flags: 7
+electronegativity:
+  - signature: '<Atomic_symbol/atomic_number> chi <mu> <Q0> <E0> '
+    flags: 2
+  - signature: '<Atomic_symbol/atomic_number> chi <mu> <Q0> <E0> <qmin> <qmax> '
+    flags: 2
+epsilon/sigma:
+  - signature: '<Atomic_symbol/atomic_number> epsilon sigma '
+    flags: 2
+equatorial:
+  - signature: '<rmin(2-3)> rmax(2-3) '
+    flags: 3
+erferfc:
+  - signature: 'atom1 atom2 A alpha beta <rmin> rmax '
+    flags: 3
+erfpot:
+  - signature: 'atom1 atom2 A alpha <rmin> rmax '
+    flags: 2
+exp2:
+  - signature: '<rmin(2-3)> rmax(2-3) '
+    flags: 5
+exponential_three_body:
+  - signature: '<rmin(2-3)> rmax(2-3) '
+    flags: 4
+exppowers:
+  - signature: 'atom1 atom2 A B0 B1 B2 B3 <rmin> rmax '
+    flags: 4
+fermi-dirac:
+  - signature: 'atom1 atom2 a b r0 <rmin> rmax '
+    flags: 3
+forceconstant:
+  - signature: 'atom1 atom2 kL kT <rmin> rmax '
+    flags: 2
+fractional:
+  - signature: 'at no. x y z <charge> <occupancy> <radius> '
+    flags: 3
+  - signature: 'at.sym. <species_type> x y z <charge> <occupancy> <radius> '
+    flags: 3
+g3coulomb:
+  - signature: ''
+    flags: 2
+gastparam:
+  - signature: 'gastparam species A B C <Q0> '
+    flags: 4
+gcoulomb:
+  - signature: 'atom1 atom2 A gamma <rmin> rmax '
+    flags: 1
+general:
+  - signature: 'atom1 atom2 A rho C <rmin> rmax '
+    flags: 3
+grimme_c6:
+  - signature: 'atom1 atom2 C6 d r0 <rmin> rmax '
+    flags: 3
+harmonic:
+  - signature: 'atom1 atom2 k2 <k3> <k4> r0 <coul> <rmin> rmax '
+    flags: 2
+  - signature: 'atom1 atom2 k2 <k3> <k4> r0 <coul> <rmin> rmax '
+    flags: 3
+  - signature: 'atom1 atom2 k2 <k3> <k4> r0 <coul> <rmin> rmax '
+    flags: 4
+  - signature: 'atom1 atom2 k2 k3 r0 <coul> <rmin> rmax '
+    flags: 3
+  - signature: 'atom1 atom2 k2 k4 r0 <coul> <rmin> rmax '
+    flags: 3
+  - signature: 'atom1 atom2 k2 k3 k4 r0 <coul> <rmin> rmax '
+    flags: 4
+hydrogen-bond:
+  - signature: 'atom1 atom2 atom3 A B <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 2
+  - signature: '<rmin23> rmax23 '
+    flags: 2
+igauss:
+  - signature: 'atom1 atom2 A b r0 <rmin> rmax '
+    flags: 3
+inversion:
+  - signature: 'atom1 atom2 atom3 atom4 k <k0> rmax(1-2) rmax(1-3) rmax(1-4) '
+    flags: 1
+lennard:
+  - signature: 'atom1 atom2 (A B/epsilon sigma) <rmin> rmax '
+    flags: 2
+lin3:
+  - signature: '<rmin(2-3)> rmax(2-3) '
+    flags: 1
+ljbuffered:
+  - signature: 'atom1 atom2 A B r0 <rmin> rmax '
+    flags: 3
+mei-davenport:
+  - signature: 'atom1 atom2 phi0 delta gamma r0 <rmin> rmax '
+    flags: 4
+mm3angle:
+  - signature: '<rmin(2-3)> rmax(2-3) '
+    flags: 7
+mm3buck:
+  - signature: 'atom1 atom2 A B C epsilon rv <rmin> rmax '
+    flags: 5
+  - signature: 'atom1 atom2 A B C <rmin> rmax '
+    flags: 3
+  - signature: 'A B C <rmin> rmax '
+    flags: 3
+mm3stretch:
+  - signature: 'atom1 atom2 k2 r0 <A B C> <coul> <rmin> rmax '
+    flags: 5
+morse:
+  - signature: 'atom1 atom2 De a r0 <coul> <rmin> rmax '
+    flags: 3
+murrell-mottram:
+  - signature: 'rmax(1-3) <rmin(2-3)> rmax(2-3) '
+    flags: 5
+  - signature: 'c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 '
+    flags: 1
+outofplane:
+  - signature: 'outofplane <inter/intra> <bond> <only3> <kcal/kjmol> atom1 atom2 atom3 atom4 k <k4> <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(1-4)> rmax(1-4)'
+    flags: 1
+  - signature: 'outofplane <inter/intra> <bond> <only3> <kcal/kjmol> atom1 atom2 atom3 atom4 k <k4> <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(1-4)> rmax(1-4)'
+    flags: 2  
+pcell:
+  - signature: 'a '
+    flags: 1
+pfractional:
+  - signature: 'at.sym. <species_type> x y z <charge> <occupancy> <radius> '
+    flags: 3
+plane_lj:
+  - signature: 'atom1 plane zcoord A B rmin rmax '
+    flags: 2
+pvector:
+  - signature: ''
+    flags: 1
+qelectronegativity:
+  - signature: '<Atomic_symbol/atomic_number> chi <mu> <radius> <Q0> <E0> '
+    flags: 3
+  - signature: '<Atomic_symbol/atomic_number> chi <mu> <radius> <Q0> <E0> <qmin> <qmax> '
+    flags: 3
+qerfc:
+  - signature: 'atom1 atom2 rho rmax '
+    flags: 1
+qincrement:
+  - signature: 'atom1 atom2 delta '
+    flags: 1
+qoverr2:
+  - signature: 'atom1 atom2 rmax '
+    flags: 1
+qtaper:
+  - signature: 'atom1 atom2 C rmax '
+    flags: 1
+reaxff0_bond:
+  - signature: 'reaxff0_bond p_boc1 p_boc2 '
+    flags: 2
+reaxff0_lonepair:
+  - signature: 'reaxff0_lonepair p_lp1 '
+    flags: 1
+reaxff0_over:
+  - signature: 'reaxff0_over p_ovun3 p_ovun4 p_ovun6 p_ovun7 p_ovun8 '
+    flags: 5
+reaxff0_penalty:
+  - signature: 'reaxff0_penalty p_pen2 p_pen3 p_pen4 '
+    flags: 3
+reaxff0_torsion:
+  - signature: 'reaxff0_torsion p_tor2 p_tor3 p_tor4 p_cot2 '
+    flags: 4
+reaxff0_valence:
+  - signature: 'reaxff0_valence p_val7 p_val8 p_val9 p_val10 '
+    flags: 4
+reaxff0_vdw:
+  - signature: 'reaxff0_vdw p_vdw1 '
+    flags: 1
+reaxff1_angle:
+  - signature: 'species <core/shell> p_val3 p_val5 '
+    flags: 2
+reaxff1_lonepair:
+  - signature: 'species <core/shell> n_lp_opt p_lp2 '
+    flags: 2
+reaxff1_morse:
+  - signature: 'species <core/shell> alpha Dij rvdw gamma_w '
+    flags: 4
+reaxff1_over:
+  - signature: 'species <core/shell> p_boc3 p_boc4 p_boc5 p_ovun2 '
+    flags: 4
+reaxff1_radii:
+  - signature: 'species <core/shell> r_sigma r_pi r_pipi '
+    flags: 3
+reaxff1_under:
+  - signature: 'species <core/shell> p_ovun5 '
+    flags: 1
+reaxff1_valence:
+  - signature: 'species <core/shell> Val_normal Val_boc Val_lp Val_angle '
+    flags: 4
+reaxff2_bo:
+  - signature: 'species1 <core/shell> species2 <core/shell> p_bo1 p_bo2 p_bo3 p_bo4
+      p_bo5 p_bo6 '
+    flags: 6
+reaxff2_bond:
+  - signature: 'species1 <core/shell> species2 <core/shell> De_sigma De_pi De_pipi
+      p_be1 p_be2 '
+    flags: 5
+reaxff2_morse:
+  - signature: 'species1 <core/shell> species2 <core/shell> De alpha r0 r_sigma r_pi
+      r_pipi '
+    flags: 6
+reaxff2_over:
+  - signature: 'species1 <core/shell> species2 <core/shell> p_ovun1 '
+    flags: 1
+reaxff2_pen:
+  - signature: 'species1 <core/shell> species2 <core/shell> p_pen1 p_pen2 p_pen3 '
+    flags: 3
+reaxff3_angle:
+  - signature: 'theta_00 p_val1 p_val2 p_val4 p_val7 <p_val6> '
+    flags: 6
+reaxff3_conjugation:
+  - signature: 'p_coa1 p_coa2 p_coa3 p_coa4 '
+    flags: 4
+reaxff3_hbond:
+  - signature: 'p_hb2 p_hb3 '
+    flags: 4
+reaxff3_pen:
+  - signature: 'species1 <core/shell> species2 <core/shell> species3 <core/shell>
+      p_pen1 '
+    flags: 1
+reaxff4_torsion:
+  - signature: 'V1 V2 V3 p_tor1 p_cot1 '
+    flags: 5
+reaxff_chi:
+  - signature: 'species <core/shell> chi '
+    flags: 1
+reaxff_gamma:
+  - signature: 'species <core/shell> gamma '
+    flags: 1
+reaxff_mu:
+  - signature: 'species <core/shell> mu '
+    flags: 1
+reaxff_qshell:
+  - signature: 'species <core/shell> dMu Qs beta '
+    flags: 3
+reaxff_r12:
+  - signature: 'species <core/shell> r12 '
+    flags: 1
+region_1:
+  - signature: '<mol_cell_index> '
+    flags: 3
+reperfc:
+  - signature: 'atom1 atom2 A beta <rmin> rmax '
+    flags: 3
+rydberg:
+  - signature: 'atom1 atom2 A B r0 <rmin> rmax '
+    flags: 3
+scell:
+  - signature: 'a b alpha '
+    flags: 3
+sfractional:
+  - signature: 'at.sym. <species_type> x y z <charge> <occupancy> <radius> '
+    flags: 3
+slater:
+  - signature: 'atom1 atom2 A B <rmin> rmax '
+    flags: 2
+smelectronegativity:
+  - signature: '<Atomic_symbol/atomic_number> chi mu zeta Znuc <Q0> <E0> '
+    flags: 4
+  - signature: '<Atomic_symbol/atomic_number> chi mu zeta Znuc <Q0> <E0> <qmin> <qmax> '
+    flags: 4
+spline:
+  - signature: 'atom1 atom2 <shift> <rmin> rmax '
+    flags: 1
+spring:
+  - signature: 'atom1 k2 <k4> '
+    flags: 1
+squaredharmonic:
+  - signature: 'atom1 atom2 k2 r0 <coul> <rmin> rmax '
+    flags: 2
+svectors:
+  - signature: ''
+    flags: 2
+sw2:
+  - signature: 'atom1 atom2 A rho B rmin rmax '
+    flags: 3
+sw2jb:
+  - signature: 'atom1 atom2 A rho B Q <rmin> rmax '
+    flags: 4
+sw3:
+  - signature: 'atom1 atom2 atom3 K theta0 rho1 rho2 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 4
+  # sw3 modified 
+  - signature: 'atom1 atom2 atom3 K theta0 rho1 rho2 C <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 5
+  # sw3 garofalini
+  - signature: 'atom1 atom2 atom3 K theta0 rho1 rho2 C <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 5
+sw3jb:
+  - signature: 'atom1 atom2 atom3 K theta0 rho1 rho2 Q <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 5
+three-body:
+  - signature: 'atom1 atom2 atom3 k theta0 <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(2-3)> rmax(2-3) '
+    flags: 2
+  # if three exponential
+  - signature: 'atom1 atom2 atom3 k theta0 rho1 rho2 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 4
+  # if three vessal
+  - signature: 'atom1 atom2 atom3 k theta0 rho1 rho2 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 4
+  - signature: 'atom1 atom2 atom3 k k3 theta0 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 3
+  - signature: 'atom1 atom2 atom3 k k4 theta0 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 3
+  - signature: 'atom1 atom2 atom3 k k3 k4 theta0 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 4
+torangle:
+  - signature: 'atom1 atom2 atom3 atom4 K theta0 theta0 rmax(1-2) rmax(2-3) rmax(3-4) '
+    flags: 3
+torcosangle:
+  - signature: 'atom1 atom2 atom3 atom4 K theta0 theta0 rmax(1-2) rmax(2-3) rmax(3-4) '
+    flags: 3
+torexp:
+  - signature: 'atom1 atom2 atom3 atom4 k <+/->nphase <phi0> rho12 rho23 rho34 rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 4
+  # if esff option is specified
+  - signature: 'atom1 atom2 atom3 atom4 k1 k2 <+/->nphase rho12 rho23 rho34 rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 5
+torharm:
+  - signature: 'atom1 atom2 atom3 atom4 K <phi0> rmax(1-2) rmax(2-3) rmax(3-4) <rmax(1-4)> '
+    flags: 2
+torsion:
+  - signature: 'atom1 atom2 atom3 atom4 k <+/->n <phi0> rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 1
+  # if esff option is specified
+  - signature: 'atom1 atom2 atom3 atom4 k1 k2 <+/->n rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 2
+tortaper:
+  - signature: 'atom1 atom2 atom3 atom4 k <+/->nphase <phi0> rtaper rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 1
+  # if esff option is specified
+  - signature: 'atom1 atom2 atom3 atom4 k1 k2 <+/->nphase rtaper rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 2
+tsuneyuki:
+  - signature: 'atom1 atom2 Q1 Q2 zeta <rmin> rmax '
+    flags: 1
+uff1:
+  - signature: 'atom1 r theta x D zeta Zeff type tor Koop Thetaoop Chi '
+    flags: 1
+uff3:
+  - signature: 'atom1 atom2 atom3 K theta0 rmin(1-2) rmax(1-2) rmin(1-3) rmax(1-3) rmin(2-3) rmax(2-3) '
+    flags: 1
+uff4:
+  - signature: 'atom1 atom2 atom3 atom4 K n <phi0> rmax(1-2) rmax(2-3) rmax(3-4) rmax(4-1) '
+    flags: 1
+uffoop:
+  - signature: 'atom1 atom2 atom3 atom4 k C0 C1 C2 rmax(1-2) rmax(1-3) rmax(1-4) '
+    flags: 4
+urey-bradley:
+  - signature: 'atom1 atom2 atom3 K r0 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
+    flags: 2
+vbo_twobody:
+  - signature: 'atom1 atom2 c gamma R0 delta '
+    flags: 4
+vectors:
+  - signature: 'x y z\nx y z\nx y z'
+    flags: 6
+xangleangle:
+  - signature: 'atom1 atom2 atom3 atom4 k(213/4) k(312/4) k(412/3) theta0(213) theta0(214) theta0(314) rmax(1-2) rmax(1-3) rmax(1-4) '
+    flags: 6
+xcosangleangle:
+  - signature: 'atom1 atom2 atom3 atom4 k(213/4) k(312/4) k(412/3) theta0(213) theta0(214) theta0(314) rmax(1-2) rmax(1-3) rmax(1-4) '
+    flags: 6
+xoutofplane:
+  - signature: 'atom1 atom2 atom3 atom4 atom5 atom6 k rmax(1-2) rmax(1-3) rmax(1-4)
+      rmax(2-5) rmax(2-6) '
+    flags: 1
+zbl:
+  - signature: 'atom1 atom2 <b1 c1 b2 c2 b3 c3 b4 c4 d n> <rmin> rmax '
+    flags: 9
+
+# the following have non-standard flag situations:
+#
+# eam_functional:
+# meam_density:
+# meam_functional:
+# polynomial:
+# - atom1 atom2 (norder+1)*coeff <r0> <rmin> rmax <(norder+1)*flags>
+# ryckaert:
+# - atom1 atom2 atom3 atom4 k0 rmax(1-2) rmax(2-3) rmax(3-4) rmax(1-4) <flags*norder+1>
