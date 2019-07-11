@@ -14,19 +14,19 @@ def pyrite_potential_lj():
             "species": ["Fe core", "S core"],
             "2body": {
                 "0"+INDEX_SEP+"0": {
-                    "A": 1.0,
-                    "B": 1.0,
-                    "rmax": 12.0
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
                 },
                 "0"+INDEX_SEP+"1": {
-                    "A": 1.0,
-                    "B": 1.0,
-                    "rmax": 12.0
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
                 },
                 "1"+INDEX_SEP+"1": {
-                    "A": 1.0,
-                    "B": 1.0,
-                    "rmax": 12.0
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
                 }
             }
         })

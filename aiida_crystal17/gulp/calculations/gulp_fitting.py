@@ -10,6 +10,7 @@ from aiida.common.exceptions import InputValidationError
 from aiida.engine import CalcJob
 from aiida.orm import Dict, StructureData
 from aiida.orm.nodes.data.base import to_aiida_type
+from aiida.plugins import DataFactory
 
 from aiida_crystal17.gulp.parsers.raw.write_input_fitting import create_input_lines
 
@@ -31,9 +32,10 @@ class GulpFittingCalculation(CalcJob):
                    valid_type=six.string_types, default='gulp.fitting')
 
         spec.input(
-            "potential", valid_type=Dict, required=True,
+            "potential", valid_type=DataFactory('gulp.potential'), required=True,
             serializer=to_aiida_type,
-            help="a dictionary defining the potential type"
+            help=("a dictionary defining the potential. "
+                  "Note this should have been created with fitting flags initialised")
         )
 
         spec.input_namespace(
@@ -128,6 +130,3 @@ class GulpFittingCalculation(CalcJob):
         calcinfo.retrieve_temporary_list = []
 
         return calcinfo
-
-    def write_input(self, tempfolder, potential, structures, observables):
-        pass

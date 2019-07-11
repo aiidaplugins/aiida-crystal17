@@ -1,4 +1,3 @@
-import copy
 from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
 from aiida_crystal17.gulp.potentials.common import filter_by_species, INDEX_SEP
 from aiida_crystal17.validation import load_schema
@@ -8,40 +7,55 @@ class PotentialWriterLJ(PotentialWriterAbstract):
     """class for creating gulp lennard-jones type
     inter-atomic potential inputs
     """
-    _schema = None
 
     @classmethod
     def get_description(cls):
-        return "Lennard-Jones potential"
+        return "Lennard-Jones potential, of the form; E = A/r**m - B/r**n"
 
     @classmethod
-    def get_schema(cls):
-        if cls._schema is None:
-            cls._schema = load_schema("potential.lj.schema.json")
-        return copy.deepcopy(cls._schema)
+    def _get_schema(cls):
+        return load_schema("potential.lj.schema.json")
 
-    def _make_string(self, data, species_filter=None):
+    @classmethod
+    def _get_fitting_schema(cls):
+        return load_schema("fitting.lj.schema.json")
+
+    def _make_string(self, data, species_filter=None, fitting_data=None):
         """write reaxff data in GULP input format
 
-        :param data: dictionary of data
-        :param species_filter: list of symbols to filter
-        :rtype: str
+        Parameters
+        ----------
+        data : dict
+            dictionary of data required to create potential
+        species_filter : list[str] or None
+            list of atomic symbols to filter by
+        fitting_data: dict or None
+            a dictionary specifying which variables to flag for optimisation,
+            of the form; {<type>: {<index>: [variable1, ...]}}
+            if None, no flags will be added
 
         """
         if species_filter is not None:
             data = filter_by_species(data, species_filter)
 
         lines = []
-        # TODO test that e.g. '1.2' and '2.1' aren't present, with different parameters
 
         for indices in sorted(data["2body"]):
             species = ["{:7s}".format(data["species"][int(i)]) for i in indices.split(INDEX_SEP)]
             values = data["2body"][indices]
-            lines.append("lennard {m} {n}".format(m=values.get("m", 12), n=values.get("n", 6)))
-            if "rmin" in values:
-                values_string = "{A} {B} {rmin} {rmax}".format(**values)
+            lines.append("lennard {lj_m} {lj_n}".format(lj_m=values.get("lj_m", 12), lj_n=values.get("lj_n", 6)))
+            if "lj_rmin" in values:
+                values_string = "{lj_A} {lj_B} {lj_rmin} {lj_rmax}".format(**values)
             else:
-                values_string = "{A} {B} {rmax}".format(**values)
+                values_string = "{lj_A} {lj_B} {lj_rmax}".format(**values)
+
+            if fitting_data is not None:
+                flag_a = flag_b = 0
+                if "lj_A" in fitting_data.get("2body", {}).get(indices, []):
+                    flag_a = 1
+                if "lj_B" in fitting_data.get("2body", {}).get(indices, []):
+                    flag_b = 1
+                values_string += " {} {}".format(flag_a, flag_b)
 
             lines.append(" ".join(species) + " " + values_string)
 

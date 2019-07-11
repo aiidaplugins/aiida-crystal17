@@ -28,6 +28,8 @@ shift
 end
 
 lennard 12 6
-Fe Fe 1.0 1.0 12.0 1.000 1.000 1 1
-Fe S  1.0 1.0 12.0 1.000 1.000 1 1
-S S   1.0 1.0 12.0 1.000 1.000 1 1
+Fe core Fe core 1.0 1.0 12.0 1 1
+lennard 12 6
+Fe core S core  1.0 1.0 12.0 0 0
+lennard 12 6
+S core  S core  1.0 1.0 12.0 0 0

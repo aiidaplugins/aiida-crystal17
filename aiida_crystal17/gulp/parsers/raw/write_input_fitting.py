@@ -34,13 +34,7 @@ def create_input_lines(potential, structures, observables):
     lines.append("")
 
     # Force Field
-    # TODO create initial force field
-    lines.extend([
-        "lennard 12 6",
-        "Fe Fe 1.0 1.0 12.0 1.000 1.000 1 1",
-        "Fe S  1.0 1.0 12.0 1.000 1.000 1 1",
-        "S S   1.0 1.0 12.0 1.000 1.000 1 1"
-    ])
+    lines.extend(potential.get_input_lines())
 
     # TODO optional dumping
     # dump every {interval} noover fitting.grs

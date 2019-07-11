@@ -1,5 +1,3 @@
-import copy
-
 from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
 from aiida_crystal17.validation import load_schema
 from aiida_crystal17.gulp.potentials.common import filter_by_species
@@ -10,7 +8,6 @@ class PotentialWriterReaxff(PotentialWriterAbstract):
     """class for creating gulp reaxff type
     inter-atomic potential inputs
     """
-    _schema = None
 
     @classmethod
     def get_description(cls):
@@ -18,12 +15,10 @@ class PotentialWriterReaxff(PotentialWriterAbstract):
 
     @classmethod
     def get_schema(cls):
-        if cls._schema is None:
-            cls._schema = load_schema("potential.reaxff.schema.json")
-        return copy.deepcopy(cls._schema)
+        return load_schema("potential.reaxff.schema.json")
 
     # pylint: disable=too-many-locals
-    def _make_string(self, data, species_filter=None):
+    def _make_string(self, data, species_filter=None, fitting_data=None):
         """write reaxff data in GULP input format
 
         :param data: dictionary of data

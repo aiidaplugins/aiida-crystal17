@@ -28,38 +28,38 @@
                     "description": "mapping of '<idx1>-<idx2>' to properties",
                     "type": "object",
                     "required": [
-                        "A",
-                        "B",
-                        "rmax"
+                        "lj_A",
+                        "lj_B",
+                        "lj_rmax"
                     ],
                     "properties": {
-                        "m": {
+                        "lj_m": {
                             "description": "first exponent",
                             "type": "integer",
                             "exclusiveMinimum": 0,
                             "default": 12
                         },
-                        "n": {
+                        "lj_n": {
                             "description": "second exponent",
                             "type": "integer",
                             "exclusiveMinimum": 0,
                             "default": 6
                         },
-                        "A": {
+                        "lj_A": {
                             "description": "fist coefficient (in ev*Angs**m)",
                             "type": "number"
                         },
-                        "B": {
+                        "lj_B": {
                             "description": "second coefficient (in ev*Angs**m)",
                             "type": "number"
                         },
-                        "rmin": {
+                        "lj_rmin": {
                             "description": "minimum radius cut-off (Angs)",
                             "type": "number",
                             "minimum": 0,
                             "default": 0
                         },
-                        "rmax": {
+                        "lj_rmax": {
                             "description": "maximum radius cut-off (Angs)",
                             "type": "number",
                             "exclusiveMinimum": 0

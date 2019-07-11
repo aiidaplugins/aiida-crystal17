@@ -27,13 +27,15 @@ class EmpiricalPotential(Data):
         # pair_style = kwargs.pop('pair_style', None)
         # potential_data = kwargs.pop('data', None)
         additional_data = kwargs.pop('additional', None)
+        fitting_data = kwargs.pop('fitting_data', None)
         super(EmpiricalPotential, self).__init__(**kwargs)
-        self.set_data(pair_style, potential_data, additional_data)
+        self.set_data(pair_style, potential_data, fitting_data, additional_data)
 
-    def set_data(self, pair_style, potential_data, additional_data=None):
+    def set_data(self, pair_style, potential_data, fitting_data=None, additional_data=None):
         """
         Store the potential type (ex. Tersoff, EAM, LJ, ..) and data
         """
+        # TODO add filtering by elements (possibly by supplying a structure?)
         if pair_style is None:
             raise ValueError("'pair_style' must be provided")
         if pair_style not in self.list_pair_styles():
@@ -41,7 +43,8 @@ class EmpiricalPotential(Data):
         potential_writer = self.load_pair_style(pair_style)()
 
         description = potential_writer.get_description()
-        content = potential_writer.create_string(potential_data)
+        content = potential_writer.create_string(
+            potential_data, fitting_data=fitting_data)
 
         with self.open(self.potential_filename, 'w') as handle:
             handle.write(six.ensure_text(content))

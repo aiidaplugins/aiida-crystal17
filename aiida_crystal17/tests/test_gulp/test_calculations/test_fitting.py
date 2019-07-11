@@ -1,4 +1,5 @@
 from aiida.orm import Dict
+from aiida.plugins import DataFactory
 
 from aiida_crystal17.tests.utils import sanitize_calc_info
 
@@ -9,7 +10,38 @@ def test_calcjob_submit_mgo(db_test_app, get_structure,
     code = db_test_app.get_or_create_code('gulp.fitting')
     builder = code.get_builder()
     builder.metadata = db_test_app.get_default_metadata(dry_run=True)
-    builder.potential = {}
+    potential_cls = DataFactory("gulp.potential")
+    builder.potential = potential_cls(
+        "lj",
+        {
+            "species": ["Fe core", "S core"],
+            "2body": {
+                "0-0": {
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
+                },
+                "0-1": {
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
+                },
+                "1-1": {
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
+                }
+            }
+        },
+        fitting_data={
+            "species": ["Fe core", "S core"],
+            "2body": {
+                "0-0": ["lj_A", "lj_B"],
+                "0-1": [],
+                "1-1": [],
+            }
+        }
+    )
     builder.structures = {
         "MgO": get_structure("MgO")
     }

@@ -9,19 +9,19 @@ def test_potential_lj(db_test_app, data_regression):
             "species": ["Fe core", "S core"],
             "2body": {
                 "0-0": {
-                    "A": 1.0,
-                    "B": 1.0,
-                    "rmax": 12.0
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
                 },
                 "0-1": {
-                    "A": 1.0,
-                    "B": 1.0,
-                    "rmax": 12.0
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
                 },
                 "1-1": {
-                    "A": 1.0,
-                    "B": 1.0,
-                    "rmax": 12.0
+                    "lj_A": 1.0,
+                    "lj_B": 1.0,
+                    "lj_rmax": 12.0
                 }
             }
         }
