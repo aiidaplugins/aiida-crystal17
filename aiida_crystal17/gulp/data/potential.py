@@ -1,6 +1,8 @@
 import copy
 from hashlib import md5
 
+import six
+
 from aiida.common import exceptions
 from aiida.orm import Data
 from aiida.plugins.entry_point import load_entry_point, get_entry_point_names
@@ -40,6 +42,9 @@ class EmpiricalPotential(Data):
 
         description = potential_writer.get_description()
         content = potential_writer.create_string(potential_data)
+
+        with self.open(self.potential_filename, 'w') as handle:
+            handle.write(six.ensure_text(content))
 
         dictionary = {
             'pair_style': pair_style,
@@ -114,3 +119,13 @@ class EmpiricalPotential(Data):
 
     def get_description(self):
         return str(self.pair_style)
+
+    def get_input_lines(self):
+        if self.potential_filename not in self.list_object_names():
+            raise KeyError("potential file not set for node pk={}".format(
+                self.pk))
+
+        with self.open(self.potential_filename, mode='r') as handle:
+            lines = handle.read()
+
+        return lines.splitlines()

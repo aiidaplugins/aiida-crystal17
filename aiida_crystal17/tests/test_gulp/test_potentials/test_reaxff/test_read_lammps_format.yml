@@ -238,7 +238,7 @@
     reaxff_gamma: 0.5639
     reaxff_mu: 8.95
 2body:
-  '1.1':
+  1-1:
     dummy1: 1.0
     reaxff2_bo1: -0.0777
     reaxff2_bo2: 6.7268
@@ -255,7 +255,7 @@
     reaxff2_bond4: -0.7738
     reaxff2_bond5: 0.459
     reaxff2_over: 0.4147
-  '1.2':
+  1-2:
     dummy1: 1.0
     reaxff2_bo1: -0.05
     reaxff2_bo2: 6.9136
@@ -278,7 +278,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.7652
-  '1.3':
+  1-3:
     dummy1: 1.0
     reaxff2_bo1: -0.1363
     reaxff2_bo2: 4.8734
@@ -301,7 +301,7 @@
     reaxff2_morse5: 1.1576
     reaxff2_morse6: 1.0637
     reaxff2_over: 1.0
-  '1.4':
+  1-4:
     dummy1: 1.0
     reaxff2_bo1: -0.1512
     reaxff2_bo2: 4.1708
@@ -324,7 +324,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.01
-  '1.5':
+  1-5:
     dummy1: 1.0
     reaxff2_bo1: -0.1579
     reaxff2_bo2: 5.5813
@@ -347,7 +347,7 @@
     reaxff2_morse5: 1.4
     reaxff2_morse6: -1.0
     reaxff2_over: 0.1958
-  '1.6':
+  1-6:
     dummy1: 1.0
     reaxff2_bo1: -0.2
     reaxff2_bo2: 8.0
@@ -370,7 +370,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.5
-  '2.2':
+  2-2:
     dummy1: 1.0
     reaxff2_bo1: -0.079
     reaxff2_bo2: 6.0552
@@ -387,7 +387,7 @@
     reaxff2_bond4: -0.46
     reaxff2_bond5: 6.25
     reaxff2_over: 0.73
-  '2.3':
+  2-3:
     dummy1: 0.0
     reaxff2_bo1: -0.092
     reaxff2_bo2: 4.279
@@ -410,7 +410,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.5626
-  '2.4':
+  2-4:
     dummy1: 1.0
     reaxff2_bo1: -0.1543
     reaxff2_bo2: 5.4965
@@ -433,7 +433,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.1766
-  '2.5':
+  2-5:
     dummy1: 1.0
     reaxff2_bo1: -0.0762
     reaxff2_bo2: 5.0961
@@ -456,7 +456,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.387
-  '2.6':
+  2-6:
     dummy1: 1.0
     reaxff2_bo1: -0.2
     reaxff2_bo2: 8.0
@@ -479,7 +479,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.5
-  '3.3':
+  3-3:
     dummy1: 1.0
     reaxff2_bo1: -0.1225
     reaxff2_bo2: 5.5
@@ -496,7 +496,7 @@
     reaxff2_bond4: 0.2506
     reaxff2_bond5: 0.3451
     reaxff2_over: 0.6051
-  '3.4':
+  3-4:
     dummy1: 1.0
     reaxff2_bo1: -0.0629
     reaxff2_bo2: 7.1208
@@ -519,7 +519,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.0852
-  '3.5':
+  3-5:
     dummy1: 1.0
     reaxff2_bo1: -0.0909
     reaxff2_bo2: 6.9512
@@ -542,7 +542,7 @@
     reaxff2_morse5: 1.4557
     reaxff2_morse6: -1.0
     reaxff2_over: 0.05
-  '3.6':
+  3-6:
     dummy1: 1.0
     reaxff2_bo1: -0.1989
     reaxff2_bo2: 4.8803
@@ -565,7 +565,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.6591
-  '4.4':
+  4-4:
     dummy1: 1.0
     reaxff2_bo1: -0.0512
     reaxff2_bo2: 6.8013
@@ -582,7 +582,7 @@
     reaxff2_bond4: 0.2931
     reaxff2_bond5: 0.6294
     reaxff2_over: 0.2682
-  '4.5':
+  4-5:
     dummy1: 1.0
     reaxff2_bo1: -0.0758
     reaxff2_bo2: 6.3424
@@ -605,7 +605,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.1769
-  '4.6':
+  4-6:
     dummy1: 1.0
     reaxff2_bo1: -0.0925
     reaxff2_bo2: 6.122
@@ -628,7 +628,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.0106
-  '5.5':
+  5-5:
     dummy1: 1.0
     reaxff2_bo1: -0.1131
     reaxff2_bo2: 6.144
@@ -645,7 +645,7 @@
     reaxff2_bond4: -0.9993
     reaxff2_bond5: 0.2799
     reaxff2_over: 0.0999
-  '5.6':
+  5-6:
     dummy1: 1.0
     reaxff2_bo1: -0.1166
     reaxff2_bo2: 5.666
@@ -668,7 +668,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.0835
-  '6.6':
+  6-6:
     dummy1: 1.0
     reaxff2_bo1: -0.1098
     reaxff2_bo2: 5.3349
@@ -686,7 +686,7 @@
     reaxff2_bond5: 0.0842
     reaxff2_over: 0.01
 3body:
-  1.1.1:
+  1-1-1:
     reaxff3_angle1: 59.0573
     reaxff3_angle2: 30.7029
     reaxff3_angle3: 0.7606
@@ -694,7 +694,7 @@
     reaxff3_angle5: 0.718
     reaxff3_conj: 0.0
     reaxff3_penalty: 6.2933
-  1.1.2:
+  1-1-2:
     reaxff3_angle1: 65.7758
     reaxff3_angle2: 14.5234
     reaxff3_angle3: 6.2481
@@ -702,7 +702,7 @@
     reaxff3_angle5: 0.5665
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.1.3:
+  1-1-3:
     reaxff3_angle1: 53.9517
     reaxff3_angle2: 7.8968
     reaxff3_angle3: 2.6122
@@ -710,7 +710,7 @@
     reaxff3_angle5: 3.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 58.6562
-  1.1.4:
+  1-1-4:
     reaxff3_angle1: 74.879
     reaxff3_angle2: 30.0
     reaxff3_angle3: 2.0
@@ -718,7 +718,7 @@
     reaxff3_angle5: 2.0334
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.1.5:
+  1-1-5:
     reaxff3_angle1: 71.4462
     reaxff3_angle2: 27.2223
     reaxff3_angle3: 6.7228
@@ -726,7 +726,7 @@
     reaxff3_angle5: 0.005
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.1.6:
+  1-1-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -734,7 +734,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.2.1:
+  1-2-1:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 3.411
     reaxff3_angle3: 7.735
@@ -742,7 +742,7 @@
     reaxff3_angle5: 0.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.2.2:
+  1-2-2:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 6.0
@@ -750,7 +750,7 @@
     reaxff3_angle5: 0.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.2.3:
+  1-2-3:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 25.0
     reaxff3_angle3: 3.0
@@ -758,7 +758,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.2.4:
+  1-2-4:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.01
     reaxff3_angle3: 2.2066
@@ -766,7 +766,7 @@
     reaxff3_angle5: 1.9789
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.2.5:
+  1-2-5:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.25
     reaxff3_angle3: 6.0
@@ -774,7 +774,7 @@
     reaxff3_angle5: 0.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.2.6:
+  1-2-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -782,7 +782,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.3.1:
+  1-3-1:
     reaxff3_angle1: 72.6199
     reaxff3_angle2: 42.551
     reaxff3_angle3: 0.7205
@@ -790,7 +790,7 @@
     reaxff3_angle5: 2.9294
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.3.2:
+  1-3-2:
     reaxff3_angle1: 70.1101
     reaxff3_angle2: 13.1217
     reaxff3_angle3: 4.4734
@@ -798,7 +798,7 @@
     reaxff3_angle5: 0.8433
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.3.3:
+  1-3-3:
     reaxff3_angle1: 81.9029
     reaxff3_angle2: 32.2258
     reaxff3_angle3: 1.7397
@@ -806,7 +806,7 @@
     reaxff3_angle5: 0.9888
     reaxff3_conj: 0.0
     reaxff3_penalty: 68.1072
-  1.3.4:
+  1-3-4:
     reaxff3_angle1: 90.0
     reaxff3_angle2: 42.4716
     reaxff3_angle3: 6.6776
@@ -814,7 +814,7 @@
     reaxff3_angle5: 2.456
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.3.5:
+  1-3-5:
     reaxff3_angle1: 83.1032
     reaxff3_angle2: 23.4174
     reaxff3_angle3: 0.7741
@@ -822,7 +822,7 @@
     reaxff3_angle5: 1.2168
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.3.6:
+  1-3-6:
     reaxff3_angle1: 63.7706
     reaxff3_angle2: 34.5234
     reaxff3_angle3: 0.9493
@@ -830,7 +830,7 @@
     reaxff3_angle5: 2.4647
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.4.1:
+  1-4-1:
     reaxff3_angle1: 0.1
     reaxff3_angle2: 42.298
     reaxff3_angle3: 0.3169
@@ -838,7 +838,7 @@
     reaxff3_angle5: 1.1069
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.4.2:
+  1-4-2:
     reaxff3_angle1: 42.714
     reaxff3_angle2: 0.1451
     reaxff3_angle3: 0.25
@@ -846,7 +846,7 @@
     reaxff3_angle5: 0.0851
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.4.3:
+  1-4-3:
     reaxff3_angle1: 38.2755
     reaxff3_angle2: 19.3103
     reaxff3_angle3: 0.1151
@@ -854,7 +854,7 @@
     reaxff3_angle5: 0.7569
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.4.4:
+  1-4-4:
     reaxff3_angle1: 47.9341
     reaxff3_angle2: 1.0246
     reaxff3_angle3: 7.9341
@@ -862,7 +862,7 @@
     reaxff3_angle5: 2.8853
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.4.5:
+  1-4-5:
     reaxff3_angle1: 60.3275
     reaxff3_angle2: 30.0
     reaxff3_angle3: 1.0871
@@ -870,7 +870,7 @@
     reaxff3_angle5: 1.3106
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.4.6:
+  1-4-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -878,7 +878,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.5.1:
+  1-5-1:
     reaxff3_angle1: 92.671
     reaxff3_angle2: 15.6798
     reaxff3_angle3: 3.1104
@@ -886,7 +886,7 @@
     reaxff3_angle5: 0.3458
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.5.2:
+  1-5-2:
     reaxff3_angle1: 99.1897
     reaxff3_angle2: 14.1666
     reaxff3_angle3: 2.5588
@@ -894,7 +894,7 @@
     reaxff3_angle5: 0.3542
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.5.3:
+  1-5-3:
     reaxff3_angle1: 79.9791
     reaxff3_angle2: 29.5117
     reaxff3_angle3: 7.0
@@ -902,7 +902,7 @@
     reaxff3_angle5: 0.005
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.5.4:
+  1-5-4:
     reaxff3_angle1: 67.5806
     reaxff3_angle2: 21.4421
     reaxff3_angle3: 0.9049
@@ -910,7 +910,7 @@
     reaxff3_angle5: 0.7789
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.5.5:
+  1-5-5:
     reaxff3_angle1: 89.391
     reaxff3_angle2: 5.0
     reaxff3_angle3: 7.0
@@ -918,7 +918,7 @@
     reaxff3_angle5: 1.005
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.5.6:
+  1-5-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -926,7 +926,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.6.1:
+  1-6-1:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -934,7 +934,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.6.2:
+  1-6-2:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -942,7 +942,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.6.3:
+  1-6-3:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -950,7 +950,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.6.4:
+  1-6-4:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -958,7 +958,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.6.5:
+  1-6-5:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -966,7 +966,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.6.6:
+  1-6-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -974,7 +974,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.1.2:
+  2-1-2:
     reaxff3_angle1: 70.2607
     reaxff3_angle2: 25.2202
     reaxff3_angle3: 3.7312
@@ -982,7 +982,7 @@
     reaxff3_angle5: 0.005
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.1.3:
+  2-1-3:
     reaxff3_angle1: 65.0
     reaxff3_angle2: 16.3141
     reaxff3_angle3: 5.273
@@ -990,7 +990,7 @@
     reaxff3_angle5: 0.4448
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.1.4:
+  2-1-4:
     reaxff3_angle1: 2.6539
     reaxff3_angle2: 32.1638
     reaxff3_angle3: 0.9167
@@ -998,7 +998,7 @@
     reaxff3_angle5: 0.024
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.1.5:
+  2-1-5:
     reaxff3_angle1: 43.6595
     reaxff3_angle2: 11.8933
     reaxff3_angle3: 0.5449
@@ -1006,7 +1006,7 @@
     reaxff3_angle5: 0.005
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.1.6:
+  2-1-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1014,7 +1014,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.2.2:
+  2-2-2:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 27.9213
     reaxff3_angle3: 5.8635
@@ -1022,7 +1022,7 @@
     reaxff3_angle5: 0.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.2.3:
+  2-2-3:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 8.5744
     reaxff3_angle3: 3.0
@@ -1030,7 +1030,7 @@
     reaxff3_angle5: 0.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.2.4:
+  2-2-4:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.01
     reaxff3_angle3: 1.0568
@@ -1038,7 +1038,7 @@
     reaxff3_angle5: 1.8595
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.2.6:
+  2-2-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1046,7 +1046,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.3.2:
+  2-3-2:
     reaxff3_angle1: 85.8
     reaxff3_angle2: 9.8453
     reaxff3_angle3: 2.272
@@ -1054,7 +1054,7 @@
     reaxff3_angle5: 2.8635
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.3.3:
+  2-3-3:
     reaxff3_angle1: 75.6935
     reaxff3_angle2: 50.0
     reaxff3_angle3: 2.0
@@ -1062,7 +1062,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.3.4:
+  2-3-4:
     reaxff3_angle1: 26.0012
     reaxff3_angle2: 49.6772
     reaxff3_angle3: 0.05
@@ -1070,7 +1070,7 @@
     reaxff3_angle5: 1.1589
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.3.5:
+  2-3-5:
     reaxff3_angle1: 35.9099
     reaxff3_angle2: 19.1501
     reaxff3_angle3: 1.9918
@@ -1078,7 +1078,7 @@
     reaxff3_angle5: 0.9342
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.3.6:
+  2-3-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1086,7 +1086,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.4.2:
+  2-4-2:
     reaxff3_angle1: 20.3683
     reaxff3_angle2: 0.01
     reaxff3_angle3: 2.2825
@@ -1094,7 +1094,7 @@
     reaxff3_angle5: 0.766
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.4.3:
+  2-4-3:
     reaxff3_angle1: 38.5594
     reaxff3_angle2: 11.2599
     reaxff3_angle3: 0.1898
@@ -1102,7 +1102,7 @@
     reaxff3_angle5: 0.1904
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.4.4:
+  2-4-4:
     reaxff3_angle1: 48.4128
     reaxff3_angle2: 4.0632
     reaxff3_angle3: 0.6773
@@ -1110,7 +1110,7 @@
     reaxff3_angle5: 2.2274
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.4.6:
+  2-4-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1118,7 +1118,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.5.2:
+  2-5-2:
     reaxff3_angle1: 90.0601
     reaxff3_angle2: 42.2756
     reaxff3_angle3: 0.5302
@@ -1126,7 +1126,7 @@
     reaxff3_angle5: 0.3707
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.5.4:
+  2-5-4:
     reaxff3_angle1: 84.8837
     reaxff3_angle2: 16.4865
     reaxff3_angle3: 0.824
@@ -1134,7 +1134,7 @@
     reaxff3_angle5: 0.5428
     reaxff3_conj: 0.5
     reaxff3_penalty: 0.0
-  2.5.5:
+  2-5-5:
     reaxff3_angle1: 66.1035
     reaxff3_angle2: 8.0885
     reaxff3_angle3: 1.0424
@@ -1142,7 +1142,7 @@
     reaxff3_angle5: 0.7355
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.5.6:
+  2-5-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1150,7 +1150,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.6.2:
+  2-6-2:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1158,7 +1158,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.6.3:
+  2-6-3:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1166,7 +1166,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.6.4:
+  2-6-4:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1174,7 +1174,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.6.5:
+  2-6-5:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1182,7 +1182,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  2.6.6:
+  2-6-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1190,7 +1190,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.1.3:
+  3-1-3:
     reaxff3_angle1: 76.9627
     reaxff3_angle2: 44.2852
     reaxff3_angle3: 2.4177
@@ -1198,7 +1198,7 @@
     reaxff3_angle5: 1.6334
     reaxff3_conj: -25.3063
     reaxff3_penalty: -50.0
-  3.1.4:
+  3-1-4:
     reaxff3_angle1: 54.69
     reaxff3_angle2: 12.6123
     reaxff3_angle3: 2.3543
@@ -1206,7 +1206,7 @@
     reaxff3_angle5: 2.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.1.6:
+  3-1-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1214,7 +1214,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.2.3:
+  3-2-3:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 15.0
     reaxff3_angle3: 2.89
@@ -1226,7 +1226,7 @@
     reaxff3_hbond3: 1.45
     reaxff3_hbond4: 19.5
     reaxff3_penalty: 0.0
-  3.2.4:
+  3-2-4:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.01
     reaxff3_angle3: 3.2567
@@ -1234,7 +1234,7 @@
     reaxff3_angle5: 2.0582
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.2.5:
+  3-2-5:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 1.0
     reaxff3_angle3: 6.0
@@ -1246,7 +1246,7 @@
     reaxff3_hbond3: 1.45
     reaxff3_hbond4: 19.5
     reaxff3_penalty: 0.0
-  3.2.6:
+  3-2-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1254,7 +1254,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.3.3:
+  3-3-3:
     reaxff3_angle1: 80.7324
     reaxff3_angle2: 30.4554
     reaxff3_angle3: 0.9953
@@ -1262,7 +1262,7 @@
     reaxff3_angle5: 3.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 50.0
-  3.3.4:
+  3-3-4:
     reaxff3_angle1: 73.6721
     reaxff3_angle2: 32.633
     reaxff3_angle3: 1.7223
@@ -1270,7 +1270,7 @@
     reaxff3_angle5: 1.0221
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.3.5:
+  3-3-5:
     reaxff3_angle1: 60.2631
     reaxff3_angle2: 30.0701
     reaxff3_angle3: 2.1707
@@ -1278,7 +1278,7 @@
     reaxff3_angle5: 1.3323
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.3.6:
+  3-3-6:
     reaxff3_angle1: 44.9499
     reaxff3_angle2: 30.0
     reaxff3_angle3: 4.2281
@@ -1286,7 +1286,7 @@
     reaxff3_angle5: 1.6672
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.4.3:
+  3-4-3:
     reaxff3_angle1: 76.5431
     reaxff3_angle2: 0.0583
     reaxff3_angle3: 0.05
@@ -1294,7 +1294,7 @@
     reaxff3_angle5: 0.4968
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.4.4:
+  3-4-4:
     reaxff3_angle1: 69.4895
     reaxff3_angle2: 5.7742
     reaxff3_angle3: 8.0001
@@ -1302,7 +1302,7 @@
     reaxff3_angle5: 1.7794
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.4.5:
+  3-4-5:
     reaxff3_angle1: 29.3282
     reaxff3_angle2: 8.1452
     reaxff3_angle3: 2.8121
@@ -1310,7 +1310,7 @@
     reaxff3_angle5: 0.2287
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.4.6:
+  3-4-6:
     reaxff3_angle1: 41.9243
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.9881
@@ -1318,7 +1318,7 @@
     reaxff3_angle5: 1.2678
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.5.3:
+  3-5-3:
     reaxff3_angle1: 83.5231
     reaxff3_angle2: 37.5859
     reaxff3_angle3: 0.9881
@@ -1326,7 +1326,7 @@
     reaxff3_angle5: 1.4725
     reaxff3_conj: -0.01
     reaxff3_penalty: 0.0
-  3.5.4:
+  3-5-4:
     reaxff3_angle1: 89.9073
     reaxff3_angle2: 7.0973
     reaxff3_angle3: 1.3919
@@ -1334,7 +1334,7 @@
     reaxff3_angle5: 0.821
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.5.5:
+  3-5-5:
     reaxff3_angle1: 55.9402
     reaxff3_angle2: 38.299
     reaxff3_angle3: 3.693
@@ -1342,7 +1342,7 @@
     reaxff3_angle5: 2.2673
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.5.6:
+  3-5-6:
     reaxff3_angle1: 83.6415
     reaxff3_angle2: 19.75
     reaxff3_angle3: 2.9247
@@ -1350,7 +1350,7 @@
     reaxff3_angle5: 1.9437
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.6.3:
+  3-6-3:
     reaxff3_angle1: 63.9878
     reaxff3_angle2: 12.9742
     reaxff3_angle3: 3.0
@@ -1358,7 +1358,7 @@
     reaxff3_angle5: 0.5058
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.6.4:
+  3-6-4:
     reaxff3_angle1: 44.3862
     reaxff3_angle2: 26.6099
     reaxff3_angle3: 2.0221
@@ -1366,7 +1366,7 @@
     reaxff3_angle5: 1.9212
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.6.5:
+  3-6-5:
     reaxff3_angle1: 19.4072
     reaxff3_angle2: 10.459
     reaxff3_angle3: 2.8285
@@ -1374,7 +1374,7 @@
     reaxff3_angle5: 1.0074
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  3.6.6:
+  3-6-6:
     reaxff3_angle1: 51.2416
     reaxff3_angle2: 17.2148
     reaxff3_angle3: 0.3698
@@ -1382,7 +1382,7 @@
     reaxff3_angle5: 1.5585
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.1.4:
+  4-1-4:
     reaxff3_angle1: 33.2812
     reaxff3_angle2: 34.6443
     reaxff3_angle3: 3.0111
@@ -1390,7 +1390,7 @@
     reaxff3_angle5: 0.1701
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.1.5:
+  4-1-5:
     reaxff3_angle1: 89.6657
     reaxff3_angle2: 30.0
     reaxff3_angle3: 3.0
@@ -1398,7 +1398,7 @@
     reaxff3_angle5: 2.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.1.6:
+  4-1-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1406,7 +1406,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.2.4:
+  4-2-4:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 10.4428
     reaxff3_angle3: 7.9607
@@ -1414,7 +1414,7 @@
     reaxff3_angle5: 2.3717
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.2.5:
+  4-2-5:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 10.0
     reaxff3_angle3: 1.0
@@ -1422,7 +1422,7 @@
     reaxff3_angle5: 0.25
     reaxff3_conj: 0.5
     reaxff3_penalty: 0.0
-  4.2.6:
+  4-2-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1430,7 +1430,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.3.4:
+  4-3-4:
     reaxff3_angle1: 63.074
     reaxff3_angle2: 14.8127
     reaxff3_angle3: 2.9929
@@ -1438,7 +1438,7 @@
     reaxff3_angle5: 0.7552
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.3.5:
+  4-3-5:
     reaxff3_angle1: 4.8461
     reaxff3_angle2: 5.5458
     reaxff3_angle3: 2.9681
@@ -1446,7 +1446,7 @@
     reaxff3_angle5: 1.0491
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.3.6:
+  4-3-6:
     reaxff3_angle1: 61.0461
     reaxff3_angle2: 0.26
     reaxff3_angle3: 1.3988
@@ -1454,7 +1454,7 @@
     reaxff3_angle5: 0.9535
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.4.5:
+  4-4-5:
     reaxff3_angle1: 33.4003
     reaxff3_angle2: 16.6274
     reaxff3_angle3: 0.1076
@@ -1462,7 +1462,7 @@
     reaxff3_angle5: 0.0825
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.5.4:
+  4-5-4:
     reaxff3_angle1: 100.0
     reaxff3_angle2: 9.2519
     reaxff3_angle3: 0.7752
@@ -1470,7 +1470,7 @@
     reaxff3_angle5: 0.1221
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.5.5:
+  4-5-5:
     reaxff3_angle1: 77.0475
     reaxff3_angle2: 7.4569
     reaxff3_angle3: 4.9579
@@ -1478,7 +1478,7 @@
     reaxff3_angle5: 0.7548
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.5.6:
+  4-5-6:
     reaxff3_angle1: 93.8709
     reaxff3_angle2: 16.3822
     reaxff3_angle3: 1.8851
@@ -1486,7 +1486,7 @@
     reaxff3_angle5: 0.321
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  4.6.5:
+  4-6-5:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1494,7 +1494,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.1.6:
+  5-1-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1502,12 +1502,12 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.2.3:
+  5-2-3:
     reaxff3_hbond1: 2.5
     reaxff3_hbond2: -1.0
     reaxff3_hbond3: 1.45
     reaxff3_hbond4: 19.5
-  5.2.5:
+  5-2-5:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 7.5
     reaxff3_angle3: 2.0
@@ -1519,7 +1519,7 @@
     reaxff3_hbond3: 1.45
     reaxff3_hbond4: 19.5
     reaxff3_penalty: 0.0
-  5.2.6:
+  5-2-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1527,7 +1527,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.3.5:
+  5-3-5:
     reaxff3_angle1: 76.3546
     reaxff3_angle2: 40.0
     reaxff3_angle3: 3.3161
@@ -1535,7 +1535,7 @@
     reaxff3_angle5: 1.9473
     reaxff3_conj: 0.0005
     reaxff3_penalty: 0.0
-  5.3.6:
+  5-3-6:
     reaxff3_angle1: 89.6617
     reaxff3_angle2: 15.3276
     reaxff3_angle3: 2.7567
@@ -1543,7 +1543,7 @@
     reaxff3_angle5: 1.6031
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.4.5:
+  5-4-5:
     reaxff3_angle1: 0.2
     reaxff3_angle2: 7.5083
     reaxff3_angle3: 1.3736
@@ -1551,7 +1551,7 @@
     reaxff3_angle5: 0.0412
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.4.6:
+  5-4-6:
     reaxff3_angle1: 0.2
     reaxff3_angle2: 7.5083
     reaxff3_angle3: 1.3736
@@ -1559,7 +1559,7 @@
     reaxff3_angle5: 0.0412
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.5.5:
+  5-5-5:
     reaxff3_angle1: 84.2345
     reaxff3_angle2: 15.579
     reaxff3_angle3: 3.7715
@@ -1567,7 +1567,7 @@
     reaxff3_angle5: 1.3066
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.5.6:
+  5-5-6:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1575,7 +1575,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.6.5:
+  5-6-5:
     reaxff3_angle1: 70.0
     reaxff3_angle2: 20.0
     reaxff3_angle3: 2.0
@@ -1583,7 +1583,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  5.6.6:
+  5-6-6:
     reaxff3_angle1: 50.5809
     reaxff3_angle2: 19.2597
     reaxff3_angle3: 0.3584
@@ -1591,7 +1591,7 @@
     reaxff3_angle5: 0.2153
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  6.1.6:
+  6-1-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1599,7 +1599,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  6.2.6:
+  6-2-6:
     reaxff3_angle1: 0.0
     reaxff3_angle2: 0.0
     reaxff3_angle3: 1.0
@@ -1607,7 +1607,7 @@
     reaxff3_angle5: 1.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  6.3.6:
+  6-3-6:
     reaxff3_angle1: 54.9212
     reaxff3_angle2: 26.4957
     reaxff3_angle3: 1.178
@@ -1615,7 +1615,7 @@
     reaxff3_angle5: 2.0
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  6.5.6:
+  6-5-6:
     reaxff3_angle1: 87.7418
     reaxff3_angle2: 23.5125
     reaxff3_angle3: 2.995
@@ -1624,7 +1624,7 @@
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
 4body:
-  0.1.1.0:
+  0-1-1-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1632,7 +1632,7 @@
     reaxff4_torsion3: 0.3
     reaxff4_torsion4: -4.0
     reaxff4_torsion5: 0.0
-  0.1.2.0:
+  0-1-2-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1640,7 +1640,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: 0.0
     reaxff4_torsion5: 0.0
-  0.1.5.0:
+  0-1-5-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.5
@@ -1648,7 +1648,7 @@
     reaxff4_torsion3: 0.5
     reaxff4_torsion4: -10.0
     reaxff4_torsion5: 0.0
-  0.2.2.0:
+  0-2-2-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1656,7 +1656,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: 0.0
     reaxff4_torsion5: 0.0
-  0.2.3.0:
+  0-2-3-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1664,7 +1664,7 @@
     reaxff4_torsion3: 0.02
     reaxff4_torsion4: -2.5415
     reaxff4_torsion5: 0.0
-  0.2.5.0:
+  0-2-5-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1672,7 +1672,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: 0.0
     reaxff4_torsion5: 0.0
-  0.3.3.0:
+  0-3-3-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.5511
@@ -1680,7 +1680,7 @@
     reaxff4_torsion3: 1.133
     reaxff4_torsion4: -5.1903
     reaxff4_torsion5: -1.0
-  0.3.5.0:
+  0-3-5-0:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.5
@@ -1688,7 +1688,7 @@
     reaxff4_torsion3: 0.5
     reaxff4_torsion4: -8.0
     reaxff4_torsion5: 0.0
-  1.1.1.1:
+  1-1-1-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -0.25
@@ -1696,7 +1696,7 @@
     reaxff4_torsion3: 0.0288
     reaxff4_torsion4: -6.3507
     reaxff4_torsion5: -1.6
-  1.1.1.2:
+  1-1-1-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -0.25
@@ -1704,7 +1704,7 @@
     reaxff4_torsion3: 0.2945
     reaxff4_torsion4: -4.9581
     reaxff4_torsion5: -2.1802
-  1.1.1.3:
+  1-1-1-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 1.2799
@@ -1712,7 +1712,7 @@
     reaxff4_torsion3: -0.5249
     reaxff4_torsion4: -2.5
     reaxff4_torsion5: -1.0
-  1.1.3.1:
+  1-1-3-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.4816
@@ -1720,7 +1720,7 @@
     reaxff4_torsion3: -0.0057
     reaxff4_torsion4: -2.5
     reaxff4_torsion5: -1.0
-  1.1.3.2:
+  1-1-3-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 1.2044
@@ -1728,7 +1728,7 @@
     reaxff4_torsion3: -0.3139
     reaxff4_torsion4: -6.1481
     reaxff4_torsion5: -1.0
-  1.1.3.3:
+  1-1-3-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -0.0002
@@ -1736,7 +1736,7 @@
     reaxff4_torsion3: 0.1601
     reaxff4_torsion4: -9.0
     reaxff4_torsion5: -2.0
-  1.3.3.1:
+  1-3-3-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0002
@@ -1744,7 +1744,7 @@
     reaxff4_torsion3: -1.5
     reaxff4_torsion4: -4.4848
     reaxff4_torsion5: -2.0
-  1.3.3.2:
+  1-3-3-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -2.5
@@ -1752,7 +1752,7 @@
     reaxff4_torsion3: 0.0268
     reaxff4_torsion4: -5.4085
     reaxff4_torsion5: -2.9498
-  1.3.3.3:
+  1-3-3-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.4118
@@ -1760,7 +1760,7 @@
     reaxff4_torsion3: 0.9706
     reaxff4_torsion4: -2.5004
     reaxff4_torsion5: -0.9972
-  1.5.5.1:
+  1-5-5-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1768,7 +1768,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: -8.0
     reaxff4_torsion5: 0.0
-  1.5.5.2:
+  1-5-5-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1776,7 +1776,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: -8.0
     reaxff4_torsion5: 0.0
-  2.1.1.2:
+  2-1-1-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -0.25
@@ -1784,7 +1784,7 @@
     reaxff4_torsion3: 0.4539
     reaxff4_torsion4: -4.8923
     reaxff4_torsion5: -2.2677
-  2.1.1.3:
+  2-1-1-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 1.9159
@@ -1792,7 +1792,7 @@
     reaxff4_torsion3: 0.7914
     reaxff4_torsion4: -4.6995
     reaxff4_torsion5: -1.0
-  2.1.3.1:
+  2-1-3-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -2.5
@@ -1800,7 +1800,7 @@
     reaxff4_torsion3: 0.6165
     reaxff4_torsion4: -2.7733
     reaxff4_torsion5: -2.9807
-  2.1.3.2:
+  2-1-3-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -2.4875
@@ -1808,7 +1808,7 @@
     reaxff4_torsion3: 0.7582
     reaxff4_torsion4: -4.2274
     reaxff4_torsion5: -3.0
-  2.1.3.3:
+  2-1-3-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -1.4383
@@ -1816,7 +1816,7 @@
     reaxff4_torsion3: 1.0
     reaxff4_torsion4: -3.6877
     reaxff4_torsion5: -2.8
-  2.1.4.4:
+  2-1-4-4:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1824,7 +1824,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: -5.0
     reaxff4_torsion5: 0.0
-  2.3.3.2:
+  2-3-3-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.1995
@@ -1832,7 +1832,7 @@
     reaxff4_torsion3: 0.2
     reaxff4_torsion4: -2.6
     reaxff4_torsion5: 0.0
-  2.3.3.3:
+  2-3-3-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.1
@@ -1840,7 +1840,7 @@
     reaxff4_torsion3: 0.5
     reaxff4_torsion4: -6.6539
     reaxff4_torsion5: 0.0
-  2.3.5.3:
+  2-3-5-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 2.5
@@ -1848,7 +1848,7 @@
     reaxff4_torsion3: 0.2237
     reaxff4_torsion4: -10.0
     reaxff4_torsion5: 0.0
-  2.5.5.2:
+  2-5-5-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.0
@@ -1856,7 +1856,7 @@
     reaxff4_torsion3: 0.0
     reaxff4_torsion4: -8.0
     reaxff4_torsion5: 0.0
-  3.1.1.3:
+  3-1-1-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -1.4477
@@ -1864,7 +1864,7 @@
     reaxff4_torsion3: 0.6461
     reaxff4_torsion4: -4.9622
     reaxff4_torsion5: -1.0
-  3.1.3.1:
+  3-1-3-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -1.139
@@ -1872,7 +1872,7 @@
     reaxff4_torsion3: -0.0964
     reaxff4_torsion4: -4.5172
     reaxff4_torsion5: -3.0
-  3.1.3.2:
+  3-1-3-2:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -2.5
@@ -1880,7 +1880,7 @@
     reaxff4_torsion3: -1.0
     reaxff4_torsion4: -5.5315
     reaxff4_torsion5: -3.0
-  3.1.3.3:
+  3-1-3-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: -0.1583
@@ -1888,7 +1888,7 @@
     reaxff4_torsion3: 1.5
     reaxff4_torsion4: -9.0
     reaxff4_torsion5: -2.0
-  3.3.3.3:
+  3-3-3-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.1
@@ -1896,7 +1896,7 @@
     reaxff4_torsion3: 0.1
     reaxff4_torsion4: -2.5
     reaxff4_torsion5: -0.9
-  3.5.5.3:
+  3-5-5-3:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.25
@@ -1904,7 +1904,7 @@
     reaxff4_torsion3: 0.5
     reaxff4_torsion4: -6.0
     reaxff4_torsion5: 0.0
-  3.5.5.5:
+  3-5-5-5:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 0.25
@@ -1912,7 +1912,7 @@
     reaxff4_torsion3: 0.5
     reaxff4_torsion4: -6.0
     reaxff4_torsion5: 0.0
-  5.5.5.5:
+  5-5-5-5:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 2.4661

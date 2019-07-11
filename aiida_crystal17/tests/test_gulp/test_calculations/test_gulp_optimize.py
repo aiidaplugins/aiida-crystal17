@@ -11,7 +11,7 @@ from aiida_crystal17.symmetry import compute_symmetry_dict
 
 def write_input_file(icreate, file_like, structure, potential,
                      parameters=None, symmetry=None):
-    icreate.create_content(structure, potential, parameters, symmetry)
+    icreate.create_content(structure, potential.get_input_lines(), parameters, symmetry)
     icreate.write_content(file_like)
     return icreate.get_content_hash()
 

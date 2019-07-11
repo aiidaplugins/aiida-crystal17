@@ -24,8 +24,8 @@
             "description": "parameters that depend on two species",
             "type": "object",
             "patternProperties": {
-                "[0-9]+\\.[0-9]+": {
-                    "description": "mapping of '<idx1>.<idx2>' to properties",
+                "[0-9]+\\-[0-9]+": {
+                    "description": "mapping of '<idx1>-<idx2>' to properties",
                     "type": "object",
                     "required": [
                         "A",

@@ -2,6 +2,7 @@ from decimal import Decimal
 import re
 
 from aiida_crystal17.validation import validate_against_schema
+from aiida_crystal17.gulp.potentials.common import INDEX_SEP
 
 
 KEYS_GLOBAL = (
@@ -171,7 +172,7 @@ def read_lammps_format(lines):
         values = split_numbers(lines[lineno]) + split_numbers(lines[lineno + 1])
         species_idx1 = int(values.pop(0))
         species_idx2 = int(values.pop(0))
-        key_name = "{}.{}".format(species_idx1, species_idx2)
+        key_name = "{}-{}".format(species_idx1, species_idx2)
         lineno += 2
 
         if len(values) != len(KEYS_2BODY_BONDS):
@@ -188,7 +189,7 @@ def read_lammps_format(lines):
         values = split_numbers(lines[lineno])
         species_idx1 = int(values.pop(0))
         species_idx2 = int(values.pop(0))
-        key_name = "{}.{}".format(species_idx1, species_idx2)
+        key_name = "{}-{}".format(species_idx1, species_idx2)
         lineno += 1
 
         if len(values) != len(KEYS_2BODY_OFFDIAG):
@@ -206,7 +207,7 @@ def read_lammps_format(lines):
         species_idx1 = int(values.pop(0))
         species_idx2 = int(values.pop(0))
         species_idx3 = int(values.pop(0))
-        key_name = "{}.{}.{}".format(species_idx1, species_idx2, species_idx3)
+        key_name = "{}-{}-{}".format(species_idx1, species_idx2, species_idx3)
         lineno += 1
 
         if len(values) != len(KEYS_3BODY_ANGLES):
@@ -225,7 +226,7 @@ def read_lammps_format(lines):
         species_idx2 = int(values.pop(0))
         species_idx3 = int(values.pop(0))
         species_idx4 = int(values.pop(0))
-        key_name = "{}.{}.{}.{}".format(species_idx1, species_idx2, species_idx3, species_idx4)
+        key_name = "{}-{}-{}-{}".format(species_idx1, species_idx2, species_idx3, species_idx4)
         lineno += 1
 
         if len(values) != len(KEYS_4BODY_TORSION):
@@ -243,7 +244,7 @@ def read_lammps_format(lines):
         species_idx1 = int(values.pop(0))
         species_idx2 = int(values.pop(0))
         species_idx3 = int(values.pop(0))
-        key_name = "{}.{}.{}".format(species_idx1, species_idx2, species_idx3)
+        key_name = "{}-{}-{}".format(species_idx1, species_idx2, species_idx3)
         lineno += 1
 
         if len(values) != len(KEYS_3BODY_HBOND):
@@ -299,7 +300,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_2BODY_BONDS):
             continue
         suboutout.extend([
-            " ".join(key.split(".")) + " " + " ".join([format_lammps_value(subdata[k]) for k in KEYS_2BODY_BONDS[:8]]),
+            " ".join(key.split(INDEX_SEP)) + " " + " ".join(
+                [format_lammps_value(subdata[k]) for k in KEYS_2BODY_BONDS[:8]]),
             " ".join([format_lammps_value(subdata[k]) for k in KEYS_2BODY_BONDS[8:16]])
         ])
 
@@ -315,7 +317,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_2BODY_OFFDIAG):
             continue
         suboutout.extend([
-            " ".join(key.split(".")) + " " + " ".join([format_lammps_value(subdata[k]) for k in KEYS_2BODY_OFFDIAG]),
+            " ".join(key.split(INDEX_SEP)) + " " + " ".join(
+                [format_lammps_value(subdata[k]) for k in KEYS_2BODY_OFFDIAG]),
         ])
 
     output.extend([
@@ -329,7 +332,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_3BODY_ANGLES):
             continue
         suboutout.extend([
-            " ".join(key.split(".")) + " " + " ".join([format_lammps_value(subdata[k]) for k in KEYS_3BODY_ANGLES]),
+            " ".join(key.split(INDEX_SEP)) + " " + " ".join(
+                [format_lammps_value(subdata[k]) for k in KEYS_3BODY_ANGLES]),
         ])
 
     output.extend([
@@ -343,7 +347,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_4BODY_TORSION):
             continue
         suboutout.extend([
-            " ".join(key.split(".")) + " " + " ".join([format_lammps_value(subdata[k]) for k in KEYS_4BODY_TORSION]),
+            " ".join(key.split(INDEX_SEP)) + " " + " ".join(
+                [format_lammps_value(subdata[k]) for k in KEYS_4BODY_TORSION]),
         ])
 
     output.extend([
@@ -357,7 +362,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_3BODY_HBOND):
             continue
         suboutout.extend([
-            " ".join(key.split(".")) + " " + " ".join([format_lammps_value(subdata[k]) for k in KEYS_3BODY_HBOND]),
+            " ".join(key.split(INDEX_SEP)) + " " + " ".join(
+                [format_lammps_value(subdata[k]) for k in KEYS_3BODY_HBOND]),
         ])
 
     output.extend([
@@ -574,7 +580,7 @@ def create_gulp_fields(data, data_key, fields, append_values=None, conditions=No
                     continue
                 if not satisfied:
                     continue
-            species = ["{:7s}".format(data["species"][int(i)]) for i in indices.split(".")]
+            species = ["{:7s}".format(data["species"][int(i)]) for i in indices.split(INDEX_SEP)]
             if len(species) == 3:
                 # NOTE Here species1 is the pivot atom of the three-body like term.
                 # This is different to LAMMPS, where the pivot atom is the central one!

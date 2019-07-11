@@ -73,8 +73,8 @@ def main(sys_args=None):
 
     if str(hashkey) not in hash_map:
         raise IOError(
-            "contents of {0} not in hash list, hashkey: {1}".format(
-                os.path.basename(input_name + ".gin"), str(hashkey)))
+            "contents of {0} not in hash list, hashkey: {1}\n{2}".format(
+                os.path.basename(input_name + ".gin"), str(hashkey), content))
 
     outfiles = hash_map[hashkey]
 

@@ -57,7 +57,8 @@ class GulpOptCalculation(GulpAbstractCalculation):
         input_creation = InputCreationOpt(
             outputs={"cif": self.metadata.options.out_cif_file_name}
         )
-        input_creation.create_content(structure, potential, parameters, symmetry)
+        # TODO assert potential species contains at least one from structure
+        input_creation.create_content(structure, potential.get_input_lines(), parameters, symmetry)
         return input_creation.get_content()
 
     def get_retrieve_list(self):

@@ -20,6 +20,7 @@ class GulpSingleCalculation(GulpAbstractCalculation):
     def create_input(self,
                      structure, potential,
                      parameters=None, symmetry=None):
+        # TODO assert potential species contains at least one from structure
         input_creation = InputCreationSingle()
-        input_creation.create_content(structure, potential, parameters, symmetry)
+        input_creation.create_content(structure, potential.get_input_lines(), parameters, symmetry)
         return input_creation.get_content()

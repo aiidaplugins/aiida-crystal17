@@ -26,8 +26,9 @@ class GulpFittingParser(Parser):
         # parse the main output file and add nodes
         self.logger.info("parsing main out file")
         with output_folder.open(mainout_file) as handle:
-            parser_result = parse_output(
-                handle, parser_class=self.__class__.__name__, final=False)
+            parser_result = handle
+            # parser_result = parse_output(
+            #     handle, parser_class=self.__class__.__name__, final=False)
 
         errors = parser_result.nodes.results.get_attribute("errors")
         parser_errors = parser_result.nodes.results.get_attribute(

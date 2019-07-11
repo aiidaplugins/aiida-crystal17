@@ -2,6 +2,8 @@ import copy
 
 from aiida_crystal17.validation import validate_against_schema
 
+INDEX_SEP = "-"
+
 
 def filter_by_species(data, species):
     """ filter a potential dict by a subset of species
@@ -20,12 +22,12 @@ def filter_by_species(data, species):
     indices = set([str(i) for i, s in enumerate(data["species"]) if s in species])
 
     def convert_indices(key):
-        return ".".join([str(species.index(data["species"][int(k)])) for k in key.split(".")])
+        return INDEX_SEP.join([str(species.index(data["species"][int(k)])) for k in key.split(INDEX_SEP)])
 
     for key in ['1body', '2body', '3body', '4body']:
         if key not in data:
             continue
-        data[key] = {convert_indices(k): v for k, v in data[key].items() if indices.issuperset(k.split("."))}
+        data[key] = {convert_indices(k): v for k, v in data[key].items() if indices.issuperset(k.split(INDEX_SEP))}
 
     data["species"] = species
 

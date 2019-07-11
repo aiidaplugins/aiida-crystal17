@@ -6,23 +6,24 @@ import pytest
 @pytest.fixture(scope="function")
 def pyrite_potential_lj():
     from aiida.plugins import DataFactory
+    from aiida_crystal17.gulp.potentials.common import INDEX_SEP
     potential_cls = DataFactory("gulp.potential")
     return potential_cls(
         "lj",
         {
             "species": ["Fe core", "S core"],
             "2body": {
-                "0.0": {
+                "0"+INDEX_SEP+"0": {
                     "A": 1.0,
                     "B": 1.0,
                     "rmax": 12.0
                 },
-                "0.1": {
+                "0"+INDEX_SEP+"1": {
                     "A": 1.0,
                     "B": 1.0,
                     "rmax": 12.0
                 },
-                "1.1": {
+                "1"+INDEX_SEP+"1": {
                     "A": 1.0,
                     "B": 1.0,
                     "rmax": 12.0

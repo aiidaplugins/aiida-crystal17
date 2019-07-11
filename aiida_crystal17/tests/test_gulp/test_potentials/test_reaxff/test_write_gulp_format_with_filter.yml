@@ -68,7 +68,7 @@
     reaxff_gamma: 0.753
     reaxff_mu: 9.0
 2body:
-  '0.0':
+  0-0:
     dummy1: 1.0
     reaxff2_bo1: -0.0512
     reaxff2_bo2: 6.8013
@@ -85,7 +85,7 @@
     reaxff2_bond4: 0.2931
     reaxff2_bond5: 0.6294
     reaxff2_over: 0.2682
-  '0.1':
+  0-1:
     dummy1: 1.0
     reaxff2_bo1: -0.0758
     reaxff2_bo2: 6.3424
@@ -108,7 +108,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.1769
-  '1.1':
+  1-1:
     dummy1: 1.0
     reaxff2_bo1: -0.1131
     reaxff2_bo2: 6.144
@@ -126,7 +126,7 @@
     reaxff2_bond5: 0.2799
     reaxff2_over: 0.0999
 3body:
-  0.0.1:
+  0-0-1:
     reaxff3_angle1: 33.4003
     reaxff3_angle2: 16.6274
     reaxff3_angle3: 0.1076
@@ -134,7 +134,7 @@
     reaxff3_angle5: 0.0825
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  0.1.0:
+  0-1-0:
     reaxff3_angle1: 100.0
     reaxff3_angle2: 9.2519
     reaxff3_angle3: 0.7752
@@ -142,7 +142,7 @@
     reaxff3_angle5: 0.1221
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  0.1.1:
+  0-1-1:
     reaxff3_angle1: 77.0475
     reaxff3_angle2: 7.4569
     reaxff3_angle3: 4.9579
@@ -150,7 +150,7 @@
     reaxff3_angle5: 0.7548
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.0.1:
+  1-0-1:
     reaxff3_angle1: 0.2
     reaxff3_angle2: 7.5083
     reaxff3_angle3: 1.3736
@@ -158,7 +158,7 @@
     reaxff3_angle5: 0.0412
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
-  1.1.1:
+  1-1-1:
     reaxff3_angle1: 84.2345
     reaxff3_angle2: 15.579
     reaxff3_angle3: 3.7715
@@ -167,7 +167,7 @@
     reaxff3_conj: 0.0
     reaxff3_penalty: 0.0
 4body:
-  1.1.1.1:
+  1-1-1-1:
     dummy1: 0.0
     dummy2: 0.0
     reaxff4_torsion1: 2.4661

@@ -4,9 +4,7 @@ import io
 
 import six
 
-from aiida.plugins import load_entry_point
 from aiida_crystal17.validation import validate_against_schema
-from aiida_crystal17.symmetry import convert_structure
 from aiida_crystal17.gulp.unit_styles import get_pressure
 from aiida_crystal17.gulp.parsers.raw.write_geometry import create_geometry_lines
 
@@ -110,7 +108,7 @@ class InputCreationBase(object):
         """
         return []
 
-    def create_content(self, structure, potential,
+    def create_content(self, structure, potential_lines,
                        parameters=None, symmetry=None):
         """create main input content for gulp.in
 
@@ -118,8 +116,7 @@ class InputCreationBase(object):
         ----------
         structure : aiida.orm.StructureData
             the input structure
-        potential : aiida.orm.nodes.data.dict.Dict or dict
-            data regarding the inter-atomic potential
+        potential_lines: list[str]
         parameters : aiida.orm.nodes.data.dict.Dict or dict
             additional parameter data, by default None
         symmetry : aiida.orm.nodes.data.dict.Dict or dict
@@ -132,8 +129,6 @@ class InputCreationBase(object):
 
         """
         # convert inputs to dictionaries
-        if hasattr(potential, "get_dict"):
-            potential = potential.get_dict()
         if parameters is None:
             parameters = {}
         else:
@@ -166,15 +161,8 @@ class InputCreationBase(object):
         # TODO kind specific inputs (e.g. initial charge)?
 
         # FORCE FIELD
-        atoms = convert_structure(structure, "ase")
-        symbols = atoms.get_chemical_symbols()
-        pair_style = potential['pair_style']
-        pair_data = potential['data']
-
         content.append("# Force Field")
-        content.extend(
-            self.create_potential_lines(pair_style, pair_data,
-                                        species_filter=[s + " core" for s in symbols]))
+        content.extend(potential_lines)
         content.append("")
 
         # OTHER OPTIONS
@@ -212,30 +200,6 @@ class InputCreationBase(object):
 
         """
         return create_geometry_lines(structure_data, symmetry_data=symmetry_data)
-
-    @staticmethod
-    def create_potential_lines(pair_style, parameters, species_filter=None):
-        """create the inter-atomic potential section of the main.gin,
-        given a pair_style
-
-        Parameters
-        ----------
-        pair_style : str
-            the pair style to use
-        parameters : dict
-            potential parameters
-        species_filter: list[str]
-            list of atomic symbols to filter by
-
-        Returns
-        -------
-        list[str]
-
-        """
-        potential_cls = load_entry_point("gulp.potentials", pair_style)
-        string = potential_cls().create_string(
-            parameters, species_filter=species_filter)
-        return string.splitlines()
 
 
 class InputCreationSingle(InputCreationBase):
