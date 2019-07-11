@@ -1,4 +1,4 @@
-verb
+optimise verb conp cg
 
 # Geometry
 name main-geometry
@@ -41,7 +41,7 @@ reaxFFqcutoff        10.0000
 #
 #  Bond order threshold - check anglemin as this is cutof2 given in control file
 #
-reaxFFtol  0.00100000 0.00100000 0.00100000 0.01000000 7.50000 0.00100000
+reaxFFtol  0.00100000 0.00100000 0.00100000 0.01000000 7.50000 0.00001000
 #
 #  Species independent parameters
 #
@@ -123,3 +123,9 @@ S core  S core  S core    0.0000
 #
 reaxff4_torsion kcal
 S core  S core  S core  S core    2.4661   71.9719    0.0100   -8.0000    0.0000 
+
+# Other Options
+maxcyc opt 100
+
+# External Outputs
+output cif output.cif

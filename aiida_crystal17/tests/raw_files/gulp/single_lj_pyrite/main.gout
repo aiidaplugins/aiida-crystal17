@@ -10,7 +10,7 @@
 *  single       - perform a single point run                                   *
 ********************************************************************************
 
-  Job Started  at 22:16.14 24th April      2019                               
+  Job Started  at 06:25.07 11th July       2019                               
 
   Number of CPUs =     1
 
@@ -145,11 +145,11 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of real space energy and derivatives                0.0007
+  Calculation of real space energy and derivatives                0.0013
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.0109
+  Total CPU time                                                  0.0078
 --------------------------------------------------------------------------------
 
 
-  Job Finished at 22:16.14 24th April      2019                               
+  Job Finished at 06:25.07 11th July       2019                               
 

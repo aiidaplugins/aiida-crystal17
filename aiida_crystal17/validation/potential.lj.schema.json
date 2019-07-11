@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "potential.base.schema",
+    "description": "a schema for storing an empirical potential",
+    "type": "object",
+    "required": [
+        "species",
+        "2body"
+    ],
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "species": {
+            "description": "the list of species",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]+ (core|shell)$"
+            }
+        },
+        "2body": {
+            "description": "parameters that depend on two species",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+": {
+                    "description": "mapping of '<idx1>.<idx2>' to properties",
+                    "type": "object",
+                    "required": [
+                        "A",
+                        "B",
+                        "rmax"
+                    ],
+                    "properties": {
+                        "m": {
+                            "description": "first exponent",
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "default": 12
+                        },
+                        "n": {
+                            "description": "second exponent",
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "default": 6
+                        },
+                        "A": {
+                            "description": "fist coefficient (in ev*Angs**m)",
+                            "type": "number"
+                        },
+                        "B": {
+                            "description": "second coefficient (in ev*Angs**m)",
+                            "type": "number"
+                        },
+                        "rmin": {
+                            "description": "minimum radius cut-off (Angs)",
+                            "type": "number",
+                            "minimum": 0,
+                            "default": 0
+                        },
+                        "rmax": {
+                            "description": "maximum radius cut-off (Angs)",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

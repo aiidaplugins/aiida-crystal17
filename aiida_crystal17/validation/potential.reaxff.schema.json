@@ -1,0 +1,274 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "potential.reaxff.schema",
+    "description": "a schema for storing an ReaxFF empirical potential",
+    "type": "object",
+    "required": [
+        "species",
+        "description",
+        "global"
+    ],
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "species": {
+            "description": "the list of species",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]+ (core|shell)$"
+            }
+        },
+        "global": {
+            "description": "parameters that depend on no species",
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": [
+                        "integer",
+                        "number",
+                        "string",
+                        "boolean"
+                    ]
+                }
+            },
+            "required": [
+                "C2-correction",
+                "Conjugation",
+                "Double bond/angle",
+                "Double bond/angle: overcoord 1",
+                "Double bond/angle: overcoord 2",
+                "Lower Taper-radius",
+                "reaxff2_bo10",
+                "Not used 2",
+                "Not used 3",
+                "Not used 4",
+                "Not used 5",
+                "Not used 6",
+                "Not used 7",
+                "Not used 8",
+                "Overcoordination 1",
+                "Overcoordination 2",
+                "Torsion overcoordination 1",
+                "Torsion overcoordination 2",
+                "Torsion/BO",
+                "Triple bond stabilisation",
+                "Triple bond stabilisation 1",
+                "Triple bond stabilisation 2",
+                "Triple bond stabilization energy",
+                "Undercoordination 1",
+                "Undercoordination 2",
+                "Undercoordination 3",
+                "Upper Taper-radius",
+                "Valency angle 1",
+                "Valency angle 2",
+                "Valency angle conjugation 1",
+                "Valency angle conjugation 2",
+                "Valency angle conjugation 3",
+                "Valency angle/lone pair",
+                "Valency overcoordination 1",
+                "Valency overcoordination 2",
+                "Valency undercoordination",
+                "Valency/lone pair",
+                "bond order cutoff",
+                "vdWaals shielding"
+            ]
+        },
+        "1body": {
+            "description": "parameters that depend on one species, mapping species index to properties",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": [
+                                "integer",
+                                "number",
+                                "string",
+                                "boolean"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "reaxff1_radii1",
+                        "reaxff1_valence1",
+                        "mass",
+                        "reaxff1_morse3",
+                        "reaxff1_morse2",
+                        "reaxff_gamma",
+                        "reaxff1_radii2",
+                        "reaxff1_valence3",
+                        "reaxff1_morse1",
+                        "reaxff1_morse4",
+                        "reaxff1_valence4",
+                        "reaxff1_under",
+                        "dummy1",
+                        "reaxff_chi",
+                        "reaxff_mu",
+                        "dummy2",
+                        "reaxff1_radii3",
+                        "reaxff1_lonepair2",
+                        "dummy3",
+                        "reaxff1_over2",
+                        "reaxff1_over1",
+                        "reaxff1_over3",
+                        "dummy4",
+                        "dummy5",
+                        "reaxff1_over4",
+                        "reaxff1_angle1",
+                        "dummy11",
+                        "reaxff1_valence2",
+                        "reaxff1_angle2",
+                        "dummy6",
+                        "dummy7",
+                        "dummy8"
+                    ]
+                }
+            }
+        },
+        "2body": {
+            "description": "parameters that depend on two species, mapping '<idx1>.<idx2>' to properties",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+": {
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                ".*": {
+                                    "type": [
+                                        "integer",
+                                        "number",
+                                        "string",
+                                        "boolean"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "reaxff2_bond1",
+                                "reaxff2_bond2",
+                                "reaxff2_bond3",
+                                "reaxff2_bond4",
+                                "reaxff2_bo5",
+                                "reaxff2_bo7",
+                                "reaxff2_bo6",
+                                "reaxff2_over",
+                                "reaxff2_bond5",
+                                "reaxff2_bo3",
+                                "reaxff2_bo4",
+                                "dummy1",
+                                "reaxff2_bo1",
+                                "reaxff2_bo2",
+                                "reaxff2_bo8",
+                                "reaxff2_bo9"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                ".*": {
+                                    "type": [
+                                        "integer",
+                                        "number",
+                                        "string",
+                                        "boolean"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "reaxff2_morse1",
+                                "reaxff2_morse3",
+                                "reaxff2_morse2",
+                                "reaxff2_morse4",
+                                "reaxff2_morse5",
+                                "reaxff2_morse6"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "3body": {
+            "description": "parameters that depend on three species, mapping of '<idx1>.<idx2>.<idx3>' to properties. NOTE: the pivot atom should be the central one!",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+\\.[0-9]+": {
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                ".*": {
+                                    "type": [
+                                        "integer",
+                                        "number",
+                                        "string",
+                                        "boolean"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "reaxff3_angle1",
+                                "reaxff3_angle2",
+                                "reaxff3_angle3",
+                                "reaxff3_conj",
+                                "reaxff3_angle5",
+                                "reaxff3_penalty",
+                                "reaxff3_angle4"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                ".*": {
+                                    "type": [
+                                        "integer",
+                                        "number",
+                                        "string",
+                                        "boolean"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "reaxff3_hbond1",
+                                "reaxff3_hbond2",
+                                "reaxff3_hbond3",
+                                "reaxff3_hbond4"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "4body": {
+            "description": "parameters that depend on four species, mapping '<idx1>.<idx2>.<idx3>.<idx4>' to properties",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": [
+                                "integer",
+                                "number",
+                                "string",
+                                "boolean"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "reaxff4_torsion1",
+                        "reaxff4_torsion2",
+                        "reaxff4_torsion3",
+                        "reaxff4_torsion4",
+                        "reaxff4_torsion5",
+                        "dummy1",
+                        "dummy2"
+                    ]
+                }
+            }
+        }
+    }
+}

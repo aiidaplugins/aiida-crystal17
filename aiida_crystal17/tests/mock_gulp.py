@@ -24,24 +24,28 @@ import aiida_crystal17.tests as tests
 
 # map of input file hashes to output files
 hash_map = {
-    "95db701a89083842f917418f7cf59f3d": {
+    "83e3c1e78aab9588bc5039588645cb4d": {
         "output": [(("single_lj_pyrite", "main.gout"), "{inname}.gout")]
     },
-    "1f639518b936001e435bf032e2f764fe": {
+    "99ff0a023f71744e5f0e2dbfd38b382c": {
         "output": [(("optimize_lj_pyrite", "main.gout"), "{inname}.gout"),
                    (("optimize_lj_pyrite", "output.cif"), "output.cif")]
     },
-    "dc0eac053e11561ee13acea272345e20": {
+    "efa125cda73b3a42ac1d3641e619e860": {
         "output": [(("optimize_lj_pyrite_symm", "main.gout"), "{inname}.gout"),
                    (("optimize_lj_pyrite_symm", "output.cif"), "output.cif")]
     },
-    "ec39b0c69c6ef97d2a701f86054702ee": {
+    "2d07a6bccfd2b15e62a0c1c94f4b1ce3": {
         "stdout": None,
-        "output": [(("opt_reaxff_pyrite", "main.gout"), "{inname}.gout"),
-                   (("opt_reaxff_pyrite", "output.cif"), "output.cif")]},
-    "57649b5ce90996cd71e233e2509068b7": {
+        "output": [(("optimize_reaxff_pyrite", "main.gout"), "{inname}.gout"),
+                   (("optimize_reaxff_pyrite", "output.cif"), "output.cif")]},
+    "5a0be0e683b4adb8b5a3c4d2354a1920": {
         "stdout": None,
         "output": [(("single_reaxff_pyrite", "main.gout"), "{inname}.gout")]},
+    "bf57b6ef3e228fa0ab1bcedbd5141c40": {
+        "output": [(("optimize_reaxff_pyrite_symm", "main.gout"), "{inname}.gout"),
+                   (("optimize_reaxff_pyrite_symm", "output.cif"), "output.cif")]
+    },
 }
 
 

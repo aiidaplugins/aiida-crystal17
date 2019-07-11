@@ -13,21 +13,11 @@ class GulpAbstractCalculation(CalcJob):
     """
     AiiDA calculation plugin to run the gulp executable,
     Subclasses must at least implement the
-    ``get_input_creation_cls`` and ``get_retrieve_list`` methods,
+    ``create_input`` and ``get_retrieve_list`` methods,
     and specify a default ``metadata.options.parser_name`` in the spec
     """
     link_output_results = 'results'
     link_output_structure = 'structure'
-
-    def get_input_creation(self):
-        """ should return a class with a ``create_content`` method"""
-        raise NotImplementedError
-
-    def get_retrieve_list(self):
-        """ should return the files to be retrieved """
-        return [
-            self.metadata.options.output_main_file_name
-        ]
 
     @classmethod
     def define(cls, spec):
@@ -93,14 +83,13 @@ class GulpAbstractCalculation(CalcJob):
         :param tempfolder: an aiida.common.folders.Folder subclass
                            where the plugin should put all its files.
         """
-        input_creation = self.get_input_creation()
-        input_creation.create_content(
+        content = self.create_input(
             self.inputs.structure,
             self.inputs.potential,
             self.inputs.get("parameters", None),
             self.inputs.get("symmetry", None)
         )
-        content = input_creation.get_content()
+
         if not isinstance(content, six.text_type):
             content = six.u(content)
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
@@ -126,3 +115,15 @@ class GulpAbstractCalculation(CalcJob):
         calcinfo.retrieve_temporary_list = []
 
         return calcinfo
+
+    def create_input(self,
+                     structure, potential,
+                     parameters=None, symmetry=None):
+        """ should return the content for main.gin"""
+        raise NotImplementedError
+
+    def get_retrieve_list(self):
+        """ should return the files to be retrieved """
+        return [
+            self.metadata.options.output_main_file_name
+        ]

@@ -11,7 +11,7 @@
 *  conp         - constant pressure calculation                                *
 ********************************************************************************
 
-  Job Started  at 23:05.20 24th April      2019                               
+  Job Started  at 06:13.07 11th July       2019                               
 
   Number of CPUs =     1
 
@@ -159,17 +159,17 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 
   Start of bulk optimisation :
 
-  Cycle:      0 Energy:        -0.328095  Gnorm:      0.028992  CPU:    0.010
+  Cycle:      0 Energy:        -0.328095  Gnorm:      0.028992  CPU:    0.006
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =  -0.999931
-  Cycle:      1 Energy:        -8.810495  Gnorm:      0.583731  CPU:    0.023
+  Cycle:      1 Energy:        -8.810495  Gnorm:      0.583731  CPU:    0.022
   ** Hess reset due to cos < rst
   ** Cos =  -0.999931
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =  -0.948917
-  Cycle:      2 Energy:       -13.119791  Gnorm:      0.410617  CPU:    0.052
+  Cycle:      2 Energy:       -13.119791  Gnorm:      0.410617  CPU:    0.053
   ** Hess reset due to cos < rst
   ** Cos =  -0.948917
   ** Hess reset due to cncadd and drop
@@ -181,9 +181,9 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   ** Cos =  -0.497736
   ** Hessian calculated **
   ** Cosine =   0.975299
-  Cycle:      4 Energy:       -13.591125  Gnorm:      0.019128  CPU:    0.104
+  Cycle:      4 Energy:       -13.591125  Gnorm:      0.019128  CPU:    0.103
   ** Cosine =   0.959836
-  Cycle:      5 Energy:       -13.613415  Gnorm:      0.055161  CPU:    0.128
+  Cycle:      5 Energy:       -13.613415  Gnorm:      0.055161  CPU:    0.127
   ** Trimming pvect back
   ** Cosine =  -0.822546
   ** Hess reset due to cos < rst
@@ -191,10 +191,10 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.962038
-  Cycle:      6 Energy:       -13.619107  Gnorm:      0.054284  CPU:    0.154
+  Cycle:      6 Energy:       -13.619107  Gnorm:      0.054284  CPU:    0.151
   ** Trimming pvect back
   ** Cosine =   0.863704
-  Cycle:      7 Energy:       -13.707890  Gnorm:      0.157142  CPU:    0.177
+  Cycle:      7 Energy:       -13.707890  Gnorm:      0.157142  CPU:    0.174
   ** Trimming pvect back
   ** Cosine =  -0.574692
   ** Hess reset due to cos < rst
@@ -202,10 +202,10 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.957682
-  Cycle:      8 Energy:       -13.761241  Gnorm:      0.119887  CPU:    0.200
+  Cycle:      8 Energy:       -13.761241  Gnorm:      0.119887  CPU:    0.197
   ** Trimming pvect back
   ** Cosine =   0.917330
-  Cycle:      9 Energy:       -14.376735  Gnorm:      0.338889  CPU:    0.226
+  Cycle:      9 Energy:       -14.376735  Gnorm:      0.338889  CPU:    0.227
   ** Trimming pvect back
   ** Cosine =  -0.769807
   ** Hess reset due to cos < rst
@@ -213,7 +213,7 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.914292
-  Cycle:     10 Energy:       -14.505541  Gnorm:      0.247571  CPU:    0.254
+  Cycle:     10 Energy:       -14.505541  Gnorm:      0.247571  CPU:    0.253
   ** Trimming pvect back
   ** Cosine =   0.980442
   Cycle:     11 Energy:       -16.922114  Gnorm:      0.326026  CPU:    0.280
@@ -224,15 +224,15 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.975460
-  Cycle:     12 Energy:       -17.329527  Gnorm:      0.304233  CPU:    0.310
+  Cycle:     12 Energy:       -17.329527  Gnorm:      0.304233  CPU:    0.309
   ** Cosine =   0.782597
-  Cycle:     13 Energy:       -17.464666  Gnorm:      0.053875  CPU:    0.327
+  Cycle:     13 Energy:       -17.464666  Gnorm:      0.053875  CPU:    0.329
   ** Cosine =   0.981412
-  Cycle:     14 Energy:       -17.470899  Gnorm:      0.010824  CPU:    0.343
+  Cycle:     14 Energy:       -17.470899  Gnorm:      0.010824  CPU:    0.342
   ** Cosine =   0.857408
   **** Gmax satisfied in optimiser ****
   **** Gtol satisfied in optimiser ****
-  Cycle:     15 Energy:       -17.471131  Gnorm:      0.000142  CPU:    0.356
+  Cycle:     15 Energy:       -17.471131  Gnorm:      0.000142  CPU:    0.354
   ** Cosine =   0.894913
   **** Ftol satisfied in optimiser ****
   **** Gmax satisfied in optimiser ****
@@ -327,7 +327,7 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
 
 
-  Time to end of optimisation =       0.3696 seconds
+  Time to end of optimisation =       0.3676 seconds
 
 
   Peak dynamic memory used =       0.54 MB 
@@ -338,16 +338,16 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of real space energy and derivatives                0.3564
-  Calculation of matrix inversion                                 0.0006
+  Calculation of real space energy and derivatives                0.3610
+  Calculation of matrix inversion                                 0.0004
   Global summation overhead                                       0.0002
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.3700
+  Total CPU time                                                  0.3677
 --------------------------------------------------------------------------------
 
 
   CIF file written as output.cif                                              
 
 
-  Job Finished at 23:05.21 24th April      2019                               
+  Job Finished at 06:13.07 11th July       2019                               
 

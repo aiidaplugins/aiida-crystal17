@@ -1,4 +1,4 @@
-from aiida_crystal17.gulp.parsers.write_input import (
+from aiida_crystal17.gulp.parsers.raw.write_input import (
     InputCreationBase, InputCreationSingle, InputCreationOpt)
 
 
@@ -10,21 +10,22 @@ def test_initialisation():
 
 def test_create_potential_lines():
     icreate = InputCreationBase()
-    lines = icreate.create_potential_lines("lj", {
-        "atoms": {
-            "H": {
-                "He": {
+    lines = icreate.create_potential_lines(
+        "lj",
+        {
+            "species": ["H core", "He core"],
+            "2body": {
+                "0.1": {
                     "A": 1.0,
                     "B": 2.0,
                     "rmax": 12.0
                 }
             }
-        }
-    })
+        })
 
     expected = [
         "lennard 12 6",
-        "H He 1.0 2.0 12.0"
+        "H core  He core 1.0 2.0 12.0"
     ]
     assert lines == expected
 
@@ -37,7 +38,7 @@ def test_create_geometry_basic():
         "atomic_numbers": [1, 2],
         "pbc": [True, True, True]
     }
-    lines = icreate.create_geometry_lines(structure_data)
+    lines = icreate.get_geometry_lines(structure_data)
     expected = [
         "name main-geometry",
         "vectors",
@@ -68,7 +69,7 @@ def test_create_geometry_with_symm():
         ],
         "equivalent_sites": [1, 2]
     }
-    lines = icreate.create_geometry_lines(structure_data, symmetry_data)
+    lines = icreate.get_geometry_lines(structure_data, symmetry_data)
     expected = [
         "name main-geometry",
         "vectors",
@@ -97,13 +98,12 @@ def test_create_content_basic():
     potential_data = {
         "pair_style": "lj",
         "data": {
-            "atoms": {
-                "H": {
-                    "He": {
-                        "A": 1.0,
-                        "B": 2.0,
-                        "rmax": 12.0
-                    }
+            "species": ["H core", "He core"],
+            "2body": {
+                "0.1": {
+                    "A": 1.0,
+                    "B": 2.0,
+                    "rmax": 12.0
                 }
             }
         }
@@ -143,7 +143,7 @@ def test_create_content_basic():
         "",
         "# Force Field",
         "lennard 12 6",
-        "H He 1.0 2.0 12.0",
+        "H core  He core 1.0 2.0 12.0",
         "",
         "# External Outputs",
         "output cif output.cif",
@@ -163,13 +163,12 @@ def test_create_content_single():
     potential_data = {
         "pair_style": "lj",
         "data": {
-            "atoms": {
-                "H": {
-                    "He": {
-                        "A": 1.0,
-                        "B": 2.0,
-                        "rmax": 12.0
-                    }
+            "species": ["H core", "He core"],
+            "2body": {
+                "0.1": {
+                    "A": 1.0,
+                    "B": 2.0,
+                    "rmax": 12.0
                 }
             }
         }
@@ -190,7 +189,7 @@ def test_create_content_single():
         "",
         "# Force Field",
         "lennard 12 6",
-        "H He 1.0 2.0 12.0",
+        "H core  He core 1.0 2.0 12.0",
         ""
     ]
     assert lines == expected
@@ -207,13 +206,12 @@ def test_create_content_opt():
     potential_data = {
         "pair_style": "lj",
         "data": {
-            "atoms": {
-                "H": {
-                    "He": {
-                        "A": 1.0,
-                        "B": 2.0,
-                        "rmax": 12.0
-                    }
+            "species": ["H core", "He core"],
+            "2body": {
+                "0.1": {
+                    "A": 1.0,
+                    "B": 2.0,
+                    "rmax": 12.0
                 }
             }
         }
@@ -238,7 +236,7 @@ def test_create_content_opt():
         "",
         "# Force Field",
         "lennard 12 6",
-        "H He 1.0 2.0 12.0",
+        "H core  He core 1.0 2.0 12.0",
         "",
         "# Other Options",
         "maxcyc opt 100",

@@ -11,7 +11,7 @@
 *  conp         - constant pressure calculation                                *
 ********************************************************************************
 
-  Job Started  at 19:48.42 17th June       2019                               
+  Job Started  at 06:16.13 11th July       2019                               
 
   Number of CPUs =     1
 
@@ -239,130 +239,130 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 
   Start of bulk optimisation :
 
-  Cycle:      0 Energy:        -0.328095  Gnorm:      0.165131  CPU:    0.006
+  Cycle:      0 Energy:        -0.328095  Gnorm:      0.165131  CPU:    0.012
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =  -0.970061
-  Cycle:      1 Energy:        -8.690305  Gnorm:      3.277775  CPU:    0.013
+  Cycle:      1 Energy:        -8.690305  Gnorm:      3.277775  CPU:    0.019
   ** Hess reset due to cos < rst
   ** Cos =  -0.970061
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =  -0.998542
-  Cycle:      2 Energy:       -13.201238  Gnorm:      3.141211  CPU:    0.031
+  Cycle:      2 Energy:       -13.201238  Gnorm:      3.141211  CPU:    0.036
   ** Hess reset due to cos < rst
   ** Cos =  -0.998542
   ** Hess reset due to cncadd and drop
   ** Hessian calculated **
   ** Cosine =   0.230524
-  Cycle:      3 Energy:       -13.589192  Gnorm:      0.583523  CPU:    0.048
+  Cycle:      3 Energy:       -13.589192  Gnorm:      0.583523  CPU:    0.058
   ** Cosine =  -0.484987
   ** Hess reset due to cos < rst
   ** Cos =  -0.484987
   ** Hessian calculated **
   ** Cosine =   0.072954
-  Cycle:      4 Energy:       -13.590423  Gnorm:      0.486225  CPU:    0.067
+  Cycle:      4 Energy:       -13.590423  Gnorm:      0.486225  CPU:    0.077
   ** Cosine =  -0.696510
   ** Hess reset due to cos < rst
   ** Cos =  -0.696510
   ** Hessian calculated **
   ** Cosine =  -0.489950
-  Cycle:      5 Energy:       -13.592160  Gnorm:      0.852197  CPU:    0.086
+  Cycle:      5 Energy:       -13.592160  Gnorm:      0.852197  CPU:    0.098
   ** Hess reset due to cos < rst
   ** Cos =  -0.489950
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.059936
-  Cycle:      6 Energy:       -13.594571  Gnorm:      0.706026  CPU:    0.105
+  Cycle:      6 Energy:       -13.594571  Gnorm:      0.706026  CPU:    0.119
   ** Cosine =  -0.573427
   ** Hess reset due to cos < rst
   ** Cos =  -0.573427
   ** Hessian calculated **
   ** Cosine =  -0.476590
-  Cycle:      7 Energy:       -13.597744  Gnorm:      1.198917  CPU:    0.125
+  Cycle:      7 Energy:       -13.597744  Gnorm:      1.198917  CPU:    0.142
   ** Hess reset due to cos < rst
   ** Cos =  -0.476590
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.041715
-  Cycle:      8 Energy:       -13.601974  Gnorm:      0.985504  CPU:    0.147
+  Cycle:      8 Energy:       -13.601974  Gnorm:      0.985504  CPU:    0.162
   ** Cosine =  -0.321101
   ** Hess reset due to cos < rst
   ** Cos =  -0.321101
   ** Hessian calculated **
   ** Cosine =  -0.470942
-  Cycle:      9 Energy:       -13.608048  Gnorm:      1.722791  CPU:    0.166
+  Cycle:      9 Energy:       -13.608048  Gnorm:      1.722791  CPU:    0.183
   ** Hess reset due to cos < rst
   ** Cos =  -0.470942
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.040337
-  Cycle:     10 Energy:       -13.616599  Gnorm:      1.385738  CPU:    0.187
+  Cycle:     10 Energy:       -13.616599  Gnorm:      1.385738  CPU:    0.204
   ** Cosine =  -0.318345
   ** Hess reset due to cos < rst
   ** Cos =  -0.318345
   ** Hessian calculated **
   ** Cosine =  -0.472226
-  Cycle:     11 Energy:       -13.629988  Gnorm:      2.623132  CPU:    0.207
+  Cycle:     11 Energy:       -13.629988  Gnorm:      2.623132  CPU:    0.224
   ** Hess reset due to cos < rst
   ** Cos =  -0.472226
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.040458
-  Cycle:     12 Energy:       -13.649648  Gnorm:      2.032166  CPU:    0.227
+  Cycle:     12 Energy:       -13.649648  Gnorm:      2.032166  CPU:    0.247
   ** Cosine =  -0.363203
   ** Hess reset due to cos < rst
   ** Cos =  -0.363203
   ** Hessian calculated **
   ** Cosine =  -0.470348
-  Cycle:     13 Energy:       -13.682509  Gnorm:      4.371509  CPU:    0.247
+  Cycle:     13 Energy:       -13.682509  Gnorm:      4.371509  CPU:    0.268
   ** Hess reset due to cos < rst
   ** Cos =  -0.470348
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =   0.028426
-  Cycle:     14 Energy:       -13.732715  Gnorm:      3.169181  CPU:    0.266
+  Cycle:     14 Energy:       -13.732715  Gnorm:      3.169181  CPU:    0.291
   ** Cosine =  -0.188848
   ** Hess reset due to cos < rst
   ** Cos =  -0.188848
   ** Hessian calculated **
   ** Cosine =  -0.464423
-  Cycle:     15 Energy:       -13.839325  Gnorm:      9.249585  CPU:    0.287
+  Cycle:     15 Energy:       -13.839325  Gnorm:      9.249585  CPU:    0.314
   ** Hess reset due to cos < rst
   ** Cos =  -0.464423
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =  -0.045982
-  Cycle:     16 Energy:       -13.986478  Gnorm:      5.898337  CPU:    0.307
+  Cycle:     16 Energy:       -13.986478  Gnorm:      5.898337  CPU:    0.334
   ** Hess reset due to cos < rst
   ** Cos =  -0.045982
   ** Hessian calculated **
   ** Cosine =  -0.381745
-  Cycle:     17 Energy:       -14.099725  Gnorm:     11.969372  CPU:    0.328
+  Cycle:     17 Energy:       -14.099725  Gnorm:     11.969372  CPU:    0.355
   ** Hess reset due to cos < rst
   ** Cos =  -0.381745
   ** Hessian calculated **
   ** Trimming pvect back
   ** Cosine =  -0.226201
-  Cycle:     18 Energy:       -14.123562  Gnorm:      9.567450  CPU:    0.349
+  Cycle:     18 Energy:       -14.123562  Gnorm:      9.567450  CPU:    0.377
   ** Hess reset due to cos < rst
   ** Cos =  -0.226201
   ** Hess reset due to cncadd and drop
   ** Hessian calculated **
   ** Cosine =  -0.234591
-  Cycle:     19 Energy:       -14.125483  Gnorm:      8.979574  CPU:    0.371
+  Cycle:     19 Energy:       -14.125483  Gnorm:      8.979574  CPU:    0.401
   ** Hess reset due to cos < rst
   ** Cos =  -0.234591
   ** Hess reset due to cncadd and drop
   ** Hessian calculated **
   ** Cosine =  -0.252188
-  Cycle:     20 Energy:       -14.125652  Gnorm:      9.143186  CPU:    0.394
+  Cycle:     20 Energy:       -14.125652  Gnorm:      9.143186  CPU:    0.425
   ** Hess reset due to cos < rst
   ** Cos =  -0.252188
   ** Hess reset due to cncadd and drop
   ** Hessian calculated **
   ** Cosine =  -0.246887
-  Cycle:     21 Energy:       -14.125668  Gnorm:      9.100982  CPU:    0.416
+  Cycle:     21 Energy:       -14.125668  Gnorm:      9.100982  CPU:    0.459
   ** Hess reset due to cos < rst
   ** Cos =  -0.246887
   ** Hess reset due to cncadd and drop
@@ -370,14 +370,14 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   ** Cosine =  -0.248226
   **** Ftol satisfied in optimiser ****
   **** Xtol satisfied in optimiser ****
-  Cycle:     22 Energy:       -14.125668  Gnorm:      9.102373  CPU:    0.439
+  Cycle:     22 Energy:       -14.125668  Gnorm:      9.102373  CPU:    0.488
   ** Hess reset due to cos < rst
   ** Cos =  -0.248226
   ** Hess reset due to cncadd and drop
   ** Hessian calculated **
   ** Cosine =  -0.248181
   ** Trying steepest descent method
-  Cycle:     23 Energy:       -14.125668  Gnorm:      9.102373  CPU:    0.461
+  Cycle:     23 Energy:       -14.125668  Gnorm:      9.102373  CPU:    0.518
   ** Hess reset due to lnstop
   ** Hess reset due to cos < rst
   ** Cos =   0.000000
@@ -455,7 +455,7 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
 
 
-  Time to end of optimisation =       0.4832 seconds
+  Time to end of optimisation =       0.5440 seconds
 
 
   Peak dynamic memory used =       0.55 MB 
@@ -466,18 +466,18 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of real space energy and derivatives                0.3996
-  Calculation of real space energy using symmetry                 0.0754
-  Calculation of matrix inversion                                 0.0001
-  Symmetry generation of equivalent positions                     0.0005
+  Calculation of real space energy and derivatives                0.4416
+  Calculation of real space energy using symmetry                 0.0874
+  Calculation of matrix inversion                                 0.0002
+  Symmetry generation of equivalent positions                     0.0007
   Global summation overhead                                       0.0002
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.4832
+  Total CPU time                                                  0.5441
 --------------------------------------------------------------------------------
 
 
   CIF file written as output.cif                                              
 
 
-  Job Finished at 19:48.43 17th June       2019                               
+  Job Finished at 06:16.13 11th July       2019                               
 

@@ -1,0 +1,117 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "potential.base.schema",
+    "description": "a schema for storing an empirical potential",
+    "type": "object",
+    "required": [
+        "species"
+    ],
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "species": {
+            "description": "the list of species",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]+ (core|shell)$"
+            }
+        },
+        "global": {
+            "description": "parameters that depend on no species",
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": [
+                        "integer",
+                        "number",
+                        "string",
+                        "boolean"
+                    ]
+                }
+            }
+        },
+        "1body": {
+            "description": "parameters that depend on one species",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+": {
+                    "type": "object",
+                    "description": "mapping of species index to properties",
+                    "patternProperties": {
+                        ".*": {
+                            "type": [
+                                "integer",
+                                "number",
+                                "string",
+                                "boolean"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "2body": {
+            "description": "parameters that depend on two species",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+": {
+                    "description": "mapping of '<idx1>.<idx2>' to properties",
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": [
+                                "integer",
+                                "number",
+                                "string",
+                                "boolean"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "3body": {
+            "description": "parameters that depend on three species",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+\\.[0-9]+": {
+                    "type": "object",
+                    "description": "mapping of '<idx1>.<idx2>.<idx3>' to properties",
+                    "patternProperties": {
+                        ".*": {
+                            "type": [
+                                "integer",
+                                "number",
+                                "string",
+                                "boolean"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "4body": {
+            "description": "parameters that depend on four species",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+": {
+                    "type": "object",
+                    "description": "mapping of '<idx1>.<idx2>.<idx3>.<idx4>' to properties",
+                    "patternProperties": {
+                        ".*": {
+                            "type": [
+                                "integer",
+                                "number",
+                                "string",
+                                "boolean"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -16,7 +16,7 @@ class PotentialWriterAbstract(object):
 
     @classmethod
     def get_schema(cls):
-        """return the schame to validate input data
+        """return the schema to validate input data
 
         Returns
         -------
