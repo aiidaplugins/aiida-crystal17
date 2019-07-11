@@ -16,7 +16,7 @@ def create_input_lines(potential, structures, observables):
     lines.extend(["shift", str(1.0)])
     lines.append("")
 
-    for name in structures:
+    for name in sorted(structures.keys()):
         lines.extend(create_geometry_lines(structures[name], name=name))
         lines.append("")
         observe = observables[name]

@@ -21,11 +21,11 @@
             }
         },
         "2body": {
-            "description": "parameters that depend on two species",
+            "description": "parameters that depend on two species, mapping of '<idx1>-<idx2>' to list oif variables to fit",
             "type": "object",
+            "additionalProperties": false,
             "patternProperties": {
                 "[0-9]+\\-[0-9]+": {
-                    "description": "mapping of '<idx1>-<idx2>' to fitting list",
                     "type": "array",
                     "items": {
                         "enum": [

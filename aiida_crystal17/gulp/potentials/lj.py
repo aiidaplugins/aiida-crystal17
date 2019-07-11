@@ -1,5 +1,5 @@
 from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
-from aiida_crystal17.gulp.potentials.common import filter_by_species, INDEX_SEP
+from aiida_crystal17.gulp.potentials.common import INDEX_SEP
 from aiida_crystal17.validation import load_schema
 
 
@@ -20,7 +20,7 @@ class PotentialWriterLJ(PotentialWriterAbstract):
     def _get_fitting_schema(cls):
         return load_schema("fitting.lj.schema.json")
 
-    def _make_string(self, data, species_filter=None, fitting_data=None):
+    def _make_string(self, data, fitting_data=None):
         """write reaxff data in GULP input format
 
         Parameters
@@ -35,9 +35,6 @@ class PotentialWriterLJ(PotentialWriterAbstract):
             if None, no flags will be added
 
         """
-        if species_filter is not None:
-            data = filter_by_species(data, species_filter)
-
         lines = []
 
         for indices in sorted(data["2body"]):

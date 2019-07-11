@@ -325,3 +325,26 @@ def test_write_gulp_format_with_filter(data_regression, file_regression):
     data_regression.check(data)
     output = write_gulp_format(data)
     file_regression.check(six.ensure_text(output))
+
+
+def test_write_gulp_format_with_fitting(data_regression, file_regression):
+    data = read_lammps_format(lammps_file.splitlines())
+    data = filter_by_species(data, ["Fe core", "S core"])
+    fitting_data = {
+        "species": ["Fe core", "S core"],
+        "global": ["reaxff0_val7"],
+        "1body": {
+            "0": ["reaxff1_valence3"]
+        },
+        "2body": {
+            "0-1": ["reaxff2_bond3"]
+        },
+        "3body": {
+            "0-1-1": ["reaxff3_penalty"]
+        },
+        "4body": {
+            "1-1-1-1": ["reaxff4_torsion4"]
+        }
+    }
+    output = write_gulp_format(data, fitting_data)
+    file_regression.check(six.ensure_text(output))

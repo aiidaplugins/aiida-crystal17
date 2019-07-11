@@ -79,6 +79,7 @@
         "1body": {
             "description": "parameters that depend on one species, mapping species index to properties",
             "type": "object",
+            "additionalProperties": false,
             "patternProperties": {
                 "[0-9]+": {
                     "type": "object",
@@ -132,6 +133,7 @@
         "2body": {
             "description": "parameters that depend on two species, mapping '<idx1>-<idx2>' to properties",
             "type": "object",
+            "additionalProperties": false,
             "patternProperties": {
                 "[0-9]+\\-[0-9]+": {
                     "anyOf": [
@@ -194,6 +196,7 @@
         "3body": {
             "description": "parameters that depend on three species, mapping of '<idx1>-<idx2>-<idx3>' to properties. NOTE: the pivot atom should be the central one!",
             "type": "object",
+            "additionalProperties": false,
             "patternProperties": {
                 "[0-9]+\\-[0-9]+\\-[0-9]+": {
                     "anyOf": [
@@ -245,6 +248,7 @@
         "4body": {
             "description": "parameters that depend on four species, mapping '<idx1>-<idx2>-<idx3>-<idx4>' to properties",
             "type": "object",
+            "additionalProperties": false,
             "patternProperties": {
                 "[0-9]+\\-[0-9]+\\-[0-9]+\\-[0-9]+": {
                     "type": "object",

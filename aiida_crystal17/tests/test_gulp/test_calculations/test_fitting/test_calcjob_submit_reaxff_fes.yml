@@ -1,0 +1,10 @@
+calc_info:
+  local_copy_list: []
+  remote_copy_list: []
+  retrieve_list:
+  - main.gout
+  retrieve_temporary_list: []
+code_infos:
+- cmdline_params:
+  - main
+  withmpi: false

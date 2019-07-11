@@ -144,6 +144,7 @@ def _parse_main_output(outstr, data):
 
         if line.startswith('!! ERROR'):
             data["errors"].append(line)
+            # TODO also merge in lower lines, if they start with "!! ""
             return data
 
         if line.startswith('!! WARNING'):

@@ -1,6 +1,7 @@
 import copy
 
 from aiida_crystal17.validation import validate_against_schema
+from aiida_crystal17.gulp.potentials.common import filter_by_species
 
 
 class PotentialWriterAbstract(object):
@@ -71,7 +72,7 @@ class PotentialWriterAbstract(object):
         """
         raise NotImplementedError
 
-    def _make_string(self, data, species_filter=None, fitting_data=None):
+    def _make_string(self, data, fitting_data=None):
         """create string for inter-atomic potential section for main.gin file
 
         Parameters
@@ -130,14 +131,19 @@ class PotentialWriterAbstract(object):
                 angles.append((i1, i2, i3))
                 angles.append((i3, i2, i1))
 
+        if species_filter is not None:
+            data = filter_by_species(data, species_filter)
+
         # validate fitting data
         if fitting_data is not None:
             fit_schema = self.get_fitting_schema()
             validate_against_schema(fitting_data, fit_schema)
+            if species_filter is not None:
+                fitting_data = filter_by_species(fitting_data, species_filter)
             if fitting_data["species"] != data["species"]:
                 raise AssertionError("the fitting data species ({}) must be equal to the data species ({})".format(
                     fitting_data["species"], data["species"]
                 ))
+            # TODO same checks as main data and possibly switch 2body/3body indices to line up with those for main data
 
-        return self._make_string(data, species_filter=species_filter,
-                                 fitting_data=fitting_data)
+        return self._make_string(data, fitting_data=fitting_data)

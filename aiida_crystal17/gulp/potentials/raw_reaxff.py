@@ -23,6 +23,8 @@ KEYS_GLOBAL = (
     'Not used 6', 'Not used 7', 'Not used 8', 'reaxff3_coa3'
 )
 
+# TODO some variables lammps sets as global are actually species dependant in GULP, how to handle these?
+
 KEYS_1BODY = (
     'reaxff1_radii1', 'reaxff1_valence1', 'mass',
     'reaxff1_morse3', 'reaxff1_morse2', 'reaxff_gamma', 'reaxff1_radii2',
@@ -70,7 +72,7 @@ DEFAULT_TOLERANCES = {
     "hbonddist": 7.5,  # Hard coded to 7.5 Ang in original code.
     "torsionprod": 0.00001
 }
-# NB: torsionprod needs to be lower (0.001), to get comparable energy to lammps,
+# NOTE: torsionprod needs to be lower (0.001), to get comparable energy to lammps,
 # but then won't optimize (reaches maximum steps)
 
 
@@ -378,13 +380,21 @@ def write_lammps_format(data):
     return "\n".join(output)
 
 
-def write_gulp_format(data):
+def write_gulp_format(data, fitting_data=None,
+                      global_val_fmt="{:9.5f}", species_val_fmt="{:6.4f}"):
     """ write a reaxff file, in GULP format, from a standardised potential dictionary
 
-    Note: energies should be supplied in kcal (the default for lammps)
+    # NOTE: GULP has issues reading from lines longer than ~80 characters,
+    # this is particularly an issue for 4 body parameters + fitting flags
+    # Hence why these value formats are imposed
+
+    energies should be supplied in kcal (the default of the lammps file format)
     """
     # validate dictionary
     validate_against_schema(data, "potential.reaxff.schema.json")
+
+    if fitting_data is not None:
+        validate_against_schema(fitting_data, "fitting.reaxff.schema.json")
 
     for species in data["species"]:
         if species.endswith("shell"):
@@ -419,8 +429,6 @@ def write_gulp_format(data):
         ),
         '#',
     ]
-    # NOTE: there is a line length issue,
-    # whereby if the decimal places in reaxFFtol are too large, then the result is altered
 
     # global parameters
     output.append("#  Species independent parameters")
@@ -437,7 +445,10 @@ def write_gulp_format(data):
     ])
 
     for field, variables in fields.items():
-        output.append("{:17}".format(field)+" ".join(["{:12.6f}".format(data["global"][v]) for v in variables]))
+        string = "{:17}".format(field) + " ".join([global_val_fmt.format(data["global"][v]) for v in variables])
+        if fitting_data is not None:
+            string += " " + " ".join(["1" if v in fitting_data.get("global", []) else "0" for v in variables])
+        output.append(string)
 
     # one-body parameters
     output.append("#")
@@ -463,7 +474,8 @@ def write_gulp_format(data):
         'reaxff1_morse': ['kcal']
     }
 
-    output.extend(create_gulp_fields(data, "1body", fields, arguments=arguments))
+    output.extend(create_gulp_fields(data, "1body", fields, species_val_fmt,
+                                     arguments=arguments, fitting_data=fitting_data))
 
     # two-body bond parameters
     output.append("#")
@@ -504,7 +516,8 @@ def write_gulp_format(data):
 
     conditions = {'reaxff2_pen': lambda s: s['reaxff2_pen1'] > 0.0}
 
-    output.extend(create_gulp_fields(data, "2body", fields, conditions, arguments=arguments))
+    output.extend(create_gulp_fields(data, "2body", fields, species_val_fmt,
+                                     conditions, arguments=arguments, fitting_data=fitting_data))
 
     # three-body parameters
     output.append("#")
@@ -537,7 +550,8 @@ def write_gulp_format(data):
         'reaxff3_conjugation': lambda s: abs(s['reaxff3_coa1']) > 1.0E-4
     }
 
-    output.extend(create_gulp_fields(data, "3body", fields, conditions, arguments=arguments))
+    output.extend(create_gulp_fields(data, "3body", fields, species_val_fmt,
+                                     conditions, arguments=arguments, fitting_data=fitting_data))
 
     # one-body parameters
     output.append("#")
@@ -552,14 +566,16 @@ def write_gulp_format(data):
 
     arguments = {'reaxff4_torsion': ['kcal']}
 
-    output.extend(create_gulp_fields(data, "4body", fields, arguments=arguments))
+    output.extend(create_gulp_fields(data, "4body", fields, species_val_fmt,
+                                     arguments=arguments, fitting_data=fitting_data))
 
     output.append("")
 
     return "\n".join(output)
 
 
-def create_gulp_fields(data, data_key, fields, conditions=None, arguments=None):
+def create_gulp_fields(data, data_type, fields, species_val_fmt,
+                       conditions=None, arguments=None, fitting_data=None):
     """ create a subsection of the gulp output file"""
     if conditions is None:
         conditions = {}
@@ -571,13 +587,13 @@ def create_gulp_fields(data, data_key, fields, conditions=None, arguments=None):
     for field in sorted(fields):
         keys = fields[field]
         subdata = {}
-        for indices in sorted(data[data_key]):
-            if not set(data[data_key][indices].keys()).issuperset(
+        for indices in sorted(data[data_type]):
+            if not set(data[data_type][indices].keys()).issuperset(
                     [k for k in keys if not k.startswith("global.") and k != 'reaxff3_angle6']):
                 continue
             if field in conditions:
                 try:
-                    satisfied = conditions[field](data[data_key][indices])
+                    satisfied = conditions[field](data[data_type][indices])
                 except KeyError:
                     continue
                 if not satisfied:
@@ -588,12 +604,17 @@ def create_gulp_fields(data, data_key, fields, conditions=None, arguments=None):
                 # This is different to LAMMPS, where the pivot atom is the central one!
                 species = [species[1], species[0], species[2]]
             species = " ".join(species)
-            values = " ".join([format_gulp_value(data, data_key, indices, k) for k in keys if k != "reaxff3_angle6"])
+            values = " ".join([format_gulp_value(data, data_type, indices, k, species_val_fmt)
+                               for k in keys if k != "reaxff3_angle6"])
+
+            if fitting_data is not None:
+                values += " " + " ".join(["1" if v in fitting_data.get(data_type, {}).get(indices, []) else "0"
+                                          for v in keys])
 
             if field in arguments and isinstance(arguments[field], list):
                 args = " ".join(arguments[field])
             elif field in arguments:
-                args = arguments[field](data[data_key][indices])
+                args = arguments[field](data[data_type][indices])
             else:
                 args = ""
 
@@ -606,14 +627,14 @@ def create_gulp_fields(data, data_key, fields, conditions=None, arguments=None):
     return output
 
 
-def format_gulp_value(data, data_key, indices, key):
+def format_gulp_value(data, data_type, indices, key, species_val_fmt):
     """ some GULP specific conversions """
 
     if key.startswith("global."):
-        data_key, key = key.split(".")
-        value = data[data_key][key]
+        data_type, key = key.split(".")
+        value = data[data_type][key]
     else:
-        value = data[data_key][indices][key]
+        value = data[data_type][indices][key]
 
     if key == "reaxff2_bo3":
         # If reaxff2_bo3 = 1 needs to be set to 0 for GULP since this is a dummy value
@@ -628,4 +649,4 @@ def format_gulp_value(data, data_key, indices, key):
         # but without it, the energies greatly differ to LAMMPS (approx equal otherwise)
         value = 0.0 if value > 0.0 else value
 
-    return "{:8.4f} ".format(value)
+    return species_val_fmt.format(value)

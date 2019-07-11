@@ -11,7 +11,7 @@
 *  noflags      - no flags to be read in, assumed to all be zero               *
 ********************************************************************************
 
-  Job Started  at 17:25.30 11th July       2019                               
+  Job Started  at 18:50.43 11th July       2019                               
 
   Number of CPUs =     1
 
@@ -198,27 +198,18 @@
 
   Maximum range for interatomic potentials =    100000.000000 Angstroms
 
-  General interatomic potentials :
+  ReaxFF forcefield to be used
 
---------------------------------------------------------------------------------
-Atom  Types   Potential      Parameter       Value         Units   Cutoffs(Ang)
-  1     2                                                            Min /  Max 
---------------------------------------------------------------------------------
-Fe   c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
-                            Lennard-Jones B  1.0000000    eV*Ang^n  
-                            Exponent m        12          None
-                            Exponent n         6          None
---------------------------------------------------------------------------------
-S    c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
-                            Lennard-Jones B  1.0000000    eV*Ang^n  
-                            Exponent m        12          None
-                            Exponent n         6          None
---------------------------------------------------------------------------------
-S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
-                            Lennard-Jones B  1.0000000    eV*Ang^n  
-                            Exponent m        12          None
-                            Exponent n         6          None
---------------------------------------------------------------------------------
+  ReaxFF Coulomb cutoff =  10.0000 Ang
+  ReaxFF VDW     cutoff =  10.0000 Ang
+  ReaxFF H-bond  cutoff =   7.5000 Ang
+
+  ReaxFF pairwise bond order       threshold = 0.00100000000000
+  ReaxFF angle/torsion bond order  threshold = 0.00100000000000
+  ReaxFF bond order double product threshold = 0.00100000000000
+  ReaxFF bond order triple product threshold = 0.00001000000000
+  ReaxFF hydrogen-bond bond order  threshold = 0.01000000000000
+
 
   Energy shifts for configurations :
 
@@ -249,8 +240,8 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
      Parameter No.       Parameter Value          Parameter Type  Species
 --------------------------------------------------------------------------------
              1                  1.000000          Energy shift        0
-             2                  1.000000          Lennard-Jones A
-             3                  1.000000          Lennard-Jones B
+             2                 50.000000          RFF0 bond boc1 
+             3                  9.546900          RFF0 bond boc2 
 --------------------------------------------------------------------------------
 
   Symmetry not used for fitting
@@ -265,21 +256,16 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 
   Start of fitting :
 
-  Cycle:      0  Sum sqs:     620.646726  Gnorm:    678.706026  CPU:    0.016
+  Cycle:      0  Sum sqs:  303958.603338  Gnorm:  18460.405024  CPU:    0.167
   ** Hessian calculated **
-  Cycle:      1  Sum sqs:     236.823045  Gnorm:      0.569042  CPU:    0.028
-  Cycle:      2  Sum sqs:     236.237177  Gnorm:      0.576337  CPU:    0.042
-  Cycle:      3  Sum sqs:     236.229618  Gnorm:      0.566073  CPU:    0.061
-  Cycle:      4  Sum sqs:     236.229324  Gnorm:      0.023301  CPU:    0.075
-  Cycle:      5  Sum sqs:     236.229324  Gnorm:      0.019172  CPU:    0.087
 
 
   **** Fit completed successfully ****
 
 
-  Final sum of squares =           236.229324
+  Final sum of squares =         19969.808640
 
-  Final gradient norm  =             0.019172
+  Final gradient norm  =             0.000000
 
   Final values of parameters :
 
@@ -287,9 +273,9 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
  Parameter No.    Parameter        Parameter      Parameter Type  Species
                   Original         Final                                 
 --------------------------------------------------------------------------------
-         1              1.000000        -0.138820 Energy shift        0
-         2              1.000000         1.000136 Lennard-Jones A
-         3              1.000000         0.000001 Lennard-Jones B
+         1              1.000000        31.767342 Energy shift        0
+         2             50.000000        50.000000 RFF0 bond boc1 
+         3              9.546900         9.546900 RFF0 bond boc2 
 --------------------------------------------------------------------------------
 
 
@@ -298,9 +284,9 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
      Parameter No.       Parameter Gradient      Parameter Type  Species
 --------------------------------------------------------------------------------
-             1                  0.017787          Energy shift        0
-             2                 -0.000081          Lennard-Jones A
-             3                 -0.007154          Lennard-Jones B
+             1                  0.000000          Energy shift        0
+             2                  0.000000          RFF0 bond boc1 
+             3                  0.000000          RFF0 bond boc2 
 --------------------------------------------------------------------------------
 
 
@@ -309,9 +295,9 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
    Observable no.  Type            Observable   Calculated    Residual  Error(%)
 --------------------------------------------------------------------------------
-          1        Energy            -1.00000     -0.29118     50.24291   70.882
-          2        Energy            -1.00000     -0.45751     29.42981   54.249
-          3        Energy             1.00000     -0.25123    156.55661 -125.123
+          1        Energy            -1.00000      9.43757  10894.28690 1043.757
+          2        Energy            -1.00000    -10.47811   8983.46633 -947.811
+          3        Energy             1.00000      0.04054     92.05541  -95.946
 --------------------------------------------------------------------------------
 
   Comparison of initial and final observables :
@@ -319,49 +305,40 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
    Observable no.  Type            Observable   Initial       Final             
 --------------------------------------------------------------------------------
-          1        Energy            -1.00000      0.84295     -0.29118
-          2        Energy            -1.00000      0.67191     -0.45751
-          3        Energy             1.00000      0.87860     -0.25123
+          1        Energy            -1.00000    -21.32977      9.43757
+          2        Energy            -1.00000    -41.24546    -10.47811
+          3        Energy             1.00000    -30.72680      0.04054
 --------------------------------------------------------------------------------
 
   Maximum range for interatomic potentials =    100000.000000 Angstroms
 
-  General interatomic potentials :
+  ReaxFF forcefield to be used
 
---------------------------------------------------------------------------------
-Atom  Types   Potential      Parameter       Value         Units   Cutoffs(Ang)
-  1     2                                                            Min /  Max 
---------------------------------------------------------------------------------
-Fe   c Fe   c Lennard       Lennard-Jones A  1.0001360    eV*Ang^m  0.000 12.000
-                            Lennard-Jones B 0.12644946E-05eV*Ang^n  
-                            Exponent m        12          None
-                            Exponent n         6          None
---------------------------------------------------------------------------------
-S    c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
-                            Lennard-Jones B  1.0000000    eV*Ang^n  
-                            Exponent m        12          None
-                            Exponent n         6          None
---------------------------------------------------------------------------------
-S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
-                            Lennard-Jones B  1.0000000    eV*Ang^n  
-                            Exponent m        12          None
-                            Exponent n         6          None
---------------------------------------------------------------------------------
+  ReaxFF Coulomb cutoff =  10.0000 Ang
+  ReaxFF VDW     cutoff =  10.0000 Ang
+  ReaxFF H-bond  cutoff =   7.5000 Ang
+
+  ReaxFF pairwise bond order       threshold = 0.00100000000000
+  ReaxFF angle/torsion bond order  threshold = 0.00100000000000
+  ReaxFF bond order double product threshold = 0.00100000000000
+  ReaxFF bond order triple product threshold = 0.00001000000000
+  ReaxFF hydrogen-bond bond order  threshold = 0.01000000000000
+
 
   Energy shifts for configurations :
 
 --------------------------------------------------------------------------------
       Configuration           Energy (eV)        Scale Factor
 --------------------------------------------------------------------------------
-             1               -.138820                 1.000
-             2               -.138820                 1.000
-             3               -.138820                 1.000
+             1                31.7673                 1.000
+             2                31.7673                 1.000
+             3                31.7673                 1.000
 --------------------------------------------------------------------------------
 
 
 
 
-  Total time to end of fitting =       0.0891 seconds
+  Total time to end of fitting =       0.4462 seconds
 
 ********************************************************************************
 *  Output for configuration   1 : marcasite                                    *
@@ -371,16 +348,32 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   Components of energy : 
 
 --------------------------------------------------------------------------------
-  Interatomic potentials     =          -0.15235812 eV    
+  Interatomic potentials     =           0.00000000 eV    
+  ReaxFF force field         =         -22.32977164 eV    
   Monopole - monopole (real) =           0.00000000 eV    
   Monopole - monopole (recip)=           0.00000000 eV    
   Monopole - monopole (total)=           0.00000000 eV    
-  Energy shift               =          -0.13881958 eV    
+  Energy shift               =          31.76734171 eV    
 --------------------------------------------------------------------------------
-  Total lattice energy       =          -0.29117770 eV    
+  Total lattice energy       =           9.43757007 eV    
 --------------------------------------------------------------------------------
-  Total lattice energy       =             -28.0942 kJ/(mole unit cells)
+  Total lattice energy       =             910.5812 kJ/(mole unit cells)
 --------------------------------------------------------------------------------
+
+
+  Final charges from ReaxFF :
+
+--------------------------------------------------------------------------------
+    Atom no.            Atomic No.             Charge
+--------------------------------------------------------------------------------
+         1                  26                 0.3539734
+         2                  26                 0.3539734
+         3                  16                -0.1769867
+         4                  16                -0.1769867
+         5                  16                -0.1769867
+         6                  16                -0.1769867
+--------------------------------------------------------------------------------
+
 
 ********************************************************************************
 *  Output for configuration   2 : pyrite                                       *
@@ -390,16 +383,38 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   Components of energy : 
 
 --------------------------------------------------------------------------------
-  Interatomic potentials     =          -0.31868795 eV    
+  Interatomic potentials     =           0.00000000 eV    
+  ReaxFF force field         =         -42.24545667 eV    
   Monopole - monopole (real) =           0.00000000 eV    
   Monopole - monopole (recip)=           0.00000000 eV    
   Monopole - monopole (total)=           0.00000000 eV    
-  Energy shift               =          -0.13881958 eV    
+  Energy shift               =          31.76734171 eV    
 --------------------------------------------------------------------------------
-  Total lattice energy       =          -0.45750753 eV    
+  Total lattice energy       =         -10.47811497 eV    
 --------------------------------------------------------------------------------
-  Total lattice energy       =             -44.1425 kJ/(mole unit cells)
+  Total lattice energy       =           -1010.9779 kJ/(mole unit cells)
 --------------------------------------------------------------------------------
+
+
+  Final charges from ReaxFF :
+
+--------------------------------------------------------------------------------
+    Atom no.            Atomic No.             Charge
+--------------------------------------------------------------------------------
+         1                  26                 0.3597069
+         2                  26                 0.3597069
+         3                  26                 0.3597069
+         4                  26                 0.3597069
+         5                  16                -0.1798535
+         6                  16                -0.1798535
+         7                  16                -0.1798535
+         8                  16                -0.1798535
+         9                  16                -0.1798535
+        10                  16                -0.1798535
+        11                  16                -0.1798535
+        12                  16                -0.1798535
+--------------------------------------------------------------------------------
+
 
 ********************************************************************************
 *  Output for configuration   3 : zincblende                                   *
@@ -409,16 +424,34 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
   Components of energy : 
 
 --------------------------------------------------------------------------------
-  Interatomic potentials     =          -0.11240626 eV    
+  Interatomic potentials     =           0.00000000 eV    
+  ReaxFF force field         =         -31.72679681 eV    
   Monopole - monopole (real) =           0.00000000 eV    
   Monopole - monopole (recip)=           0.00000000 eV    
   Monopole - monopole (total)=           0.00000000 eV    
-  Energy shift               =          -0.13881958 eV    
+  Energy shift               =          31.76734171 eV    
 --------------------------------------------------------------------------------
-  Total lattice energy       =          -0.25122584 eV    
+  Total lattice energy       =           0.04054490 eV    
 --------------------------------------------------------------------------------
-  Total lattice energy       =             -24.2395 kJ/(mole unit cells)
+  Total lattice energy       =               3.9120 kJ/(mole unit cells)
 --------------------------------------------------------------------------------
+
+
+  Final charges from ReaxFF :
+
+--------------------------------------------------------------------------------
+    Atom no.            Atomic No.             Charge
+--------------------------------------------------------------------------------
+         1                  26                 0.2649611
+         2                  26                 0.2649611
+         3                  26                 0.2649611
+         4                  26                 0.2649611
+         5                  16                -0.2649611
+         6                  16                -0.2649611
+         7                  16                -0.2649611
+         8                  16                -0.2649611
+--------------------------------------------------------------------------------
+
 
   Peak dynamic memory used =       0.52 MB 
 
@@ -428,13 +461,13 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of real space energy and derivatives                0.0777
-  Sum of squares for fitting                                      0.0031
-  Global summation overhead                                       0.0002
+  Calculation of reaxFF energy and derivatives                    0.4410
+  Electronegativity equalisation                                  0.0137
+  Sum of squares for fitting                                      0.0014
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.0913
+  Total CPU time                                                  0.4680
 --------------------------------------------------------------------------------
 
 
-  Job Finished at 17:25.30 11th July       2019                               
+  Job Finished at 18:50.43 11th July       2019                               
 

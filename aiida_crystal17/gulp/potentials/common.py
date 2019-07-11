@@ -1,16 +1,31 @@
 import copy
 
-from aiida_crystal17.validation import validate_against_schema
-
 INDEX_SEP = "-"
 
 
 def filter_by_species(data, species):
-    """ filter a potential dict by a subset of species
-    NB: all species index keys will be re-indexed
-    """
-    validate_against_schema(data, "potential.base.schema.json")
+    """filter a potential dict by a subset of species
 
+    Parameters
+    ----------
+    data : dict
+        a potential or fitting dict
+    species : list[str]
+        the species to filter by
+
+    Returns
+    -------
+    dict
+        data filtered by species and with all species index keys re-indexed
+
+    Raises
+    ------
+    KeyError
+        if the data does not adhere to the potential or fitting jsonschema
+    AssertionError
+        if the filter set is not a subset of the available species
+
+    """
     species = sorted(list(set(species)))
 
     if not set(species).issubset(data["species"]):
