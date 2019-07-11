@@ -41,6 +41,21 @@ def get_test_structure(name):
             "pbc": [True, True, True]
         }
         return convert_structure(structure_data, "aiida")
+    elif name == "marcasite":
+        structure_data = {
+            "lattice": [[3.37, 0.000000, 0.000000],
+                        [0.000000, 4.44, 0.000000],
+                        [0.000000, 0.000000, 5.39]],
+            "ccoords": [[0.0, 0.0, 0.0],
+                        [1.685000,    2.220000,    2.695000],
+                        [0.000000,    0.901320,    2.021250],
+                        [0.000000,    3.538680,    3.368750],
+                        [1.685000,    1.318680,    4.716250],
+                        [1.685000,    3.121320,    0.673750]],
+            "symbols": ['Fe'] * 2 + ['S'] * 4,
+            "pbc": [True, True, True]
+        }
+        return convert_structure(structure_data, "aiida")
     elif name == "zincblende":
         structure_data = {
             'pbc': [True, True, True],
@@ -72,5 +87,5 @@ def get_test_structure_and_symm(name, symprec=0.01, primitive=True):
     sym_calc = run_get_node(
         WorkflowFactory("crystal17.sym3d"), structure=instruct,
         settings=Dict(dict={"symprec": symprec, "compute_primitive": primitive})
-        ).node
+    ).node
     return sym_calc.outputs.structure, sym_calc.outputs.symmetry

@@ -4,7 +4,7 @@ from aiida.plugins import DataFactory
 from aiida_crystal17.tests.utils import sanitize_calc_info
 
 
-def test_calcjob_submit_mgo(db_test_app, get_structure,
+def test_calcjob_submit_fes(db_test_app, get_structure,
                             data_regression, file_regression):
     """Test submitting a calculation"""
     code = db_test_app.get_or_create_code('gulp.fitting')
@@ -43,10 +43,14 @@ def test_calcjob_submit_mgo(db_test_app, get_structure,
         }
     )
     builder.structures = {
-        "MgO": get_structure("MgO")
+        "pyrite": get_structure("pyrite"),
+        "marcasite": get_structure("marcasite"),
+        "zincblende": get_structure("zincblende")
     }
     builder.observables = {
-        "MgO": Dict(dict={"energy": 1})
+        "pyrite": Dict(dict={"energy": -1}),
+        "marcasite": Dict(dict={"energy": -1}),
+        "zincblende": Dict(dict={"energy": 1})
     }
 
     process_options = builder.process_class(inputs=builder).metadata.options

@@ -1,0 +1,440 @@
+********************************************************************************
+*                       GENERAL UTILITY LATTICE PROGRAM                        *
+*                                 Julian Gale                                  *
+*                       Curtin Institute for Computation                       *
+*                           Department of Chemistry                            *
+*                    Curtin University, Western Australia                      *
+********************************************************************************
+* Version = 4.5.3 * Last modified =  19th April 2017                           *
+********************************************************************************
+*  fit          - perform fitting run                                          *
+*  noflags      - no flags to be read in, assumed to all be zero               *
+********************************************************************************
+
+  Job Started  at 16:26.43 11th July       2019                               
+
+  Number of CPUs =     1
+
+
+  Total number of configurations input =   3
+
+********************************************************************************
+*  Input for Configuration =   1 : pyrite                                      *
+********************************************************************************
+
+  Formula = Fe4S8                                                       
+
+  Number of irreducible atoms/shells =      12
+
+
+  Total number atoms/shells =      12
+
+  Dimensionality = 3               :  Bulk   
+
+
+
+  Cartesian lattice vectors (Angstroms) :
+
+        5.380000    0.000000    0.000000
+        0.000000    5.380000    0.000000
+        0.000000    0.000000    5.380000
+
+  Cell parameters (Angstroms/Degrees):
+
+  a =       5.3800    alpha =  90.0000
+  b =       5.3800    beta  =  90.0000
+  c =       5.3800    gamma =  90.0000
+
+  Initial cell volume =         155.720872 Angs**3
+
+  Temperature of configuration =  0.000     K 
+
+  Pressure of configuration =         0.000 GPa 
+
+  Fractional coordinates of asymmetric unit :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Frac)      (Frac)     (Frac)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 Fe    c    0.000000    0.000000    0.000000     0.00000    1.000000    
+      2 Fe    c    0.500000    0.000000    0.500000     0.00000    1.000000    
+      3 Fe    c    0.000000    0.500000    0.500000     0.00000    1.000000    
+      4 Fe    c    0.500000    0.500000    0.000000     0.00000    1.000000    
+      5 S     c    0.338000    0.338000    0.338000     0.00000    1.000000    
+      6 S     c    0.662000    0.662000    0.662000     0.00000    1.000000    
+      7 S     c    0.162000    0.662000    0.838000     0.00000    1.000000    
+      8 S     c    0.838000    0.338000    0.162000     0.00000    1.000000    
+      9 S     c    0.662000    0.838000    0.162000     0.00000    1.000000    
+     10 S     c    0.338000    0.162000    0.838000     0.00000    1.000000    
+     11 S     c    0.838000    0.162000    0.662000     0.00000    1.000000    
+     12 S     c    0.162000    0.838000    0.338000     0.00000    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+********************************************************************************
+*  Input for Configuration =   2 : marcasite                                   *
+********************************************************************************
+
+  Formula = Fe2S4                                                       
+
+  Number of irreducible atoms/shells =       6
+
+
+  Total number atoms/shells =       6
+
+  Dimensionality = 3               :  Bulk   
+
+
+
+  Cartesian lattice vectors (Angstroms) :
+
+        3.370000    0.000000    0.000000
+        0.000000    4.440000    0.000000
+        0.000000    0.000000    5.390000
+
+  Cell parameters (Angstroms/Degrees):
+
+  a =       3.3700    alpha =  90.0000
+  b =       4.4400    beta  =  90.0000
+  c =       5.3900    gamma =  90.0000
+
+  Initial cell volume =          80.649492 Angs**3
+
+  Temperature of configuration =  0.000     K 
+
+  Pressure of configuration =         0.000 GPa 
+
+  Fractional coordinates of asymmetric unit :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Frac)      (Frac)     (Frac)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 Fe    c    0.000000    0.000000    0.000000     0.00000    1.000000    
+      2 Fe    c    0.500000    0.500000    0.500000     0.00000    1.000000    
+      3 S     c    0.000000    0.203000    0.375000     0.00000    1.000000    
+      4 S     c    0.000000    0.797000    0.625000     0.00000    1.000000    
+      5 S     c    0.500000    0.297000    0.875000     0.00000    1.000000    
+      6 S     c    0.500000    0.703000    0.125000     0.00000    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+********************************************************************************
+*  Input for Configuration =   3 : zincblende                                  *
+********************************************************************************
+
+  Formula = Fe4S4                                                       
+
+  Number of irreducible atoms/shells =       8
+
+
+  Total number atoms/shells =       8
+
+  Dimensionality = 3               :  Bulk   
+
+
+
+  Cartesian lattice vectors (Angstroms) :
+
+        5.420000    0.000000    0.000000
+        0.000000    5.420000    0.000000
+        0.000000    0.000000    5.420000
+
+  Cell parameters (Angstroms/Degrees):
+
+  a =       5.4200    alpha =  90.0000
+  b =       5.4200    beta  =  90.0000
+  c =       5.4200    gamma =  90.0000
+
+  Initial cell volume =         159.220088 Angs**3
+
+  Temperature of configuration =  0.000     K 
+
+  Pressure of configuration =         0.000 GPa 
+
+  Fractional coordinates of asymmetric unit :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Frac)      (Frac)     (Frac)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 Fe    c    0.000000    0.000000    0.000000     0.00000    1.000000    
+      2 Fe    c    0.500000    0.500000    0.000000     0.00000    1.000000    
+      3 Fe    c    0.000000    0.500000    0.500000     0.00000    1.000000    
+      4 Fe    c    0.500000    0.000000    0.500000     0.00000    1.000000    
+      5 S     c    0.250000    0.250000    0.250000     0.00000    1.000000    
+      6 S     c    0.750000    0.750000    0.250000     0.00000    1.000000    
+      7 S     c    0.250000    0.750000    0.750000     0.00000    1.000000    
+      8 S     c    0.750000    0.250000    0.750000     0.00000    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+********************************************************************************
+*  General input information                                                   *
+********************************************************************************
+
+  Species output for all configurations : 
+
+--------------------------------------------------------------------------------
+  Species    Type    Atomic    Atomic    Charge       Radii (Angs)     Library
+                     Number     Mass       (e)     Cova   Ionic  VDW   Symbol
+--------------------------------------------------------------------------------
+    Fe       Core       26      55.85   0.000000   1.340  0.000  2.000          
+    S        Core       16      32.07   0.000000   1.020  0.000  1.700          
+--------------------------------------------------------------------------------
+
+
+  Lattice summation method               =    Ewald          (3-D)
+                                         =    Parry          (2-D)
+                                         =    Saunders et al (1-D)
+  Accuracy factor for lattice sums       =   12.000
+
+
+  Time limit = Infinity
+
+  Maximum range for interatomic potentials =    100000.000000 Angstroms
+
+  General interatomic potentials :
+
+--------------------------------------------------------------------------------
+Atom  Types   Potential      Parameter       Value         Units   Cutoffs(Ang)
+  1     2                                                            Min /  Max 
+--------------------------------------------------------------------------------
+Fe   c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+S    c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+
+  Energy shifts for configurations :
+
+--------------------------------------------------------------------------------
+      Configuration           Energy (eV)        Scale Factor
+--------------------------------------------------------------------------------
+             1                1.00000                 1.000
+             2                1.00000                 1.000
+             3                1.00000                 1.000
+--------------------------------------------------------------------------------
+
+
+
+  Number of variables   =    3
+  Number of observables =    3
+
+--------------------------------------------------------------------------------
+   Observable no.  Type           Observable    Weight       Reference  Confign 
+--------------------------------------------------------------------------------
+          1        Energy           -1.000000      100.0000                1
+          2        Energy           -1.000000      100.0000                2
+          3        Energy            1.000000      100.0000                3
+--------------------------------------------------------------------------------
+
+  Variables :
+
+--------------------------------------------------------------------------------
+     Parameter No.       Parameter Value          Parameter Type  Species
+--------------------------------------------------------------------------------
+             1                  1.000000          Energy shift        0
+             2                  1.000000          Lennard-Jones A
+             3                  1.000000          Lennard-Jones B
+--------------------------------------------------------------------------------
+
+  Symmetry not used for fitting
+  First derivatives of residuals to be used in fitting
+
+  Maximum no. of cycles   =       5000
+  Maximum step size       =  1000.0000
+  Tolerance on parameters =  0.0000100
+  Tolerance on function   =  0.0000100
+  Tolerance on gradient   =  0.0001000
+  Differencing interval   =  0.0001000
+
+  Start of fitting :
+
+  Cycle:      0  Sum sqs:     620.646726  Gnorm:    678.706026  CPU:    0.017
+  ** Hessian calculated **
+  Cycle:      1  Sum sqs:     236.823045  Gnorm:      0.569042  CPU:    0.029
+  Cycle:      2  Sum sqs:     236.237177  Gnorm:      0.576337  CPU:    0.041
+  Cycle:      3  Sum sqs:     236.229618  Gnorm:      0.566073  CPU:    0.056
+  Cycle:      4  Sum sqs:     236.229324  Gnorm:      0.023301  CPU:    0.070
+  Cycle:      5  Sum sqs:     236.229324  Gnorm:      0.019172  CPU:    0.085
+
+
+  **** Fit completed successfully ****
+
+
+  Final sum of squares =           236.229324
+
+  Final gradient norm  =             0.019172
+
+  Final values of parameters :
+
+--------------------------------------------------------------------------------
+ Parameter No.    Parameter        Parameter      Parameter Type  Species
+                  Original         Final                                 
+--------------------------------------------------------------------------------
+         1              1.000000        -0.138820 Energy shift        0
+         2              1.000000         1.000136 Lennard-Jones A
+         3              1.000000         0.000001 Lennard-Jones B
+--------------------------------------------------------------------------------
+
+
+  Final values of numerical parameter gradients :
+
+--------------------------------------------------------------------------------
+     Parameter No.       Parameter Gradient      Parameter Type  Species
+--------------------------------------------------------------------------------
+             1                  0.017787          Energy shift        0
+             2                 -0.000081          Lennard-Jones A
+             3                 -0.007154          Lennard-Jones B
+--------------------------------------------------------------------------------
+
+
+  Final values of residuals :
+
+--------------------------------------------------------------------------------
+   Observable no.  Type            Observable   Calculated    Residual  Error(%)
+--------------------------------------------------------------------------------
+          1        Energy            -1.00000     -0.45751     29.42981   54.249
+          2        Energy            -1.00000     -0.29118     50.24291   70.882
+          3        Energy             1.00000     -0.25123    156.55661 -125.123
+--------------------------------------------------------------------------------
+
+  Comparison of initial and final observables :
+
+--------------------------------------------------------------------------------
+   Observable no.  Type            Observable   Initial       Final             
+--------------------------------------------------------------------------------
+          1        Energy            -1.00000      0.67191     -0.45751
+          2        Energy            -1.00000      0.84295     -0.29118
+          3        Energy             1.00000      0.87860     -0.25123
+--------------------------------------------------------------------------------
+
+  Maximum range for interatomic potentials =    100000.000000 Angstroms
+
+  General interatomic potentials :
+
+--------------------------------------------------------------------------------
+Atom  Types   Potential      Parameter       Value         Units   Cutoffs(Ang)
+  1     2                                                            Min /  Max 
+--------------------------------------------------------------------------------
+Fe   c Fe   c Lennard       Lennard-Jones A  1.0001360    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B 0.12644946E-05eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+S    c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+
+  Energy shifts for configurations :
+
+--------------------------------------------------------------------------------
+      Configuration           Energy (eV)        Scale Factor
+--------------------------------------------------------------------------------
+             1               -.138820                 1.000
+             2               -.138820                 1.000
+             3               -.138820                 1.000
+--------------------------------------------------------------------------------
+
+
+
+
+  Total time to end of fitting =       0.0859 seconds
+
+********************************************************************************
+*  Output for configuration   1 : pyrite                                       *
+********************************************************************************
+
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =          -0.31868795 eV    
+  Monopole - monopole (real) =           0.00000000 eV    
+  Monopole - monopole (recip)=           0.00000000 eV    
+  Monopole - monopole (total)=           0.00000000 eV    
+  Energy shift               =          -0.13881958 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          -0.45750753 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =             -44.1425 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+********************************************************************************
+*  Output for configuration   2 : marcasite                                    *
+********************************************************************************
+
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =          -0.15235812 eV    
+  Monopole - monopole (real) =           0.00000000 eV    
+  Monopole - monopole (recip)=           0.00000000 eV    
+  Monopole - monopole (total)=           0.00000000 eV    
+  Energy shift               =          -0.13881958 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          -0.29117770 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =             -28.0942 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+********************************************************************************
+*  Output for configuration   3 : zincblende                                   *
+********************************************************************************
+
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =          -0.11240626 eV    
+  Monopole - monopole (real) =           0.00000000 eV    
+  Monopole - monopole (recip)=           0.00000000 eV    
+  Monopole - monopole (total)=           0.00000000 eV    
+  Energy shift               =          -0.13881958 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          -0.25122584 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =             -24.2395 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+  Peak dynamic memory used =       0.52 MB 
+
+
+  Timing analysis for GULP :
+
+--------------------------------------------------------------------------------
+  Task / Subroutine                                          Time (Seconds)
+--------------------------------------------------------------------------------
+  Calculation of real space energy and derivatives                0.0742
+  Sum of squares for fitting                                      0.0025
+  Global summation overhead                                       0.0002
+--------------------------------------------------------------------------------
+  Total CPU time                                                  0.0876
+--------------------------------------------------------------------------------
+
+
+  Job Finished at 16:26.43 11th July       2019                               
+
