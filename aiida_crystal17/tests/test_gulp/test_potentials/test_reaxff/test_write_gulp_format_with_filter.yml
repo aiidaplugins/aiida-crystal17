@@ -78,13 +78,13 @@
     reaxff2_bo6: 16.0
     reaxff2_bo7: 0.0
     reaxff2_bo8: 0.0
-    reaxff2_bo9: 0.0
     reaxff2_bond1: 41.4611
     reaxff2_bond2: 0.0
     reaxff2_bond3: 0.0
     reaxff2_bond4: 0.2931
     reaxff2_bond5: 0.6294
     reaxff2_over: 0.2682
+    reaxff2_pen1: 0.0
   0-1:
     dummy1: 1.0
     reaxff2_bo1: -0.0758
@@ -95,7 +95,6 @@
     reaxff2_bo6: 16.0
     reaxff2_bo7: 0.0
     reaxff2_bo8: 0.0
-    reaxff2_bo9: 0.0
     reaxff2_bond1: 75.528
     reaxff2_bond2: 0.0
     reaxff2_bond3: 0.0
@@ -108,6 +107,7 @@
     reaxff2_morse5: -1.0
     reaxff2_morse6: -1.0
     reaxff2_over: 0.1769
+    reaxff2_pen1: 0.0
   1-1:
     dummy1: 1.0
     reaxff2_bo1: -0.1131
@@ -118,13 +118,13 @@
     reaxff2_bo6: 17.8574
     reaxff2_bo7: 1.0
     reaxff2_bo8: 1.0
-    reaxff2_bo9: 0.0
     reaxff2_bond1: 86.8868
     reaxff2_bond2: 69.1367
     reaxff2_bond3: 0.0
     reaxff2_bond4: -0.9993
     reaxff2_bond5: 0.2799
     reaxff2_over: 0.0999
+    reaxff2_pen1: 0.0
 3body:
   0-0-1:
     reaxff3_angle1: 33.4003
@@ -132,7 +132,7 @@
     reaxff3_angle3: 0.1076
     reaxff3_angle4: 1.0
     reaxff3_angle5: 0.0825
-    reaxff3_conj: 0.0
+    reaxff3_coa1: 0.0
     reaxff3_penalty: 0.0
   0-1-0:
     reaxff3_angle1: 100.0
@@ -140,7 +140,7 @@
     reaxff3_angle3: 0.7752
     reaxff3_angle4: 2.2142
     reaxff3_angle5: 0.1221
-    reaxff3_conj: 0.0
+    reaxff3_coa1: 0.0
     reaxff3_penalty: 0.0
   0-1-1:
     reaxff3_angle1: 77.0475
@@ -148,7 +148,7 @@
     reaxff3_angle3: 4.9579
     reaxff3_angle4: 2.3345
     reaxff3_angle5: 0.7548
-    reaxff3_conj: 0.0
+    reaxff3_coa1: 0.0
     reaxff3_penalty: 0.0
   1-0-1:
     reaxff3_angle1: 0.2
@@ -156,7 +156,7 @@
     reaxff3_angle3: 1.3736
     reaxff3_angle4: 1.8149
     reaxff3_angle5: 0.0412
-    reaxff3_conj: 0.0
+    reaxff3_coa1: 0.0
     reaxff3_penalty: 0.0
   1-1-1:
     reaxff3_angle1: 84.2345
@@ -164,7 +164,7 @@
     reaxff3_angle3: 3.7715
     reaxff3_angle4: 1.627
     reaxff3_angle5: 1.3066
-    reaxff3_conj: 0.0
+    reaxff3_coa1: 0.0
     reaxff3_penalty: 0.0
 4body:
   1-1-1-1:
@@ -178,10 +178,6 @@
 description: 'Reactive MD-force field: Cr/O/Fe/S/C/H force field 2014'
 global:
   C2-correction: 60.485
-  Conjugation: 2.1645
-  Double bond/angle: 6.929
-  'Double bond/angle: overcoord 1': 0.3989
-  'Double bond/angle: overcoord 2': 3.9954
   Lower Taper-radius: 0.0
   Not used 2: 6.1431
   Not used 3: -2.4837
@@ -190,32 +186,37 @@ global:
   Not used 6: 20.0
   Not used 7: 5.0
   Not used 8: 0.0
-  Overcoordination 1: 50.0
-  Overcoordination 2: 9.5469
-  Torsion overcoordination 1: 10.0
-  Torsion overcoordination 2: 1.9487
-  Torsion/BO: 5.7796
   Triple bond stabilisation: 4.6
   Triple bond stabilisation 1: 1.7224
   Triple bond stabilisation 2: 6.8702
   Triple bond stabilization energy: -70.5044
-  Undercoordination 1: 1.0588
-  Undercoordination 2: 12.1176
-  Undercoordination 3: 13.3056
   Upper Taper-radius: 10.0
-  Valency angle 1: 1.0563
-  Valency angle 2: 2.0384
-  Valency angle conjugation 1: 26.5405
-  Valency angle conjugation 2: 2.1365
-  Valency angle conjugation 3: 2.6962
-  Valency angle/lone pair: 6.0891
-  Valency overcoordination 1: 0.6991
-  Valency overcoordination 2: 50.0
-  Valency undercoordination: 33.8667
-  Valency/lone pair: 1.8512
   bond order cutoff: 0.1
-  reaxff2_bo10: 2.8793
-  vdWaals shielding: 1.5591
+  reaxff0_boc1: 50.0
+  reaxff0_boc2: 9.5469
+  reaxff0_cot2: 2.1645
+  reaxff0_lp1: 6.0891
+  reaxff0_ovun3: 50.0
+  reaxff0_ovun4: 0.6991
+  reaxff0_ovun6: 1.0588
+  reaxff0_ovun7: 12.1176
+  reaxff0_ovun8: 13.3056
+  reaxff0_pen2: 6.929
+  reaxff0_pen3: 0.3989
+  reaxff0_pen4: 3.9954
+  reaxff0_tor2: 5.7796
+  reaxff0_tor3: 10.0
+  reaxff0_tor4: 1.9487
+  reaxff0_val10: 2.0384
+  reaxff0_val7: 33.8667
+  reaxff0_val8: 1.8512
+  reaxff0_val9: 1.0563
+  reaxff0_vdw1: 1.5591
+  reaxff2_pen2: 2.8793
+  reaxff2_pen3: 1.0
+  reaxff3_coa2: 26.5405
+  reaxff3_coa3: 2.6962
+  reaxff3_coa4: 2.1365
 species:
 - Fe core
 - S core

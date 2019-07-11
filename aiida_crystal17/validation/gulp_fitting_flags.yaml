@@ -236,8 +236,13 @@ inversion:
 lennard:
   - signature: 'atom1 atom2 (A B/epsilon sigma) <rmin> rmax '
     flags: 2
+    flag_name: ['A', 'B']
+  # if epsilon specified
+  - signature: 'atom1 atom2 epsilon sigma <rmin> rmax '
+    flags: 2
+    flag_name: ['epsilon', 'sigma']
 lin3:
-  - signature: '<rmin(2-3)> rmax(2-3) '
+  - signature: 'atom1 atom2 atom3 K isign n <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(2-3)> rmax(2-3) '
     flags: 1
 ljbuffered:
   - signature: 'atom1 atom2 A B r0 <rmin> rmax '
@@ -246,7 +251,7 @@ mei-davenport:
   - signature: 'atom1 atom2 phi0 delta gamma r0 <rmin> rmax '
     flags: 4
 mm3angle:
-  - signature: '<rmin(2-3)> rmax(2-3) '
+  - signature: 'atom1 atom2 atom3 k2 theta0 A B C D E <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(2-3)> rmax(2-3) '
     flags: 7
 mm3buck:
   - signature: 'atom1 atom2 A B C epsilon rv <rmin> rmax '
@@ -302,89 +307,125 @@ qtaper:
     flags: 1
 reaxff0_bond:
   - signature: 'reaxff0_bond p_boc1 p_boc2 '
+    # overcoordination
     flags: 2
+    names: ['reaxff0_boc1', 'reaxff0_boc2']
 reaxff0_lonepair:
   - signature: 'reaxff0_lonepair p_lp1 '
+    # Valency angle/lone pair
     flags: 1
+    names: ['reaxff0_lp1']
 reaxff0_over:
   - signature: 'reaxff0_over p_ovun3 p_ovun4 p_ovun6 p_ovun7 p_ovun8 '
+    # overcoordination(2) undercoordination(3)
     flags: 5
+    names: ['reaxff0_ovun3', 'reaxff0_ovun4', 'reaxff0_ovun6', 'reaxff0_ovun7', 'reaxff0_ovun8']
 reaxff0_penalty:
   - signature: 'reaxff0_penalty p_pen2 p_pen3 p_pen4 '
+    #  Double bond/angle, Double bond/angle overcoordination(2)
     flags: 3
+    names: ['reaxff0_pen2', 'reaxff0_pen3', 'reaxff0_pen4']
 reaxff0_torsion:
   - signature: 'reaxff0_torsion p_tor2 p_tor3 p_tor4 p_cot2 '
+    # bond-order, overcoordination(2), conjugation
     flags: 4
+    names: ['reaxff0_tor2', 'reaxff0_tor3', 'reaxff0_tor4', 'reaxff0_cot2']
 reaxff0_valence:
   - signature: 'reaxff0_valence p_val7 p_val8 p_val9 p_val10 '
+    # undercoordination, lone pair, angle(2)
     flags: 4
+    names: ['reaxff0_val7', 'reaxff0_val8', 'reaxff0_val9', 'reaxff0_val10']
 reaxff0_vdw:
   - signature: 'reaxff0_vdw p_vdw1 '
+    # vdWaals shielding
     flags: 1
+    names: ['reaxff0_vdw1']
 reaxff1_angle:
   - signature: 'species <core/shell> p_val3 p_val5 '
     flags: 2
+    names: ['reaxff1_angle1', 'reaxff1_angle2']
 reaxff1_lonepair:
   - signature: 'species <core/shell> n_lp_opt p_lp2 '
     flags: 2
+    names: ['reaxff1_lonepair1', 'reaxff1_lonepair2']
 reaxff1_morse:
   - signature: 'species <core/shell> alpha Dij rvdw gamma_w '
     flags: 4
+    names: ['reaxff1_morse1', 'reaxff1_morse2', 'reaxff1_morse3', 'reaxff1_morse4']
 reaxff1_over:
   - signature: 'species <core/shell> p_boc3 p_boc4 p_boc5 p_ovun2 '
     flags: 4
+    names: ['reaxff1_over1', 'reaxff1_over2', 'reaxff1_over3', 'reaxff1_over4']
 reaxff1_radii:
   - signature: 'species <core/shell> r_sigma r_pi r_pipi '
     flags: 3
+    names: ['reaxff1_radii1', 'reaxff1_radii2', 'reaxff1_radii3']
 reaxff1_under:
   - signature: 'species <core/shell> p_ovun5 '
     flags: 1
+    names: ['reaxff1_under']
 reaxff1_valence:
   - signature: 'species <core/shell> Val_normal Val_boc Val_lp Val_angle '
     flags: 4
+    names: ['reaxff1_valence1', 'reaxff1_valence2', 'reaxff1_valence3', 'reaxff1_valence4']
 reaxff2_bo:
   - signature: 'species1 <core/shell> species2 <core/shell> p_bo1 p_bo2 p_bo3 p_bo4
       p_bo5 p_bo6 '
     flags: 6
+    names: ['reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
+            'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6']
 reaxff2_bond:
   - signature: 'species1 <core/shell> species2 <core/shell> De_sigma De_pi De_pipi
       p_be1 p_be2 '
     flags: 5
+    names: ['reaxff2_bond1', 'reaxff2_bond2', 'reaxff2_bond3',
+            'reaxff2_bond4', 'reaxff2_bond5']
 reaxff2_morse:
-  - signature: 'species1 <core/shell> species2 <core/shell> De alpha r0 r_sigma r_pi
-      r_pipi '
+  - signature: 'species1 <core/shell> species2 <core/shell> De alpha r0 r_sigma r_pi r_pipi '
     flags: 6
+    names: ['reaxff2_morse1', 'reaxff2_morse2', 'reaxff2_morse3',
+            'reaxff2_morse4', 'reaxff2_morse5', 'reaxff2_morse6']
 reaxff2_over:
   - signature: 'species1 <core/shell> species2 <core/shell> p_ovun1 '
     flags: 1
+    names: ['reaxff2_over']
 reaxff2_pen:
   - signature: 'species1 <core/shell> species2 <core/shell> p_pen1 p_pen2 p_pen3 '
     flags: 3
+    names: ['reaxff2_pen1', 'reaxff2_pen2', 'reaxff2_pen3']
 reaxff3_angle:
-  - signature: 'theta_00 p_val1 p_val2 p_val4 p_val7 <p_val6> '
+  - signature: 'species1 <core/shell> species2 <core/shell> species3 <core/shell> theta_00 p_val1 p_val2 p_val4 p_val7 <p_val6> '
     flags: 6
+    names: ['reaxff3_angle1', 'reaxff3_angle2', 'reaxff3_angle3',
+            'reaxff3_angle4', 'reaxff3_angle5', 'reaxff3_angle6']
 reaxff3_conjugation:
-  - signature: 'p_coa1 p_coa2 p_coa3 p_coa4 '
+  - signature: 'species1 <core/shell> species2 <core/shell> species3 <core/shell> p_coa1 p_coa2 p_coa3 p_coa4 '
     flags: 4
+    names: ['reaxff3_coa1', 'reaxff3_coa2', 'reaxff3_coa3', 'reaxff3_coa4']
 reaxff3_hbond:
-  - signature: 'p_hb2 p_hb3 '
+  - signature: 'species1 <core/shell> species2 <core/shell> species3 <core/shell> r0_hb p_hb1 p_hb2 p_hb3 '
     flags: 4
-reaxff3_pen:
-  - signature: 'species1 <core/shell> species2 <core/shell> species3 <core/shell>
-      p_pen1 '
+    names: ['reaxff3_hbond1', 'reaxff3_hbond2', 'reaxff3_hbond3', 'reaxff3_hbond4']
+reaxff3_penalty:
+  - signature: 'species1 <core/shell> species2 <core/shell> species3 <core/shell> p_pen1 '
     flags: 1
+    names: ['reaxff3_penalty']
 reaxff4_torsion:
   - signature: 'V1 V2 V3 p_tor1 p_cot1 '
     flags: 5
+    names: ['reaxff4_torsion1', 'reaxff4_torsion2', 'reaxff4_torsion3', 'reaxff4_torsion4', 'reaxff4_torsion5']
 reaxff_chi:
   - signature: 'species <core/shell> chi '
     flags: 1
+    names: ['reaxff_chi']
 reaxff_gamma:
   - signature: 'species <core/shell> gamma '
     flags: 1
+    names: ['reaxff_gamma']
 reaxff_mu:
   - signature: 'species <core/shell> mu '
     flags: 1
+    names: ['reaxff_mu']
 reaxff_qshell:
   - signature: 'species <core/shell> dMu Qs beta '
     flags: 3
@@ -517,8 +558,7 @@ xcosangleangle:
   - signature: 'atom1 atom2 atom3 atom4 k(213/4) k(312/4) k(412/3) theta0(213) theta0(214) theta0(314) rmax(1-2) rmax(1-3) rmax(1-4) '
     flags: 6
 xoutofplane:
-  - signature: 'atom1 atom2 atom3 atom4 atom5 atom6 k rmax(1-2) rmax(1-3) rmax(1-4)
-      rmax(2-5) rmax(2-6) '
+  - signature: 'atom1 atom2 atom3 atom4 atom5 atom6 k rmax(1-2) rmax(1-3) rmax(1-4) rmax(2-5) rmax(2-6) '
     flags: 1
 zbl:
   - signature: 'atom1 atom2 <b1 c1 b2 c2 b3 c3 b4 c4 d n> <rmin> rmax '

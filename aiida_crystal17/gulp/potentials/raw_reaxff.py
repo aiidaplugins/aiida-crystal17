@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from decimal import Decimal
 import re
 
@@ -6,20 +7,20 @@ from aiida_crystal17.gulp.potentials.common import INDEX_SEP
 
 
 KEYS_GLOBAL = (
-    'Overcoordination 1', 'Overcoordination 2', 'Valency angle conjugation 1',
+    'reaxff0_boc1', 'reaxff0_boc2', 'reaxff3_coa2',
     'Triple bond stabilisation 1', 'Triple bond stabilisation 2',
-    'C2-correction', 'Undercoordination 1', 'Triple bond stabilisation',
-    'Undercoordination 2', 'Undercoordination 3',
+    'C2-correction', 'reaxff0_ovun6', 'Triple bond stabilisation',
+    'reaxff0_ovun7', 'reaxff0_ovun8',
     'Triple bond stabilization energy', 'Lower Taper-radius',
-    'Upper Taper-radius', 'reaxff2_bo10', 'Valency undercoordination',
-    'Valency angle/lone pair', 'Valency angle 1', 'Valency angle 2',
-    'Not used 2', 'Double bond/angle', 'Double bond/angle: overcoord 1',
-    'Double bond/angle: overcoord 2', 'Not used 3', 'Torsion/BO',
-    'Torsion overcoordination 1', 'Torsion overcoordination 2', 'Not used 4',
-    'Conjugation', 'vdWaals shielding', 'bond order cutoff',
-    'Valency angle conjugation 2', 'Valency overcoordination 1',
-    'Valency overcoordination 2', 'Valency/lone pair', 'Not used 5',
-    'Not used 6', 'Not used 7', 'Not used 8', 'Valency angle conjugation 3'
+    'Upper Taper-radius', 'reaxff2_pen2', 'reaxff0_val7',
+    'reaxff0_lp1', 'reaxff0_val9', 'reaxff0_val10',
+    'Not used 2', 'reaxff0_pen2', 'reaxff0_pen3',
+    'reaxff0_pen4', 'Not used 3', 'reaxff0_tor2',
+    'reaxff0_tor3', 'reaxff0_tor4', 'Not used 4',
+    'reaxff0_cot2', 'reaxff0_vdw1', 'bond order cutoff',
+    'reaxff3_coa4', 'reaxff0_ovun4',
+    'reaxff0_ovun3', 'reaxff0_val8', 'Not used 5',
+    'Not used 6', 'Not used 7', 'Not used 8', 'reaxff3_coa3'
 )
 
 KEYS_1BODY = (
@@ -37,7 +38,7 @@ KEYS_2BODY_BONDS = (
     'reaxff2_bond1', 'reaxff2_bond2', 'reaxff2_bond3',
     'reaxff2_bond4', 'reaxff2_bo5', 'reaxff2_bo7', 'reaxff2_bo6',
     'reaxff2_over', 'reaxff2_bond5', 'reaxff2_bo3', 'reaxff2_bo4', 'dummy1',
-    'reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo8', 'reaxff2_bo9'
+    'reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo8', 'reaxff2_pen1'
 )
 
 KEYS_2BODY_OFFDIAG = [
@@ -47,7 +48,7 @@ KEYS_2BODY_OFFDIAG = [
 
 KEYS_3BODY_ANGLES = (
     'reaxff3_angle1', 'reaxff3_angle2',
-    'reaxff3_angle3', 'reaxff3_conj', 'reaxff3_angle5', 'reaxff3_penalty',
+    'reaxff3_angle3', 'reaxff3_coa1', 'reaxff3_angle5', 'reaxff3_penalty',
     'reaxff3_angle4'
 )
 
@@ -134,6 +135,8 @@ def read_lammps_format(lines):
     for key in KEYS_GLOBAL:
         lineno += 1
         output["global"][key] = float(lines[lineno].split()[0])
+
+    output['global']['reaxff2_pen3'] = 1.0  # this is not provided by lammps, but is used by GULP
 
     # one-body parameters
     lineno += 1
@@ -376,7 +379,10 @@ def write_lammps_format(data):
 
 
 def write_gulp_format(data):
-    """ write a reaxff file, in GULP format, from a standardised potential dictionary """
+    """ write a reaxff file, in GULP format, from a standardised potential dictionary
+
+    Note: energies should be supplied in kcal (the default for lammps)
+    """
     # validate dictionary
     validate_against_schema(data, "potential.reaxff.schema.json")
 
@@ -419,33 +425,19 @@ def write_gulp_format(data):
     # global parameters
     output.append("#  Species independent parameters")
     output.append("#")
-    output.append(("reaxff0_bond     {:12.6f} {:12.6f}".format(
-        data["global"]['Overcoordination 1'],
-        data["global"]['Overcoordination 2'])))
-    output.append(("reaxff0_over     {:12.6f} {:12.6f} {:12.6f} {:12.6f} {:12.6f}".format(
-        data["global"]['Valency overcoordination 2'],
-        data["global"]['Valency overcoordination 1'],
-        data["global"]['Undercoordination 1'],
-        data["global"]['Undercoordination 2'],
-        data["global"]['Undercoordination 3'])))
-    output.append(("reaxff0_valence  {:12.6f} {:12.6f} {:12.6f} {:12.6f}".format(
-        data["global"]['Valency undercoordination'],
-        data["global"]['Valency/lone pair'],
-        data["global"]['Valency angle 1'],
-        data["global"]['Valency angle 2'])))
-    output.append(("reaxff0_penalty  {:12.6f} {:12.6f} {:12.6f}".format(
-        data["global"]['Double bond/angle'],
-        data["global"]['Double bond/angle: overcoord 1'],
-        data["global"]['Double bond/angle: overcoord 2'])))
-    output.append(("reaxff0_torsion  {:12.6f} {:12.6f} {:12.6f} {:12.6f}".format(
-        data["global"]['Torsion/BO'],
-        data["global"]['Torsion overcoordination 1'],
-        data["global"]['Torsion overcoordination 2'],
-        data["global"]['Conjugation'])))
-    output.append("reaxff0_vdw      {:12.6f}".format(
-        data["global"]['vdWaals shielding']))
-    output.append("reaxff0_lonepair {:12.6f}".format(
-        data["global"]['Valency angle/lone pair']))
+
+    fields = OrderedDict([
+        ("reaxff0_bond", ['reaxff0_boc1', 'reaxff0_boc2']),
+        ("reaxff0_over", ['reaxff0_ovun3', 'reaxff0_ovun4',  'reaxff0_ovun6', 'reaxff0_ovun7', 'reaxff0_ovun8']),
+        ("reaxff0_valence", ['reaxff0_val7', 'reaxff0_val8', 'reaxff0_val9', 'reaxff0_val10']),
+        ("reaxff0_penalty", ['reaxff0_pen2', 'reaxff0_pen3', 'reaxff0_pen4']),
+        ("reaxff0_torsion", ['reaxff0_tor2', 'reaxff0_tor3', 'reaxff0_tor4', 'reaxff0_cot2']),
+        ("reaxff0_vdw", ['reaxff0_vdw1']),
+        ("reaxff0_lonepair", ['reaxff0_lp1'])
+    ])
+
+    for field, variables in fields.items():
+        output.append("{:17}".format(field)+" ".join(["{:12.6f}".format(data["global"][v]) for v in variables]))
 
     # one-body parameters
     output.append("#")
@@ -456,16 +448,22 @@ def write_gulp_format(data):
         'reaxff1_radii': ['reaxff1_radii1', 'reaxff1_radii2', 'reaxff1_radii3'],
         'reaxff1_valence': ['reaxff1_valence1', 'reaxff1_valence2', 'reaxff1_valence3', 'reaxff1_valence4'],
         'reaxff1_over': ['reaxff1_over1', 'reaxff1_over2', 'reaxff1_over3', 'reaxff1_over4'],
-        'reaxff1_under kcal': ['reaxff1_under'],
-        'reaxff1_lonepair kcal': ['reaxff1_lonepair1', 'reaxff1_lonepair2'],
+        'reaxff1_under': ['reaxff1_under'],
+        'reaxff1_lonepair': ['reaxff1_lonepair1', 'reaxff1_lonepair2'],
         'reaxff1_angle': ['reaxff1_angle1', 'reaxff1_angle2'],
-        'reaxff1_morse kcal': ['reaxff1_morse1', 'reaxff1_morse2', 'reaxff1_morse3', 'reaxff1_morse4'],
+        'reaxff1_morse': ['reaxff1_morse1', 'reaxff1_morse2', 'reaxff1_morse3', 'reaxff1_morse4'],
         'reaxff_chi': ['reaxff_chi'],
         'reaxff_mu': ['reaxff_mu'],
         'reaxff_gamma': ['reaxff_gamma']
     }
 
-    output.extend(create_gulp_fields(data, "1body", fields))
+    arguments = {
+        'reaxff1_under': ['kcal'],
+        'reaxff1_lonepair': ['kcal'],
+        'reaxff1_morse': ['kcal']
+    }
+
+    output.extend(create_gulp_fields(data, "1body", fields, arguments=arguments))
 
     # two-body bond parameters
     output.append("#")
@@ -473,41 +471,40 @@ def write_gulp_format(data):
     output.append("#")
 
     fields = {
-        'reaxff2_bo over bo13': [
-            'reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-            'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        'reaxff2_bo bo13': [
-            'reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-            'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        'reaxff2_bo over': [
-            'reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
-            'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
         'reaxff2_bo': [
             'reaxff2_bo1', 'reaxff2_bo2', 'reaxff2_bo3',
             'reaxff2_bo4', 'reaxff2_bo5', 'reaxff2_bo6'],
-        'reaxff2_bond kcal': [
+        'reaxff2_bond': [
             'reaxff2_bond1', 'reaxff2_bond2', 'reaxff2_bond3',
             'reaxff2_bond4', 'reaxff2_bond5'],
         'reaxff2_over': ['reaxff2_over'],
-        'reaxff2_pen kcal': ['reaxff2_bo9'],
-        'reaxff2_morse kcal': [
+        'reaxff2_pen': ['reaxff2_pen1', 'global.reaxff2_pen2', 'global.reaxff2_pen'],
+        'reaxff2_morse': [
             'reaxff2_morse1', 'reaxff2_morse2', 'reaxff2_morse3',
             'reaxff2_morse4', 'reaxff2_morse5', 'reaxff2_morse6']
     }
 
-    conditions = {
-        'reaxff2_bo over bo13': lambda s: s['reaxff2_bo7'] > 0.001 and s['reaxff2_bo8'] > 0.001,
-        'reaxff2_bo bo13': lambda s: s['reaxff2_bo7'] > 0.001 and s['reaxff2_bo8'] <= 0.001,
-        'reaxff2_bo over': lambda s: s['reaxff2_bo7'] <= 0.001 and s['reaxff2_bo8'] > 0.001,
-        'reaxff2_bo': lambda s: s['reaxff2_bo7'] <= 0.001 and s['reaxff2_bo8'] <= 0.001,
-        'reaxff2_pen kcal': lambda s: s['reaxff2_bo9'] > 0.0
+    def reaxff2_bo_args(bodata):
+        if bodata['reaxff2_bo7'] <= 0.001 and bodata['reaxff2_bo8'] <= 0.001:
+            return ''
+        elif bodata['reaxff2_bo7'] > 0.001 and bodata['reaxff2_bo8'] > 0.001:
+            return 'over bo13'  # correct for overcoordination using f1 and 1-3 terms using f4 and f5
+        elif bodata['reaxff2_bo7'] > 0.001 and bodata['reaxff2_bo8'] <= 0.001:
+            return 'bo13'  # correct for 1-3 terms using f4 and f5
+        elif bodata['reaxff2_bo7'] <= 0.001 and bodata['reaxff2_bo8'] > 0.001:
+            return 'over'  # correct for overcoordination using f1
+        return ''
+
+    arguments = {
+        'reaxff2_bo': reaxff2_bo_args,
+        'reaxff2_bond': ['kcal'],
+        'reaxff2_pen': ['kcal'],
+        'reaxff2_morse': ['kcal']
     }
 
-    append_values = {
-        'reaxff2_pen kcal': [data['global']['reaxff2_bo10'], 1.0]
-    }
+    conditions = {'reaxff2_pen': lambda s: s['reaxff2_pen1'] > 0.0}
 
-    output.extend(create_gulp_fields(data, "2body", fields, append_values, conditions))
+    output.extend(create_gulp_fields(data, "2body", fields, conditions, arguments=arguments))
 
     # three-body parameters
     output.append("#")
@@ -515,30 +512,32 @@ def write_gulp_format(data):
     output.append("#")
 
     fields = {
-        'reaxff3_angle kcal': [
+        'reaxff3_angle': [
             'reaxff3_angle1', 'reaxff3_angle2', 'reaxff3_angle3',
-            'reaxff3_angle4', 'reaxff3_angle5'],
-        'reaxff3_penalty kcal': ['reaxff3_penalty'],
-        'reaxff3_conjugation kcal': ['reaxff3_conj'],
-        'reaxff3_hbond kcal': [
+            'reaxff3_angle4', 'reaxff3_angle5', 'reaxff3_angle6'],
+        # TODO reaxff3_angle6 is taken from a global value, if not present,
+        # need to find out what this value is, so it can be set in the input data
+        'reaxff3_penalty': ['reaxff3_penalty'],
+        'reaxff3_conjugation': ['reaxff3_coa1', 'global.reaxff3_coa2', 'global.reaxff3_coa3', 'global.reaxff3_coa4'],
+        'reaxff3_hbond': [
             'reaxff3_hbond1', 'reaxff3_hbond2',
             'reaxff3_hbond3', 'reaxff3_hbond4']
     }
 
+    arguments = {
+        'reaxff3_angle': ['kcal'],
+        'reaxff3_penalty': ['kcal'],
+        'reaxff2_pen': ['kcal'],
+        'reaxff3_conjugation': ['kcal'],
+        'reaxff3_hbond': ['kcal']
+    }
+
     conditions = {
-        'reaxff3_angle kcal': lambda s: s['reaxff3_angle2'] > 0.0,
-        'reaxff3_conjugation kcal': lambda s: abs(s['reaxff3_conj']) > 1.0E-4
+        'reaxff3_angle': lambda s: s['reaxff3_angle2'] > 0.0,
+        'reaxff3_conjugation': lambda s: abs(s['reaxff3_coa1']) > 1.0E-4
     }
 
-    append_values = {
-        'reaxff3_conjugation kcal': [
-            data["global"]['Valency angle conjugation 1'],
-            data["global"]['Valency angle conjugation 3'],
-            data["global"]['Valency angle conjugation 2']
-        ]
-    }
-
-    output.extend(create_gulp_fields(data, "3body", fields, append_values, conditions))
+    output.extend(create_gulp_fields(data, "3body", fields, conditions, arguments=arguments))
 
     # one-body parameters
     output.append("#")
@@ -546,32 +545,35 @@ def write_gulp_format(data):
     output.append("#")
 
     fields = {
-        'reaxff4_torsion kcal': [
+        'reaxff4_torsion': [
             'reaxff4_torsion1', 'reaxff4_torsion2', 'reaxff4_torsion3',
             'reaxff4_torsion4', 'reaxff4_torsion5'],
     }
 
-    output.extend(create_gulp_fields(data, "4body", fields))
+    arguments = {'reaxff4_torsion': ['kcal']}
+
+    output.extend(create_gulp_fields(data, "4body", fields, arguments=arguments))
 
     output.append("")
 
     return "\n".join(output)
 
 
-def create_gulp_fields(data, data_key, fields, append_values=None, conditions=None):
+def create_gulp_fields(data, data_key, fields, conditions=None, arguments=None):
     """ create a subsection of the gulp output file"""
     if conditions is None:
         conditions = {}
-    if append_values is None:
-        append_values = {}
+    if arguments is None:
+        arguments = {}
 
     output = []
 
     for field in sorted(fields):
         keys = fields[field]
-        subdata = []
+        subdata = {}
         for indices in sorted(data[data_key]):
-            if not set(data[data_key][indices].keys()).issuperset(keys):
+            if not set(data[data_key][indices].keys()).issuperset(
+                    [k for k in keys if not k.startswith("global.") and k != 'reaxff3_angle6']):
                 continue
             if field in conditions:
                 try:
@@ -586,20 +588,32 @@ def create_gulp_fields(data, data_key, fields, append_values=None, conditions=No
                 # This is different to LAMMPS, where the pivot atom is the central one!
                 species = [species[1], species[0], species[2]]
             species = " ".join(species)
-            values = " ".join([format_gulp_value(data[data_key][indices], k) for k in keys])
-            if field in append_values:
-                values += " " + " ".join(["{:8.4f} ".format(v) for v in append_values[field]])
-            subdata.append("{} {}".format(species, values))
-        if subdata:
-            output.append(field)
-            output.extend(subdata)
+            values = " ".join([format_gulp_value(data, data_key, indices, k) for k in keys if k != "reaxff3_angle6"])
+
+            if field in arguments and isinstance(arguments[field], list):
+                args = " ".join(arguments[field])
+            elif field in arguments:
+                args = arguments[field](data[data_key][indices])
+            else:
+                args = ""
+
+            subdata.setdefault(args, []).append("{} {}".format(species, values))
+
+        for args in sorted(subdata.keys()):
+            output.append(field + " " + args if args else field)
+            output.extend(subdata[args])
 
     return output
 
 
-def format_gulp_value(data, key):
+def format_gulp_value(data, data_key, indices, key):
     """ some GULP specific conversions """
-    value = data[key]
+
+    if key.startswith("global."):
+        data_key, key = key.split(".")
+        value = data[data_key][key]
+    else:
+        value = data[data_key][indices][key]
 
     if key == "reaxff2_bo3":
         # If reaxff2_bo3 = 1 needs to be set to 0 for GULP since this is a dummy value
