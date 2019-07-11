@@ -142,7 +142,7 @@ def read_lammps_format(lines):
     idx = 1
     for i in range(num_species):
         lineno += 1
-        symbol, values = lines[lineno].split(maxsplit=1)
+        symbol, values = lines[lineno].split(None, 1)
         if symbol == "X":
             species_idx = 0  # the X symbol is always assigned index 0
         else:
