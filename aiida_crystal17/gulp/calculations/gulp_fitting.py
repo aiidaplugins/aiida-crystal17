@@ -15,6 +15,10 @@ from aiida.plugins import DataFactory
 from aiida_crystal17.gulp.parsers.raw.write_input_fitting import create_input_lines
 
 
+def potential_validator(potential):
+    assert potential.has_fitting_flags, "fitting flags should be set for the potential"
+
+
 class GulpFittingCalculation(CalcJob):
     """ a calculation plugin to perform fitting of potentials,
     given a set of structures and observables
@@ -33,7 +37,7 @@ class GulpFittingCalculation(CalcJob):
 
         spec.input(
             "potential", valid_type=DataFactory('gulp.potential'), required=True,
-            serializer=to_aiida_type,
+            serializer=to_aiida_type, validator=potential_validator,
             help=("a dictionary defining the potential. "
                   "Note this should have been created with fitting flags initialised")
         )
@@ -95,7 +99,15 @@ class GulpFittingCalculation(CalcJob):
             raise InputValidationError(
                 "The structures and observables do not match: {} != {}".format(struct_keys, observe_keys))
 
-        # TODO validate number of fitting variables vs number of observables
+        # TODO control observables
+
+        # validate number of fitting variables vs number of observables
+        if len(observe_keys) < self.inputs.potential.number_of_variables:
+            raise InputValidationError(
+                "The number of observables supplied ({}) "
+                "is less than the number of variables required to be fit ({})".format(
+                    len(observe_keys), self.inputs.potential.number_of_variables
+                ))
 
         content = "\n".join(create_input_lines(
             self.inputs.potential,

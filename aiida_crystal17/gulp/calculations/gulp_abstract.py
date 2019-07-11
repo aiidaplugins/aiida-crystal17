@@ -9,6 +9,10 @@ from aiida.engine import CalcJob
 from aiida.plugins import DataFactory
 
 
+def potential_validator(potential):
+    assert not potential.has_fitting_flags, "fitting flags should not be set for the potential"
+
+
 class GulpAbstractCalculation(CalcJob):
     """
     AiiDA calculation plugin to run the gulp executable,
@@ -36,7 +40,7 @@ class GulpAbstractCalculation(CalcJob):
                   'geometry section of .gin file content.'))
         spec.input(
             'potential', valid_type=DataFactory('gulp.potential'),
-            required=True,
+            required=True, validator=potential_validator,
             help=('parameters to create the '
                   'potential section of the .gin file content.'))
         spec.input(

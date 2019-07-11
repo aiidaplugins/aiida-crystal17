@@ -1,7 +1,22 @@
+from collections import namedtuple
 import copy
 
 from aiida_crystal17.validation import validate_against_schema
 from aiida_crystal17.gulp.potentials.common import filter_by_species
+
+PotentialContent = namedtuple('PotentialContent', ['content', 'number_of_flags', "number_flagged"])
+"""used for returning the content creation for a potential
+
+Parameters
+----------
+content: str
+    the potential file content
+number_of_flags: int
+    number of potential flags for fitting
+number_flagged: int
+    number of variables flagged to fit
+
+"""
 
 
 class PotentialWriterAbstract(object):
@@ -84,12 +99,12 @@ class PotentialWriterAbstract(object):
 
         Returns
         -------
-        str
+        PotentialContent
 
         """
         raise NotImplementedError
 
-    def create_string(self, data, species_filter=None, fitting_data=None):
+    def create_content(self, data, species_filter=None, fitting_data=None):
         """create string for inter-atomic potential section for main.gin file
 
         Parameters
@@ -105,7 +120,7 @@ class PotentialWriterAbstract(object):
 
         Returns
         -------
-        str
+        PotentialContent
 
         """
         # validate data

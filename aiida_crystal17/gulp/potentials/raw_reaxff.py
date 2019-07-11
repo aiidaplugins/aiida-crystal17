@@ -398,8 +398,12 @@ def write_gulp_format(data, fitting_data=None,
 
     for species in data["species"]:
         if species.endswith("shell"):
+            # TODO is this true?
             raise ValueError("only core species can be used for reaxff, not shell: {}".format(species))
         species = species[:-5]
+
+    total_flags = 0  # total number of variables with a flag
+    fitting_flags = 0  # number of variables with a flag set to 1
 
     # header
     output = [
@@ -445,8 +449,10 @@ def write_gulp_format(data, fitting_data=None,
     ])
 
     for field, variables in fields.items():
+        total_flags += len(variables)
         string = "{:17}".format(field) + " ".join([global_val_fmt.format(data["global"][v]) for v in variables])
         if fitting_data is not None:
+            fitting_flags += sum([1 if v in fitting_data.get("global", []) else 0 for v in variables])
             string += " " + " ".join(["1" if v in fitting_data.get("global", []) else "0" for v in variables])
         output.append(string)
 
@@ -474,8 +480,11 @@ def write_gulp_format(data, fitting_data=None,
         'reaxff1_morse': ['kcal']
     }
 
-    output.extend(create_gulp_fields(data, "1body", fields, species_val_fmt,
-                                     arguments=arguments, fitting_data=fitting_data))
+    field_lines, num_vars, num_fit = create_gulp_fields(data, "1body", fields, species_val_fmt,
+                                                        arguments=arguments, fitting_data=fitting_data)
+    total_flags += num_vars
+    fitting_flags += num_fit
+    output.extend(field_lines)
 
     # two-body bond parameters
     output.append("#")
@@ -516,8 +525,11 @@ def write_gulp_format(data, fitting_data=None,
 
     conditions = {'reaxff2_pen': lambda s: s['reaxff2_pen1'] > 0.0}
 
-    output.extend(create_gulp_fields(data, "2body", fields, species_val_fmt,
-                                     conditions, arguments=arguments, fitting_data=fitting_data))
+    field_lines, num_vars, num_fit = create_gulp_fields(data, "2body", fields, species_val_fmt,
+                                                        conditions, arguments=arguments, fitting_data=fitting_data)
+    total_flags += num_vars
+    fitting_flags += num_fit
+    output.extend(field_lines)
 
     # three-body parameters
     output.append("#")
@@ -550,8 +562,11 @@ def write_gulp_format(data, fitting_data=None,
         'reaxff3_conjugation': lambda s: abs(s['reaxff3_coa1']) > 1.0E-4
     }
 
-    output.extend(create_gulp_fields(data, "3body", fields, species_val_fmt,
-                                     conditions, arguments=arguments, fitting_data=fitting_data))
+    field_lines, num_vars, num_fit = create_gulp_fields(data, "3body", fields, species_val_fmt,
+                                                        conditions, arguments=arguments, fitting_data=fitting_data)
+    total_flags += num_vars
+    fitting_flags += num_fit
+    output.extend(field_lines)
 
     # one-body parameters
     output.append("#")
@@ -566,12 +581,15 @@ def write_gulp_format(data, fitting_data=None,
 
     arguments = {'reaxff4_torsion': ['kcal']}
 
-    output.extend(create_gulp_fields(data, "4body", fields, species_val_fmt,
-                                     arguments=arguments, fitting_data=fitting_data))
+    field_lines, num_vars, num_fit = create_gulp_fields(data, "4body", fields, species_val_fmt,
+                                                        arguments=arguments, fitting_data=fitting_data)
+    total_flags += num_vars
+    fitting_flags += num_fit
+    output.extend(field_lines)
 
     output.append("")
 
-    return "\n".join(output)
+    return "\n".join(output), total_flags, fitting_flags
 
 
 def create_gulp_fields(data, data_type, fields, species_val_fmt,
@@ -581,6 +599,8 @@ def create_gulp_fields(data, data_type, fields, species_val_fmt,
         conditions = {}
     if arguments is None:
         arguments = {}
+    num_of_variable = 0
+    num_fit = 0
 
     output = []
 
@@ -588,6 +608,7 @@ def create_gulp_fields(data, data_type, fields, species_val_fmt,
         keys = fields[field]
         subdata = {}
         for indices in sorted(data[data_type]):
+            num_of_variable += len(keys)
             if not set(data[data_type][indices].keys()).issuperset(
                     [k for k in keys if not k.startswith("global.") and k != 'reaxff3_angle6']):
                 continue
@@ -608,6 +629,7 @@ def create_gulp_fields(data, data_type, fields, species_val_fmt,
                                for k in keys if k != "reaxff3_angle6"])
 
             if fitting_data is not None:
+                num_fit += sum([1 if v in fitting_data.get(data_type, {}).get(indices, []) else 0 for v in keys])
                 values += " " + " ".join(["1" if v in fitting_data.get(data_type, {}).get(indices, []) else "0"
                                           for v in keys])
 
@@ -624,7 +646,7 @@ def create_gulp_fields(data, data_type, fields, species_val_fmt,
             output.append(field + " " + args if args else field)
             output.extend(subdata[args])
 
-    return output
+    return output, num_of_variable, num_fit
 
 
 def format_gulp_value(data, data_type, indices, key, species_val_fmt):

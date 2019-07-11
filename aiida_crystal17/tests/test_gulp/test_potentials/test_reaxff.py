@@ -315,7 +315,7 @@ def test_round_trip_lammps_format():
 
 def test_write_gulp_format(file_regression):
     data = read_lammps_format(lammps_file.splitlines())
-    output = write_gulp_format(data)
+    output, nflags, nfit = write_gulp_format(data)
     file_regression.check(six.ensure_text(output))
 
 
@@ -323,7 +323,7 @@ def test_write_gulp_format_with_filter(data_regression, file_regression):
     data = read_lammps_format(lammps_file.splitlines())
     data = filter_by_species(data, ["Fe core", "S core"])
     data_regression.check(data)
-    output = write_gulp_format(data)
+    output, nflags, nfit = write_gulp_format(data)
     file_regression.check(six.ensure_text(output))
 
 
@@ -346,5 +346,7 @@ def test_write_gulp_format_with_fitting(data_regression, file_regression):
             "1-1-1-1": ["reaxff4_torsion4"]
         }
     }
-    output = write_gulp_format(data, fitting_data)
+    output, nflags, nfit = write_gulp_format(data, fitting_data)
     file_regression.check(six.ensure_text(output))
+    assert nfit == 5
+    assert nflags == 209

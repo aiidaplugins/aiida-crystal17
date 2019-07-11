@@ -1,4 +1,4 @@
-from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
+from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract, PotentialContent
 from aiida_crystal17.gulp.potentials.common import INDEX_SEP
 from aiida_crystal17.validation import load_schema
 
@@ -26,16 +26,21 @@ class PotentialWriterLJ(PotentialWriterAbstract):
         Parameters
         ----------
         data : dict
-            dictionary of data required to create potential
+            dictionary of data
         species_filter : list[str] or None
             list of atomic symbols to filter by
-        fitting_data: dict or None
-            a dictionary specifying which variables to flag for optimisation,
-            of the form; {<type>: {<index>: [variable1, ...]}}
-            if None, no flags will be added
+
+        Returns
+        -------
+        str:
+            the potential file content
+        int:
+            number of potential flags for fitting
 
         """
         lines = []
+        total_flags = 0
+        num_fit = 0
 
         for indices in sorted(data["2body"]):
             species = ["{:7s}".format(data["species"][int(i)]) for i in indices.split(INDEX_SEP)]
@@ -46,14 +51,17 @@ class PotentialWriterLJ(PotentialWriterAbstract):
             else:
                 values_string = "{lj_A} {lj_B} {lj_rmax}".format(**values)
 
+            total_flags += 2
+
             if fitting_data is not None:
                 flag_a = flag_b = 0
                 if "lj_A" in fitting_data.get("2body", {}).get(indices, []):
                     flag_a = 1
                 if "lj_B" in fitting_data.get("2body", {}).get(indices, []):
                     flag_b = 1
+                num_fit += flag_a + flag_b
                 values_string += " {} {}".format(flag_a, flag_b)
 
             lines.append(" ".join(species) + " " + values_string)
 
-        return "\n".join(lines)
+        return PotentialContent("\n".join(lines), total_flags, num_fit)

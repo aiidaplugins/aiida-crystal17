@@ -1,20 +1,9 @@
-data:
-  2body:
-    0-0:
-      lj_A: 1.0
-      lj_B: 1.0
-      lj_rmax: 12.0
-    0-1:
-      lj_A: 1.0
-      lj_B: 1.0
-      lj_rmax: 12.0
-    1-1:
-      lj_A: 1.0
-      lj_B: 1.0
-      lj_rmax: 12.0
-  species:
-  - Fe core
-  - S core
 description: Lennard-Jones potential, of the form; E = A/r**m - B/r**n
+fitting_flags: false
 input_lines_md5: f313b1b97e0bae72dc2f6cf2c30d17d8
+number_flagged: 0
 pair_style: lj
+species:
+- Fe core
+- S core
+total_flags: 6

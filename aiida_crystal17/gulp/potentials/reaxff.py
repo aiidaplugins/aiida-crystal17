@@ -1,4 +1,4 @@
-from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
+from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract, PotentialContent
 from aiida_crystal17.validation import load_schema
 from aiida_crystal17.gulp.potentials.raw_reaxff import write_gulp_format
 
@@ -24,9 +24,19 @@ class PotentialWriterReaxff(PotentialWriterAbstract):
     def _make_string(self, data, fitting_data=None):
         """write reaxff data in GULP input format
 
-        :param data: dictionary of data
-        :param species_filter: list of symbols to filter
-        :rtype: str
+        Parameters
+        ----------
+        data : dict
+            dictionary of data
+        species_filter : list[str] or None
+            list of atomic symbols to filter by
+
+        Returns
+        -------
+        str:
+            the potential file content
+        int:
+            number of potential flags for fitting
 
         """
-        return write_gulp_format(data, fitting_data=fitting_data)
+        return PotentialContent(*write_gulp_format(data, fitting_data=fitting_data))
