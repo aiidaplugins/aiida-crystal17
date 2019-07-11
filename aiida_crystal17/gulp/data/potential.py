@@ -53,11 +53,11 @@ class EmpiricalPotential(Data):
             handle.write(six.ensure_text(output.content))
 
         with self.open(self._default_potential_json, 'w') as handle:
-            json.dump(potential_data, handle)
+            handle.write(six.ensure_text(json.dumps(potential_data)))
 
         if fitting_data is not None:
             with self.open(self._default_fitting_json, 'w') as handle:
-                json.dump(fitting_data, handle)
+                handle.write(six.ensure_text(json.dumps(fitting_data)))
 
         dictionary = {
             'pair_style': pair_style,
