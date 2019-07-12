@@ -170,3 +170,5 @@ S core  S core  S core  0.0000 0
 #
 reaxff4_torsion kcal
 S core  S core  S core  S core  2.4661 71.9719 0.0100 -8.0000 0.0000 0 0 0 0 0
+
+dump fitting.grs

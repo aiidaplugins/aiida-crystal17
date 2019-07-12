@@ -56,7 +56,7 @@ def test_optimize_no_cif(db_test_app):
 def test_optimize_no_convergence(db_test_app):
     # type: (AiidaTestApp) -> None
     retrieved = FolderData()
-    path = os.path.join(TEST_FILES, "gulp", "failed", 'FAILED_OPT_main_out.gulp.out')
+    path = os.path.join(TEST_FILES, "gulp", "failed", 'opt_step_limit.gout')
     retrieved.put_object_from_file(path, "main.gout")
     path = os.path.join(TEST_FILES, "gulp", "optimize_reaxff_pyrite", 'output.cif')
     calc_cls = db_test_app.get_calc_cls('gulp.optimize')
@@ -68,7 +68,7 @@ def test_optimize_no_convergence(db_test_app):
     # raise
     assert calcfunction.is_finished
     assert not calcfunction.is_finished_ok
-    assert calcfunction.exit_status == calc_cls.exit_codes.ERROR_NOT_OPTIMISED.status
+    assert calcfunction.exit_status == calc_cls.exit_codes.ERROR_OPTIMISE_MAX_ATTEMPTS.status
 
     # the output structure should still be passed though
     assert "results" in results

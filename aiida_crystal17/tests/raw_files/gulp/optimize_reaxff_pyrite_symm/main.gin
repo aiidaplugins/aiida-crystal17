@@ -1,4 +1,5 @@
-optimise verb conp cg
+optimise verb gulp_s2_hse.gin
+gulp_s2_hse.gout
 
 # Geometry
 name main-geometry

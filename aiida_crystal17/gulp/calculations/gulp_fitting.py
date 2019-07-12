@@ -2,7 +2,6 @@
 given a set of structures and observables
 """
 
-import os
 import six
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
@@ -32,6 +31,10 @@ class GulpFittingCalculation(CalcJob):
                    valid_type=six.string_types, default='main.gin')
         spec.input('metadata.options.output_main_file_name',
                    valid_type=six.string_types, default='main.gout')
+        spec.input('metadata.options.output_stderr_file_name',
+                   valid_type=six.string_types, default='main_stderr.txt')
+        spec.input('metadata.options.output_dump_file_name',
+                   valid_type=six.string_types, default='fitting.grs')
         spec.input('metadata.options.parser_name',
                    valid_type=six.string_types, default='gulp.fitting')
 
@@ -71,8 +74,17 @@ class GulpFittingCalculation(CalcJob):
             message=('An error was flagged trying to parse the '
                      'gulp exec stdout file'))
         spec.exit_code(
+            301, 'ERROR_STDOUT_EMPTY',
+            message=('The stdout file is empty'))
+        spec.exit_code(
             310, 'ERROR_NOT_ENOUGH_OBSERVABLES',
             message=('The number of fitting variables exceeds the number of observables'))
+        spec.exit_code(
+            311, 'ERROR_FIT_UNSUCCESFUL',
+            message=('The fit was not successful'))
+        spec.exit_code(
+            311, 'ERROR_GULP_UNKNOWN',
+            message=('An error was flagged by GULP, which is not accounted for in another exit code'))
 
         # Significant errors but calculation can be used to restart
 
@@ -113,6 +125,7 @@ class GulpFittingCalculation(CalcJob):
             self.inputs.potential,
             self.inputs.structures,
             self.inputs.observables,
+            self.metadata.options.output_dump_file_name
         ))
 
         if not isinstance(content, six.text_type):
@@ -125,9 +138,9 @@ class GulpFittingCalculation(CalcJob):
         code = self.inputs.code
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = [
-            os.path.splitext(self.metadata.options.input_file_name)[0]
-        ]
+        codeinfo.stdin_name = self.metadata.options.input_file_name
+        codeinfo.stdout_name = self.metadata.options.output_main_file_name
+        codeinfo.stderr_name = self.metadata.options.output_stderr_file_name
         codeinfo.withmpi = self.metadata.options.withmpi
 
         # Prepare CalcInfo object for aiida
@@ -137,7 +150,9 @@ class GulpFittingCalculation(CalcJob):
         calcinfo.local_copy_list = []
         calcinfo.remote_copy_list = []
         calcinfo.retrieve_list = [
-            self.metadata.options.output_main_file_name
+            self.metadata.options.output_main_file_name,
+            self.metadata.options.output_stderr_file_name,
+            self.metadata.options.output_dump_file_name
         ]
         calcinfo.retrieve_temporary_list = []
 

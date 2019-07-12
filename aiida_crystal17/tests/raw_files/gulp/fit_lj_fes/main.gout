@@ -11,7 +11,7 @@
 *  noflags      - no flags to be read in, assumed to all be zero               *
 ********************************************************************************
 
-  Job Started  at 17:25.30 11th July       2019                               
+  Job Started  at 03:13.57 12th July       2019                               
 
   Number of CPUs =     1
 
@@ -265,13 +265,13 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 
   Start of fitting :
 
-  Cycle:      0  Sum sqs:     620.646726  Gnorm:    678.706026  CPU:    0.016
+  Cycle:      0  Sum sqs:     620.646726  Gnorm:    678.706026  CPU:    0.021
   ** Hessian calculated **
-  Cycle:      1  Sum sqs:     236.823045  Gnorm:      0.569042  CPU:    0.028
-  Cycle:      2  Sum sqs:     236.237177  Gnorm:      0.576337  CPU:    0.042
-  Cycle:      3  Sum sqs:     236.229618  Gnorm:      0.566073  CPU:    0.061
-  Cycle:      4  Sum sqs:     236.229324  Gnorm:      0.023301  CPU:    0.075
-  Cycle:      5  Sum sqs:     236.229324  Gnorm:      0.019172  CPU:    0.087
+  Cycle:      1  Sum sqs:     236.823045  Gnorm:      0.569042  CPU:    0.034
+  Cycle:      2  Sum sqs:     236.237177  Gnorm:      0.576337  CPU:    0.046
+  Cycle:      3  Sum sqs:     236.229618  Gnorm:      0.566073  CPU:    0.060
+  Cycle:      4  Sum sqs:     236.229324  Gnorm:      0.023301  CPU:    0.073
+  Cycle:      5  Sum sqs:     236.229324  Gnorm:      0.019172  CPU:    0.084
 
 
   **** Fit completed successfully ****
@@ -361,7 +361,7 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 
 
 
-  Total time to end of fitting =       0.0891 seconds
+  Total time to end of fitting =       0.0856 seconds
 
 ********************************************************************************
 *  Output for configuration   1 : marcasite                                    *
@@ -428,13 +428,16 @@ S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of real space energy and derivatives                0.0777
-  Sum of squares for fitting                                      0.0031
+  Calculation of real space energy and derivatives                0.0731
+  Sum of squares for fitting                                      0.0025
   Global summation overhead                                       0.0002
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.0913
+  Total CPU time                                                  0.0875
 --------------------------------------------------------------------------------
 
 
-  Job Finished at 17:25.30 11th July       2019                               
+  Dump file written as fitting.grs                                             
+
+
+  Job Finished at 03:13.57 12th July       2019                               
 

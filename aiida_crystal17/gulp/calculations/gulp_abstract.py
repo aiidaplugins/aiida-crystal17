@@ -1,7 +1,6 @@
 """
 Plugin to run GULP
 """
-import os
 import six
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
@@ -32,6 +31,8 @@ class GulpAbstractCalculation(CalcJob):
                    valid_type=six.string_types, default='main.gin')
         spec.input('metadata.options.output_main_file_name',
                    valid_type=six.string_types, default='main.gout')
+        spec.input('metadata.options.output_stderr_file_name',
+                   valid_type=six.string_types, default='main_stderr.txt')
 
         spec.input(
             'structure', valid_type=DataFactory('structure'),
@@ -64,13 +65,22 @@ class GulpAbstractCalculation(CalcJob):
             300, 'ERROR_PARSING_STDOUT',
             message=('An error was flagged trying to parse the '
                      'main gulp output file'))
+        spec.exit_code(
+            301, 'ERROR_STDOUT_EMPTY',
+            message=('The stdout file is empty'))
 
         # Significant errors but calculation can be used to restart
         spec.exit_code(
-            400, 'ERROR_GULP_RUN',
-            message='The main gulp output file flagged an unknown error')
+            400, 'ERROR_GULP_UNHANDLED',
+            message='The main gulp output file flagged an error not handled elsewhere')
         spec.exit_code(
-            410, 'ERROR_NOT_OPTIMISED',
+            410, 'ERROR_OPTIMISE_UNSUCCESFUL',
+            message='The main gulp output file did not signal that an expected optimisation completed')
+        spec.exit_code(
+            411, 'ERROR_OPTIMISE_MAX_ATTEMPTS',
+            message='The main gulp output file did not signal that an expected optimisation completed')
+        spec.exit_code(
+            412, 'ERROR_OPTIMISE_MAX_CALLS',
             message='The main gulp output file did not signal that an expected optimisation completed')
 
         spec.output(cls.link_output_results,
@@ -104,9 +114,9 @@ class GulpAbstractCalculation(CalcJob):
         code = self.inputs.code
         codeinfo = CodeInfo()
         codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = [
-            os.path.splitext(self.metadata.options.input_file_name)[0]
-        ]
+        codeinfo.stdin_name = self.metadata.options.input_file_name
+        codeinfo.stdout_name = self.metadata.options.output_main_file_name
+        codeinfo.stderr_name = self.metadata.options.output_stderr_file_name
         codeinfo.withmpi = self.metadata.options.withmpi
 
         # Prepare CalcInfo object for aiida
@@ -129,5 +139,6 @@ class GulpAbstractCalculation(CalcJob):
     def get_retrieve_list(self):
         """ should return the files to be retrieved """
         return [
-            self.metadata.options.output_main_file_name
+            self.metadata.options.output_main_file_name,
+            self.metadata.options.output_stderr_file_name
         ]

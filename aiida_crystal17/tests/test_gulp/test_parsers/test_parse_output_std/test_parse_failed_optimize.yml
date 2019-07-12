@@ -1,0 +1,39 @@
+energy_units: eV
+errors:
+- '**** Too many failed attempts to optimise ****'
+final_energy: -23.261685
+final_primitive_energy: -23.261685
+gulp_version: 4.0.3
+initial_energy: -22.665715
+initial_primitive_energy: -22.665715
+opt_succeeded: false
+opt_time_second: 0.1791
+opt_type: bulk
+parser_class: test_class
+parser_errors: []
+parser_warnings: []
+peak_dynamic_memory_mb: 0.48
+reaxff_charges:
+  atomic_number:
+  - 26
+  - 26
+  - 16
+  - 16
+  - 16
+  - 16
+  charge:
+  - 0.348316
+  - 0.348316
+  - -0.174158
+  - -0.174158
+  - -0.174158
+  - -0.174158
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+total_time_second: 0.1791
+warnings: []

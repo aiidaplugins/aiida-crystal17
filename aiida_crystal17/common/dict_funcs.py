@@ -1,3 +1,4 @@
+from collections import Mapping
 import json
 from textwrap import wrap
 from jsonextended import edict
@@ -31,6 +32,28 @@ def get_keys(dct, keys, default=None, raise_error=False):
             else:
                 return default
     return subdct
+
+
+def map_nested_dicts(ob, func, apply_lists=False):
+    """ map a function on to all values of a nested dictionary """
+    if isinstance(ob, Mapping):
+        return {k: map_nested_dicts(v, func, apply_lists)
+                for k, v in ob.items()}
+    elif apply_lists and isinstance(ob, (list, tuple)):
+        return [map_nested_dicts(v, func, apply_lists) for v in ob]
+    else:
+        return func(ob)
+
+
+def recursive_round(dct, dp):
+    """ recursively apply the `round` function to all floats in a dict"""
+
+    def _round(value):
+        if isinstance(value, float):
+            value = round(value, dp)
+        return value
+
+    return map_nested_dicts(dct, _round, True)
 
 
 class BuilderEncoder(json.JSONEncoder):

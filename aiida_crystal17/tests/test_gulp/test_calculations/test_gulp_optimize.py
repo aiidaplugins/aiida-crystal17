@@ -1,7 +1,8 @@
 import os  # noqa: F401
-from jsonextended import edict
+
 from aiida.plugins import DataFactory
-from aiida_crystal17 import __version__
+
+from aiida_crystal17.common import recursive_round
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 from aiida_crystal17.tests import TEST_FILES  # noqa: F401
 from aiida_crystal17.gulp.parsers.raw.write_input import (  # noqa: F401
@@ -16,7 +17,7 @@ def write_input_file(icreate, file_like, structure, potential,
     return icreate.get_content_hash()
 
 
-def test_run_optimize_lj(db_test_app, get_structure, pyrite_potential_lj):
+def test_run_optimize_lj(db_test_app, get_structure, pyrite_potential_lj, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
 
@@ -45,22 +46,13 @@ def test_run_optimize_lj(db_test_app, get_structure, pyrite_potential_lj):
 
     db_test_app.check_calculation(calc_node, ["results", "structure"])
 
-    expected = {
-        'energy_initial': -0.32809466,
-        'optimised': True,
-        'energy': -17.47113113,
-        'energy_units': 'eV',
-        'errors': [],
-        'parser_class': 'GulpOptParser',
-        'parser_errors': [],
-        'parser_version': __version__,
-        'parser_warnings': [],
-        'warnings': []}
-    assert edict.diff(
-        calc_node.outputs.results.get_dict(), expected, np_allclose=True) == {}
+    result = recursive_round(calc_node.outputs.results.get_dict(), 6)
+    for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
+        result.pop(key, None)
+    data_regression.check(result)
 
 
-def test_run_optimize_lj_with_symm(db_test_app, get_structure, pyrite_potential_lj):
+def test_run_optimize_lj_with_symm(db_test_app, get_structure, pyrite_potential_lj, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
 
@@ -94,20 +86,10 @@ def test_run_optimize_lj_with_symm(db_test_app, get_structure, pyrite_potential_
     db_test_app.check_calculation(
         calc_node, ["results", "structure", "retrieved"])
 
-    expected = {
-        'energy_initial': -0.32809466,
-        'optimised': True,
-        'energy': -14.12566776,
-        'energy_units': 'eV',
-        'errors': [],
-        'parser_class': 'GulpOptParser',
-        'parser_errors': [],
-        'parser_version': __version__,
-        'parser_warnings': [],
-        'warnings': [("Conditions for a minimum have not been satisfied. "
-                      "However no lower point can be found - treat results with caution")]}
-    assert edict.diff(
-        calc_node.outputs.results.get_dict(), expected, np_allclose=True) == {}
+    result = recursive_round(calc_node.outputs.results.get_dict(), 6)
+    for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
+        result.pop(key, None)
+    data_regression.check(result)
 
     # file_regression.check(
     #     calc_node.outputs.retrieved.get_object_content('main.gout'), basename="optimize_lj_pyrite_symm.gout")
@@ -117,7 +99,7 @@ def test_run_optimize_lj_with_symm(db_test_app, get_structure, pyrite_potential_
     #     calc_node.outputs.retrieved.get_object_content('output.cif'), basename="optimize_lj_pyrite_symm.cif")
 
 
-def test_run_optimize_reaxff(db_test_app, get_structure, pyrite_potential_reaxff):
+def test_run_optimize_reaxff(db_test_app, get_structure, pyrite_potential_reaxff, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
 
@@ -146,25 +128,13 @@ def test_run_optimize_reaxff(db_test_app, get_structure, pyrite_potential_reaxff
 
     db_test_app.check_calculation(calc_node, ["results", "structure"])
 
-    expected = {
-        'errors': [], 'warnings': [], 'parser_version': __version__,
-        'parser_class': 'GulpOptParser', 'parser_warnings': [], 'parser_errors': [],
-        'energy_units': 'eV',
-        'energy_initial': -42.24545667,
-        'energy': -43.56745576,
-        'optimised': True,
-        'energy_contributions': {
-            'Bond': -70.24248892, 'Coulomb': -3.09559776, 'Torsion': 0.79779098,
-            'Lone-Pair': 1.21245957, 'Conjugation': 0.0, 'Hydrogen Bond': 0.0,
-            'Valence Angle': 14.8595733, 'van der Waals': 3.23506097,
-            'Coordination (over)': 9.93440993, 'Charge Equilibration': -0.26866394,
-            'Coordination (under)': 1.1e-07, 'Valence Angle Conjugation': 0.0,
-            'Double-Bond Valence Angle Penalty': 0.0}}
-    assert edict.diff(
-        calc_node.outputs.results.get_dict(), expected, np_allclose=True) == {}
+    result = recursive_round(calc_node.outputs.results.get_dict(), 6)
+    for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
+        result.pop(key, None)
+    data_regression.check(result)
 
 
-def test_run_optimize_reaxff_symm(db_test_app, get_structure, pyrite_potential_reaxff):
+def test_run_optimize_reaxff_symm(db_test_app, get_structure, pyrite_potential_reaxff, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
 
@@ -195,19 +165,7 @@ def test_run_optimize_reaxff_symm(db_test_app, get_structure, pyrite_potential_r
 
     db_test_app.check_calculation(calc_node, ["results", "structure"])
 
-    expected = {
-        'errors': [], 'warnings': [], 'parser_version': __version__,
-        'parser_class': 'GulpOptParser', 'parser_warnings': [], 'parser_errors': [],
-        'energy_units': 'eV',
-        'energy_initial': -42.24545667,
-        'energy': -47.40858937,
-        'optimised': True,
-        'energy_contributions': {
-            'Bond': -78.05702943, 'Coulomb': -2.97478507, 'Torsion': 0.20219012,
-            'Lone-Pair': 1.21399494, 'Conjugation': 0.0, 'Hydrogen Bond': 0.0,
-            'Valence Angle': 14.01837821, 'van der Waals': 6.11205713,
-            'Coordination (over)': 12.42317601, 'Charge Equilibration': -0.34657127,
-            'Coordination (under)': 0.0, 'Valence Angle Conjugation': 0.0,
-            'Double-Bond Valence Angle Penalty': 0.0}}
-    assert edict.diff(
-        calc_node.outputs.results.get_dict(), expected, np_allclose=True) == {}
+    result = recursive_round(calc_node.outputs.results.get_dict(), 6)
+    for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
+        result.pop(key, None)
+    data_regression.check(result)

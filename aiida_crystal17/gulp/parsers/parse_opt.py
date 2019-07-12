@@ -1,13 +1,16 @@
 """
 A parser to read output from a standard CRYSTAL17 run
 """
+import traceback
 import warnings
 from ase.io import read as ase_read
 from aiida.common import exceptions
+from aiida.engine import ExitCode
+from aiida.orm import Dict
 from aiida.parsers.parser import Parser
 from aiida.plugins import DataFactory
 
-from aiida_crystal17.gulp.parsers.raw.parse_output import parse_output
+from aiida_crystal17.gulp.parsers.raw.parse_output_std import parse_file
 
 
 class GulpOptParser(Parser):
@@ -31,30 +34,41 @@ class GulpOptParser(Parser):
         # parse the main output file and add nodes
         self.logger.info("parsing main out file")
         with output_folder.open(mainout_file) as handle:
-            parser_result = parse_output(
-                handle, parser_class=self.__class__.__name__,
-                final=True, optimise=True)
+            try:
+                result_dict, exit_code = parse_file(
+                    handle, parser_class=self.__class__.__name__)
+            except Exception:
+                traceback.print_exc()
+                return self.exit_codes.ERROR_PARSING_STDOUT
 
-        errors = parser_result.nodes.results.get_attribute("errors")
-        parser_errors = parser_result.nodes.results.get_attribute(
-            "parser_errors")
-        if parser_errors:
+        if result_dict["parser_errors"]:
             self.logger.warning(
                 "the parser raised the following errors:\n{}".format(
-                    "\n\t".join(parser_errors)))
-        if errors:
+                    "\n\t".join(result_dict["parser_errors"])))
+        if result_dict["errors"]:
             self.logger.warning(
                 "the calculation raised the following errors:\n{}".format(
-                    "\n\t".join(errors)))
+                    "\n\t".join(result_dict["errors"])))
 
-        self.out('results', parser_result.nodes.results)
+        # look a stderr for fortran warnings, etc,
+        # e.g. IEEE_INVALID_FLAG IEEE_OVERFLOW_FLAG IEEE_UNDERFLOW_FLAG
+        stderr_file = self.node.get_option("output_stderr_file_name")
+        if stderr_file in output_folder.list_object_names():
+            with output_folder.open(stderr_file) as handle:
+                stderr_content = handle.read()
+                if stderr_content:
+                    self.logger.warning("the calculation stderr file was not empty:")
+                    self.logger.warning(stderr_content)
+                    result_dict["warnings"].append(stderr_content.strip())
+
+        self.out('results', Dict(dict=result_dict))
 
         cif_file = self.node.get_option("out_cif_file_name")
         if cif_file not in output_folder.list_object_names():
             self.logger.error("the output cif file is missing")
-            if parser_result.exit_code.status != 0:
+            if exit_code is not None:
                 # if there was already an error identified, then return that
-                return parser_result.exit_code
+                return self.exit_codes[exit_code]
             return self.exit_codes.ERROR_CIF_FILE_MISSING
 
         # We do not use this method, since currently different kinds are set for each atom
@@ -77,8 +91,9 @@ class GulpOptParser(Parser):
 
             if "structure" not in self.node.inputs:
                 self.logger.error("the input structure node is not set")
-                if parser_result.exit_code.status != 0:
-                    return parser_result.exit_code
+                if exit_code is not None:
+                    # if there was already an error identified, then return that
+                    return self.exit_codes[exit_code]
                 return self.exit_codes.ERROR_MISSING_INPUT_STRUCTURE
 
             in_structure = self.node.inputs.structure
@@ -87,8 +102,9 @@ class GulpOptParser(Parser):
             if in_atoms.get_chemical_symbols() != atoms.get_chemical_symbols():
                 self.logger.error(
                     "the input and cif structures have different atomic configurations")
-                if parser_result.exit_code.status != 0:
-                    return parser_result.exit_code
+                if exit_code is not None:
+                    # if there was already an error identified, then return that
+                    return self.exit_codes[exit_code]
                 return self.exit_codes.ERROR_CIF_INCONSISTENT
 
             out_structure = in_structure.clone()
@@ -100,4 +116,6 @@ class GulpOptParser(Parser):
 
         self.out('structure', out_structure)
 
-        return parser_result.exit_code
+        if exit_code is not None:
+            return self.exit_codes[exit_code]
+        return ExitCode()

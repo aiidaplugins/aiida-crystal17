@@ -11,7 +11,7 @@
 *  noflags      - no flags to be read in, assumed to all be zero               *
 ********************************************************************************
 
-  Job Started  at 18:50.43 11th July       2019                               
+  Job Started  at 03:12.25 12th July       2019                               
 
   Number of CPUs =     1
 
@@ -256,7 +256,7 @@
 
   Start of fitting :
 
-  Cycle:      0  Sum sqs:  303958.603338  Gnorm:  18460.405024  CPU:    0.167
+  Cycle:      0  Sum sqs:  303958.603338  Gnorm:  18460.405024  CPU:    0.173
   ** Hessian calculated **
 
 
@@ -338,7 +338,7 @@
 
 
 
-  Total time to end of fitting =       0.4462 seconds
+  Total time to end of fitting =       0.4002 seconds
 
 ********************************************************************************
 *  Output for configuration   1 : marcasite                                    *
@@ -461,13 +461,16 @@
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of reaxFF energy and derivatives                    0.4410
-  Electronegativity equalisation                                  0.0137
-  Sum of squares for fitting                                      0.0014
+  Calculation of reaxFF energy and derivatives                    0.3975
+  Electronegativity equalisation                                  0.0119
+  Sum of squares for fitting                                      0.0011
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.4680
+  Total CPU time                                                  0.4232
 --------------------------------------------------------------------------------
 
 
-  Job Finished at 18:50.43 11th July       2019                               
+  Dump file written as fitting.grs                                             
+
+
+  Job Finished at 03:12.26 12th July       2019                               
 

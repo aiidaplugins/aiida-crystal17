@@ -387,6 +387,9 @@ def write_gulp_format(data, fitting_data=None,
     # NOTE: GULP has issues reading from lines longer than ~80 characters,
     # this is particularly an issue for 4 body parameters + fitting flags
     # Hence why these value formats are imposed
+    # TODO can use '&' to denote a new line (appears you can use it once per line)
+    # NOTE GULP outputs to 6 dp
+    # TODO use scientific output
 
     energies should be supplied in kcal (the default of the lammps file format)
     """
@@ -568,7 +571,9 @@ def write_gulp_format(data, fitting_data=None,
     fitting_flags += num_fit
     output.extend(field_lines)
 
-    # one-body parameters
+    # four-body parameters
+    # TODO there seems to be an issue when flagging more than one torsion variable for fitting
+    # the dump file just shows the first flagged variable as 1, then subsequent as 0
     output.append("#")
     output.append("#  Four-Body Parameters")
     output.append("#")

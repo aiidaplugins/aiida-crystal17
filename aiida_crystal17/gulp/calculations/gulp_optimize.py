@@ -65,5 +65,6 @@ class GulpOptCalculation(GulpAbstractCalculation):
         """ should return the files to be retrieved """
         return [
             self.metadata.options.output_main_file_name,
+            self.metadata.options.output_stderr_file_name,
             self.metadata.options.out_cif_file_name
         ]

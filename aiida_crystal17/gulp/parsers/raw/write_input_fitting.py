@@ -1,7 +1,7 @@
 from aiida_crystal17.gulp.parsers.raw.write_geometry import create_geometry_lines
 
 
-def create_input_lines(potential, structures, observables):
+def create_input_lines(potential, structures, observables, dump_file="fitting.grs"):
     """ create the input file for a potential fitting """
     lines = []
 
@@ -36,9 +36,8 @@ def create_input_lines(potential, structures, observables):
     # Force Field
     lines.extend(potential.get_input_lines())
 
-    # TODO optional dumping
-    # dump every {interval} noover fitting.grs
-
     lines.append("")
+    lines.append("dump {}".format(dump_file))
+    # NOTE can also dump every interval ('noover' will output to separate files)
 
     return lines
