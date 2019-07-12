@@ -13,7 +13,7 @@
         "Topic :: Scientific/Engineering :: Physics",
         "Framework :: AiiDA"
     ],
-    "version": "0.7.1b4",
+    "version": "0.8.0b4",
     "entry_points": {
         "console_scripts": [
             "mock_crystal17 = aiida_crystal17.tests.mock_crystal17:main",
@@ -33,14 +33,16 @@
             "crystal17.doss = aiida_crystal17.calculations.cry_doss:CryDossCalculation",
             "crystal17.fermi = aiida_crystal17.calculations.cry_fermi:CryFermiCalculation",
             "gulp.single = aiida_crystal17.gulp.calculations.gulp_single:GulpSingleCalculation",
-            "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation"
+            "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation",
+            "gulp.fitting = aiida_crystal17.gulp.calculations.gulp_fitting:GulpFittingCalculation"
         ],
         "aiida.parsers": [
             "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser",
             "crystal17.doss = aiida_crystal17.parsers.cry_doss:CryDossParser",
             "crystal17.fermi = aiida_crystal17.parsers.cry_fermi:CryFermiParser",
-            "gulp.single = aiida_crystal17.gulp.parsers.parse_main:GulpSingleParser",
-            "gulp.optimize = aiida_crystal17.gulp.parsers.parse_main:GulpOptParser"
+            "gulp.single = aiida_crystal17.gulp.parsers.parse_single:GulpSingleParser",
+            "gulp.optimize = aiida_crystal17.gulp.parsers.parse_opt:GulpOptParser",
+            "gulp.fitting = aiida_crystal17.gulp.parsers.parse_fitting:GulpFittingParser"
         ],
         "aiida.workflows": [
             "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure",

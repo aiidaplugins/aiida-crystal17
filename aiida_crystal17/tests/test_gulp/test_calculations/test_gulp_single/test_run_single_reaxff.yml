@@ -1,0 +1,64 @@
+energy: -44.600332
+energy_contributions:
+  bond: -78.236609
+  bpen: 0.0
+  coa: 0.0
+  conj: 0.0
+  coulomb: -3.344222
+  hb: 0.0
+  lonepair: 1.213993
+  over: 12.78994
+  pen: 0.0
+  self: -0.106087
+  tors: 0.0
+  under: 0.0
+  val: 16.668957
+  vdw: 6.413695
+energy_units: eV
+errors: []
+gulp_version: 4.5.3
+parser_class: GulpSingleParser
+parser_errors: []
+parser_warnings: []
+primitive_energy: -44.600332
+reaxff_charges:
+  atomic_number:
+  - 26
+  - 26
+  - 26
+  - 26
+  - 16
+  - 16
+  - 16
+  - 16
+  - 16
+  - 16
+  - 16
+  - 16
+  charge:
+  - 0.359707
+  - 0.359707
+  - 0.359707
+  - 0.359707
+  - -0.179853
+  - -0.179853
+  - -0.179853
+  - -0.179853
+  - -0.179853
+  - -0.179853
+  - -0.179853
+  - -0.179853
+  index:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+warnings: []

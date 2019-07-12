@@ -1,0 +1,11 @@
+energy: -0.328095
+energy_units: eV
+errors: []
+gulp_version: 4.5.3
+parser_class: test_class
+parser_errors: []
+parser_warnings: []
+peak_dynamic_memory_mb: 0.5
+primitive_energy: -0.328095
+total_time_second: 0.0078
+warnings: []

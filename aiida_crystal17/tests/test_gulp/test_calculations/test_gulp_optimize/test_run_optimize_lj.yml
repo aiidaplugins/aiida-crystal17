@@ -1,0 +1,13 @@
+energy_units: eV
+errors: []
+final_energy: -17.471131
+final_primitive_energy: -17.471131
+gulp_version: 4.5.3
+initial_energy: -0.328095
+initial_primitive_energy: -0.328095
+opt_succeeded: true
+opt_type: bulk
+parser_class: GulpOptParser
+parser_errors: []
+parser_warnings: []
+warnings: []

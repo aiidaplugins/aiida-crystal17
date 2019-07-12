@@ -1,5 +1,5 @@
-import copy
-from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract
+from aiida_crystal17.gulp.potentials.base import PotentialWriterAbstract, PotentialContent
+from aiida_crystal17.gulp.potentials.common import INDEX_SEP
 from aiida_crystal17.validation import load_schema
 
 
@@ -7,58 +7,61 @@ class PotentialWriterLJ(PotentialWriterAbstract):
     """class for creating gulp lennard-jones type
     inter-atomic potential inputs
     """
-    _schema = None
 
     @classmethod
     def get_description(cls):
-        return "Lennard-Jones potential"
+        return "Lennard-Jones potential, of the form; E = A/r**m - B/r**n"
 
     @classmethod
-    def get_schema(cls):
-        if cls._schema is None:
-            cls._schema = load_schema("lj_potential.schema.json")
-        return copy.deepcopy(cls._schema)
+    def _get_schema(cls):
+        return load_schema("potential.lj.schema.json")
 
-    def _make_string(self, data, species_filter=None):
+    @classmethod
+    def _get_fitting_schema(cls):
+        return load_schema("fitting.lj.schema.json")
+
+    def _make_string(self, data, fitting_data=None):
         """write reaxff data in GULP input format
 
-        :param data: dictionary of data
-        :param species_filter: list of symbols to filter
-        :rtype: str
+        Parameters
+        ----------
+        data : dict
+            dictionary of data
+        species_filter : list[str] or None
+            list of atomic symbols to filter by
+
+        Returns
+        -------
+        str:
+            the potential file content
+        int:
+            number of potential flags for fitting
 
         """
         lines = []
+        total_flags = 0
+        num_fit = 0
 
-        lines.append("lennard {m} {n}".format(
-            m=data.get("m", 12), n=data.get("n", 6)))
+        for indices in sorted(data["2body"]):
+            species = ["{:7s}".format(data["species"][int(i)]) for i in indices.split(INDEX_SEP)]
+            values = data["2body"][indices]
+            lines.append("lennard {lj_m} {lj_n}".format(lj_m=values.get("lj_m", 12), lj_n=values.get("lj_n", 6)))
+            if "lj_rmin" in values:
+                values_string = "{lj_A} {lj_B} {lj_rmin} {lj_rmax}".format(**values)
+            else:
+                values_string = "{lj_A} {lj_B} {lj_rmax}".format(**values)
 
-        species_used = {}
+            total_flags += 2
 
-        for species1 in sorted(data["atoms"].keys()):
-            if species_filter is not None and species1 not in species_filter:
-                continue
-            for species2 in sorted(data["atoms"][species1].keys()):
-                if species_filter is not None and species2 not in species_filter:
-                    continue
+            if fitting_data is not None:
+                flag_a = flag_b = 0
+                if "lj_A" in fitting_data.get("2body", {}).get(indices, []):
+                    flag_a = 1
+                if "lj_B" in fitting_data.get("2body", {}).get(indices, []):
+                    flag_b = 1
+                num_fit += flag_a + flag_b
+                values_string += " {} {}".format(flag_a, flag_b)
 
-                subdata = data["atoms"][species1][species2]
+            lines.append(" ".join(species) + " " + values_string)
 
-                if (species2, species1) in species_used:
-                    if subdata != species_used[(species2, species1)]:
-                        raise ValueError(
-                            "{0} {1} pairing is stored twice, but with "
-                            "different parameters".format(species1, species2))
-                    continue
-
-                if "rmin" in subdata:
-                    lines.append("{atom1} {atom2} {A} {B} {rmin} {rmax}".format(
-                        atom1=species1, atom2=species2, **subdata
-                    ))
-                else:
-                    lines.append("{atom1} {atom2} {A} {B} {rmax}".format(
-                        atom1=species1, atom2=species2, **subdata
-                    ))
-
-                species_used[(species1, species2)] = subdata
-
-        return "\n".join(lines)
+        return PotentialContent("\n".join(lines), total_flags, num_fit)

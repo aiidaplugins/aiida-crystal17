@@ -5,96 +5,125 @@ from aiida_crystal17.gulp.potentials.lj import PotentialWriterLJ
 
 def test_basic():
     data = {
-        "atoms": {
-            "H": {
-                "He": {
-                    "A": 1.0,
-                    "B": 2.0,
-                    "rmax": 12.0
-                }
+        "species": ["H core", "He core"],
+        "2body": {
+            "0-1": {
+                "lj_A": 1.0,
+                "lj_B": 2.0,
+                "lj_rmax": 12.0
             }
         }
     }
-    output = PotentialWriterLJ().create_string(data)
+    output = PotentialWriterLJ().create_content(data)
     expected = dedent("""\
         lennard 12 6
-        H He 1.0 2.0 12.0""")
-    assert output == expected
+        H core  He core 1.0 2.0 12.0""")
+    assert output.content == expected
 
 
 def test_validation():
     with pytest.raises(Exception):
-        PotentialWriterLJ().create_string({})
+        PotentialWriterLJ().create_content({})
     with pytest.raises(Exception):
-        PotentialWriterLJ().create_string({"atoms": {"abc": {}}})
+        PotentialWriterLJ().create_content({"atoms": {"abc": {}}})
 
 
 def test_additional_args():
     data = {
-        "m": 10,
-        "n": 5,
-        "atoms": {
-            "Fe": {
-                "B": {
-                    "A": 1.0,
-                    "B": 2.0,
-                    "rmin": 3.0,
-                    "rmax": 12.0
-                }
+        "species": ["Fe core", "B core"],
+        "2body": {
+            "0-1": {
+                "lj_m": 10,
+                "lj_n": 5,
+                "lj_A": 1.0,
+                "lj_B": 2.0,
+                "lj_rmin": 3.0,
+                "lj_rmax": 12.0
             }
         }
     }
-    output = PotentialWriterLJ().create_string(data)
+    output = PotentialWriterLJ().create_content(data)
     expected = dedent("""\
         lennard 10 5
-        Fe B 1.0 2.0 3.0 12.0""")
-    assert output == expected
+        Fe core B core  1.0 2.0 3.0 12.0""")
+    assert output.content == expected
 
 
 def test_multi():
     data = {
-        "atoms": {
-            "H": {
-                "He": {
-                    "A": 1.0,
-                    "B": 2.0,
-                    "rmax": 12.0
-                },
-                "B": {
-                    "A": 3.0,
-                    "B": 4.0,
-                    "rmax": 12.0
-                }
+        "species": ["H core", "He core", "B core"],
+        "2body": {
+            "0-1": {
+                "lj_A": 1.0,
+                "lj_B": 2.0,
+                "lj_rmax": 12.0
+            },
+            "0-2": {
+                "lj_A": 3.0,
+                "lj_B": 4.0,
+                "lj_rmax": 12.0
             }
         }
     }
-    output = PotentialWriterLJ().create_string(data)
+    output = PotentialWriterLJ().create_content(data)
     expected = dedent("""\
         lennard 12 6
-        H B 3.0 4.0 12.0
-        H He 1.0 2.0 12.0""")
-    assert output == expected
+        H core  He core 1.0 2.0 12.0
+        lennard 12 6
+        H core  B core  3.0 4.0 12.0""")
+    assert output.content == expected
 
 
 def test_filter():
     data = {
-        "atoms": {
-            "H": {
-                "He": {
-                    "A": 1.0,
-                    "B": 2.0,
-                    "rmax": 12.0
-                },
-                "B": {
-                    "A": 3.0,
-                    "B": 4.0,
-                    "rmax": 12.0
-                }
+        "species": ["H core", "He core", "B core"],
+        "2body": {
+            "0-1": {
+                "lj_A": 1.0,
+                "lj_B": 2.0,
+                "lj_rmax": 12.0
+            },
+            "0-2": {
+                "lj_A": 3.0,
+                "lj_B": 4.0,
+                "lj_rmax": 12.0
             }
         }
     }
-    output = PotentialWriterLJ().create_string(data, ["H", "B"])
+    output = PotentialWriterLJ().create_content(data, ["H core", "B core"])
     expected = dedent("""\
         lennard 12 6
-        H B 3.0 4.0 12.0""")
-    assert output == expected
+        H core  B core  3.0 4.0 12.0""")
+    assert output.content == expected
+
+
+def test_add_fitting_flags():
+    data = {
+        "species": ["H core", "He core", "B core"],
+        "2body": {
+            "0-1": {
+                "lj_A": 1.0,
+                "lj_B": 2.0,
+                "lj_rmax": 12.0
+            },
+            "0-2": {
+                "lj_A": 3.0,
+                "lj_B": 4.0,
+                "lj_rmax": 12.0
+            }
+        }
+    }
+    fitting_data = {
+        "species": ["H core", "He core", "B core"],
+        "2body": {
+            "0-1": ["lj_B"],
+            "0-2": ["lj_A"]
+        }
+    }
+    output = PotentialWriterLJ().create_content(data, fitting_data=fitting_data)
+    expected = dedent("""\
+        lennard 12 6
+        H core  He core 1.0 2.0 12.0 0 1
+        lennard 12 6
+        H core  B core  3.0 4.0 12.0 1 0""")
+    assert output.content == expected

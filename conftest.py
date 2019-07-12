@@ -33,7 +33,8 @@ def db_test_app(aiida_environment):
             'crystal17.doss': 'mock_properties17',
             'crystal17.fermi': 'mock_properties17',
             'gulp.single': 'mock_gulp',
-            'gulp.optimize': 'mock_gulp'
+            'gulp.optimize': 'mock_gulp',
+            'gulp.fitting': 'mock_gulp'
         }
     else:
         executables = {
@@ -42,7 +43,8 @@ def db_test_app(aiida_environment):
             'crystal17.doss': 'properties17',
             'crystal17.fermi': 'properties17',
             'gulp.single': 'gulp',
-            'gulp.optimize': 'gulp'
+            'gulp.optimize': 'gulp',
+            'gulp.fitting': 'gulp'
         }
 
     work_directory = tempfile.mkdtemp()

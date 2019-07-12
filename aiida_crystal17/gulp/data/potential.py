@@ -1,5 +1,8 @@
 import copy
 from hashlib import md5
+import json
+
+import six
 
 from aiida.common import exceptions
 from aiida.orm import Data
@@ -11,7 +14,9 @@ class EmpiricalPotential(Data):
     Store the empirical potential data
     """
     entry_name = 'gulp.potentials'
-    potential_filename = 'potential.pot'
+    _default_potential_filename = 'potential.pot'
+    _default_potential_json = 'potential.json'
+    _default_fitting_json = 'fitting.json'
 
     @classmethod
     def list_pair_styles(cls):
@@ -25,13 +30,15 @@ class EmpiricalPotential(Data):
         # pair_style = kwargs.pop('pair_style', None)
         # potential_data = kwargs.pop('data', None)
         additional_data = kwargs.pop('additional', None)
+        fitting_data = kwargs.pop('fitting_data', None)
         super(EmpiricalPotential, self).__init__(**kwargs)
-        self.set_data(pair_style, potential_data, additional_data)
+        self.set_data(pair_style, potential_data, fitting_data, additional_data)
 
-    def set_data(self, pair_style, potential_data, additional_data=None):
+    def set_data(self, pair_style, potential_data, fitting_data=None, additional_data=None):
         """
         Store the potential type (ex. Tersoff, EAM, LJ, ..) and data
         """
+        # TODO add filtering by elements (possibly by supplying a structure?)
         if pair_style is None:
             raise ValueError("'pair_style' must be provided")
         if pair_style not in self.list_pair_styles():
@@ -39,18 +46,35 @@ class EmpiricalPotential(Data):
         potential_writer = self.load_pair_style(pair_style)()
 
         description = potential_writer.get_description()
-        content = potential_writer.create_string(potential_data)
+        output = potential_writer.create_content(
+            potential_data, fitting_data=fitting_data)
+
+        with self.open(self._default_potential_filename, 'w') as handle:
+            handle.write(six.ensure_text(output.content))
+
+        with self.open(self._default_potential_json, 'w') as handle:
+            handle.write(six.ensure_text(json.dumps(potential_data)))
+
+        if fitting_data is not None:
+            with self.open(self._default_fitting_json, 'w') as handle:
+                handle.write(six.ensure_text(json.dumps(fitting_data)))
 
         dictionary = {
             'pair_style': pair_style,
             'description': description,
-            'data': potential_data,
-            'input_lines_md5': md5(content.encode("utf-8")).hexdigest()
+            'species': potential_data['species'],
+            'input_lines_md5': md5(output.content.encode("utf-8")).hexdigest(),
+            'fitting_flags': fitting_data is not None,
+            'total_flags': output.number_of_flags,
+            'number_flagged': output.number_flagged,
+            'potential_filename': self._default_potential_filename,
+            'potential_json': self._default_potential_json,
+            'fitting_json': self._default_fitting_json
         }
         if additional_data is not None:
             dictionary["additional"] = additional_data
 
-        dictionary_backup = copy.deepcopy(self.get_dict())
+        dictionary_backup = copy.deepcopy(self.attributes)
 
         try:
             # Clear existing attributes and set the new dictionary
@@ -75,38 +99,51 @@ class EmpiricalPotential(Data):
         for key, value in dictionary.items():
             self.set_attribute(key, value)
 
-    def get_dict(self):
+    def get_potential_dict(self):
         """Return a dictionary with the parameters currently set.
 
-        :return: dictionary
+        :rtype: dict
         """
-        return dict(self.attributes)
+        potential_json = self.get_attribute('potential_json')
+        if potential_json not in self.list_object_names():
+            raise KeyError("potential dict not set for node pk={}".format(
+                self.pk))
 
-    def keys(self):
-        """Iterator of valid keys stored in the Dict object.
+        with self.open(potential_json, mode='r') as handle:
+            data = json.load(handle)
 
-        :return: iterator over the keys of the current dictionary
+        return data
+
+    def get_fitting_dict(self):
+        """Return a dictionary with the parameters currently set.
+
+        :rtype: dict
         """
-        for key in self.attributes.keys():
-            yield key
+        fitting_json = self.get_attribute('fitting_json')
+        if fitting_json not in self.list_object_names():
+            raise KeyError("fitting dict not set for node pk={}".format(
+                self.pk))
 
-    def __getitem__(self, key):
-        return self.get_attribute(key)
+        with self.open(fitting_json, mode='r') as handle:
+            data = json.load(handle)
 
-    @property
-    def dict(self):
-        """Return an instance of `AttributeManager` that transforms the dictionary into an attribute dict.
-
-        .. note:: this will allow one to do `node.dict.key` as well as `node.dict[key]`.
-
-        :return: an instance of the `AttributeResultManager`.
-        """
-        from aiida.orm.utils.managers import AttributeManager
-        return AttributeManager(self)
+        return data
 
     @property
     def pair_style(self):
         return self.get_attribute('pair_style')
+
+    @property
+    def species(self):
+        return self.get_attribute('species')
+
+    @property
+    def has_fitting_flags(self):
+        return self.get_attribute('fitting_flags')
+
+    @property
+    def number_of_variables(self):
+        return self.get_attribute('number_flagged')
 
     @property
     def input_lines_md5(self):
@@ -114,3 +151,14 @@ class EmpiricalPotential(Data):
 
     def get_description(self):
         return str(self.pair_style)
+
+    def get_input_lines(self):
+        potential_filename = self.get_attribute('potential_filename')
+        if potential_filename not in self.list_object_names():
+            raise KeyError("potential file not set for node pk={}".format(
+                self.pk))
+
+        with self.open(potential_filename, mode='r') as handle:
+            lines = handle.read()
+
+        return lines.splitlines()

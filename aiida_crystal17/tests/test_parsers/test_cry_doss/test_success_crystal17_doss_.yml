@@ -28,7 +28,7 @@ results:
   npts: 1002
   parser_class: CryDossParser
   parser_errors: []
-  parser_version: 0.7.1b4
+  parser_version: 0.8.0b4
   parser_warnings: []
   spin: true
   system_type: open shell, conducting system

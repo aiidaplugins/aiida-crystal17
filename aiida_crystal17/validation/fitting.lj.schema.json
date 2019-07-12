@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "potential.base.schema",
+    "description": "a schema for storing an empirical potential",
+    "type": "object",
+    "required": [
+        "species",
+        "2body"
+    ],
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "species": {
+            "description": "the list of species",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z]+ (core|shell)$"
+            }
+        },
+        "2body": {
+            "description": "parameters that depend on two species, mapping of '<idx1>-<idx2>' to list oif variables to fit",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "[0-9]+\\-[0-9]+": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "lj_A",
+                            "lj_B"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

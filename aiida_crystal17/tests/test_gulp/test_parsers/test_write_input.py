@@ -1,4 +1,4 @@
-from aiida_crystal17.gulp.parsers.write_input import (
+from aiida_crystal17.gulp.parsers.raw.write_input import (
     InputCreationBase, InputCreationSingle, InputCreationOpt)
 
 
@@ -6,27 +6,6 @@ def test_initialisation():
     InputCreationBase()
     InputCreationSingle()
     InputCreationOpt()
-
-
-def test_create_potential_lines():
-    icreate = InputCreationBase()
-    lines = icreate.create_potential_lines("lj", {
-        "atoms": {
-            "H": {
-                "He": {
-                    "A": 1.0,
-                    "B": 2.0,
-                    "rmax": 12.0
-                }
-            }
-        }
-    })
-
-    expected = [
-        "lennard 12 6",
-        "H He 1.0 2.0 12.0"
-    ]
-    assert lines == expected
 
 
 def test_create_geometry_basic():
@@ -37,7 +16,7 @@ def test_create_geometry_basic():
         "atomic_numbers": [1, 2],
         "pbc": [True, True, True]
     }
-    lines = icreate.create_geometry_lines(structure_data)
+    lines = icreate.get_geometry_lines(structure_data)
     expected = [
         "name main-geometry",
         "vectors",
@@ -68,7 +47,7 @@ def test_create_geometry_with_symm():
         ],
         "equivalent_sites": [1, 2]
     }
-    lines = icreate.create_geometry_lines(structure_data, symmetry_data)
+    lines = icreate.get_geometry_lines(structure_data, symmetry_data)
     expected = [
         "name main-geometry",
         "vectors",
@@ -94,20 +73,7 @@ def test_create_content_basic():
         "atomic_numbers": [1, 2],
         "pbc": [True, True, True]
     }
-    potential_data = {
-        "pair_style": "lj",
-        "data": {
-            "atoms": {
-                "H": {
-                    "He": {
-                        "A": 1.0,
-                        "B": 2.0,
-                        "rmax": 12.0
-                    }
-                }
-            }
-        }
-    }
+    potential_lines = ["lennard 12 6", "H core  He core 1.0 2.0 12.0"]
     symmetry_data = {
         "hall_number": None,
         "basis": "fractional",
@@ -118,7 +84,7 @@ def test_create_content_basic():
         "equivalent_sites": [1, 2]
     }
     lines = icreate.create_content(
-        structure_data, potential_data,
+        structure_data, potential_lines,
         symmetry=symmetry_data, parameters={"title": "My Title"})
     expected = [
         "verb",
@@ -143,7 +109,7 @@ def test_create_content_basic():
         "",
         "# Force Field",
         "lennard 12 6",
-        "H He 1.0 2.0 12.0",
+        "H core  He core 1.0 2.0 12.0",
         "",
         "# External Outputs",
         "output cif output.cif",
@@ -160,21 +126,8 @@ def test_create_content_single():
         "atomic_numbers": [1, 2],
         "pbc": [True, True, True]
     }
-    potential_data = {
-        "pair_style": "lj",
-        "data": {
-            "atoms": {
-                "H": {
-                    "He": {
-                        "A": 1.0,
-                        "B": 2.0,
-                        "rmax": 12.0
-                    }
-                }
-            }
-        }
-    }
-    lines = icreate.create_content(structure_data, potential_data)
+    potential_lines = ["lennard 12 6", "H core  He core 1.0 2.0 12.0"]
+    lines = icreate.create_content(structure_data, potential_lines)
     expected = [
         "verb",
         "",
@@ -190,7 +143,7 @@ def test_create_content_single():
         "",
         "# Force Field",
         "lennard 12 6",
-        "H He 1.0 2.0 12.0",
+        "H core  He core 1.0 2.0 12.0",
         ""
     ]
     assert lines == expected
@@ -204,25 +157,12 @@ def test_create_content_opt():
         "atomic_numbers": [1, 2],
         "pbc": [True, True, True]
     }
-    potential_data = {
-        "pair_style": "lj",
-        "data": {
-            "atoms": {
-                "H": {
-                    "He": {
-                        "A": 1.0,
-                        "B": 2.0,
-                        "rmax": 12.0
-                    }
-                }
-            }
-        }
-    }
+    potential_lines = ["lennard 12 6", "H core  He core 1.0 2.0 12.0"]
     parameters = {
         "minimize": {"style": "cg", "max_iterations": 100},
         "relax": {"type": "conp"}}
     lines = icreate.create_content(
-        structure_data, potential_data, parameters=parameters)
+        structure_data, potential_lines, parameters=parameters)
     expected = [
         "optimise verb conp cg",
         "",
@@ -238,7 +178,7 @@ def test_create_content_opt():
         "",
         "# Force Field",
         "lennard 12 6",
-        "H He 1.0 2.0 12.0",
+        "H core  He core 1.0 2.0 12.0",
         "",
         "# Other Options",
         "maxcyc opt 100",

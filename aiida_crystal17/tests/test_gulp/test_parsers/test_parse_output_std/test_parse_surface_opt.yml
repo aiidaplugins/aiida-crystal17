@@ -1,0 +1,16 @@
+energy_units: eV
+errors: []
+final_energy: -243.119219
+final_primitive_energy: -243.119219
+gulp_version: 4.1.0
+initial_energy: -243.111953
+initial_primitive_energy: -243.111953
+opt_succeeded: true
+opt_time_second: 0.0187
+opt_type: surface
+parser_class: test_class
+parser_errors: []
+parser_warnings: []
+peak_dynamic_memory_mb: 0.56
+total_time_second: 0.0187
+warnings: []

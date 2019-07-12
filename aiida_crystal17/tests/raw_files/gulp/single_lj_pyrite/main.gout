@@ -1,0 +1,155 @@
+********************************************************************************
+*                       GENERAL UTILITY LATTICE PROGRAM                        *
+*                                 Julian Gale                                  *
+*                       Curtin Institute for Computation                       *
+*                           Department of Chemistry                            *
+*                    Curtin University, Western Australia                      *
+********************************************************************************
+* Version = 4.5.3 * Last modified =  19th April 2017                           *
+********************************************************************************
+*  single       - perform a single point run                                   *
+********************************************************************************
+
+  Job Started  at 06:25.07 11th July       2019                               
+
+  Number of CPUs =     1
+
+
+  Total number of configurations input =   1
+
+********************************************************************************
+*  Input for Configuration =   1 : main-geometry                               *
+********************************************************************************
+
+  Formula = Fe4S8                                                       
+
+  Number of irreducible atoms/shells =      12
+
+
+  Total number atoms/shells =      12
+
+  Dimensionality = 3               :  Bulk   
+
+
+
+  Cartesian lattice vectors (Angstroms) :
+
+        5.380000    0.000000    0.000000
+        0.000000    5.380000    0.000000
+        0.000000    0.000000    5.380000
+
+  Cell parameters (Angstroms/Degrees):
+
+  a =       5.3800    alpha =  90.0000
+  b =       5.3800    beta  =  90.0000
+  c =       5.3800    gamma =  90.0000
+
+  Initial cell volume =         155.720872 Angs**3
+
+  Temperature of configuration =  0.000     K 
+
+  Pressure of configuration =         0.000 GPa 
+
+  Fractional coordinates of asymmetric unit :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Frac)      (Frac)     (Frac)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 Fe    c    0.000000    0.000000    0.000000     0.00000    1.000000    
+      2 Fe    c    0.500000    0.000000    0.500000     0.00000    1.000000    
+      3 Fe    c    0.000000    0.500000    0.500000     0.00000    1.000000    
+      4 Fe    c    0.500000    0.500000    0.000000     0.00000    1.000000    
+      5 S     c    0.338000    0.338000    0.338000     0.00000    1.000000    
+      6 S     c    0.662000    0.662000    0.662000     0.00000    1.000000    
+      7 S     c    0.162000    0.662000    0.838000     0.00000    1.000000    
+      8 S     c    0.838000    0.338000    0.162000     0.00000    1.000000    
+      9 S     c    0.662000    0.838000    0.162000     0.00000    1.000000    
+     10 S     c    0.338000    0.162000    0.838000     0.00000    1.000000    
+     11 S     c    0.838000    0.162000    0.662000     0.00000    1.000000    
+     12 S     c    0.162000    0.838000    0.338000     0.00000    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+********************************************************************************
+*  General input information                                                   *
+********************************************************************************
+
+  Species output for all configurations : 
+
+--------------------------------------------------------------------------------
+  Species    Type    Atomic    Atomic    Charge       Radii (Angs)     Library
+                     Number     Mass       (e)     Cova   Ionic  VDW   Symbol
+--------------------------------------------------------------------------------
+    Fe       Core       26      55.85   0.000000   1.340  0.000  2.000          
+    S        Core       16      32.07   0.000000   1.020  0.000  1.700          
+--------------------------------------------------------------------------------
+
+
+  Lattice summation method               =    Ewald          (3-D)
+                                         =    Parry          (2-D)
+                                         =    Saunders et al (1-D)
+  Accuracy factor for lattice sums       =   12.000
+
+
+  Time limit = Infinity
+
+  Maximum range for interatomic potentials =    100000.000000 Angstroms
+
+  General interatomic potentials :
+
+--------------------------------------------------------------------------------
+Atom  Types   Potential      Parameter       Value         Units   Cutoffs(Ang)
+  1     2                                                            Min /  Max 
+--------------------------------------------------------------------------------
+Fe   c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+S    c Fe   c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+S    c S    c Lennard       Lennard-Jones A  1.0000000    eV*Ang^m  0.000 12.000
+                            Lennard-Jones B  1.0000000    eV*Ang^n  
+                            Exponent m        12          None
+                            Exponent n         6          None
+--------------------------------------------------------------------------------
+
+********************************************************************************
+*  Output for configuration   1 : main-geometry                                *
+********************************************************************************
+
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =          -0.32809466 eV    
+  Monopole - monopole (real) =           0.00000000 eV    
+  Monopole - monopole (recip)=           0.00000000 eV    
+  Monopole - monopole (total)=           0.00000000 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          -0.32809466 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =             -31.6561 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+  Peak dynamic memory used =       0.50 MB 
+
+
+  Timing analysis for GULP :
+
+--------------------------------------------------------------------------------
+  Task / Subroutine                                          Time (Seconds)
+--------------------------------------------------------------------------------
+  Calculation of real space energy and derivatives                0.0013
+--------------------------------------------------------------------------------
+  Total CPU time                                                  0.0078
+--------------------------------------------------------------------------------
+
+
+  Job Finished at 06:25.07 11th July       2019                               
+
