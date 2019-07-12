@@ -3,6 +3,6 @@ errors: []
 fermi_energy: -3.4014233
 parser_class: dummy_parser_class
 parser_errors: []
-parser_version: 0.7.1b4
+parser_version: 0.8.0b4
 parser_warnings: []
 warnings: []
