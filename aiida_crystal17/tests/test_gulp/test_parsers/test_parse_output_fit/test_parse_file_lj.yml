@@ -95,5 +95,7 @@ parser_class: null
 parser_errors: []
 parser_version: 0.7.1b4
 parser_warnings: []
+peak_dynamic_memory_mb: 0.52
 total_configurations: 3
+total_time_second: 0.0875
 warnings: []

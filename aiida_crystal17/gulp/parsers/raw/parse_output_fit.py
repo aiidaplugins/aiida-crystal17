@@ -116,6 +116,20 @@ def parse_file(file_obj, parser_class=None):
                         lines, lineno, ["configuration", "energy", "scale_factor"], [int, float, float])
                     continue
 
+                if line.strip().startswith("Peak dynamic memory used"):
+                    # 'Peak dynamic memory used =       0.56 MB'
+                    mem_match = re.findall("Peak dynamic memory used[\\s]*=[\\s]*([+-]?[0-9]*[.]?[0-9]+) MB", line)
+                    if mem_match:
+                        output["peak_dynamic_memory_mb"] = float(mem_match[0])
+                    continue
+
+                if line.strip().startswith("Total CPU time"):
+                    # 'Total CPU time  0.0187'
+                    mem_match = re.findall("Total CPU time[\\s]*([+-]?[0-9]*[.]?[0-9]+)", line)
+                    if mem_match:
+                        output["total_time_second"] = float(mem_match[0])
+                    continue
+
             except IOError as err:
                 output["parser_errors"].append(err)
                 continue

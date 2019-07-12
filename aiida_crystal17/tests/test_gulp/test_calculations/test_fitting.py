@@ -7,6 +7,7 @@ from aiida.plugins import DataFactory
 from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.tests.utils import sanitize_calc_info
 
+from aiida_crystal17.common import recursive_round
 from aiida_crystal17.gulp.potentials.common import filter_by_species
 from aiida_crystal17.gulp.potentials.raw_reaxff import read_lammps_format
 
@@ -169,7 +170,10 @@ def test_run_lj_fes(db_test_app, get_structure,
 
     db_test_app.check_calculation(calc_node, ["results"])
 
-    data_regression.check(calc_node.outputs.results.get_dict())
+    result = recursive_round(calc_node.outputs.results.get_dict(), 6)
+    for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
+        result.pop(key, None)
+    data_regression.check(result)
 
 
 def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
@@ -205,4 +209,7 @@ def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
 
     db_test_app.check_calculation(calc_node, ["results"])
 
-    data_regression.check(calc_node.outputs.results.get_dict())
+    result = recursive_round(calc_node.outputs.results.get_dict(), 6)
+    for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
+        result.pop(key, None)
+    data_regression.check(result)

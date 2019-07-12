@@ -93,7 +93,6 @@ gulp_version: 4.5.3
 num_cycles: 1
 parser_class: GulpFittingParser
 parser_errors: []
-parser_version: 0.7.1b4
 parser_warnings: []
 total_configurations: 3
 warnings: []
