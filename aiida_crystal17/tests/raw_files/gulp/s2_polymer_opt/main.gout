@@ -1,0 +1,736 @@
+********************************************************************************
+*                       GENERAL UTILITY LATTICE PROGRAM                        *
+*                                 Julian Gale                                  *
+*                       Curtin Institute for Computation                       *
+*                           Department of Chemistry                            *
+*                    Curtin University, Western Australia                      *
+********************************************************************************
+* Version = 4.5.3 * Last modified =  19th April 2017                           *
+********************************************************************************
+
+  ReaxFF: Bond order cutoffs: 
+
+  Species number =    1   4.04098
+  Species number =    2   4.04098
+
+
+*  optimise     - perform optimisation run                                     *
+*  conv         - constant volume calculation                                  *
+********************************************************************************
+
+  Job Started  at 05:30.52 13th July       2019                               
+
+  Number of CPUs =     1
+
+
+  Total number of configurations input =   1
+
+********************************************************************************
+*  Input for Configuration =   1 : main-geometry                               *
+********************************************************************************
+
+  Formula = S2                                                          
+
+  Number of irreducible atoms/shells =       2
+
+
+  Total number atoms/shells =       2
+
+  Dimensionality = 1               :  Polymer
+
+
+
+  Polymer Cartesian vector (Angstroms) :
+
+       10.000000    0.000000    0.000000
+
+  Polymer cell parameter (Angstrom):
+
+  a =      10.0000
+
+  Initial polymer dipoles : y =      0.000000 e.Angs
+                            z =      0.000000 e.Angs
+
+  Temperature of configuration =  0.000     K 
+
+  Mixed fractional/Cartesian coordinates of polymer :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Frac)      (Angs)     (Angs)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 S     c    0.000000      0.0000      0.0000     0.00000    1.000000    
+      2 S     c    0.189000 *    0.0000 *    0.0000 *   0.00000    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+********************************************************************************
+*  General input information                                                   *
+********************************************************************************
+
+  Species output for all configurations : 
+
+--------------------------------------------------------------------------------
+  Species    Type    Atomic    Atomic    Charge       Radii (Angs)     Library
+                     Number     Mass       (e)     Cova   Ionic  VDW   Symbol
+--------------------------------------------------------------------------------
+    S        Core       16      32.07   0.000000   1.020  0.000  1.700          
+--------------------------------------------------------------------------------
+
+
+  Lattice summation method               =    Ewald          (3-D)
+                                         =    Parry          (2-D)
+                                         =    Saunders et al (1-D)
+  Accuracy factor for lattice sums       =   12.000
+
+
+  Time limit = Infinity
+
+  ReaxFF: Bond order cutoffs: 
+
+  Species number =    1   4.04098
+  Species number =    2   4.04098
+
+
+
+  Maximum range for interatomic potentials =    100000.000000 Angstroms
+
+  ReaxFF forcefield to be used
+
+  ReaxFF Coulomb cutoff =  10.0000 Ang
+  ReaxFF VDW     cutoff =  10.0000 Ang
+  ReaxFF H-bond  cutoff =   7.5000 Ang
+
+  ReaxFF pairwise bond order       threshold = 0.00100000000000
+  ReaxFF angle/torsion bond order  threshold = 0.00100000000000
+  ReaxFF bond order double product threshold = 0.00000100000000
+  ReaxFF bond order triple product threshold = 0.00000000000000
+  ReaxFF hydrogen-bond bond order  threshold = 0.01000000000000
+
+
+********************************************************************************
+*  Output for configuration   1 : main-geometry                                *
+********************************************************************************
+
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.534998    2  1.4650
+   2 -0.534998    1  1.4650
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8722
+   2    1  0.8722
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.5928
+   2    1  0.5928
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.534998    2  1.4650
+   2 -0.534998    1  1.4650
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000002
+   2 -0.000002
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -4.94248993 eV =     -113.9757947 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000032 eV =       -0.0000074 kcal
+  E(over)     =      -0.00008885 eV =       -0.0020489 kcal
+  E(under)    =      -0.95488401 eV =      -22.0200073 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.85558018 eV =       19.7300212 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =           0.00000000 eV    
+  ReaxFF force field         =          -5.04188293 eV    
+  Monopole - monopole (real) =           0.00000000 eV    
+  Monopole - monopole (recip)=           0.00000000 eV    
+  Monopole - monopole (total)=           0.00000000 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          -5.04188293 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =            -486.4646 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+
+  Number of variables =        3
+
+  Maximum number of calculations  =          1000
+  Maximum Hessian update interval =            10
+  Maximum step size               =   1.000000000
+  Maximum parameter tolerance     =   0.000010000
+  Maximum function  tolerance     =   0.000010000
+  Maximum gradient  tolerance     =   0.001000000
+  Maximum gradient  component     =   0.010000000
+
+  Symmetry not applied to optimisation
+
+  Newton-Raphson optimiser to be used
+
+  BFGS hessian update to be used
+
+  Start of polymer optimisation :
+
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.534998    2  1.4650
+   2 -0.534998    1  1.4650
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8722
+   2    1  0.8722
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.5928
+   2    1  0.5928
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.534998    2  1.4650
+   2 -0.534998    1  1.4650
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000002
+   2 -0.000002
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -4.94248993 eV =     -113.9757947 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000032 eV =       -0.0000074 kcal
+  E(over)     =      -0.00008885 eV =       -0.0020489 kcal
+  E(under)    =      -0.95488401 eV =      -22.0200073 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.85558018 eV =       19.7300212 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+  Cycle:      0 Energy:        -5.041883  Gnorm:      1.935000  CPU:    0.007
+  ** Cosine =   1.000000
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.510041    2  1.4900
+   2 -0.510041    1  1.4900
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8777
+   2    1  0.8777
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6122
+   2    1  0.6122
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.510041    2  1.4900
+   2 -0.510041    1  1.4900
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.02623870 eV =     -115.9070750 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000020 eV =       -0.0000047 kcal
+  E(over)     =      -0.00012544 eV =       -0.0028927 kcal
+  E(under)    =      -0.91196499 eV =      -21.0302774 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.89044239 eV =       20.5339578 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =      -0.00000000 eV =       -0.0000000 kcal
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.485743    2  1.5143
+   2 -0.485743    1  1.5143
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8831
+   2    1  0.8831
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6312
+   2    1  0.6312
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.485743    2  1.5143
+   2 -0.485743    1  1.5143
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.10776871 eV =     -117.7871895 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000013 eV =       -0.0000030 kcal
+  E(over)     =      -0.00017508 eV =       -0.0040373 kcal
+  E(under)    =      -0.86777208 eV =      -20.0111713 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.92660964 eV =       21.3679890 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =      -0.00000000 eV =       -0.0000000 kcal
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.491637    2  1.5084
+   2 -0.491637    1  1.5084
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8818
+   2    1  0.8818
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6266
+   2    1  0.6266
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.491637    2  1.5084
+   2 -0.491637    1  1.5084
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.08799205 eV =     -117.3311319 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000015 eV =       -0.0000034 kcal
+  E(over)     =      -0.00016151 eV =       -0.0037245 kcal
+  E(under)    =      -0.87871193 eV =      -20.2634485 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.91762038 eV =       21.1606931 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.491637    2  1.5084
+   2 -0.491637    1  1.5084
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8818
+   2    1  0.8818
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6266
+   2    1  0.6266
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.491637    2  1.5084
+   2 -0.491637    1  1.5084
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.08799205 eV =     -117.3311319 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000015 eV =       -0.0000034 kcal
+  E(over)     =      -0.00016151 eV =       -0.0037245 kcal
+  E(under)    =      -0.87871193 eV =      -20.2634485 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.91762038 eV =       21.1606931 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+  **** Gmax satisfied in optimiser ****
+  Cycle:      1 Energy:        -5.049245  Gnorm:      0.002392  CPU:    0.008
+  ** Cosine =   1.000000
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.491584    2  1.5084
+   2 -0.491584    1  1.5084
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8818
+   2    1  0.8818
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6266
+   2    1  0.6266
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.491584    2  1.5084
+   2 -0.491584    1  1.5084
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.08816789 eV =     -117.3351869 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000015 eV =       -0.0000034 kcal
+  E(over)     =      -0.00016163 eV =       -0.0037272 kcal
+  E(under)    =      -0.87861528 eV =      -20.2612198 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.91769968 eV =       21.1625217 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =      -0.00000000 eV =       -0.0000000 kcal
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.491532    2  1.5085
+   2 -0.491532    1  1.5085
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8818
+   2    1  0.8818
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6267
+   2    1  0.6267
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.491532    2  1.5085
+   2 -0.491532    1  1.5085
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.08834373 eV =     -117.3392417 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000015 eV =       -0.0000034 kcal
+  E(over)     =      -0.00016174 eV =       -0.0037298 kcal
+  E(under)    =      -0.87851863 eV =      -20.2589909 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.91777899 eV =       21.1643506 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.491583    2  1.5084
+   2 -0.491583    1  1.5084
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8818
+   2    1  0.8818
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6266
+   2    1  0.6266
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.491583    2  1.5084
+   2 -0.491583    1  1.5084
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.08817083 eV =     -117.3352547 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000015 eV =       -0.0000034 kcal
+  E(over)     =      -0.00016163 eV =       -0.0037272 kcal
+  E(under)    =      -0.87861366 eV =      -20.2611825 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.91770101 eV =       21.1625523 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+
+  ReaxFF: Delta and Bond Order prime: 
+
+   1 -0.491583    2  1.5084
+   2 -0.491583    1  1.5084
+
+  ReaxFF: Bond Order sigma prime: 
+
+   1    2  0.8818
+   2    1  0.8818
+
+  ReaxFF: Bond Order pi prime: 
+
+   1    2  0.6266
+   2    1  0.6266
+
+  ReaxFF: Bond Order pi-pi prime: 
+
+   1    2  0.0000
+   2    1  0.0000
+
+
+
+  ReaxFF: Delta and Bond Order: 
+
+   1 -0.491583    2  1.5084
+   2 -0.491583    1  1.5084
+
+  ReaxFF: Delta lone pair: 
+
+   1 -0.000001
+   2 -0.000001
+
+
+  ReaxFF : Energy contributions: 
+
+  E(bond)     =      -5.08817083 eV =     -117.3352547 kcal
+  E(bpen)     =       0.00000000 eV =        0.0000000 kcal
+  E(lonepair) =      -0.00000015 eV =       -0.0000034 kcal
+  E(over)     =      -0.00016163 eV =       -0.0037272 kcal
+  E(under)    =      -0.87861366 eV =      -20.2611825 kcal
+  E(val)      =       0.00000000 eV =        0.0000000 kcal
+  E(pen)      =       0.00000000 eV =        0.0000000 kcal
+  E(coa)      =       0.00000000 eV =        0.0000000 kcal
+  E(tors)     =       0.00000000 eV =        0.0000000 kcal
+  E(conj)     =       0.00000000 eV =        0.0000000 kcal
+  E(hb)       =       0.00000000 eV =        0.0000000 kcal
+  E(vdw)      =       0.91770101 eV =       21.1625523 kcal
+  E(coulomb)  =       0.00000000 eV =        0.0000000 kcal
+  E(self)     =       0.00000000 eV =        0.0000000 kcal
+  **** Ftol satisfied in optimiser ****
+  **** Gmax satisfied in optimiser ****
+  **** Gtol satisfied in optimiser ****
+
+
+  **** Optimisation achieved ****
+
+
+  Final energy =      -5.04924526 eV
+  Final Gnorm  =       0.00000002
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =           0.00000000 eV    
+  ReaxFF force field         =          -5.04924526 eV    
+  Monopole - monopole (real) =           0.00000000 eV    
+  Monopole - monopole (recip)=           0.00000000 eV    
+  Monopole - monopole (total)=           0.00000000 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =          -5.04924526 eV    
+--------------------------------------------------------------------------------
+  Total lattice energy       =            -487.1750 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+  Final fractional/Cartesian coordinates of atoms :
+
+--------------------------------------------------------------------------------
+   No.  Atomic        x           y          z          Radius
+        Label       (Frac)      (Angs)     (Angs)       (Angs) 
+--------------------------------------------------------------------------------
+     1  S     c     0.000000    0.000000    0.000000    0.000000
+     2  S     c     0.186450    0.000000    0.000000    0.000000
+--------------------------------------------------------------------------------
+
+  Final internal/Cartesian derivatives :
+
+--------------------------------------------------------------------------------
+   No.  Atomic          a             y             z           Radius
+        Label          (eV)       (eV/Angs)     (eV/Angs)      (eV/Angs)
+--------------------------------------------------------------------------------
+      1 S     c       0.000000      0.000000      0.000000      0.000000
+      2 S     c      -0.000000      0.000000      0.000000      0.000000
+--------------------------------------------------------------------------------
+  Maximum abs         0.000000      0.000000      0.000000      0.000000
+--------------------------------------------------------------------------------
+
+
+  Time to end of optimisation =       0.0083 seconds
+
+
+
+  Final charges from ReaxFF :
+
+--------------------------------------------------------------------------------
+    Atom no.            Atomic No.             Charge
+--------------------------------------------------------------------------------
+         1                  16                 0.0000000
+         2                  16                 0.0000000
+--------------------------------------------------------------------------------
+
+
+  Peak dynamic memory used =       0.48 MB 
+
+
+  Timing analysis for GULP :
+
+--------------------------------------------------------------------------------
+  Task / Subroutine                                          Time (Seconds)
+--------------------------------------------------------------------------------
+  Calculation of reaxFF energy and derivatives                    0.0012
+  Electronegativity equalisation                                  0.0002
+--------------------------------------------------------------------------------
+  Total CPU time                                                  0.0085
+--------------------------------------------------------------------------------
+
+
+  CIF file written as output.cif                                              
+
+
+  Job Finished at 05:30.52 13th July       2019                               
+

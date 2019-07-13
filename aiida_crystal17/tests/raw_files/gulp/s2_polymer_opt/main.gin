@@ -1,12 +1,12 @@
-verb opti conp
+verb opti conv
 
 # Geometry
 name main-geometry
 pcell
-20
+10
 pfractional
 S core 0.00000 0.00000 0.00000
-S core 0.00000 0.00000 1.8900
+S core 0.18900 0.00000 0.00000
 
 # Force Field
 #
@@ -116,3 +116,6 @@ S  core Fe core S  core   0.0000
 #
 reaxff4_torsion kcal 
 S  core S  core S  core S  core   2.4661  71.9719   0.0100  -8.0000   0.0000 
+
+
+output cif output.cif

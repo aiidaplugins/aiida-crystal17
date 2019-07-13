@@ -185,3 +185,32 @@ def test_create_content_opt():
         ""
     ]
     assert lines == expected
+
+
+def test_create_content_1d():
+    icreate = InputCreationSingle()
+    structure_data = {
+        "lattice": [[10, 0, 0], [0, 20, 0], [0, 0, 30]],
+        "ccoords": [[0, 0, 0], [0.5, 0.5, 0.5]],
+        "atomic_numbers": [1, 2],
+        "pbc": [True, False, False]
+    }
+    potential_lines = ["lennard 12 6", "H core  He core 1.0 2.0 12.0"]
+    lines = icreate.create_content(structure_data, potential_lines)
+    expected = [
+        "verb",
+        "",
+        "# Geometry",
+        "name main-geometry",
+        "pcell",
+        "10.000000",
+        "pfractional",
+        "H core 0.000000 0.000000 0.000000",
+        "He core 0.050000 0.500000 0.500000",
+        "",
+        "# Force Field",
+        "lennard 12 6",
+        "H core  He core 1.0 2.0 12.0",
+        ""
+    ]
+    assert lines == expected
