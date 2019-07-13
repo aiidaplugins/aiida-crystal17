@@ -8,7 +8,7 @@ from aiida_crystal17.common import unflatten_dict
 
 
 class CryInputParamsData(Data):
-    """stores additional data for StructureData Kinds"""
+    """stores a validated dictionary of input parameters for CryMainCalculations"""
     _data_schema = None
 
     @classproperty
@@ -30,16 +30,17 @@ class CryInputParamsData(Data):
         """
         validate_against_schema(dct, cls.data_schema)
 
-    def __init__(self, **kwargs):
-        """Stores the symmetry data for a structure
+    def __init__(self, data=None, unflatten=False, **kwargs):
+        """stores a validated dictionary of input parameters for CryMainCalculations
 
-        - symmetry operations are stored on file (in the style of ArrayData)
-        - the rest of the values are stored as attributes in the database
+        Parameters
+        ----------
+        data : dict
+            the data to set
+        unflatten : bool
+            whether to unflatten the dictionary, e.g. from {"a.b": 1} to {"a": {"b": 1}}
 
-        :param data: the data to set
         """
-        data = kwargs.pop('data', None)
-        unflatten = kwargs.pop('unflatten', False)
         super(CryInputParamsData, self).__init__(**kwargs)
         if data is not None:
             if unflatten:
