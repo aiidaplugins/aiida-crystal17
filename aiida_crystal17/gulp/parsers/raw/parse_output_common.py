@@ -2,7 +2,7 @@
 import re
 
 
-def read_gulp_table(lines, lineno, field_names, field_conversions):
+def read_gulp_table(lines, lineno, field_names, field_conversions, star_to_none=True):
     """ read tables of the format:
 
     ::
@@ -22,11 +22,26 @@ def read_gulp_table(lines, lineno, field_names, field_conversions):
     field_names: list[str]
     field_conversions: list
         a list of functions for converting each expected field, e.g. [int, float, float]
+    star_to_none: bool
+        See notes below, if a value has been replaced with *** then convert it to None
 
     Returns
     -------
     int: lineno
     values: dict
+
+    Notes
+    -----
+
+    Sometimes values can be output as *'s (presumably if they are too large)
+
+    ::
+
+            Observable no.  Type            Observable   Calculated    Residual  Error(%)
+        --------------------------------------------------------------------------------
+                    1        Energy        -90425.39915 ************ ************ -127.948
+
+
 
     """
     if not len(field_names) == len(field_conversions):
@@ -39,7 +54,7 @@ def read_gulp_table(lines, lineno, field_names, field_conversions):
         lineno += 1
         if lineno >= len(lines):
             raise IOError("reached end of file trying to find start of table, "
-                          "starting from line {}".format(start_lineno))
+                          "starting from line #{}".format(start_lineno))
         line = lines[lineno]
 
     lineno += 1
@@ -49,7 +64,7 @@ def read_gulp_table(lines, lineno, field_names, field_conversions):
         lineno += 1
         if lineno >= len(lines):
             raise IOError("reached end of file trying to find end of table header, "
-                          "starting from line {}".format(start_lineno))
+                          "starting from line #{}".format(start_lineno))
         line = lines[lineno]
 
     lineno += 1
@@ -60,19 +75,22 @@ def read_gulp_table(lines, lineno, field_names, field_conversions):
     while not line.strip().startswith("---"):
         value_list = line.strip().split(None, num_fields - 1)
         if not len(value_list) == num_fields:
-            raise IOError("line {} did not have at least the expected number of fields ({}): "
+            raise IOError("line #{} did not have at least the expected number of fields ({}): "
                           "{}".format(lineno, num_fields, value_list))
         try:
             for value, name, convert in zip(value_list, field_names, field_conversions):
-                values[name].append(convert(value))
+                if value.startswith("******") and star_to_none:
+                    values[name].append(None)
+                else:
+                    values[name].append(convert(value))
         except Exception as err:
-            raise IOError("line {} could not be converted to the required format: "
+            raise IOError("line #{} could not be converted to the required format: "
                           "{}".format(lineno, err))
 
         lineno += 1
         if lineno >= len(lines):
             raise IOError("reached end of file trying to find end of table, "
-                          "starting from line {}".format(start_lineno))
+                          "starting from line #{}".format(start_lineno))
         line = lines[lineno]
 
     return lineno, values
