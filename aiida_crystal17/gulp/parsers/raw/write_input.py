@@ -114,7 +114,7 @@ class InputCreationBase(object):
 
         Parameters
         ----------
-        structure : aiida.orm.StructureData
+        structure : aiida.StructureData
             the input structure
         potential_lines: list[str]
         parameters : aiida.orm.nodes.data.dict.Dict or dict

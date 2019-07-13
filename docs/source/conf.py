@@ -15,6 +15,8 @@ import os
 import subprocess
 import sys
 import time
+
+import six
 import aiida_crystal17
 
 # -- AiiDA-related setup --------------------------------------------------
@@ -114,8 +116,15 @@ intersphinx_mapping = {
 intersphinx_aliases = {
     ('py:class', 'json.encoder.JSONEncoder'): ('py:class', 'json.JSONEncoder'),
     ('py:class', 'aiida.StructureData'):
-    ('py:class', 'aiida.orm.nodes.data.structure.StructureData')
+    ('py:class', 'aiida.orm.nodes.data.structure.StructureData'),
+    ('py:class', 'aiida.orm.Dict'):
+    ('py:class', 'aiida.orm.nodes.data.dict.Dict')
 }
+
+if six.PY2:
+    intersphinx_aliases[('py:class', 'callable')] = ('py:class', 'dict')
+else:
+    intersphinx_aliases[('py:class', 'callable')] = ('py:class', 'collections.abc.Callable')
 
 
 # The master toctree document.
@@ -232,15 +241,17 @@ nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'),
                   ('py:exc', 'VMSError'), ('py:exc', 'ValueError'),
                   ('py:exc', 'Warning'), ('py:exc', 'WindowsError'),
                   ('py:exc', 'ZeroDivisionError'),
+                  ('py:class', '_abcoll.MutableMapping'),
+                  ('py:class', 'tuple'),
                   ('py:obj', 'str'),
                   ('py:obj', 'list'),
-                  ('py:obj', 'tuple'), ('py:class', 'tuple'),
+                  ('py:obj', 'tuple'),
                   ('py:obj', 'int'),
                   ('py:obj', 'float'),
                   ('py:obj', 'bool'),
                   ('py:obj', 'Mapping'),
                   ('py:obj', 'MutableMapping'),
-                  ('py:class', '_abcoll.MutableMapping')]
+                  ]
 
 # autodoc options, see
 # http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration

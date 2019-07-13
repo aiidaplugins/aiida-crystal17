@@ -1,9 +1,11 @@
 """ a calculation plugin to perform fitting of potentials,
 given a set of structures and observables
 """
+import copy
 
 import six
 
+from aiida.common.utils import classproperty
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.common.exceptions import InputValidationError
 from aiida.engine import CalcJob
@@ -11,17 +13,45 @@ from aiida.orm import Dict, StructureData
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import DataFactory
 
+from aiida_crystal17.validation import load_schema, validate_against_schema
 from aiida_crystal17.gulp.parsers.raw.write_input_fitting import create_input_lines
-
-
-def potential_validator(potential):
-    assert potential.has_fitting_flags, "fitting flags should be set for the potential"
 
 
 class GulpFittingCalculation(CalcJob):
     """ a calculation plugin to perform fitting of potentials,
     given a set of structures and observables
     """
+    _settings_schema = None
+    _observable_defaults = {
+        "weighting": 100.0,
+        "energy_units": "eV",
+        "energy_units_key": "energy_units",
+        "energy_key": "energy"
+    }
+
+    @classproperty
+    def settings_schema(cls):
+        """ return the settings schema,
+        which is loaded from file the first time it is called only"""
+        if cls._settings_schema is None:
+            cls._settings_schema = load_schema("fitting_settings.schema.json")
+        return copy.deepcopy(cls._settings_schema)
+
+    @classmethod
+    def validate_settings(cls, dct):
+        """validate a settings dictionary
+
+        Parameters
+        ----------
+        dct : aiida.orm.Dict
+
+        """
+        validate_against_schema(dct.get_dict(), cls.settings_schema)
+
+    @classmethod
+    def validate_potential(cls, potential):
+        assert potential.has_fitting_flags, "fitting flags should be set for the potential"
+
     @classmethod
     def define(cls, spec):
         """ define the process specification """
@@ -39,8 +69,15 @@ class GulpFittingCalculation(CalcJob):
                    valid_type=six.string_types, default='gulp.fitting')
 
         spec.input(
+            "settings", valid_type=Dict, required=True, validator=cls.validate_settings,
+            serializer=to_aiida_type,
+            help=("Settings for the fitting, "
+                  "see `GulpFittingCalculation.settings_schema` for the accepted format")
+        )
+
+        spec.input(
             "potential", valid_type=DataFactory('gulp.potential'), required=True,
-            serializer=to_aiida_type, validator=potential_validator,
+            serializer=to_aiida_type, validator=cls.validate_potential,
             help=("a dictionary defining the potential. "
                   "Note this should have been created with fitting flags initialised")
         )
@@ -96,6 +133,34 @@ class GulpFittingCalculation(CalcJob):
 
         # TODO output a potential file (for input into GulpAbstractCalculation)
 
+    def create_observable_map(self, settings):
+        observables = settings["observables"]
+        observable_map = {}
+        if "energy" in observables:
+            units = observables["energy"].get("units", self._observable_defaults["energy_units"])
+            units_key = observables["energy"].get("units_key", self._observable_defaults["energy_units_key"])
+            energy_key = observables["energy"].get("energy_key", self._observable_defaults["energy_key"])
+            weighting = observables["energy"].get("weighting", self._observable_defaults["weighting"])
+            if units == "eV":
+                key = "energy ev"
+            else:
+                key = "energy " + units
+
+            def _get_energy(data):
+                dct = data.get_dict()
+                for key in [units_key, energy_key]:
+                    if key not in dct:
+                        raise AssertionError(
+                            "the observable data Pk={0} does not contain a '{1}' key".format(data.id, key))
+                if dct[units_key] != units:
+                    # TODO units conversion
+                    raise AssertionError("'{}' != {}".format(units_key, units))
+                return dct[energy_key], weighting
+
+            observable_map[key] = _get_energy
+
+        return observable_map
+
     def prepare_for_submission(self, tempfolder):
         """
         This is the routine to be called when you want to create
@@ -104,14 +169,16 @@ class GulpFittingCalculation(CalcJob):
         :param tempfolder: an aiida.common.folders.Folder subclass
                            where the plugin should put all its files.
         """
+        settings = {}
+        if "settings" in self.inputs:
+            settings = self.inputs.settings.get_dict()
+
         # validate that the structures and observables have the same keys
         struct_keys = set(self.inputs.structures.keys())
         observe_keys = set(self.inputs.observables.keys())
         if struct_keys != observe_keys:
             raise InputValidationError(
                 "The structures and observables do not match: {} != {}".format(struct_keys, observe_keys))
-
-        # TODO control observables
 
         # validate number of fitting variables vs number of observables
         if len(observe_keys) < self.inputs.potential.number_of_variables:
@@ -125,7 +192,9 @@ class GulpFittingCalculation(CalcJob):
             self.inputs.potential,
             self.inputs.structures,
             self.inputs.observables,
-            self.metadata.options.output_dump_file_name
+            observables=self.create_observable_map(settings),
+            delta=settings.get("gradient_delta", None),
+            dump_file=self.metadata.options.output_dump_file_name
         ))
 
         if not isinstance(content, six.text_type):
