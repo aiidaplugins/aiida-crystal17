@@ -131,7 +131,7 @@ def parse_file(file_obj, parser_class=None):
                     continue
 
             except IOError as err:
-                output["parser_errors"].append(err)
+                output["parser_errors"].append(str(err))
                 continue
 
     return output, assign_exit_code(

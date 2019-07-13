@@ -97,7 +97,7 @@ class GulpOptParser(Parser):
             try:
                 validate_1d_geometry(self.node.inputs.structure)
             except Exception as err:
-                self.logger.error(err)
+                self.logger.error(str(err))
                 return None, "ERROR_STRUCTURE_PARSING"
             out_structure = self.node.inputs.structure.clone()
             positions = []
