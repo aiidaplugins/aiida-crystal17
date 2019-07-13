@@ -150,6 +150,17 @@ def parse_file(file_obj, parser_class=None, single_point_only=False):
             #     # this should be the same as the (primitive energy from the components section)
             #     continue
 
+            if line.strip().startswith("Final fractional/Cartesian coordinates of atoms"):
+                # output for surfaces and polymers
+                try:
+                    lineno, output['final_coords'] = read_gulp_table(
+                        lines, lineno,
+                        ["id", "label", "type", "x", "y", "z", "radius"],
+                        [int, str, str, float, float, float, float])
+                except (IOError, ValueError) as err:
+                    output["parser_errors"].append(err)
+                continue
+
             if line.strip().startswith("Final charges from ReaxFF"):
                 lineno, output["reaxff_charges"] = read_gulp_table(
                     lines, lineno, ["index", "atomic_number", "charge"], [int, int, float])

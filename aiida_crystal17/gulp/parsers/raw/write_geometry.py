@@ -23,20 +23,24 @@ def create_geometry_lines(structure_data, symmetry_data=None, name="main-geometr
     list[str]
 
     """
+    lines = ['name {}'.format(name)]
     atoms = convert_structure(structure_data, "ase")
+
+    if sum(atoms.get_pbc()) == 1:
+        if symmetry_data is not None:
+            raise NotImplementedError("cannot set symmetry data for 1D structures")
+        return create_1d_geometry(lines, atoms)
 
     if not all(atoms.get_pbc()):
         # TODO For 2D use svectors and sfractional,
         # can you specify symmetry operations?
-        raise NotImplementedError('periodicity lower than 3')
+        raise NotImplementedError('2-D periodicity')
 
     if symmetry_data is None:
         pass
         # symmetry_data = structure_to_symmetry(structure_data)
     else:
         validate_against_schema(symmetry_data, "symmetry.schema.json")
-
-    lines = ['name {}'.format(name)]
 
     # add cell vectors
     lines.append('vectors')
@@ -102,3 +106,32 @@ def create_geometry_lines(structure_data, symmetry_data=None, name="main-geometr
                 op[2], op[5], op[8], op[11]))
 
     return lines
+
+
+def create_1d_geometry(lines, atoms):
+    """ create 1D (polymer) geometry lines """
+    # TODO creating shell models
+    validate_1d_geometry(atoms)
+    lines.append('pcell')
+    lines.append("{0:.6f}".format(atoms.cell[0][0]))
+    lines.append('pfractional')
+    symbols = atoms.get_chemical_symbols()
+    fcoords = atoms.get_scaled_positions()
+    ccoords = atoms.positions
+    for symbol, fcoords, ccoords in zip(symbols, fcoords, ccoords):
+        lines.append("{0} core {1:.6f} {2:.6f} {3:.6f}".format(
+            symbol, fcoords[0], ccoords[1], ccoords[2]))
+    return lines
+
+
+def validate_1d_geometry(structure):
+    """ validate a 1-d structure """
+    if not list(structure.pbc) == [True, False, False]:
+        raise NotImplementedError("a 1-D structure can only be periodic in the x-direction")
+    expected_cell = np.eye(3)
+    for i in range(3):
+        expected_cell[i][i] = structure.cell[i][i]
+    if not np.allclose(structure.cell, expected_cell):
+        raise NotImplementedError(
+            "a 1-D structure cell must be of the form "
+            "[[x, 0, 0], [0, y, 0], [0, 0, z]]: {}".format(structure.cell))

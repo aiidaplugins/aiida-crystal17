@@ -90,4 +90,18 @@ def test_optimize_success(db_test_app):
     assert "results" in results
     assert "structure" in results
 
-# TODO reaxff tests
+
+def test_optimize_1d_molecule(db_test_app, get_structure):
+    # type: (AiidaTestApp) -> None
+    retrieved = FolderData()
+    path = os.path.join(TEST_FILES, "gulp", "s2_polymer_opt", 'main.gout')
+    retrieved.put_object_from_file(path, "main.gout")
+
+    node = db_test_app.generate_calcjob_node(
+        'gulp.optimize', retrieved,
+        input_nodes={"structure": get_structure("s2_molecule")})
+    results, calcfunction = db_test_app.parse_from_node('gulp.optimize', node)
+    if not calcfunction.is_finished_ok:
+        raise AssertionError(calcfunction.attributes)
+    assert "results" in results
+    assert "structure" in results

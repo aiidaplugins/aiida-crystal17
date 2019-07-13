@@ -17,9 +17,6 @@ def create_input_lines(potential, structures, observable_datas,
         (must have same keys as structures)
     observables: None or dict[str, callable]
         mapping of observable to a function that returns (value, weighting) from the observable_data.
-        If None, {'energy ev': func} if used,
-        where func returns the 'energy' key from observable_data,
-        and also validates that it contains an 'energy_units' key that equals 'eV'
     delta: None or float
         differencing interval for gradients (default 0.00001 or 0.0001 for relax)
     dump_file : str

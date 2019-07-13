@@ -11,6 +11,7 @@ from aiida.parsers.parser import Parser
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.gulp.parsers.raw.parse_output_std import parse_file
+from aiida_crystal17.gulp.parsers.raw.write_geometry import validate_1d_geometry
 
 
 class GulpOptParser(Parser):
@@ -63,59 +64,91 @@ class GulpOptParser(Parser):
 
         self.out('results', Dict(dict=result_dict))
 
-        cif_file = self.node.get_option("out_cif_file_name")
-        if cif_file not in output_folder.list_object_names():
-            self.logger.error("the output cif file is missing")
-            if exit_code is not None:
-                # if there was already an error identified, then return that
-                return self.exit_codes[exit_code]
-            return self.exit_codes.ERROR_CIF_FILE_MISSING
+        out_structure, exit_code_structure = self.create_structure(result_dict, output_folder)
 
-        # We do not use this method, since currently different kinds are set for each atom
-        # see aiidateam/aiida_core#2942
-        # NOTE cif files are read as binary, by default, since aiida-core v1.0.0b3
-        # with output_folder.open(cif_file, mode="rb") as handle:
-        #     cif = DataFactory('cif')(file=handle)
-        # structure = cif.get_structure(converter="ase")
-
-        with warnings.catch_warnings():
-            # ase.io.read returns a warnings that can be ignored
-            # UserWarning: crystal system 'triclinic' is not interpreted for space group 1.
-            # This may result in wrong setting!
-            warnings.simplefilter("ignore", UserWarning)
-            with output_folder.open(cif_file, mode="r") as handle:
-                atoms = ase_read(handle, index=':', format="cif")[-1]
-        atoms.set_tags(0)
-
-        if self.node.get_option("use_input_kinds"):
-
-            if "structure" not in self.node.inputs:
-                self.logger.error("the input structure node is not set")
-                if exit_code is not None:
-                    # if there was already an error identified, then return that
-                    return self.exit_codes[exit_code]
-                return self.exit_codes.ERROR_MISSING_INPUT_STRUCTURE
-
-            in_structure = self.node.inputs.structure
-            in_atoms = in_structure.get_ase()
-
-            if in_atoms.get_chemical_symbols() != atoms.get_chemical_symbols():
-                self.logger.error(
-                    "the input and cif structures have different atomic configurations")
-                if exit_code is not None:
-                    # if there was already an error identified, then return that
-                    return self.exit_codes[exit_code]
-                return self.exit_codes.ERROR_CIF_INCONSISTENT
-
-            out_structure = in_structure.clone()
-            out_structure.set_cell(atoms.cell)
-            out_structure.reset_sites_positions(atoms.positions)
-
-        else:
-            out_structure = DataFactory('structure')(ase=atoms)
-
-        self.out('structure', out_structure)
+        if out_structure is not None:
+            self.out('structure', out_structure)
 
         if exit_code is not None:
             return self.exit_codes[exit_code]
+        if exit_code_structure is not None:
+            return self.exit_codes[exit_code_structure]
         return ExitCode()
+
+    def create_structure(self, results_dict, output_folder):
+        """ create the output structure """
+        opt_type = results_dict.get("opt_type", None)
+        if opt_type in "polymer":
+            if "final_coords" not in results_dict:
+                return None, "ERROR_STRUCTURE_PARSING"
+            final_coords = results_dict.pop("final_coords")
+            if "structure" not in self.node.inputs:
+                self.logger.error("the input structure node is not set")
+                return None, "ERROR_MISSING_INPUT_STRUCTURE"
+            if not set(final_coords.keys()).issuperset(["id", "x", "y", "z", "label"]):
+                self.logger.error('expected final_coords to contain ["id", "x", "y", "z", "label"]')
+                return None, "ERROR_STRUCTURE_PARSING"
+            if not final_coords["id"] == list(range(1, len(final_coords["id"]) + 1)):
+                self.logger.error("the final_coords ids were not ordered 1,2,3,...")
+                return None, "ERROR_STRUCTURE_PARSING"
+            if not final_coords["label"] == self.node.inputs.structure.get_ase().get_chemical_symbols():
+                self.logger.error("the final_coords labels are != to the input structure symbols")
+                return None, "ERROR_STRUCTURE_PARSING"
+            try:
+                validate_1d_geometry(self.node.inputs.structure)
+            except Exception as err:
+                self.logger.error(err)
+                return None, "ERROR_STRUCTURE_PARSING"
+            out_structure = self.node.inputs.structure.clone()
+            positions = []
+            for x, y, z in zip(final_coords["x"], final_coords["y"], final_coords["z"]):
+                # x are fractional and y,z are cartesian
+                positions.append([x * out_structure.cell[0][0], y, z])
+            out_structure.reset_sites_positions(positions)
+        elif opt_type in "surface":
+            self.logger.error("creating output structures for surface optimisations has not yet been implemented")
+            return None, "ERROR_STRUCTURE_PARSING"
+        else:
+            cif_file = self.node.get_option("out_cif_file_name")
+            if cif_file not in output_folder.list_object_names():
+                self.logger.error("the output cif file is missing")
+                return None, "ERROR_CIF_FILE_MISSING"
+
+            # We do not use this method, since currently different kinds are set for each atom
+            # see aiidateam/aiida_core#2942
+            # NOTE cif files are read as binary, by default, since aiida-core v1.0.0b3
+            # with output_folder.open(cif_file, mode="rb") as handle:
+            #     cif = DataFactory('cif')(file=handle)
+            # structure = cif.get_structure(converter="ase")
+
+            with warnings.catch_warnings():
+                # ase.io.read returns a warnings that can be ignored
+                # UserWarning: crystal system 'triclinic' is not interpreted for space group 1.
+                # This may result in wrong setting!
+                warnings.simplefilter("ignore", UserWarning)
+                with output_folder.open(cif_file, mode="r") as handle:
+                    atoms = ase_read(handle, index=':', format="cif")[-1]
+            atoms.set_tags(0)
+
+            if self.node.get_option("use_input_kinds"):
+
+                if "structure" not in self.node.inputs:
+                    self.logger.error("the input structure node is not set")
+                    return None, "ERROR_MISSING_INPUT_STRUCTURE"
+
+                in_structure = self.node.inputs.structure
+                in_atoms = in_structure.get_ase()
+
+                if in_atoms.get_chemical_symbols() != atoms.get_chemical_symbols():
+                    self.logger.error(
+                        "the input and cif structures have different atomic configurations")
+                    return None, "ERROR_CIF_INCONSISTENT"
+
+                out_structure = in_structure.clone()
+                out_structure.set_cell(atoms.cell)
+                out_structure.reset_sites_positions(atoms.positions)
+
+            else:
+                out_structure = DataFactory('structure')(ase=atoms)
+
+        return out_structure, None

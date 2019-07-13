@@ -72,7 +72,7 @@ def test_parse_surface_opt(data_regression):
 def test_parse_polymer_opt(data_regression):
     # type: (AiidaTestApp) -> None
     """ this is a surface calculation """
-    path = os.path.join(TEST_FILES, "gulp", "polymer_opt", 'main.gout')
+    path = os.path.join(TEST_FILES, "gulp", "s2_polymer_opt", 'main.gout')
     with open(path) as handle:
         data, exit_code = parse_file(handle, "test_class")
 
