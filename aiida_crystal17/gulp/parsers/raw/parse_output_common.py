@@ -23,7 +23,7 @@ def read_gulp_table(lines, lineno, field_names, field_conversions, star_to_none=
     field_conversions: list
         a list of functions for converting each expected field, e.g. [int, float, float]
     star_to_none: bool
-        See notes below, if a value has been replaced with *** then convert it to None
+        See notes below, if a value has been replaced with `***` then convert it to None
 
     Returns
     -------
@@ -33,7 +33,7 @@ def read_gulp_table(lines, lineno, field_names, field_conversions, star_to_none=
     Notes
     -----
 
-    Sometimes values can be output as *'s (presumably if they are too large)
+    Sometimes values can be output as `*`'s (presumably if they are too large)
 
     ::
 
