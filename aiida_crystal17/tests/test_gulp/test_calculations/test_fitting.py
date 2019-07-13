@@ -50,15 +50,20 @@ def test_calcjob_submit_lj_fes(db_test_app, get_structure,
             }
         }
     )
+    builder.settings = {
+        "observables": {
+            "energy": {"energy_key": "final_energy"}
+        }
+    }
     builder.structures = {
         "pyrite": get_structure("pyrite"),
         "marcasite": get_structure("marcasite"),
         "zincblende": get_structure("zincblende")
     }
     builder.observables = {
-        "pyrite": Dict(dict={"energy": -1}),
-        "marcasite": Dict(dict={"energy": -1}),
-        "zincblende": Dict(dict={"energy": 1})
+        "pyrite": Dict(dict={"final_energy": -1, "energy_units": "eV"}),
+        "marcasite": Dict(dict={"final_energy": -1, "energy_units": "eV"}),
+        "zincblende": Dict(dict={"final_energy": 1, "energy_units": "eV"})
     }
 
     process_options = builder.process_class(inputs=builder).metadata.options
@@ -85,6 +90,11 @@ def test_calcjob_submit_reaxff_fes(db_test_app, get_structure,
         content = handle.read()
     pot_data = read_lammps_format(content.splitlines())
     pot_data = filter_by_species(pot_data, ["Fe core", "S core"])
+    builder.settings = {
+        "observables": {
+            "energy": {}
+        }
+    }
     builder.potential = potential_cls(
         "reaxff",
         pot_data,
@@ -99,9 +109,9 @@ def test_calcjob_submit_reaxff_fes(db_test_app, get_structure,
         "zincblende": get_structure("zincblende")
     }
     builder.observables = {
-        "pyrite": Dict(dict={"energy": -1}),
-        "marcasite": Dict(dict={"energy": -1}),
-        "zincblende": Dict(dict={"energy": 1})
+        "pyrite": Dict(dict={"energy": -1, "energy_units": "eV"}),
+        "marcasite": Dict(dict={"energy": -1, "energy_units": "eV"}),
+        "zincblende": Dict(dict={"energy": 1, "energy_units": "eV"})
     }
 
     process_options = builder.process_class(inputs=builder).metadata.options
@@ -155,15 +165,20 @@ def test_run_lj_fes(db_test_app, get_structure,
             }
         }
     )
+    builder.settings = {
+        "observables": {
+            "energy": {}
+        }
+    }
     builder.structures = {
         "pyrite": get_structure("pyrite"),
         "marcasite": get_structure("marcasite"),
         "zincblende": get_structure("zincblende")
     }
     builder.observables = {
-        "pyrite": Dict(dict={"energy": -1}),
-        "marcasite": Dict(dict={"energy": -1}),
-        "zincblende": Dict(dict={"energy": 1})
+        "pyrite": Dict(dict={"energy": -1, "energy_units": "eV"}),
+        "marcasite": Dict(dict={"energy": -1, "energy_units": "eV"}),
+        "zincblende": Dict(dict={"energy": 1, "energy_units": "eV"})
     }
 
     calc_node = run_get_node(builder).node
@@ -186,6 +201,11 @@ def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
         content = handle.read()
     pot_data = read_lammps_format(content.splitlines())
     pot_data = filter_by_species(pot_data, ["Fe core", "S core"])
+    builder.settings = {
+        "observables": {
+            "energy": {}
+        }
+    }
     builder.potential = potential_cls(
         "reaxff",
         pot_data,
@@ -200,9 +220,9 @@ def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
         "zincblende": get_structure("zincblende")
     }
     builder.observables = {
-        "pyrite": Dict(dict={"energy": -1}),
-        "marcasite": Dict(dict={"energy": -1}),
-        "zincblende": Dict(dict={"energy": 1})
+        "pyrite": Dict(dict={"energy": -1, "energy_units": "eV"}),
+        "marcasite": Dict(dict={"energy": -1, "energy_units": "eV"}),
+        "zincblende": Dict(dict={"energy": 1, "energy_units": "eV"})
     }
 
     calc_node = run_get_node(builder).node

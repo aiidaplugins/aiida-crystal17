@@ -82,7 +82,7 @@ class CryMainCalculation(CryAbstractCalculation):
         ----------
         parameters: dict or CryInputParamsData
             input parameters to create the input .d12 file
-        structure: aiida.orm.StructureData
+        structure: aiida.StructureData
             the structure node
         bases: str or dict
             string of the BasisSetFamily to use,
