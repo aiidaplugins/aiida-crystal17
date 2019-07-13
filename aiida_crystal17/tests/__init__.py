@@ -73,6 +73,17 @@ def get_test_structure(name):
                         [0.0, 0.0, 5.42]],
             'equivalent': [0, 0, 0, 0, 0, 0, 0, 0]}
         return convert_structure(structure_data, "aiida")
+    elif name == "s2_molecule":
+        structure_data = {
+            'pbc': [True, False, False],
+            'atomic_numbers': [16, 16],
+            'ccoords': [[0.0, 0.0, 0.0],
+                        [1.89, 0.0, 0.0]],
+            'lattice': [[10.0, 0.0, 0.0],
+                        [0.0, 10.0, 0.0],
+                        [0.0, 0.0, 10.0]],
+            'equivalent': [0, 0]}
+        return convert_structure(structure_data, "aiida")
     raise ValueError(name)
 
 

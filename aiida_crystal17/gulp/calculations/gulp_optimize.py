@@ -45,6 +45,9 @@ class GulpOptCalculation(GulpAbstractCalculation):
         spec.exit_code(
             252, 'ERROR_CIF_INCONSISTENT',
             message='the output cif file was not consistent with the input structure')
+        spec.exit_code(
+            253, 'ERROR_STRUCTURE_PARSING',
+            message='The final structure coordinates were not parsed from the output file')
 
         spec.output(cls.link_output_structure,
                     valid_type=DataFactory('structure'),

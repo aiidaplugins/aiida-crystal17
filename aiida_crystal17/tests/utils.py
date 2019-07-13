@@ -299,7 +299,7 @@ class AiidaTestApp(object):
     def generate_calcjob_node(self, entry_point_name, retrieved=None,
                               computer_name='localhost',
                               options=None, mark_completed=False,
-                              remote_path=None):
+                              remote_path=None, input_nodes=None):
         """Fixture to generate a mock `CalcJobNode` for testing parsers.
 
         Parameters
@@ -316,6 +316,8 @@ class AiidaTestApp(object):
             path to a folder on the computer
         mark_completed : bool
             if True, set the process state to finished, and the exit_status = 0
+        input_nodes: dict
+            mapping of link label to node
 
         Returns
         -------
@@ -348,6 +350,12 @@ class AiidaTestApp(object):
         if mark_completed:
             calc_node.set_process_state(ProcessState.FINISHED)
             calc_node.set_exit_status(ExitCode().status)
+
+        if input_nodes is not None:
+            for label, in_node in input_nodes.items():
+                in_node.store()
+                calc_node.add_incoming(
+                    in_node, link_type=LinkType.INPUT_CALC, link_label=label)
 
         calc_node.store()
 
@@ -422,6 +430,7 @@ class AiidaTestApp(object):
         class ContextDumper(yaml.Dumper):
             """Custom yaml dumper for a process context.
             """
+
             def represent_data(self, data):
                 if isinstance(data, Node):
                     data = str(data.__class__)

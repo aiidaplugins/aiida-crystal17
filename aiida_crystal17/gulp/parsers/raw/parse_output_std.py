@@ -117,7 +117,7 @@ def parse_file(file_obj, parser_class=None, single_point_only=False):
                     output[energy], output[penergy], lineno = read_energy_components(
                         lines, lineno)
                 except (IOError, ValueError) as err:
-                    output["parser_errors"].append(err)
+                    output["parser_errors"].append(str(err))
                 continue
 
             # TODO convert this to energy if single-point calculation
@@ -129,7 +129,7 @@ def parse_file(file_obj, parser_class=None, single_point_only=False):
                     output["final_energy"], output["final_primitive_energy"], lineno = read_energy_components(
                         lines, lineno)
                 except (IOError, ValueError) as err:
-                    output["parser_errors"].append(err)
+                    output["parser_errors"].append(str(err))
                 continue
 
         if section == "output" or section == "optimisation":
@@ -140,7 +140,7 @@ def parse_file(file_obj, parser_class=None, single_point_only=False):
                 try:
                     output['energy_contributions'], lineno = read_reaxff_econtribs(lines, lineno)
                 except (IOError, ValueError) as err:
-                    output["parser_errors"].append(err)
+                    output["parser_errors"].append(str(err))
                 continue
 
         if section == "output" or section == "post_opt":
@@ -149,6 +149,17 @@ def parse_file(file_obj, parser_class=None, single_point_only=False):
             # if line.strip().startswith("Final energy ="):
             #     # this should be the same as the (primitive energy from the components section)
             #     continue
+
+            if line.strip().startswith("Final fractional/Cartesian coordinates of atoms"):
+                # output for surfaces and polymers
+                try:
+                    lineno, output['final_coords'] = read_gulp_table(
+                        lines, lineno,
+                        ["id", "label", "type", "x", "y", "z", "radius"],
+                        [int, str, str, float, float, float, float])
+                except (IOError, ValueError) as err:
+                    output["parser_errors"].append(str(err))
+                continue
 
             if line.strip().startswith("Final charges from ReaxFF"):
                 lineno, output["reaxff_charges"] = read_gulp_table(
