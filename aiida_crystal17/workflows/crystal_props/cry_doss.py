@@ -77,15 +77,15 @@ class CryPropertiesWorkChain(WorkChain):
         """ check that the remote folder contains the wavefunction file
         """
         self.ctx.wf_folder = self.inputs.wf_folder
+        wf_filename = self.inputs.doss.metadata.options.input_wf_name
         # TODO this should use the exponential backoff mechanism
         if not self.inputs.wf_folder.is_empty:
             content = self.inputs.wf_folder.listdir()
-            wf_filename = self.inputs.doss.metadata.options.input_wf_name
             if wf_filename in content:
                 self.ctx.run_calc = False
                 return False
 
-        self.report("{} does not contain '{}', attempting to rerun SCF calculation".format(
+        self.report("Remote folder {} does not contain '{}', attempting to rerun SCF calculation".format(
             self.inputs.wf_folder, wf_filename))
         self.ctx.run_calc = True
         # TODO if re-running we should reset self.inputs.doss.metadata.options.input_wf_name
