@@ -34,7 +34,7 @@ class CryPropertiesWorkChain(WorkChain):
         spec.expose_inputs(CryDossCalculation, namespace=cls._doss_namespace, exclude=('wf_folder'))
         spec.input('{}.metadata.options.resources'.format(cls._doss_namespace), valid_type=dict, required=False)
         spec.input('{}.meta_options'.format(cls._calc_namespace),
-                   valid_type=dict, required=False,
+                   valid_type=dict, required=False, non_db=True,
                    help='if supplied will update the original CryMainCalculations `metadata.options')
         spec.input('clean_workdir', valid_type=Bool,
                    serializer=to_aiida_type, required=False,
