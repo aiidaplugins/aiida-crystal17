@@ -1,0 +1,25 @@
+calc_options:
+  append_text: ''
+  custom_scheduler_commands: ''
+  environment_variables: {}
+  import_sys_environment: true
+  input_file_name: INPUT
+  max_wallclock_seconds: 1800
+  mpirun_extra_params: []
+  output_main_file_name: main.out
+  parser_name: crystal17.main
+  prepend_text: ''
+  resources:
+    num_machines: 1
+    num_mpiprocs_per_machine: 1
+  scheduler_stderr: _scheduler-stderr.txt
+  scheduler_stdout: _scheduler-stdout.txt
+  withmpi: false
+calc_params:
+  scf:
+    k_points:
+    - 8
+    - 8
+  title: MgO Bulk
+run_calc: true
+wf_folder: <class 'aiida.orm.nodes.data.remote.RemoteData'>

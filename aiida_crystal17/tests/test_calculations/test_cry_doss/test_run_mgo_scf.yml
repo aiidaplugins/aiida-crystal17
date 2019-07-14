@@ -36,8 +36,8 @@ calc:
   withmpi: false
 results:
   ejplugins_version: 0.11.1
-  energy_max: -1.1689903
-  energy_min: -6.7761793
+  energy_max: 10.4040617
+  energy_min: -10.2020112
   energy_units: eV
   errors: []
   fermi_energy: -3.9864953

@@ -17,7 +17,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
 
     code = db_test_app.get_or_create_code('crystal17.fermi')
     remote = RemoteData(
-        remote_path=os.path.join(TEST_FILES, "doss", "mgo_sto3g_scf"),
+        remote_path=os.path.join(TEST_FILES, "fermi", "mgo_sto3g_scf"),
         computer=db_test_app.get_or_create_computer())
 
     # set up calculation
@@ -30,7 +30,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
                 "num_mpiprocs_per_machine": 1,
             },
             "max_wallclock_seconds": 30,
-            "input_wf_name": "mgo_sto3g_scf.f9"
+            "input_wf_name": "fort.9"
         }
     }
     builder.shrink_is = Int(18)
