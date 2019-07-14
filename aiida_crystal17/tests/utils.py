@@ -327,7 +327,7 @@ class AiidaTestApp(object):
         """
         from aiida.common.links import LinkType
         from aiida.engine import ProcessState, ExitCode
-        from aiida.orm import CalcJobNode, RemoteData
+        from aiida.orm import Node, CalcJobNode, RemoteData
         from aiida.plugins.entry_point import format_entry_point_string
 
         process = self.get_calc_cls(entry_point_name)
@@ -353,9 +353,14 @@ class AiidaTestApp(object):
 
         if input_nodes is not None:
             for label, in_node in input_nodes.items():
-                in_node.store()
-                calc_node.add_incoming(
-                    in_node, link_type=LinkType.INPUT_CALC, link_label=label)
+                in_node_map = in_node
+                if isinstance(in_node, Node):
+                    in_node_map = {None: in_node_map}
+                for sublabel, in_node in in_node_map.items():
+                    in_node.store()
+                    link_label = label if sublabel is None else "{}__{}".format(label, sublabel)
+                    calc_node.add_incoming(
+                        in_node, link_type=LinkType.INPUT_CALC, link_label=link_label)
 
         calc_node.store()
 
@@ -368,7 +373,7 @@ class AiidaTestApp(object):
             remote = RemoteData(remote_path=remote_path,
                                 computer=computer)
             remote.add_incoming(
-                calc_node, link_type=LinkType.CREATE, link_label="remote")
+                calc_node, link_type=LinkType.CREATE, link_label="remote_folder")
             remote.store()
 
         return calc_node

@@ -5,7 +5,7 @@ calc:
   exit_status: 0
   import_sys_environment: true
   input_file_name: INPUT
-  input_wf_name: mgo_sto3g_scf.f9
+  input_wf_name: fort.9
   max_wallclock_seconds: 30
   mpirun_extra_params: []
   output_main_file_name: main.out

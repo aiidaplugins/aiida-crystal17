@@ -538,9 +538,23 @@ class BasisSetData(Data):
 
     @classmethod
     def get_basis_group_map(cls, group_name):
-        """
-        Return an {element: basis} map
-        for the BasisFamily group with the given name.
+        """get a mapping of elements to basissets in a basis set family
+
+        Parameters
+        ----------
+        group_name : str
+            the group name of the basis set
+
+        Returns
+        -------
+        dict
+            a mapping of element to basis set
+
+        Raises
+        ------
+        aiida.common.exceptions.MultipleObjectsError
+            if there is more than one element s
+
         """
         from aiida.common.exceptions import MultipleObjectsError
         family_bases = {}

@@ -30,10 +30,15 @@ hash_map = {
         None: {
             "output": (),
             "stdout": ("mgo_sto3g_scf", "main.out")}},
-    "4bfb50cb82980b82aabc6eb00e17f62c": {
+    "ee3e7aa100e0ffcd8c23ac626c54c538": {
         None: {
             "output": (),
             "stdout": ("mgo_sto3g_scf_external", "main.out")}},
+    "ee712942682b1e4fa73a6c8456dd6fda": {
+        None: {
+            "output": (),
+            "stdout": ("mgo_sto3g_scf_external", "main.out")}},
+    # TODO I think the above two are the same just with minor differences (and 4bfb50cb82980b82aabc6eb00e17f62c)
     "ff77b996a5081e64ab2e9970c6cd15cb": {
         None: {
             "output": (),

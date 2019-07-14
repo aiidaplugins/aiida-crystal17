@@ -25,11 +25,11 @@ import aiida_crystal17.tests as tests
 
 # map of input file hashes to output files
 hash_map = {
-    "7231636fb32fa896709483defc8841fb": {
-        "stdout": ("mgo_sto3g_scf", "doss_total_only.out"),
-        "output": [[("mgo_sto3g_scf", "doss_total_only.f25"), "fort.25"]]},
+    "a3744c045b5572e93157a16decd1dd24": {
+        "stdout": ("doss", "mgo_sto3g_scf", "main.out"),
+        "output": [[("doss", "mgo_sto3g_scf", "fort.25"), "fort.25"]]},
     "c1c5a85d0d799459f2e20fcb25bec0af": {
-        "stdout": ("mgo_sto3g_scf", "fermi_only.out"),
+        "stdout": ("fermi", "mgo_sto3g_scf", "main.out"),
         "output": ()},
 }
 
@@ -43,14 +43,14 @@ def main(sys_args=None):
         # this used in the conda recipe, to test the executable is present
         return
 
-    test_path = os.path.join(tests.TEST_FILES, "doss")
+    test_path = tests.TEST_FILES
 
     content = six.ensure_text(sys.stdin.read())
     hashkey = hashlib.md5(content.encode()).hexdigest()
 
     if str(hashkey) not in hash_map:
         raise IOError(
-            "contents from stdin not in hash list, hashkey: {1}\n{2}".format(
+            "contents from stdin not in hash list, hashkey: {0}\n{1}".format(
                 str(hashkey), content))
 
     outfiles = hash_map[hashkey]

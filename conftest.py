@@ -47,12 +47,17 @@ def db_test_app(aiida_environment):
             'gulp.fitting': 'gulp'
         }
 
-    work_directory = tempfile.mkdtemp()
-    # work_directory = "test_workdir"
+    test_workdir = os.environ.get("CRY17_TEST_WORKDIR", None)
+    if test_workdir:
+        print("NB: using test workdir: {}".format(test_workdir))
+        work_directory = test_workdir
+    else:
+        work_directory = tempfile.mkdtemp()
     yield AiidaTestApp(
         work_directory, executables, environment=aiida_environment)
     aiida_environment.reset_db()
-    shutil.rmtree(work_directory)
+    if not test_workdir:
+        shutil.rmtree(work_directory)
 
 
 @pytest.fixture(scope='function')
@@ -82,10 +87,11 @@ def upload_basis_set_family():
     from aiida_crystal17.data.basis_set import BasisSetData
 
     def _upload(folder_name="sto3g", group_name="sto3g", stop_if_existing=True):
-        return BasisSetData.upload_basisset_family(
+        BasisSetData.upload_basisset_family(
             os.path.join(TEST_FILES, "basis_sets", folder_name),
             group_name,
             "minimal basis sets",
             stop_if_existing=stop_if_existing,
             extension=".basis")
+        return BasisSetData.get_basis_group_map(group_name)
     return _upload

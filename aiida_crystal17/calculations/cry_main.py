@@ -190,7 +190,9 @@ class CryMainCalculation(CryAbstractCalculation):
             self.inputs.structure, self.inputs.get("kinds", None))
         try:
             d12_filecontent = write_input(
-                parameters, list(self.inputs.basissets.values()), atom_props)
+                parameters,
+                [self.inputs.basissets[k] for k in sorted(self.inputs.basissets.keys())],
+                atom_props)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
                 "an input file could not be created from the parameters: {}".
