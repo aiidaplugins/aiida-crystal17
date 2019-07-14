@@ -552,7 +552,7 @@ class BasisSetData(Data):
 
         Raises
         ------
-        MultipleObjectsError
+        aiida.common.exceptions.MultipleObjectsError
             if there is more than one element s
 
         """

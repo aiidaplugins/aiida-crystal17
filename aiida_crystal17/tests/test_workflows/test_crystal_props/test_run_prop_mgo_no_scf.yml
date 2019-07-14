@@ -5,7 +5,6 @@ calc_node:
   sealed: true
   stepper_state_info: 2:check_doss_calculation
 incoming:
-- clean_workdir
 - doss__code
 - doss__parameters
 - wf_folder
@@ -15,4 +14,3 @@ outgoing:
 - doss__results
 - doss__retrieved
 - doss_calc
-- scf_calc
