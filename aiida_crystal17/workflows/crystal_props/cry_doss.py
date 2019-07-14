@@ -1,5 +1,6 @@
 from aiida.common import AttributeDict, LinkType
 from aiida.engine import if_, ToContext, WorkChain
+from aiida.manage.caching import disable_caching
 from aiida.orm import Bool, CalcJobNode
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import CalculationFactory
@@ -133,6 +134,7 @@ class CryPropertiesWorkChain(WorkChain):
 
         # use the final structure (output if the previous calculation was an optimization)
         if "structure" in previous_calc.outputs:
+            self.report("using optimised structure")
             builder.structure = previous_calc.outputs.structure
 
         # we want to use the final structure, so the input wavefunction will not apply
@@ -152,7 +154,8 @@ class CryPropertiesWorkChain(WorkChain):
         # TODO could submit CryMainBaseWorkChain
         builder.metadata.call_link_label = "scf_calc"
         try:
-            calculation = self.submit(builder)
+            with disable_caching():
+                calculation = self.submit(builder)
         except Exception as err:
             self.report("{} submission failed: {}".format(previous_calc, err))
             return self.exit_codes.ERROR_INCOMPLETE_INCOMING_CALC
@@ -166,6 +169,7 @@ class CryPropertiesWorkChain(WorkChain):
         if not self.ctx.calc_scf.is_finished_ok:
             self.report("{} failed with exit code: {}".format(self.ctx.calc_scf, self.ctx.calc_scf.exit_status))
             return self.exit_codes.ERROR_SCF_CALC_FAILED
+        self.report("{} finished successfully".format(self.ctx.calc_scf))
         self.ctx.wf_folder = self.ctx.calc_scf.outputs.remote_folder
 
     def submit_doss_calculation(self):
@@ -174,6 +178,7 @@ class CryPropertiesWorkChain(WorkChain):
             return self.exit_codes.END_OF_TEST_RUN
 
         inputs = AttributeDict(self.exposed_inputs(CryDossCalculation, self._doss_namespace))
+        inputs.wf_folder = self.ctx.wf_folder
         inputs['metadata']['call_link_label'] = "doss_calc"
         calculation = self.submit(CryDossCalculation, **inputs)
         self.report('launching DOSS calculation {}'.format(calculation))
@@ -185,6 +190,8 @@ class CryPropertiesWorkChain(WorkChain):
             self.report("{} failed with exit code: {}".format(
                 self.ctx.calc_doss, self.ctx.calc_doss.exit_status))
             return self.exit_codes.ERROR_DOSS_CALC_FAILED
+
+        self.report("{} finished successfully".format(self.ctx.calc_doss))
 
         namespace_separator = self.spec().namespace_separator
         for link_triple in self.ctx.calc_doss.get_outgoing(link_type=LinkType.CREATE).link_triples:
