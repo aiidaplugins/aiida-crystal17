@@ -38,9 +38,9 @@ def test_calcjob_submit_mgo(db_test_app):
         "shrink_is": 18,
         "shrink_isp": 36,
         "npoints": 100,
-        "band_minimum": -0.247,
-        "band_maximum": -0.047,
-        "band_units": "hartree"
+        "band_minimum": -10,
+        "band_maximum": 10,
+        "band_units": "eV"
     })
     builder.wf_folder = remote
 
@@ -69,7 +69,7 @@ def test_calcjob_submit_mgo(db_test_app):
         1 0
         DOSS
         0 100 -1 -1 1 14 0
-        -0.247 -0.047
+        -0.36749322 0.36749322
         END""")
 
     assert input_content == expected_input
@@ -102,9 +102,9 @@ def test_run_mgo_scf(db_test_app, data_regression):
         "shrink_is": 18,
         "shrink_isp": 36,
         "npoints": 100,
-        "band_minimum": -0.247,
-        "band_maximum": -0.047,
-        "band_units": "hartree"
+        "band_minimum": -10,
+        "band_maximum": 10,
+        "band_units": "eV"
     })
     builder.wf_folder = remote
 
