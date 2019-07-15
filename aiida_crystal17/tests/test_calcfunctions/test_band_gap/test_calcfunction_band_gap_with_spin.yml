@@ -1,0 +1,16 @@
+alpha_bandgap: 1.4329
+alpha_fermi: -4.4489
+alpha_left_edge: -4.4589
+alpha_right_edge: -3.026
+alpha_zero_fermi: true
+beta_bandgap: 1.4329
+beta_fermi: -4.4489
+beta_left_edge: -4.4589
+beta_right_edge: -3.026
+beta_zero_fermi: true
+energy_units: eV
+total_bandgap: 1.4329
+total_fermi: -4.4489
+total_left_edge: -4.4589
+total_right_edge: -3.026
+total_zero_fermi: true
