@@ -17,7 +17,7 @@ def test_basic():
     output = PotentialWriterLJ().create_content(data)
     expected = dedent("""\
         lennard 12 6
-        H core  He core 1.0 2.0 12.0""")
+        H core  He core 1.00000000E+00 2.00000000E+00 12.00000""")
     assert output.content == expected
 
 
@@ -45,7 +45,7 @@ def test_additional_args():
     output = PotentialWriterLJ().create_content(data)
     expected = dedent("""\
         lennard 10 5
-        Fe core B core  1.0 2.0 3.0 12.0""")
+        Fe core B core  1.00000000E+00 2.00000000E+00  3.00000 12.00000""")
     assert output.content == expected
 
 
@@ -68,9 +68,9 @@ def test_multi():
     output = PotentialWriterLJ().create_content(data)
     expected = dedent("""\
         lennard 12 6
-        H core  He core 1.0 2.0 12.0
+        H core  He core 1.00000000E+00 2.00000000E+00 12.00000
         lennard 12 6
-        H core  B core  3.0 4.0 12.0""")
+        H core  B core  3.00000000E+00 4.00000000E+00 12.00000""")
     assert output.content == expected
 
 
@@ -93,7 +93,7 @@ def test_filter():
     output = PotentialWriterLJ().create_content(data, ["H core", "B core"])
     expected = dedent("""\
         lennard 12 6
-        H core  B core  3.0 4.0 12.0""")
+        H core  B core  3.00000000E+00 4.00000000E+00 12.00000""")
     assert output.content == expected
 
 
@@ -123,7 +123,7 @@ def test_add_fitting_flags():
     output = PotentialWriterLJ().create_content(data, fitting_data=fitting_data)
     expected = dedent("""\
         lennard 12 6
-        H core  He core 1.0 2.0 12.0 0 1
+        H core  He core 1.00000000E+00 2.00000000E+00 12.00000 0 1
         lennard 12 6
-        H core  B core  3.0 4.0 12.0 1 0""")
+        H core  B core  3.00000000E+00 4.00000000E+00 12.00000 1 0""")
     assert output.content == expected
