@@ -43,13 +43,19 @@ class PotentialWriterLJ(PotentialWriterAbstract):
         num_fit = 0
 
         for indices in sorted(data["2body"]):
-            species = ["{:7s}".format(data["species"][int(i)]) for i in indices.split(INDEX_SEP)]
+            species = [
+                "{:7s}".format(data["species"][int(i)])
+                for i in indices.split(INDEX_SEP)
+            ]
             values = data["2body"][indices]
-            lines.append("lennard {lj_m} {lj_n}".format(lj_m=values.get("lj_m", 12), lj_n=values.get("lj_n", 6)))
+            lines.append("lennard {lj_m} {lj_n}".format(
+                lj_m=values.get("lj_m", 12), lj_n=values.get("lj_n", 6)))
             if "lj_rmin" in values:
-                values_string = "{lj_A:.8E} {lj_B:.8E} {lj_rmin:8.5f} {lj_rmax:8.5f}".format(**values)
+                values_string = "{lj_A:.8E} {lj_B:.8E} {lj_rmin:8.5f} {lj_rmax:8.5f}".format(
+                    **values)
             else:
-                values_string = "{lj_A:.8E} {lj_B:.8E} {lj_rmax:8.5f}".format(**values)
+                values_string = "{lj_A:.8E} {lj_B:.8E} {lj_rmax:8.5f}".format(
+                    **values)
 
             total_flags += 2
 
@@ -65,3 +71,77 @@ class PotentialWriterLJ(PotentialWriterAbstract):
             lines.append(" ".join(species) + " " + values_string)
 
         return PotentialContent("\n".join(lines), total_flags, num_fit)
+
+    def read_exising(self, lines):
+        """read an existing potential file
+
+        Parameters
+        ----------
+        lines : list[str]
+
+        Returns
+        -------
+        dict
+            the potential data
+
+        Raises
+        ------
+        IOError
+            on parsing failure
+
+        """
+        lineno = 0
+        symbol_set = set()
+        terms = {}
+
+        while lineno < len(lines):
+            line = lines[lineno]
+            if line.strip().startswith("lennard"):
+                meta_values = line.strip().split()
+                if len(meta_values) != 3:
+                    raise IOError(
+                        "expected `lennard` option to have only m & n variables: {}"
+                        .format(line))
+                try:
+                    lj_m = int(meta_values[1])
+                    lj_n = int(meta_values[2])
+                except ValueError:
+                    raise IOError(
+                        "expected `lennard` option to have only (integer) m & n variables: {}"
+                        .format(line))
+                lineno, sset, results = self._read_section(
+                    lines, lineno + 1, ["lennard"], 2, {
+                        "lj_m": lj_m,
+                        "lj_n": lj_n
+                    })
+                symbol_set.update(sset)
+                terms.update(results)
+            lineno += 1
+
+        pot_data = {"species": sorted(symbol_set), "2body": {}}
+        for key, value in terms.items():
+            indices = "-".join(
+                [str(pot_data["species"].index(term)) for term in key])
+            variables = value["values"].split()
+            if len(variables) in [3, 5]:
+                pot_data["2body"][indices] = {
+                    "lj_m": value["global"]["lj_m"],
+                    "lj_n": value["global"]["lj_n"],
+                    "lj_A": float(variables[0]),
+                    "lj_B": float(variables[1]),
+                    "lj_rmax": float(variables[2])
+                }
+            elif len(variables) in [4, 6]:
+                pot_data["2body"][indices] = {
+                    "lj_m": value["global"]["lj_m"],
+                    "lj_n": value["global"]["lj_n"],
+                    "lj_A": float(variables[0]),
+                    "lj_B": float(variables[1]),
+                    "lj_rmin": float(variables[2]),
+                    "lj_rmax": float(variables[3])
+                }
+            else:
+                raise IOError(
+                    "expected 3, 4, 5 or 6 variables: {}".format(value))
+
+        return pot_data

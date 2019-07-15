@@ -120,10 +120,49 @@ def test_add_fitting_flags():
             "0-2": ["lj_A"]
         }
     }
-    output = PotentialWriterLJ().create_content(data, fitting_data=fitting_data)
+    output = PotentialWriterLJ().create_content(
+        data, fitting_data=fitting_data)
     expected = dedent("""\
         lennard 12 6
         H core  He core 1.00000000E+00 2.00000000E+00 12.00000 0 1
         lennard 12 6
         H core  B core  3.00000000E+00 4.00000000E+00 12.00000 1 0""")
     assert output.content == expected
+
+
+def test_read_existing():
+    content = dedent("""\
+        lennard 12 6
+        H core  He shell 1.00000000E+00 2.00000000E+00 12.00000 0 1
+        H core  H core 3.00000000E+00 4.00000000E+00 12.00000 0 1
+        lennard 10 5
+        H B 5.00000000E+00 6.00000000E+00 0.00 12.00000 1 0 """)
+
+    data = PotentialWriterLJ().read_exising(content.splitlines())
+    assert data == {
+        'species': ['B core', 'H core', 'He shell'],
+        '2body': {
+            '1-2': {
+                'lj_m': 12,
+                'lj_n': 6,
+                'lj_A': 1.0,
+                'lj_B': 2.0,
+                'lj_rmax': 12.0
+            },
+            '1-1': {
+                'lj_m': 12,
+                'lj_n': 6,
+                'lj_A': 3.0,
+                'lj_B': 4.0,
+                'lj_rmax': 12.0
+            },
+            '1-0': {
+                'lj_m': 10,
+                'lj_n': 5,
+                'lj_A': 5.0,
+                'lj_B': 6.0,
+                'lj_rmin': 0.0,
+                'lj_rmax': 12.0
+            }
+        }
+    }
