@@ -38,7 +38,7 @@ def calculate_band_gap(energies,
 
     """
     energies = np.array(energies, float)
-    densities = np.array(densities, float)
+    densities = np.abs(np.array(densities, float))
     if not len(energies) == len(densities):
         raise AssertionError("the energies and densities arrays are of different lengths")
     if not fermi < energies.max():
@@ -161,14 +161,19 @@ def calcfunction_band_gap(doss_array, dtol=None, try_fshifts=None):
         except Exception:
             traceback.print_exc()
             return ExitCode(201, 'calculate_band_gap failed')
+        if result.non_zero_fermi:
+            bandgap = 0.
+        elif result.left_edge is None or result.right_edge is None:
+            bandgap = None
+        else:
+            bandgap = result.right_edge - result.left_edge
         final_dict.update(
             {
                 name+'_fermi': result.fermi,
                 name+'_left_edge': result.left_edge,
                 name+'_right_edge': result.right_edge,
                 name+'_zero_fermi': not result.non_zero_fermi,
-                name+'_bandgap': (None if result.left_edge is None or result.right_edge is None
-                                  else result.right_edge - result.left_edge)
+                name+'_bandgap': bandgap
             }
         )
 
