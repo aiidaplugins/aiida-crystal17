@@ -118,7 +118,9 @@ intersphinx_aliases = {
     ('py:class', 'aiida.StructureData'):
     ('py:class', 'aiida.orm.nodes.data.structure.StructureData'),
     ('py:class', 'aiida.orm.Dict'):
-    ('py:class', 'aiida.orm.nodes.data.dict.Dict')
+    ('py:class', 'aiida.orm.nodes.data.dict.Dict'),
+    ('py:class', 'aiida.orm.ArrayData'):
+    ('py:class', 'aiida.orm.nodes.data.array.array.ArrayData')
 }
 
 if six.PY2:
