@@ -26,15 +26,15 @@ import aiida_crystal17.tests as tests
 
 # map of input file hashes to output files
 hash_map = {
-    "83e3c1e78aab9588bc5039588645cb4d": {
+    "14b7194e25eb366328198908b3bcf840": {
         "stdout": ("single_lj_pyrite", "main.gout"),
         "output": ()
     },
-    "99ff0a023f71744e5f0e2dbfd38b382c": {
+    "e2b297d73de5174741c94d52432e7b79": {
         "stdout": ("optimize_lj_pyrite", "main.gout"),
         "output": [(("optimize_lj_pyrite", "output.cif"), ("output.cif",))]
     },
-    "efa125cda73b3a42ac1d3641e619e860": {
+    "6f373e02f3245c3b989f468c524a0d9d": {
         "stdout": ("optimize_lj_pyrite_symm", "main.gout"),
         "output": [(("optimize_lj_pyrite_symm", "output.cif"), ("output.cif",))]
     },
@@ -51,7 +51,7 @@ hash_map = {
         "output": [(("optimize_reaxff_pyrite_symm", "output.cif"), ("output.cif",))],
         "stderr": ("optimize_reaxff_pyrite_symm", "main_stderr.txt")
     },
-    "03ae4d9f97ca466ac92c223892672b0f": {
+    "1f77dad9265e394d88b58cd909f34f18": {
         "stdout": ("fit_lj_fes", "main.gout"),
         "output": [(("fit_lj_fes", "fitting.grs"), ("fitting.grs",))]
     },
