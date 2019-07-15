@@ -68,8 +68,8 @@ def calculate_band_gap(energies,
             fermi_idx = new_index
 
     if fermi_non_zero:
-        return BandResult(energies[fermi_idx], missing_edge, missing_edge,
-                          True)
+        return BandResult(
+            energies[fermi_idx], missing_edge, missing_edge, True)
 
     # find left edge
     found_left = False
@@ -92,7 +92,7 @@ def calculate_band_gap(energies,
 
 
 @calcfunction
-def calcfunction_band_gap(doss_array, dtol=None, try_fshifts=None):
+def calcfunction_band_gap(doss_results, doss_array, dtol=None, try_fshifts=None):
     """calculate the band gap, given DoS data computed by CryDossCalculation
 
     Parameters
@@ -106,22 +106,33 @@ def calcfunction_band_gap(doss_array, dtol=None, try_fshifts=None):
         Useful for dealing with band edges at the fermi energy
 
     """
+    if not isinstance(doss_results, Dict):
+        return ExitCode(
+            101, 'doss_results is not of type `aiida.orm.Dict`: {}'.format(doss_results))
+    if "fermi_energy" not in doss_results.get_dict():
+        return ExitCode(
+            102, '`fermi_energy` not in doss_results')
+    if "energy_units" not in doss_results.get_dict():
+        return ExitCode(
+            102, '`energy_units` not in doss_results')
     if not isinstance(doss_array, ArrayData):
         return ExitCode(
-            101, 'doss_array is not of type `aiida.orm.ArrayData`: {}'.format(doss_array))
+            103, 'doss_array is not of type `aiida.orm.ArrayData`: {}'.format(doss_array))
 
-    kwargs = {}
+    kwargs = {
+        "fermi": doss_results.get_dict()["fermi_energy"]
+    }
 
     if dtol is not None:
         if not isinstance(dtol, Float):
             return ExitCode(
-                102, 'dtol is not of type `aiida.orm.Float`: {}'.format(dtol))
+                104, 'dtol is not of type `aiida.orm.Float`: {}'.format(dtol))
         kwargs["dtol"] = dtol.value
 
     if try_fshifts is not None:
         if not isinstance(try_fshifts, List):
             return ExitCode(
-                103, 'try_fshifts is not of type `aiida.orm.List`: {}'.format(try_fshifts))
+                105, 'try_fshifts is not of type `aiida.orm.List`: {}'.format(try_fshifts))
         kwargs["try_fshifts"] = try_fshifts.get_list()
 
     array_names = doss_array.get_arraynames()
@@ -150,7 +161,9 @@ def calcfunction_band_gap(doss_array, dtol=None, try_fshifts=None):
         total_density = np.abs(alpha_density) + np.abs(beta_density)
         calcs = {'alpha': alpha_density, 'beta': beta_density, 'total': total_density}
 
-    final_dict = {}
+    final_dict = {
+        "energy_units": doss_results.get_dict()["energy_units"]
+    }
 
     for name, density in calcs.items():
         try:
