@@ -47,9 +47,9 @@ class PotentialWriterLJ(PotentialWriterAbstract):
             values = data["2body"][indices]
             lines.append("lennard {lj_m} {lj_n}".format(lj_m=values.get("lj_m", 12), lj_n=values.get("lj_n", 6)))
             if "lj_rmin" in values:
-                values_string = "{lj_A} {lj_B} {lj_rmin} {lj_rmax}".format(**values)
+                values_string = "{lj_A:.8E} {lj_B:.8E} {lj_rmin:8.5f} {lj_rmax:8.5f}".format(**values)
             else:
-                values_string = "{lj_A} {lj_B} {lj_rmax}".format(**values)
+                values_string = "{lj_A:.8E} {lj_B:.8E} {lj_rmax:8.5f}".format(**values)
 
             total_flags += 2
 

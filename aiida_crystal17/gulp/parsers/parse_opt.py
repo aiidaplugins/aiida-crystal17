@@ -78,7 +78,7 @@ class GulpOptParser(Parser):
     def create_structure(self, results_dict, output_folder):
         """ create the output structure """
         opt_type = results_dict.get("opt_type", None)
-        if opt_type in "polymer":
+        if opt_type == "polymer":
             if "final_coords" not in results_dict:
                 return None, "ERROR_STRUCTURE_PARSING"
             final_coords = results_dict.pop("final_coords")
@@ -105,7 +105,7 @@ class GulpOptParser(Parser):
                 # x are fractional and y,z are cartesian
                 positions.append([x * out_structure.cell[0][0], y, z])
             out_structure.reset_sites_positions(positions)
-        elif opt_type in "surface":
+        elif opt_type == "surface":
             self.logger.error("creating output structures for surface optimisations has not yet been implemented")
             return None, "ERROR_STRUCTURE_PARSING"
         else:
