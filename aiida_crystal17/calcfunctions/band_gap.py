@@ -131,11 +131,13 @@ def calcfunction_band_gap(doss_array, dtol=None, try_fshifts=None):
     if "total" in array_names:
         if "total_alpha" in array_names and "total_beta" in array_names:
             return ExitCode(
-                112, 'doss_array does not contains both array `total` and `total_alpha`, `total_beta`: {}'.format(doss_array))
+                112, ('doss_array does not contains both array `total` and '
+                      '`total_alpha`, `total_beta`: {}'.format(doss_array)))
     elif "total_alpha" in array_names and "total_beta" in array_names:
         if "total" in array_names:
             return ExitCode(
-                112, 'doss_array does not contains both array `total` and `total_alpha`, `total_beta`: {}'.format(doss_array))
+                112, ('doss_array does not contains both array `total` and '
+                      '`total_alpha`, `total_beta`: {}'.format(doss_array)))
     else:
         return ExitCode(
             113, 'doss_array does not contain array `total` or `total_alpha` and `total_beta`: {}'.format(doss_array))
