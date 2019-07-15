@@ -1,0 +1,6 @@
+energy_units: eV
+total_bandgap: 1.4329
+total_fermi: -4.4489
+total_left_edge: -4.4589
+total_right_edge: -3.026
+total_zero_fermi: true

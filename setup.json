@@ -46,7 +46,8 @@
         ],
         "aiida.workflows": [
             "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure",
-            "crystal17.main.base = aiida_crystal17.workflows.crystal_main.base:CryMainBaseWorkChain"
+            "crystal17.main.base = aiida_crystal17.workflows.crystal_main.base:CryMainBaseWorkChain",
+            "crystal17.properties = aiida_crystal17.workflows.crystal_props.cry_doss:CryPropertiesWorkChain"
         ],
         "aiida.cmdline.data": [
             "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
