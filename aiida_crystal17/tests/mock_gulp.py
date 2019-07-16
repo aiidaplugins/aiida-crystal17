@@ -38,15 +38,15 @@ hash_map = {
         "stdout": ("optimize_lj_pyrite_symm", "main.gout"),
         "output": [(("optimize_lj_pyrite_symm", "output.cif"), ("output.cif",))]
     },
-    "7ca8e6e9a6f544e43f0aaf45e65e54df": {
+    "f104b6cc996c97be76b3ee31761b7898": {
         "stdout": ("single_reaxff_pyrite", "main.gout"),
         "output": ()
     },
-    "3b662a2567df952cee2bdf09fc4197c4": {
+    "5dc8cb9621091a1a029b8149b0e02e33": {
         "stdout": ("optimize_reaxff_pyrite", "main.gout"),
         "output": [(("optimize_reaxff_pyrite", "output.cif"), ("output.cif",))]
     },
-    "fdc074fd4e053802ae44e841389ceceb": {
+    "99595ec1cba6fb909a1de2377e21d82a": {
         "stdout": ("optimize_reaxff_pyrite_symm", "main.gout"),
         "output": [(("optimize_reaxff_pyrite_symm", "output.cif"), ("output.cif",))],
         "stderr": ("optimize_reaxff_pyrite_symm", "main_stderr.txt")
@@ -55,7 +55,7 @@ hash_map = {
         "stdout": ("fit_lj_fes", "main.gout"),
         "output": [(("fit_lj_fes", "fitting.grs"), ("fitting.grs",))]
     },
-    "f5b53088f258b6521db4741dc5cded30": {
+    "bbfcc242e70205e5d418001dea5e3d63": {
         "stdout": ("fit_reaxff_fes", "main.gout"),
         "output": [(("fit_reaxff_fes", "fitting.grs"), ("fitting.grs",))]
     }

@@ -88,11 +88,12 @@ reaxFFqcutoff        10.0000
 #
 #  Bond order threshold - check anglemin as this is cutof2 given in control file
 #
-reaxFFtol  0.00100000 0.00100000 0.00100000 0.01000000 7.50000 0.00001000
+reaxFFtol  1.000000E-03 1.000000E-03 1.000000E-03 &
+           1.000000E-02 7.500000E+00 1.000000E-05
 #
 #  Species independent parameters
 #
-reaxff0_bond      50.00000   9.54690 1 1
+reaxff0_bond      50.00000   9.54690 0 0
 reaxff0_over      50.00000   0.69910   1.05880  12.11760  13.30560 0 0 0 0 0
 reaxff0_valence   33.86670   1.85120   1.05630   2.03840 0 0 0 0
 reaxff0_penalty    6.92900   0.39890   3.99540 0 0 0
@@ -158,7 +159,8 @@ Fe core Fe core S core  33.4003 16.6274 0.1076 1.0000 0.0825 0 0 0 0 0 0
 S core  Fe core Fe core 100.0000 9.2519 0.7752 2.2142 0.1221 0 0 0 0 0 0
 S core  Fe core S core  77.0475 7.4569 4.9579 2.3345 0.7548 0 0 0 0 0 0
 Fe core S core  S core  0.2000 7.5083 1.3736 1.8149 0.0412 0 0 0 0 0 0
-S core  S core  S core  84.2345 15.5790 3.7715 1.6270 1.3066 0 0 0 0 0 0
+S core  S core  S core  84.2345 15.5790 3.7715 1.6270 1.3066 0 0 0 &
+    0 0 1
 reaxff3_penalty kcal
 Fe core Fe core S core  0.0000 0
 S core  Fe core Fe core 0.0000 0
@@ -169,6 +171,7 @@ S core  S core  S core  0.0000 0
 #  Four-Body Parameters
 #
 reaxff4_torsion kcal
-S core  S core  S core  S core  2.4661 71.9719 0.0100 -8.0000 0.0000 0 0 0 0 0
+S core  S core  S core S core 2.46610E+00 7.19719E+01 1.00000E-02 -8.00000E+00 &
+    0.00000E+00 0 0 0 1 0
 
 dump fitting.grs

@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from decimal import Decimal
 import re
+import textwrap
 
 from aiida_crystal17.validation import validate_against_schema
 from aiida_crystal17.gulp.potentials.common import INDEX_SEP
@@ -381,15 +382,12 @@ def write_lammps_format(data):
 
 
 def write_gulp_format(data, fitting_data=None,
-                      global_val_fmt="{:9.5f}", species_val_fmt="{:6.4f}"):
+                      global_val_fmt="{:.5E}", species_val_fmt="{:.5E}"):
     """ write a reaxff file, in GULP format, from a standardised potential dictionary
 
-    # NOTE: GULP has issues reading from lines longer than ~80 characters,
-    # this is particularly an issue for 4 body parameters + fitting flags
-    # Hence why these value formats are imposed
-    # TODO can use '&' to denote a new line (appears you can use it once per line)
-    # NOTE GULP outputs to 6 dp
-    # TODO use scientific output
+    NOTE: GULP only read a line up to ~80 characters,
+    `&` can be used to break a line into two lines
+    NOTE GULP outputs to 6 dp
 
     energies should be supplied in kcal (the default of the lammps file format)
     """
@@ -424,15 +422,19 @@ def write_gulp_format(data, fitting_data=None,
         '#',
         '#  Cutoffs for VDW & Coulomb terms',
         '#',
-        'reaxFFvdwcutoff {:12.4f}'.format(data["global"]['Upper Taper-radius']),
-        'reaxFFqcutoff   {:12.4f}'.format(data["global"]['Upper Taper-radius']),
+        'reaxFFvdwcutoff {:14.6E}'.format(data["global"]['Upper Taper-radius']),
+        'reaxFFqcutoff   {:14.6E}'.format(data["global"]['Upper Taper-radius']),
         '#',
         '#  Bond order threshold - check anglemin as this is cutof2 given in control file',
         '#',
-        'reaxFFtol  {:10.8f} {:10.8f} {:10.8f} {:10.8f} {:7.5f} {:10.8f}'.format(
+        'reaxFFtol  {:.6E} {:.6E} {:.6E} &'.format(
             data["global"]['bond order cutoff'] * 0.01,
             *[data["global"].get(k, DEFAULT_TOLERANCES[k])
-              for k in "anglemin angleprod hbondmin hbonddist torsionprod".split()]
+              for k in "anglemin angleprod".split()]
+        ),
+        '           {:.6E} {:.6E} {:.6E}'.format(
+            *[data["global"].get(k, DEFAULT_TOLERANCES[k])
+              for k in "hbondmin hbonddist torsionprod".split()]
         ),
         '#',
     ]
@@ -457,7 +459,16 @@ def write_gulp_format(data, fitting_data=None,
         if fitting_data is not None:
             fitting_flags += sum([1 if v in fitting_data.get("global", []) else 0 for v in variables])
             string += " " + " ".join(["1" if v in fitting_data.get("global", []) else "0" for v in variables])
-        output.append(string)
+
+        lines = textwrap.wrap(string, 78)
+
+        if len(lines) > 2:
+            raise IOError("the line cannot be coerced to fit within the 80 character limit: {}".format(string))
+        elif len(lines) > 1:
+            output.append("{} &".format(lines[0]))
+            output.append("    {}".format(lines[1]))
+        else:
+            output.append(string)
 
     # one-body parameters
     output.append("#")
@@ -629,14 +640,13 @@ def create_gulp_fields(data, data_type, fields, species_val_fmt,
                 # NOTE Here species1 is the pivot atom of the three-body like term.
                 # This is different to LAMMPS, where the pivot atom is the central one!
                 species = [species[1], species[0], species[2]]
-            species = " ".join(species)
-            values = " ".join([format_gulp_value(data, data_type, indices, k, species_val_fmt)
-                               for k in keys if k != "reaxff3_angle6"])
+
+            values = [format_gulp_value(data, data_type, indices, k, species_val_fmt)
+                      for k in keys if k != "reaxff3_angle6"]
 
             if fitting_data is not None:
                 num_fit += sum([1 if v in fitting_data.get(data_type, {}).get(indices, []) else 0 for v in keys])
-                values += " " + " ".join(["1" if v in fitting_data.get(data_type, {}).get(indices, []) else "0"
-                                          for v in keys])
+                values += ["1" if v in fitting_data.get(data_type, {}).get(indices, []) else "0" for v in keys]
 
             if field in arguments and isinstance(arguments[field], list):
                 args = " ".join(arguments[field])
@@ -645,7 +655,16 @@ def create_gulp_fields(data, data_type, fields, species_val_fmt,
             else:
                 args = ""
 
-            subdata.setdefault(args, []).append("{} {}".format(species, values))
+            line = " ".join(species + values)
+            lines = textwrap.wrap(line, 78)
+
+            if len(lines) > 2:
+                raise IOError("the line cannot be coerced to fit within the 80 character limit: {}".format(line))
+            elif len(lines) > 1:
+                subdata.setdefault(args, []).append("{} &".format(lines[0]))
+                subdata.setdefault(args, []).append("    {}".format(lines[1]))
+            else:
+                subdata.setdefault(args, []).append(line)
 
         for args in sorted(subdata.keys()):
             output.append(field + " " + args if args else field)
