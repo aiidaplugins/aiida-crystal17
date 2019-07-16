@@ -187,7 +187,8 @@ class PotentialWriterAbstract(object):
         """
         raise NotImplementedError
 
-    def _read_section(self, lines, lineno, breaking_terms, number_atoms, global_args=None):
+    @staticmethod
+    def read_atom_section(lines, lineno, breaking_terms, number_atoms, global_args=None):
         """read a section of a potential file, e.g.
 
         ::
@@ -203,8 +204,8 @@ class PotentialWriterAbstract(object):
             the current line number, should be the line below the option line
         breaking_terms : list[str]
             stop reading lines, if a line starts with one of these terms
-        number_atoms : the number of atoms expected
-            [description]
+        number_atoms : int
+            the number of interacting atoms expected
         global_args : dict
             additional arguments to add to the result of each line
 
@@ -231,15 +232,21 @@ class PotentialWriterAbstract(object):
             if any([line.strip().startswith(term) for term in breaking_terms]):
                 break
             # TODO ignore comments at end of line
+            # check for breaking lines
+            if line.strip().endswith(" &"):
+                lineno += 1
+                line = line.strip()[:-2] + " " + lines[lineno].strip()
+            # check for lines containing both atom symbols and types (core/shell)
             match_sym_type = re.findall(
                 "^{}\\s+(.+)\\s*$".format(
                     "\\s+".join([RE_SYMBOL_TYPE for _ in range(number_atoms)])),
                 line.strip())
+            # check for lines containing only atom symbols (assume types to be core)
             match_sym = re.findall(
                 "^{}\\s+(.+)\\s*$".format(
                     "\\s+".join([RE_SYMBOL for _ in range(number_atoms)])),
                 line.strip())
-            # TODO also match atomic numbers
+            # TODO also match atomic numbers (and mixed type / no type)
             if match_sym_type:
                 result = list(match_sym_type[0])
                 index = []

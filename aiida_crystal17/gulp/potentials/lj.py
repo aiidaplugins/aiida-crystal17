@@ -109,7 +109,7 @@ class PotentialWriterLJ(PotentialWriterAbstract):
                     raise IOError(
                         "expected `lennard` option to have only (integer) m & n variables: {}"
                         .format(line))
-                lineno, sset, results = self._read_section(
+                lineno, sset, results = self.read_atom_section(
                     lines, lineno + 1, ["lennard"], 2, {
                         "lj_m": lj_m,
                         "lj_n": lj_n
