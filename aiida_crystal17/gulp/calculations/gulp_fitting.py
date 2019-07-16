@@ -2,6 +2,7 @@
 given a set of structures and observables
 """
 import copy
+import json
 
 import six
 
@@ -196,19 +197,20 @@ class GulpFittingCalculation(CalcJob):
                     len(observe_keys), self.inputs.potential.number_of_variables
                 ))
 
-        content = "\n".join(create_input_lines(
+        content_lines, snames = create_input_lines(
             self.inputs.potential,
             self.inputs.structures,
             self.inputs.observables,
             observables=self.create_observable_map(settings),
             delta=settings.get("gradient_delta", None),
             dump_file=self.metadata.options.output_dump_file_name
-        ))
+        )
 
-        if not isinstance(content, six.text_type):
-            content = six.u(content)
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write(content)
+            f.write(six.ensure_text("\n".join(content_lines)))
+
+        with tempfolder.open('structure_names.json', 'w') as handle:
+            handle.write(six.ensure_text(json.dumps(snames)))
 
         # Prepare CodeInfo object for aiida,
         # describes how a code has to be executed

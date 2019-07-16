@@ -25,9 +25,13 @@ def create_input_lines(potential, structures, observable_datas,
     Returns
     -------
     list[str]
+        the input lines
+    list[str]
+        a list of the structure names, in the order they appear in the input
 
     """
     lines = []
+    snames = []
 
     # intial key words
     lines.append("fit noflags")
@@ -46,6 +50,7 @@ def create_input_lines(potential, structures, observable_datas,
     lines.append("")
 
     for name in sorted(structures.keys()):
+        snames.append(name)
         lines.extend(create_geometry_lines(structures[name], name=name))
         lines.append("")
         lines.append("observables")
@@ -69,4 +74,4 @@ def create_input_lines(potential, structures, observable_datas,
     lines.append("dump {}".format(dump_file))
     # NOTE can also dump every interval ('noover' will output to separate files)
 
-    return lines
+    return lines, snames

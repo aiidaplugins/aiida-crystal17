@@ -1,6 +1,7 @@
 """
 A parser to read output from a standard CRYSTAL17 run
 """
+import json
 import traceback
 
 from aiida.common import exceptions
@@ -48,6 +49,9 @@ class GulpFittingParser(Parser):
             self.logger.warning(
                 "the calculation raised the following errors:\n{}".format(
                     "\n\t".join(result_dict["errors"])))
+
+        if 'structure_names.json' in self.node.list_object_names():
+            result_dict["config_names"] = json.loads(self.node.get_object_content('structure_names.json'))
 
         # look a stderr for fortran warnings, etc, e.g. IEEE_INVALID_FLAG IEEE_OVERFLOW_FLAG IEEE_UNDERFLOW_FLAG
         stderr_file = self.node.get_option("output_stderr_file_name")
