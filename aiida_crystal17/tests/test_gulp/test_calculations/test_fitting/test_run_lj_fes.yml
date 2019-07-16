@@ -33,6 +33,10 @@ results:
     - -1.0
     - -1.0
     - 1.0
+  config_names:
+  - marcasite
+  - pyrite
+  - zincblende
   energy_shifts:
     configuration:
     - 1
