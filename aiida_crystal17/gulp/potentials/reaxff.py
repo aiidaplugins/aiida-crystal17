@@ -40,3 +40,5 @@ class PotentialWriterReaxff(PotentialWriterAbstract):
 
         """
         return PotentialContent(*write_gulp_format(data, fitting_data=fitting_data))
+
+    # TODO implement `read_existing` method

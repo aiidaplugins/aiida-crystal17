@@ -183,12 +183,12 @@ def test_run_lj_fes(db_test_app, get_structure,
 
     calc_node = run_get_node(builder).node
 
-    db_test_app.check_calculation(calc_node, ["results"])
+    db_test_app.check_calculation(calc_node, ["results", "potential"])
 
     result = recursive_round(calc_node.outputs.results.get_dict(), 6)
     for key in ['parser_version', 'peak_dynamic_memory_mb', 'opt_time_second', 'total_time_second']:
         result.pop(key, None)
-    data_regression.check(result)
+    data_regression.check({"results": result, "potential": calc_node.outputs.potential.attributes})
 
 
 def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
@@ -224,6 +224,7 @@ def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
         "marcasite": Dict(dict={"energy": -1, "energy_units": "eV"}),
         "zincblende": Dict(dict={"energy": 1, "energy_units": "eV"})
     }
+    builder.metadata['options']['allow_create_potential_fail'] = True
 
     calc_node = run_get_node(builder).node
 
