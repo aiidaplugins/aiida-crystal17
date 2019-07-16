@@ -72,12 +72,14 @@ class PotentialWriterLJ(PotentialWriterAbstract):
 
         return PotentialContent("\n".join(lines), total_flags, num_fit)
 
-    def read_exising(self, lines):
+    def read_exising(self, lines, breaking_terms=()):
         """read an existing potential file
 
         Parameters
         ----------
         lines : list[str]
+        breaking_terms : list[str]
+            stop reading lines, if a line starts with one of these terms
 
         Returns
         -------
@@ -110,7 +112,9 @@ class PotentialWriterLJ(PotentialWriterAbstract):
                         "expected `lennard` option to have only (integer) m & n variables: {}"
                         .format(line))
                 lineno, sset, results = self.read_atom_section(
-                    lines, lineno + 1, ["lennard"], 2, {
+                    lines, lineno + 1,
+                    number_atoms=2,
+                    global_args={
                         "lj_m": lj_m,
                         "lj_n": lj_n
                     })
