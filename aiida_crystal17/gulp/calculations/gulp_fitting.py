@@ -65,6 +65,8 @@ class GulpFittingCalculation(CalcJob):
                    valid_type=six.string_types, default='main_stderr.txt')
         spec.input('metadata.options.output_dump_file_name',
                    valid_type=six.string_types, default='fitting.grs')
+        spec.input('metadata.options.allow_create_potential_fail',
+                   valid_type=bool, default=False)
         spec.input('metadata.options.parser_name',
                    valid_type=six.string_types, default='gulp.fitting')
 
@@ -120,8 +122,11 @@ class GulpFittingCalculation(CalcJob):
             311, 'ERROR_FIT_UNSUCCESFUL',
             message=('The fit was not successful'))
         spec.exit_code(
-            311, 'ERROR_GULP_UNKNOWN',
+            312, 'ERROR_GULP_UNKNOWN',
             message=('An error was flagged by GULP, which is not accounted for in another exit code'))
+        spec.exit_code(
+            313, 'ERROR_CREATING_NEW_POTENTIAL',
+            message=('An error occurred trying to create the new potential'))
 
         # Significant errors but calculation can be used to restart
 
@@ -131,7 +136,10 @@ class GulpFittingCalculation(CalcJob):
         )
         spec.default_output_node = "results"
 
-        # TODO output a potential file (for input into GulpAbstractCalculation)
+        spec.output(
+            "potential", valid_type=DataFactory('gulp.potential'), required=False,
+            help=("a dictionary defining the fitted potential.")
+        )
 
     def create_observable_map(self, settings):
         observables = settings["observables"]

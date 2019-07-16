@@ -72,14 +72,12 @@ class PotentialWriterLJ(PotentialWriterAbstract):
 
         return PotentialContent("\n".join(lines), total_flags, num_fit)
 
-    def read_exising(self, lines, breaking_terms=()):
+    def read_exising(self, lines):
         """read an existing potential file
 
         Parameters
         ----------
         lines : list[str]
-        breaking_terms : list[str]
-            stop reading lines, if a line starts with one of these terms
 
         Returns
         -------

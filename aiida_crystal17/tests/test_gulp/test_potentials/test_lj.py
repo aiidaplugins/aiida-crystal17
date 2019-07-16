@@ -132,11 +132,16 @@ def test_add_fitting_flags():
 
 def test_read_existing():
     content = dedent("""\
+        variables
+        shift
+        end
         lennard 12 6
         H core  He shell 1.00000000E+00 2.00000000E+00 12.00000 0 1
         H core  H core 3.00000000E+00 4.00000000E+00 12.00000 0 1
         lennard 10 5
-        H B 5.00000000E+00 6.00000000E+00 0.00 12.00000 1 0 """)
+        H B 5.00000000E+00 6.00000000E+00 0.00 12.00000 1 0
+        dump fitting.grs
+        """)
 
     data = PotentialWriterLJ().read_exising(content.splitlines())
     assert data == {
