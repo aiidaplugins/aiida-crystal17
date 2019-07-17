@@ -6,11 +6,25 @@ from aiida_crystal17.common import recursive_round
 from aiida_crystal17.parsers.raw.crystal_stdout import read_crystal_stdout
 
 
-@pytest.mark.parametrize('filename',
-                         ('cry14_scf_and_opt.out', 'cry14_scf_only.out',
-                          'cry14_scf_and_opt_slab.out', 'cry17_spin_opt.out'))
-def test_crystal_stdout_files(filename, data_regression):
-    path = os.path.join(TEST_FILES, "crystal", "stdout_parser", filename)
+@pytest.mark.parametrize(
+    'name,filepath',
+    (('cry14_opt',
+      ('crystal', 'stdout_parser', 'cry14_scf_and_opt.out')),
+     ('cry14_scf', ('crystal', 'stdout_parser', 'cry14_scf_only.out')),
+     ('cry14_opt_slab',
+      ('crystal', 'stdout_parser', 'cry14_scf_and_opt_slab.out')),
+     ('cry17_opt_spin', ('crystal', 'stdout_parser', 'cry17_spin_opt.out')),
+     ('mgo_scf', ('crystal', 'mgo_sto3g_scf', 'main.out')),
+     ('mgo_opt', ('crystal', 'mgo_sto3g_opt', 'main.out')),
+     ('nio_scf', ('crystal', 'nio_sto3g_afm_scf', 'main.out')),
+     ('nio_opt', ('crystal', 'nio_sto3g_afm_opt', 'main.out')),
+     ('nio_opt_walltime',
+      ('crystal', 'nio_sto3g_afm_opt_walltime', 'main.out')),
+     ('nio_scf_maxcyc', ('crystal', 'nio_sto3g_afm_scf_maxcyc', 'main.out'))))
+def test_crystal_stdout_files(name, filepath, data_regression):
+    if name == "nio_opt_walltime":
+        return
+    path = os.path.join(TEST_FILES, *filepath)
     with open(path) as handle:
         lines = handle.read().splitlines()
     output = read_crystal_stdout(lines)

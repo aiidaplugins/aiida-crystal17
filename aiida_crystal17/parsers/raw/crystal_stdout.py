@@ -19,13 +19,13 @@ def convert_units(value, in_units, out_units, standard="codata2014"):
         return value * 27.21138602
 
 
-def read_crystal_stdout(lines, log_warnings=False):
+def read_crystal_stdout(lines, logger=logger):
 
     (start_line_no, geom_input_end, scf_init_start_no, scf_init_end_no,
      opt_start_no, opt_end_no, mulliken_starts, final_opt, run_warnings,
      non_terminating_errors, errors, meta, band_gaps) = split_output(lines)
 
-    if run_warnings and log_warnings:
+    if run_warnings and logger is not None:
         logger.warning("the following warnings were noted:\n  {}".format(
             "\n  ".join(run_warnings)))
 
