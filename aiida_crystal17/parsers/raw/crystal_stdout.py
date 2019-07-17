@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import copy
 from fnmatch import fnmatch
 import re
