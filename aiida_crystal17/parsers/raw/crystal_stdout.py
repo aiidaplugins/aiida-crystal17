@@ -94,8 +94,11 @@ def read_crystal_stdout(lines, log_warnings=False):
             [meta, read_before_run(lines[:start_line_no])]),
         "initial":
         initial,
-        "creator": {
-            "program": "CRYSTAL"
+        "units": {
+            "conversion": "CODATA2014",
+            "energy": "eV",
+            "length": "angstrom",
+            "angle": "degrees"
         }
     }
 
@@ -271,7 +274,7 @@ def split_output(lines):
                 raise IOError(
                     "band gap data already contains {0} value before line {1}: {2}"
                     .format(bgtype, i, line))
-            band_gaps[bgtype] = {"magnitude": bgvalue, "units": "eV"}
+            band_gaps[bgtype] = bgvalue
         elif "CONVERGENCE TESTS UNSATISFIED" in line.upper():
             non_terminating_errors.append(line.strip())
         elif line.strip().startswith("MULLIKEN POPULATION ANALYSIS"):
@@ -381,12 +384,8 @@ def get_geometry(dct, i, line, lines, startline=0):
                 {
                     "cell_parameters":
                     dict(
-                        zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], [{
-                            "units":
-                            "angstrom" if i < 3 else "degrees",
-                            "magnitude":
-                            p
-                        } for i, p in enumerate(split_numbers(lines[i + 2]))]))
+                        zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'],
+                            split_numbers(lines[i + 2])))
                 }
             ])
         if fnmatch(line, pattern2):
@@ -403,11 +402,7 @@ def get_geometry(dct, i, line, lines, startline=0):
                     periodic = [False, False, False]
                     cell_params = dict(
                         zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'],
-                            [{
-                                "units": "angstrom" if i < 3 else "degrees",
-                                "magnitude": p
-                            } for i, p in enumerate(
-                                [500., 500., 500., 90., 90., 90.])]))
+                            [500., 500., 500., 90., 90., 90.]))
                     dct[field] = edict.merge(
                         [dct.get(field, {}), {
                             "cell_parameters": cell_params
@@ -426,8 +421,7 @@ def get_geometry(dct, i, line, lines, startline=0):
             if not all(periodic):
                 cell = dct[field]["cell_parameters"]
                 a, b, c, alpha, beta, gamma = [
-                    cell[p]["magnitude"]
-                    for p in ["a", "b", "c", "alpha", "beta", "gamma"]
+                    cell[p] for p in ["a", "b", "c", "alpha", "beta", "gamma"]
                 ]
 
             nextindx = i + 3
@@ -478,10 +472,7 @@ def get_geometry(dct, i, line, lines, startline=0):
             'ids': [],
             'atomic_numbers': [],
             'symbols': [],
-            "ccoords": {
-                "units": "angstrom",
-                "magnitude": []
-            }
+            "ccoords": []
         }
         while lines[nextindx].strip(
         ) and not lines[nextindx].strip()[0].isalpha():
@@ -489,7 +480,7 @@ def get_geometry(dct, i, line, lines, startline=0):
             atom_data['ids'].append(fields[0])
             atom_data['atomic_numbers'].append(int(fields[1]))
             atom_data['symbols'].append(fields[2].lower().capitalize())
-            atom_data['ccoords']["magnitude"].append(
+            atom_data['ccoords'].append(
                 [float(fields[3]),
                  float(fields[4]),
                  float(fields[5])])
@@ -512,18 +503,9 @@ def get_geometry(dct, i, line, lines, startline=0):
                           " {0}, got: {1}".format(startline + i + 1,
                                                   lines[i + 1]))
         vectors = {
-            "a": {
-                "units": "angstrom",
-                "magnitude": split_numbers(lines[i + 2])
-            },
-            "b": {
-                "units": "angstrom",
-                "magnitude": split_numbers(lines[i + 3])
-            },
-            "c": {
-                "units": "angstrom",
-                "magnitude": split_numbers(lines[i + 4])
-            }
+            "a": split_numbers(lines[i + 2]),
+            "b": split_numbers(lines[i + 3]),
+            "c": split_numbers(lines[i + 4])
         }
 
         dct["primitive_cell"]["cell_vectors"] = vectors
@@ -651,11 +633,8 @@ def read_scf(lines, startline):
                 # this is the initial energy of the configuration and so actually the energy of the previous run
                 if scf:
                     scf[-1]["energy"] = scf[-1].get("energy", {})
-                    scf[-1]["energy"]["total"] = {
-                        "magnitude": convert_units(split_numbers(line)[1], "hartree", "eV"),
-                        "units":
-                        "eV"
-                    }
+                    scf[-1]["energy"]["total"] = convert_units(
+                        split_numbers(line)[1], "hartree", "eV")
 
         elif scf_cyc is None:
             continue
@@ -721,10 +700,8 @@ def read_post_scf(lines, startline):
             if "total_corrected" in post_scf["energy"]:
                 raise IOError("total corrected energy found twice, on line:"
                               " {0}, got: {1}".format(startline + i, line))
-            post_scf["energy"]["total_corrected"] = {
-                "magnitude": convert_units(split_numbers(line)[1], "hartree", "eV"),
-                "units": "eV"
-            }
+            post_scf["energy"]["total_corrected"] = convert_units(
+                split_numbers(line)[1], "hartree", "eV")
 
     return post_scf
 
@@ -752,11 +729,8 @@ def read_opt(lines, startline):
                                                   lines[-1]))
         return [{
             "energy": {
-                "total_corrected": {
-                    "magnitude": convert_units(split_numbers(lines[-1])[0], "hartree", "eV"),
-                    "units":
-                    "eV"
-                }
+                "total_corrected":
+                convert_units(split_numbers(lines[-1])[0], "hartree", "eV")
             }
         }]
 
@@ -799,10 +773,8 @@ def read_opt(lines, startline):
                 raise IOError("was expecting units in a.u. on line:"
                               " {0}, got: {1}".format(startline + i, line))
             opt_cyc["energy"] = opt_cyc.get("energy", {})
-            opt_cyc["energy"]["total_corrected"] = {
-                "magnitude": convert_units(split_numbers(line)[1], "hartree", "eV"),
-                "units": "eV"
-            }
+            opt_cyc["energy"]["total_corrected"] = convert_units(
+                split_numbers(line)[1], "hartree", "eV")
 
         for param in [
                 "MAX GRADIENT", "RMS GRADIENT", "MAX DISPLAC", "RMS DISPLAC"
