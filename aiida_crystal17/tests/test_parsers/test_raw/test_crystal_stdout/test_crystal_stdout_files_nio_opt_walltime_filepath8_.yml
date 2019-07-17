@@ -1482,7 +1482,7 @@ optimisation:
     - O
 parser_errors:
 - did not find 'OPT END', after optimisation start at line 814
-parser_warnings: []
+parser_exceptions: []
 units:
   angle: degrees
   conversion: CODATA2014

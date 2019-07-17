@@ -710,7 +710,7 @@ initial_scf:
   final_energy:
     total_corrected: -7380.221605190324
 parser_errors: []
-parser_warnings: []
+parser_exceptions: []
 units:
   angle: degrees
   conversion: CODATA2014

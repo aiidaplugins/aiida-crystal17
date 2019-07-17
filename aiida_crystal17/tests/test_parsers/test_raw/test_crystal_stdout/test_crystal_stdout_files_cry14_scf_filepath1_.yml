@@ -837,7 +837,7 @@ mulliken:
 non_program:
   date: Tue  5 Sep 20:53:50 BST 2017
 parser_errors: []
-parser_warnings: []
+parser_exceptions: []
 units:
   angle: degrees
   conversion: CODATA2014

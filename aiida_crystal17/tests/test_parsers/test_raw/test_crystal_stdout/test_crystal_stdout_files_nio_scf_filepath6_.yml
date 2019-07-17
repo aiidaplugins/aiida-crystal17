@@ -512,7 +512,7 @@ mulliken:
     - O
     - O
 parser_errors: []
-parser_warnings: []
+parser_exceptions: []
 units:
   angle: degrees
   conversion: CODATA2014
