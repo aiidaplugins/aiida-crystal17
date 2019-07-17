@@ -1,6 +1,20 @@
 band_gaps:
   alpha: 2.4142
   beta: 2.4079
+calculation:
+  functional:
+    correlation: PERDEW-BURKE-ERNZERHOF
+    exchange: HSE06 SR/GGA
+  n_ao: 124
+  n_atoms: 4
+  n_core_el: 56
+  n_electrons: 84
+  n_kpoints_gilat: 405
+  n_kpoints_ibz: 75
+  n_shells: 48
+  n_symops: 8
+  spin: true
+  type: unrestricted open shell
 errors: []
 execution_time_seconds: 6894
 exit_code: 0
@@ -177,21 +191,7 @@ final_geometry:
 header:
   crystal_subversion: 1.0.1
   crystal_version: 17
-initial:
-  calculation:
-    functional:
-      correlation: PERDEW-BURKE-ERNZERHOF
-      exchange: HSE06 SR/GGA
-    n_ao: 124
-    n_atoms: 4
-    n_core_el: 56
-    n_electrons: 84
-    n_kpoints_gilat: 405
-    n_kpoints_ibz: 75
-    n_shells: 48
-    n_symops: 8
-    spin: true
-    type: unrestricted open shell
+initial_geometry:
   crystallographic_cell: {}
   primitive_cell:
     assymetric:

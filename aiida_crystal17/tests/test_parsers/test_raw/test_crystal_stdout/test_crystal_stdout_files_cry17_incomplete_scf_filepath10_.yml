@@ -1,21 +1,21 @@
+calculation:
+  n_ao: 20
+  n_atoms: 2
+  n_core_el: 4
+  n_electrons: 8
+  n_kpoints_gilat: 793
+  n_kpoints_ibz: 133
+  n_shells: 8
+  n_symops: 24
+  spin: false
+  type: restricted closed shell
 errors: []
 execution_time_seconds: 4
 exit_code: ERROR_PARSING_STDOUT
 header:
   crystal_subversion: 1.0.1
   crystal_version: 17
-initial:
-  calculation:
-    n_ao: 20
-    n_atoms: 2
-    n_core_el: 4
-    n_electrons: 8
-    n_kpoints_gilat: 793
-    n_kpoints_ibz: 133
-    n_shells: 8
-    n_symops: 24
-    spin: false
-    type: restricted closed shell
+initial_geometry:
   crystallographic_cell: {}
   primitive_cell:
     assymetric:

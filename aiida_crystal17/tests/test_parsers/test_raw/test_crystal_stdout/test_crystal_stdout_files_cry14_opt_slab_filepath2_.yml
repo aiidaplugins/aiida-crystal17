@@ -1,3 +1,17 @@
+calculation:
+  functional:
+    correlation: PERDEW-BURKE-ERNZERHOF
+    exchange: PERDEW-BURKE-ERNZERHOF
+  n_ao: 93
+  n_atoms: 3
+  n_core_el: 54
+  n_electrons: 78
+  n_kpoints_gilat: 45
+  n_kpoints_ibz: 15
+  n_shells: 24
+  n_symops: 16
+  spin: true
+  type: unrestricted open shell
 errors: []
 execution_time_seconds: 1134
 exit_code: 0
@@ -260,21 +274,7 @@ final_geometry:
 header:
   crystal_subversion: 1.0.4
   crystal_version: 14
-initial:
-  calculation:
-    functional:
-      correlation: PERDEW-BURKE-ERNZERHOF
-      exchange: PERDEW-BURKE-ERNZERHOF
-    n_ao: 93
-    n_atoms: 3
-    n_core_el: 54
-    n_electrons: 78
-    n_kpoints_gilat: 45
-    n_kpoints_ibz: 15
-    n_shells: 24
-    n_symops: 16
-    spin: true
-    type: unrestricted open shell
+initial_geometry:
   crystallographic_cell: {}
   primitive_cell:
     assymetric:

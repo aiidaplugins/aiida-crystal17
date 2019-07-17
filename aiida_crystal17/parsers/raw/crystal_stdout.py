@@ -129,9 +129,9 @@ def read_crystal_stdout(content):
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    # parse the calculation setup
+    # parse the calculation setup and initial geometry
     outcome = parse_section(parse_calculation_setup, lines, lineno, output,
-                            "initial")
+                            None)
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
@@ -165,6 +165,7 @@ def read_crystal_stdout(content):
             lineno = outcome.next_lineno
 
         if outcome is not None and outcome.parser_error is None:
+            # TODO do band gaps only com after optimisation?
             outcome = parse_section(parse_band_gaps, lines, lineno, output,
                                     "band_gaps")
             # Note: we don't abort on error
@@ -201,8 +202,8 @@ def parse_section(func, lines, initial_lineno, output, key_name):
     initial_lineno : int
     output : dict
         current output from the parser
-    key_name : str or list[str]
-        the key_name of output to assign the data to
+    key_name : str or list[str] or None
+        the key_name of output to assign the data to (if None directly update)
 
     Returns
     -------
@@ -216,12 +217,15 @@ def parse_section(func, lines, initial_lineno, output, key_name):
         output["parser_exceptions"].append(str(err))
         return None
     if outcome.data:
-        suboutput = output
-        if isinstance(key_name, (tuple, list)):
-            for key in key_name[:-1]:
-                suboutput = suboutput.setdefault(key, {})
-            key_name = key_name[-1]
-        suboutput[key_name] = outcome.data
+        if key_name is None:
+            output.update(outcome.data)
+        else:
+            suboutput = output
+            if isinstance(key_name, (tuple, list)):
+                for key in key_name[:-1]:
+                    suboutput = suboutput.setdefault(key, {})
+                key_name = key_name[-1]
+            suboutput[key_name] = outcome.data
     if outcome.non_terminating_error is not None:
         output["errors"].append(outcome.non_terminating_error)
     if outcome.parser_error is not None:
@@ -444,7 +448,7 @@ def parse_calculation_setup(lines, initial_lineno):
     ParsedSection
 
     """
-    data = {"calculation": {"spin": False}}
+    data = {"calculation": {"spin": False}, "initial_geometry": {}}
     end_lineno = None
 
     for i, line in enumerate(lines[initial_lineno:]):
@@ -469,8 +473,8 @@ def parse_calculation_setup(lines, initial_lineno):
         elif "SPIN POLARIZ" in line:
             data["calculation"]["spin"] = True
 
-        parse_geometry_section(data, curr_lineno, line, lines)
-        parse_symmetry_section(data, curr_lineno, line, lines)
+        parse_geometry_section(data["initial_geometry"], curr_lineno, line, lines)
+        parse_symmetry_section(data["initial_geometry"], curr_lineno, line, lines)
 
     if end_lineno is None:
         return ParsedSection(curr_lineno, data,
