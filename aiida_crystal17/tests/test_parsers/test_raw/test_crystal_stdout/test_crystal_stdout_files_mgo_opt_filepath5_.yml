@@ -1,8 +1,8 @@
+band_gaps:
+  all: 17.4781
 errors: []
 execution_time_seconds: 102
-final:
-  band_gaps:
-    all: 17.4781
+final_geometry:
   crystallographic_cell:
     assymetric:
     - true
@@ -34,8 +34,6 @@ final:
     symbols:
     - Mg
     - O
-  energy:
-    total_corrected: -7381.350250201443
   primitive_cell:
     assymetric:
     - true

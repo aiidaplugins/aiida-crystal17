@@ -1,12 +1,10 @@
+band_gaps:
+  alpha: 2.4142
+  beta: 2.4079
 errors: []
 execution_time_seconds: 6894
-final:
-  band_gaps:
-    alpha: 2.4142
-    beta: 2.4079
+final_geometry:
   crystallographic_cell: {}
-  energy:
-    total_corrected: -90425.20300751997
   primitive_cell:
     assymetric:
     - true

@@ -1,9 +1,7 @@
 errors: []
 execution_time_seconds: 3018
-final:
+final_geometry:
   crystallographic_cell: {}
-  energy:
-    total_corrected: -85125.87667521938
   primitive_cell:
     assymetric:
     - true

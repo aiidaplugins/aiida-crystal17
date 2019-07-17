@@ -1,6 +1,6 @@
 errors: []
 execution_time_seconds: 1336
-final:
+final_geometry:
   crystallographic_cell:
     assymetric:
     - true
@@ -25,8 +25,6 @@ final:
     - true
     symbols:
     - Fe
-  energy:
-    total_corrected: -34383.46655742792
   primitive_cell:
     assymetric:
     - true
