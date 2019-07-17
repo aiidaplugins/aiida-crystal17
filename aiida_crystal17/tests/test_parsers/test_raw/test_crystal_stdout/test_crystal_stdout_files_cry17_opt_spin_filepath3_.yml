@@ -1711,6 +1711,7 @@ optimisation:
     - Fe
     - S
     - S
+parser_errors: []
 units:
   angle: degrees
   conversion: CODATA2014

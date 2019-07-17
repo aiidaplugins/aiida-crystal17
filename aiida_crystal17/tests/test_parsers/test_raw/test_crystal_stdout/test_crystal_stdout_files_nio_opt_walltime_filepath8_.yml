@@ -1,0 +1,10 @@
+errors: []
+parser_errors:
+- found start of optimisation but not end
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings:
+- WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY

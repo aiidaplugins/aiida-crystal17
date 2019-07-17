@@ -1,7 +1,7 @@
 import copy
 from fnmatch import fnmatch
-import logging
 import re
+import traceback
 
 from jsonextended import edict
 from aiida_crystal17.common.parsing import split_numbers
@@ -11,31 +11,47 @@ try:
 except ImportError:
     from distutils import strtobool
 
-logger = logging.getLogger(__name__)
-
 
 def convert_units(value, in_units, out_units, standard="codata2014"):
     if in_units == "hartree" and out_units == "eV":
         return value * 27.21138602
 
 
-def read_crystal_stdout(lines, logger=logger):
+def read_crystal_stdout(lines):
 
-    (start_line_no, geom_input_end, scf_init_start_no, scf_init_end_no,
-     opt_start_no, opt_end_no, mulliken_starts, final_opt, run_warnings,
-     non_terminating_errors, errors, meta, band_gaps) = split_output(lines)
+    output = {
+        "units": {
+            "conversion": "CODATA2014",
+            "energy": "eV",
+            "length": "angstrom",
+            "angle": "degrees"
+        },
+        "errors": [],
+        "warnings": [],
+        "parser_errors": []
+    }
 
-    if run_warnings and logger is not None:
-        logger.warning("the following warnings were noted:\n  {}".format(
-            "\n  ".join(run_warnings)))
+    errors, run_warnings = scan_for_errors(lines)
+
+    output["errors"] += errors
+    output["warnings"] += run_warnings
+
+    try:
+        (start_line_no, geom_input_end, scf_init_start_no, scf_init_end_no,
+         opt_start_no, opt_end_no, mulliken_starts, final_opt,
+         non_terminating_errors, meta, band_gaps) = split_output(lines)
+    except Exception as err:
+        traceback.print_exc()
+        output["parser_errors"] = [str(err)]
+        return output
 
     errors_all = errors + non_terminating_errors
     if errors or non_terminating_errors:
         # MPI aborts should be the result of another error, so remove them if this is the case
         errors_noabort = [e for e in errors_all if "MPI_Abort" not in e]
         errors_all = errors_noabort if errors_noabort else errors_all
-        logger.warning("the following errors were found:\n  {}".format(
-            "\n  ".join(errors_all)))
+
+    output["errors"] = errors_all
 
     if start_line_no is None or start_line_no is None:
         initial = None
@@ -84,23 +100,13 @@ def read_crystal_stdout(lines, logger=logger):
     #             "creator": {"program": "Crystal14"}
     #             }
 
-    output = {
-        "warnings":
-        run_warnings,
-        "errors":
-        errors_all,
+    output.update({
         "meta":
         meta if start_line_no is None else edict.merge(
             [meta, read_before_run(lines[:start_line_no])]),
         "initial":
-        initial,
-        "units": {
-            "conversion": "CODATA2014",
-            "energy": "eV",
-            "length": "angstrom",
-            "angle": "degrees"
-        }
-    }
+        initial
+    })
 
     if opt_start_no is not None and opt_end_no is not None:
         if errors:
@@ -163,6 +169,31 @@ def read_crystal_stdout(lines, logger=logger):
     return output
 
 
+def scan_for_errors(lines):
+    """ scan the file for errors """
+    errors = []
+    warnings = []
+    mpi_abort = False
+
+    for i, line in enumerate(lines):
+
+        # TODO note line number of error?
+
+        if "WARNING" in line.upper():
+            warnings.append(line.strip())
+        elif "ERROR" in line:
+            errors.append(line.strip())
+        elif "SCF abnormal end" in line:  # only present when run using runcry
+            errors.append(line.strip())
+        elif "MPI_Abort" in line:
+            # only record one mpi_abort event (to not clutter output)
+            if not mpi_abort:
+                errors.append(line.strip())
+                mpi_abort = True
+
+    return errors, warnings
+
+
 def split_output(lines):
     """ split up the crystal output into sections
 
@@ -182,10 +213,7 @@ def split_output(lines):
     opt_end_no = None
     mulliken_starts = None
     final_opt = None
-    run_warnings = []
     non_terminating_errors = []
-    errors = []
-    mpi_abort = False
     second_opt_line = False
     telapse_line = False
     band_gaps = None
@@ -193,17 +221,6 @@ def split_output(lines):
     for i, line in enumerate(lines):
         if "************************" in line and start_line_no is None:
             start_line_no = i
-        elif "WARNING" in line.upper():
-            run_warnings.append(line.strip())
-        elif "ERROR" in line:
-            errors.append(line.strip())
-        elif "SCF abnormal end" in line:
-            errors.append(line.strip())
-        elif "MPI_Abort" in line:
-            # only record one mpi_abort event (to not clutter output)
-            if not mpi_abort:
-                errors.append(line.strip())
-                mpi_abort = True
         elif line.strip().startswith("* GEOMETRY EDITING"):
             if geom_input_end is None:
                 geom_input_end = i
@@ -299,11 +316,11 @@ def split_output(lines):
         h, m = divmod(m, 60)
         meta["elapsed_time"] = "%d:%02d:%02d" % (h, m, s)
 
-    if errors:
-        return (start_line_no, geom_input_end, scf_init_start_no,
-                scf_init_end_no, opt_start_no, opt_end_no, mulliken_starts,
-                final_opt, run_warnings, non_terminating_errors, errors, meta,
-                band_gaps)
+    # if errors:
+    #     return (start_line_no, geom_input_end, scf_init_start_no,
+    #             scf_init_end_no, opt_start_no, opt_end_no, mulliken_starts,
+    #             final_opt, non_terminating_errors, meta,
+    #             band_gaps)
 
     if start_line_no is None:
         raise IOError("couldn't find start of program run (denoted *****)")
@@ -322,8 +339,8 @@ def split_output(lines):
         raise IOError("found end of optimisation but not start")
 
     return (start_line_no, geom_input_end, scf_init_start_no, scf_init_end_no,
-            opt_start_no, opt_end_no, mulliken_starts, final_opt, run_warnings,
-            non_terminating_errors, errors, meta, band_gaps)
+            opt_start_no, opt_end_no, mulliken_starts, final_opt,
+            non_terminating_errors, meta, band_gaps)
 
 
 def read_before_run(lines):

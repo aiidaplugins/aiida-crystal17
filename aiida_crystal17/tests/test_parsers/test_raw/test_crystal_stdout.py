@@ -22,8 +22,7 @@ from aiida_crystal17.parsers.raw.crystal_stdout import read_crystal_stdout
       ('crystal', 'nio_sto3g_afm_opt_walltime', 'main.out')),
      ('nio_scf_maxcyc', ('crystal', 'nio_sto3g_afm_scf_maxcyc', 'main.out'))))
 def test_crystal_stdout_files(name, filepath, data_regression):
-    if name == "nio_opt_walltime":
-        return
+
     path = os.path.join(TEST_FILES, *filepath)
     with open(path) as handle:
         lines = handle.read().splitlines()

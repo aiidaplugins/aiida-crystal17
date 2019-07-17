@@ -1341,6 +1341,7 @@ initial:
 meta:
   elapsed_time: 0:00:03
 optimisation: null
+parser_errors: []
 units:
   angle: degrees
   conversion: CODATA2014

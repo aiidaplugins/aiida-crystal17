@@ -1725,6 +1725,7 @@ optimisation:
     symbols:
     - Mg
     - O
+parser_errors: []
 units:
   angle: degrees
   conversion: CODATA2014
