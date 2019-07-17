@@ -699,8 +699,6 @@ initial:
     symbols:
     - Mg
     - O
-  energy:
-    total_corrected: -7380.221605205836
   primitive_cell:
     assymetric:
     - true
@@ -1329,7 +1327,8 @@ initial:
     - 0.0
     - 0.0
     - 0.0
-  scf:
+initial_scf:
+  cycles:
   - atomic_charges_peratom:
     - 10.972064
     - 9.027936
@@ -1378,7 +1377,8 @@ initial:
     charge_normalization_factor: 1.0
     energy:
       total: -7380.221605206379
-meta: {}
+  final_energy:
+    total_corrected: -7380.221605205836
 optimisation:
 - convergence:
     max_displac: false

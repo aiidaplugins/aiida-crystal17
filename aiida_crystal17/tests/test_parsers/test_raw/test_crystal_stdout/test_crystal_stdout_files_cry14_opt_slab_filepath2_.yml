@@ -266,8 +266,6 @@ initial:
     spin: true
     type: unrestricted open shell
   crystallographic_cell: {}
-  energy:
-    total_corrected: -103144.08038441061
   primitive_cell:
     assymetric:
     - true
@@ -522,7 +520,8 @@ initial:
     - 0.0
     - 0.0
     - 0.0
-  scf:
+initial_scf:
+  cycles:
   - atomic_charges_peratom:
     - 26.3386213
     - 25.3227573
@@ -991,8 +990,8 @@ initial:
     - 2.2219741
     - 2.9857537
     spin_density_total: 8.19348147
-meta:
-  date: Sat 16 Sep 01:37:18 BST 2017
+  final_energy:
+    total_corrected: -103144.08038441061
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -1028,6 +1027,8 @@ mulliken:
     - Fe
     - Fe
     - Fe
+non_program:
+  date: Sat 16 Sep 01:37:18 BST 2017
 optimisation:
 - convergence:
     max_displac: false

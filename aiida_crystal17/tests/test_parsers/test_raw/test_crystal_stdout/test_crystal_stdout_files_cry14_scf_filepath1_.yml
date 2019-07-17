@@ -652,8 +652,6 @@ initial:
     - true
     symbols:
     - Fe
-  energy:
-    total_corrected: -34382.95981576187
   primitive_cell:
     assymetric:
     - true
@@ -1272,7 +1270,8 @@ initial:
     - 0.0
     - 0.0
     - 0.0
-  scf:
+initial_scf:
+  cycles:
   - atomic_charges_peratom:
     - 26.0
     charge_normalization_factor: 1.00075177
@@ -1435,8 +1434,8 @@ initial:
     spin_density_peratom:
     - 2.22826
     spin_density_total: 2.22826001
-meta:
-  date: Tue  5 Sep 20:53:50 BST 2017
+  final_energy:
+    total_corrected: -34382.95981576187
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -1456,6 +1455,8 @@ mulliken:
     - 1
     symbols:
     - Fe
+non_program:
+  date: Tue  5 Sep 20:53:50 BST 2017
 optimisation: null
 parser_errors: []
 parser_warnings: []

@@ -1,4 +1,28 @@
 # -*- coding: utf-8 -*-
+"""
+
+::
+
+    <parse_pre_header>
+    ***************************
+    <parse_calculation_header>
+    ***************************
+    <initial geometry input>
+    * GEOMETRY EDITING
+    <parse_calculation_setup>
+    CRYSTAL - SCF - TYPE OF CALCULATION :
+    <parse_initial_scf>
+    SCF ENDED
+    <>
+    OPTOPTOPTOPT
+    <>
+    OPT END -
+    <>
+    FINAL OPTIMIZED GEOMETRY
+    <>
+
+"""
+# TODO raise error if onelog specified?
 import copy
 from fnmatch import fnmatch
 import re
@@ -33,25 +57,49 @@ def read_crystal_stdout(lines):
         "parser_warnings": []
     }
 
+    # make an initial parse to find all errors/warnings and get the final elapsed time
     errors, run_warnings, telapse_seconds = initial_parse(lines)
-
     output["errors"] += errors
     output["warnings"] += run_warnings
     if telapse_seconds is not None:
         output["execution_time_seconds"] = telapse_seconds
 
-    lineno, meta_data = parse_initial_meta(lines)
+    # parse until the program header
+    lineno, meta_data = parse_pre_header(lines)
+    if meta_data:
+        output["non_program"] = meta_data
     if lineno is None:
-        output["parser_errors"] = [
-            "couldn't find start of program output (denoted *****)"
-        ]
+        output["parser_errors"].append(
+            "couldn't find start of program header (denoted *****)")
         return output
 
-    output["meta"] = meta_data
+    # parse the program header section
+    lineno, header_data = parse_calculation_header(lines, lineno)
+    # TODO add header data
+    # output["header"] = header_data
+    if lineno is None:
+        output["parser_errors"].append("couldn't find end of program header")
+        return output
+
+    # parse the initial geometry input
+    lineno, geom_data = parse_geometry_input(lines, lineno)
+    # TODO add geometry input data
+    if lineno is None:
+        output["parser_errors"].append(
+            "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
+        return output
+
+    # parse the calculation setup
+    xlineno, calc_setup_data = parse_calculation_setup(lines, lineno)
+    output['initial'] = calc_setup_data
+    if lineno is None:
+        output["parser_errors"].append(
+            "couldn't find start of initial scf calculation")
+        return output
 
     try:
-        (geom_input_end, scf_init_start_no, scf_init_end_no, opt_start_no,
-         opt_end_no, mulliken_starts, final_opt, non_terminating_errors,
+        (scf_init_start_no, scf_init_end_no, opt_start_no, opt_end_no,
+         mulliken_starts, final_opt, non_terminating_errors,
          band_gaps) = split_output(lines, lineno)
     except Exception as err:
         traceback.print_exc()
@@ -66,43 +114,30 @@ def read_crystal_stdout(lines):
 
     output["errors"] = errors_all
 
-    initial = read_init(lines[geom_input_end:scf_init_start_no],
-                        geom_input_end)
-
     if scf_init_start_no is None or scf_init_end_no is None:
-        initial["scf"] = None
+        output['initial_scf'] = None
     else:
-        #  initial["scf_type"] = lines[scf_start_no].replace("CRYSTAL - SCF - TYPE OF CALCULATION :", "").strip(),
-        initial["scf"] = read_scf(
+        output['initial_scf'] = {}
+        output['initial_scf']["cycles"] = parse_scf_section(
             lines[scf_init_start_no + 1:scf_init_end_no + 1],
             scf_init_start_no + 1)
 
         if opt_start_no is not None:
-            initial = edict.merge([
-                initial,
-                read_post_scf(lines[scf_init_end_no + 1:opt_start_no],
-                              scf_init_start_no + 1)
-            ])
-        elif final_opt is not None:
-            initial = edict.merge([
-                initial,
-                read_post_scf(lines[scf_init_end_no + 1:final_opt],
-                              scf_init_start_no + 1)
-            ])
-        elif mulliken_starts is not None:
-            initial = edict.merge([
-                initial,
-                read_post_scf(lines[scf_init_end_no + 1:mulliken_starts[0]],
-                              scf_init_start_no + 1)
-            ])
-        else:
-            initial = edict.merge([
-                initial,
-                read_post_scf(lines[scf_init_end_no + 1:],
-                              scf_init_start_no + 1)
-            ])
+            output['initial_scf']["final_energy"] = parse_scf_final_energy(
+                lines[scf_init_end_no + 1:opt_start_no], scf_init_start_no + 1)
 
-    output['initial'] = initial
+        elif final_opt is not None:
+            output['initial_scf']["final_energy"] = parse_scf_final_energy(
+                lines[scf_init_end_no + 1:final_opt], scf_init_start_no + 1)
+
+        elif mulliken_starts is not None:
+            output['initial_scf']["final_energy"] = parse_scf_final_energy(
+                lines[scf_init_end_no + 1:mulliken_starts[0]],
+                scf_init_start_no + 1)
+
+        else:
+            output['initial_scf']["final_energy"] = parse_scf_final_energy(
+                lines[scf_init_end_no + 1:], scf_init_start_no + 1)
 
     if opt_start_no is not None and opt_end_no is not None:
         if errors:
@@ -144,8 +179,8 @@ def read_crystal_stdout(lines):
             output["final"]["energy"] = copy.deepcopy(
                 output["optimisation"][-1].get("energy", None))
         else:
-            output["final"]["energy"] = copy.deepcopy(output["initial"].get(
-                "energy", None))
+            output["final"]["energy"] = copy.deepcopy(output["initial_scf"].get(
+                "final_energy", None))
 
     if "primitive_symmops" not in output["final"]:
         if "primitive_symmops" in output[
@@ -201,16 +236,30 @@ def initial_parse(lines):
     return errors, warnings, total_seconds
 
 
-def parse_initial_meta(lines):
-    """ note this is only for runs using runcry (not straight from the binary)"""
+def parse_pre_header(lines, initial_lineno=0):
+    """ parse any data before the program header
+
+    note this is only for runs using runcry (not straight from the binary)
+
+    Parameters
+    ----------
+    lines: list[str]
+    initial_lineno: int
+
+    Returns
+    -------
+    int
+    dict
+
+    """
     lineno = 0
     meta_data = {}
     num_lines = len(lines)
     line = lines[lineno]
-    while True:
+    for i, line in enumerate(lines[initial_lineno:]):
         if "************************" in line:
             # found start of crystal binary stdout
-            break
+            return lineno, meta_data
 
         elif fnmatch(line, "date:*"):
             meta_data["date"] = line.replace("date:", "").strip()
@@ -221,13 +270,99 @@ def parse_initial_meta(lines):
 
         lineno += 1
         if lineno + 1 >= num_lines:
-            return None, None
+            return None, meta_data
         line = lines[lineno]
 
-    return lineno, meta_data
+    return None, meta_data
 
 
-def split_output(lines, lineno):
+def parse_calculation_header(lines, initial_lineno):
+    """ parse calculation header
+
+    Parameters
+    ----------
+    lines: list[str]
+    initial_lineno: int
+
+    Returns
+    -------
+    int
+    dict
+
+    """
+    data = {}
+    for i, line in enumerate(lines[initial_lineno:]):
+        if not line.strip().startswith("*"):
+            return initial_lineno + i, data
+        # TODO parse version
+    return None, data
+
+
+def parse_geometry_input(lines, initial_lineno):
+    """ parse geometry input data
+
+    Parameters
+    ----------
+    lines: list[str]
+    initial_lineno: int
+
+    Returns
+    -------
+    int
+    dict
+
+    """
+    lineno = initial_lineno
+    data = {}
+    for i, line in enumerate(lines[initial_lineno:]):
+        if line.strip().startswith("* GEOMETRY EDITING"):
+            return lineno + i, data
+    return None, data
+
+
+def parse_calculation_setup(lines, initial_lineno):
+    """ parse initial setup data (starting after intital geometry input)
+
+    Parameters
+    ----------
+    lines: list[str]
+    initial_lineno: int
+
+    Returns
+    -------
+    int
+    dict
+
+    """
+    data = {"calculation": {"spin": False}}
+    for i, line in enumerate(lines[initial_lineno:]):
+        curr_lineno = initial_lineno + i
+        line = line.strip()
+        if line.startswith("CRYSTAL - SCF - TYPE OF CALCULATION :"):
+            return curr_lineno, data
+
+        elif line.startswith("TYPE OF CALCULATION :"):
+            data["calculation"]["type"] = line.replace("TYPE OF CALCULATION :",
+                                                       "").strip().lower()
+            if "HAMILTONIAN" in lines[curr_lineno + 1]:
+                regex = r"\(EXCHANGE\)\[CORRELATION\] FUNCTIONAL:\((.*)\)\[(.*)\]"
+                string = lines[curr_lineno + 3].strip()
+                if re.match(regex, string):
+                    data["calculation"]["functional"] = {
+                        "exchange": re.search(regex, string).group(1),
+                        "correlation": re.search(regex, string).group(2)
+                    }
+
+        elif "SPIN POLARIZ" in line:
+            data["calculation"]["spin"] = True
+
+        parse_geometry_section(data, curr_lineno, line, lines)
+        parse_symmetry_section(data, curr_lineno, line, lines)
+
+    return None, data
+
+
+def split_output(lines, initial_lineno):
     """ split up the crystal output into sections
 
     Parameters
@@ -239,7 +374,6 @@ def split_output(lines, lineno):
     -------
 
     """
-    geom_input_end = None
     scf_init_start_no = None
     scf_init_end_no = None
     opt_start_no = None
@@ -249,25 +383,24 @@ def split_output(lines, lineno):
     non_terminating_errors = []
     second_opt_line = False
     band_gaps = None
-    for i, line in enumerate(lines):
-        if i < lineno:
-            pass
+    geometry_edit_no = None
+    lineno = initial_lineno
+    for line in lines[initial_lineno:]:
         if line.strip().startswith("* GEOMETRY EDITING"):
-            if geom_input_end is None:
-                geom_input_end = i
-            else:
+            if geometry_edit_no is not None:
                 raise IOError(
-                    "found two lines starting '* GEOMETRY EDITING' in initial data:"
-                    " {0} and {1}".format(geom_input_end, i))
-
+                    "found two lines starting '* GEOMETRY EDITING' in initial data: {0} and {1}"
+                    .format(geometry_edit_no, lineno))
+            else:
+                geometry_edit_no = lineno
         elif "CRYSTAL - SCF - TYPE OF CALCULATION :" in line:
             if opt_start_no is not None:
                 continue
             if scf_init_start_no is not None:
                 raise IOError(
                     "found two lines starting scf ('CRYSTAL - SCF - ') in initial data:"
-                    " {0} and {1}".format(scf_init_start_no, i))
-            scf_init_start_no = i
+                    " {0} and {1}".format(scf_init_start_no, lineno))
+            scf_init_start_no = lineno
         elif "SCF ENDED" in line:
             if opt_start_no is not None:
                 continue
@@ -276,32 +409,32 @@ def split_output(lines, lineno):
             if scf_init_end_no is not None:
                 raise IOError(
                     "found two lines ending scf ('SCF ENDED') in initial data:"
-                    " {0} and {1}".format(scf_init_end_no, i))
-            scf_init_end_no = i
+                    " {0} and {1}".format(scf_init_end_no, lineno))
+            scf_init_end_no = lineno
         # elif "STARTING GEOMETRY OPTIMIZATION" in line: #not the same in CRYSTAL17
         elif "OPTOPTOPTOPT" in line:
             if opt_start_no is not None:
                 if second_opt_line:
                     raise IOError(
                         "found two lines starting opt ('STARTING GEOMETRY OPTIMIZATION'):"
-                        " {0} and {1}".format(opt_start_no, i))
+                        " {0} and {1}".format(opt_start_no, lineno))
                 else:
                     second_opt_line = True
-            opt_start_no = i
+            opt_start_no = lineno
         elif "CONVERGENCE ON GRADIENTS SATISFIED AFTER THE FIRST OPTIMIZATION CYCLE" in line:
             if opt_start_no is not None:
                 if second_opt_line:
                     raise IOError(
                         "found two lines starting opt ('STARTING GEOMETRY OPTIMIZATION'):"
-                        " {0} and {1}".format(opt_start_no, i))
+                        " {0} and {1}".format(opt_start_no, lineno))
                 else:
                     second_opt_line = True
-            opt_start_no = i
+            opt_start_no = lineno
         elif "OPT END -" in line:
             if opt_end_no is not None:
                 raise IOError("found two lines ending opt ('OPT END -'):"
-                              " {0} and {1}".format(opt_end_no, i))
-            opt_end_no = i
+                              " {0} and {1}".format(opt_end_no, lineno))
+            opt_end_no = lineno
         elif opt_end_no and "BAND GAP" in line:
             # NB: this is new for CRYSTAL17
             band_gaps = {} if band_gaps is None else band_gaps
@@ -317,26 +450,28 @@ def split_output(lines, lineno):
             else:
                 raise IOError(
                     "found a band gap of unknown format at line {0}: {1}".
-                    format(i, line))
+                    format(lineno, line))
             if bgtype in band_gaps:
                 raise IOError(
                     "band gap data already contains {0} value before line {1}: {2}"
-                    .format(bgtype, i, line))
+                    .format(bgtype, lineno, line))
             band_gaps[bgtype] = bgvalue
         elif "CONVERGENCE TESTS UNSATISFIED" in line.upper():
             non_terminating_errors.append(line.strip())
         elif line.strip().startswith("MULLIKEN POPULATION ANALYSIS"):
             # can have ALPHA+BETA ELECTRONS and ALPHA-BETA ELECTRONS (denoted in line above mulliken_starts)
             if mulliken_starts is None:
-                mulliken_starts = [i]
+                mulliken_starts = [lineno]
             else:
-                mulliken_starts.append(i)
+                mulliken_starts.append(lineno)
         elif "FINAL OPTIMIZED GEOMETRY" in line:
             if final_opt is not None:
                 raise IOError(
                     "found two lines starting final opt geometry ('FINAL OPTIMIZED GEOMETRY'):"
-                    " {0} and {1}".format(final_opt, i))
-            final_opt = i
+                    " {0} and {1}".format(final_opt, lineno))
+            final_opt = lineno
+
+        lineno += 1
 
     # if errors:
     #     return (geom_input_end, scf_init_start_no,
@@ -344,9 +479,6 @@ def split_output(lines, lineno):
     #             final_opt, non_terminating_errors,
     #             band_gaps)
 
-    if geom_input_end is None:
-        raise IOError(
-            "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
     if scf_init_start_no is None:
         raise IOError("didn't find an SCF (as expected)")
     if scf_init_start_no is not None and scf_init_end_no is None:
@@ -358,12 +490,11 @@ def split_output(lines, lineno):
     if opt_end_no is not None and opt_start_no is None:
         raise IOError("found end of optimisation but not start")
 
-    return (geom_input_end, scf_init_start_no, scf_init_end_no, opt_start_no,
-            opt_end_no, mulliken_starts, final_opt, non_terminating_errors,
-            band_gaps)
+    return (scf_init_start_no, scf_init_end_no, opt_start_no, opt_end_no,
+            mulliken_starts, final_opt, non_terminating_errors, band_gaps)
 
 
-def get_geometry(dct, i, line, lines, startline=0):
+def parse_geometry_section(dct, i, line, lines, startline=0):
     """ update dict get geometry related variables
 
     Parameters
@@ -526,7 +657,7 @@ def get_geometry(dct, i, line, lines, startline=0):
         dct["primitive_cell"]["cell_vectors"] = vectors
 
 
-def get_symmetry(dct, i, line, lines, startline=0):
+def parse_symmetry_section(dct, i, line, lines, startline=0):
     """ update dict with symmetry related variables
 
     Parameters
@@ -572,42 +703,7 @@ def get_symmetry(dct, i, line, lines, startline=0):
         dct["primitive_symmops"] = symmops
 
 
-def read_init(lines, startline):
-    """ read initial setup data (starting after intital geometry input)
-
-    Parameters
-    ----------
-    lines: List of str
-    startline: int
-
-    Returns
-    -------
-
-    """
-    init = {"calculation": {"spin": False}}
-    for i, line in enumerate(lines):
-        line = line.strip()
-        if line.startswith("TYPE OF CALCULATION :"):
-            init["calculation"]["type"] = line.replace("TYPE OF CALCULATION :",
-                                                       "").strip().lower()
-            if "HAMILTONIAN" in lines[i + 1]:
-                regex = r"\(EXCHANGE\)\[CORRELATION\] FUNCTIONAL:\((.*)\)\[(.*)\]"
-                string = lines[i + 3].strip()
-                if re.match(regex, string):
-                    init["calculation"]["functional"] = {
-                        "exchange": re.search(regex, string).group(1),
-                        "correlation": re.search(regex, string).group(2)
-                    }
-        if "SPIN POLARIZ" in line:
-            init["calculation"]["spin"] = True
-
-        get_geometry(init, i, line, lines, startline)
-        get_symmetry(init, i, line, lines, startline)
-
-    return init
-
-
-def read_scf(lines, startline):
+def parse_scf_section(lines, startline):
     """ read scf data
 
     Parameters
@@ -693,7 +789,7 @@ def read_scf(lines, startline):
     return scf
 
 
-def read_post_scf(lines, startline):
+def parse_scf_final_energy(lines, startline):
     """ read post initial scf data
 
     Parameters
@@ -705,20 +801,19 @@ def read_post_scf(lines, startline):
     -------
 
     """
-    post_scf = {}
+    scf_energy = {}
     for i, line in enumerate(lines):
         if fnmatch(line.strip(), "TOTAL ENERGY*DE*"):
             if not fnmatch(line.strip(), "TOTAL ENERGY*AU*DE*"):
                 raise IOError("was expecting units in a.u. on line:"
                               " {0}, got: {1}".format(startline + i, line))
-            post_scf["energy"] = post_scf.get("energy", {})
-            if "total_corrected" in post_scf["energy"]:
+            if "total_corrected" in scf_energy:
                 raise IOError("total corrected energy found twice, on line:"
                               " {0}, got: {1}".format(startline + i, line))
-            post_scf["energy"]["total_corrected"] = convert_units(
+            scf_energy["total_corrected"] = convert_units(
                 split_numbers(line)[1], "hartree", "eV")
 
-    return post_scf
+    return scf_energy
 
 
 def read_opt(lines, startline):
@@ -777,10 +872,10 @@ def read_opt(lines, startline):
         elif "SCF ENDED" in line:
             if "CONVERGE" not in line:
                 pass  # errors.append(line.strip())
-            opt_cyc["scf"] = read_scf(lines[scf_start_no + 1:i + 1],
-                                      startline + i + 1)
+            opt_cyc["scf"] = parse_scf_section(lines[scf_start_no + 1:i + 1],
+                                               startline + i + 1)
 
-        get_geometry(opt_cyc, i, line, lines, startline)
+        parse_geometry_section(opt_cyc, i, line, lines, startline)
 
         # TODO move to read_post_scf?
         if fnmatch(line, "TOTAL ENERGY*DE*"):
@@ -827,8 +922,8 @@ def read_final(lines, startline):
     final = {}
     for i, line in enumerate(lines):
         line = line.strip()
-        get_geometry(final, i, line, lines, startline)
-        get_symmetry(final, i, line, lines, startline)
+        parse_geometry_section(final, i, line, lines, startline)
+        parse_symmetry_section(final, i, line, lines, startline)
 
     return final
 
