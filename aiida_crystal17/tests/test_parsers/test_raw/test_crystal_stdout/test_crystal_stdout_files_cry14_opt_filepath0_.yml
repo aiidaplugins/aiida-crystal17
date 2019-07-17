@@ -1,4 +1,5 @@
 errors: []
+execution_time_seconds: 1336
 final:
   crystallographic_cell:
     assymetric:
@@ -1505,8 +1506,6 @@ initial:
     spin_density_total: 2.24518405
 meta:
   date: Tue 27 Jun 17:36:57 BST 2017
-  elapsed_time: 0:22:16
-  nprocs: 16
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -2353,6 +2352,7 @@ optimisation:
     symbols:
     - Fe
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

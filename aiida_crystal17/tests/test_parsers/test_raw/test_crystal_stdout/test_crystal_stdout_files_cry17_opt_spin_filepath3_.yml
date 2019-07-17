@@ -1,4 +1,5 @@
 errors: []
+execution_time_seconds: 6894
 final:
   band_gaps:
     alpha: 2.4142
@@ -625,8 +626,6 @@ initial:
     spin_density_total: -0.0
 meta:
   date: Sun  1 Apr 03:08:46 BST 2018
-  elapsed_time: '1:54:54'
-  nprocs: 32
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -1712,6 +1711,7 @@ optimisation:
     - S
     - S
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

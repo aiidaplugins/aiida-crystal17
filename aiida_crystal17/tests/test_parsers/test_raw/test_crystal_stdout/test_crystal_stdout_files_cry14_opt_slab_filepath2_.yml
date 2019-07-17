@@ -1,4 +1,5 @@
 errors: []
+execution_time_seconds: 1134
 final:
   crystallographic_cell: {}
   energy:
@@ -992,8 +993,6 @@ initial:
     spin_density_total: 8.19348147
 meta:
   date: Sat 16 Sep 01:37:18 BST 2017
-  elapsed_time: 0:18:54
-  nprocs: 16
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -4136,6 +4135,7 @@ optimisation:
     - Fe
     - Fe
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

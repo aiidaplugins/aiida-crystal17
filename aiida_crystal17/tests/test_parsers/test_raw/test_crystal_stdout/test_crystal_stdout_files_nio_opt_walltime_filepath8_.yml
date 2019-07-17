@@ -1,6 +1,9 @@
 errors: []
+execution_time_seconds: 1098
+meta: {}
 parser_errors:
 - found start of optimisation but not end
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

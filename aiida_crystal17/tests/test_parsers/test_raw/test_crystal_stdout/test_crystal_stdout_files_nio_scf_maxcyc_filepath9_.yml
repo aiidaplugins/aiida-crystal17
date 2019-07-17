@@ -1,5 +1,6 @@
 errors:
 - == SCF ENDED - TOO MANY CYCLES            E(AU) -3.1282821683361E+03 CYCLES  10
+execution_time_seconds: 179
 final:
   energy:
     total_corrected: -85124.89366207623
@@ -689,8 +690,7 @@ initial:
     - -0.0675862
     - 0.0675686
     spin_density_total: -0.0
-meta:
-  elapsed_time: 0:02:59
+meta: {}
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -736,6 +736,7 @@ mulliken:
     - O
 optimisation: null
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

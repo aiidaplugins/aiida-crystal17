@@ -1,4 +1,5 @@
 errors: []
+execution_time_seconds: 102
 final:
   band_gaps:
     all: 17.4781
@@ -1377,8 +1378,7 @@ initial:
     charge_normalization_factor: 1.0
     energy:
       total: -7380.221605206379
-meta:
-  elapsed_time: 0:01:42
+meta: {}
 optimisation:
 - convergence:
     max_displac: false
@@ -1726,6 +1726,7 @@ optimisation:
     - Mg
     - O
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

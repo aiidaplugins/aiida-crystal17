@@ -1,4 +1,5 @@
 errors: []
+execution_time_seconds: 3
 final:
   energy:
     total_corrected: -7380.221605190324
@@ -1338,10 +1339,10 @@ initial:
     charge_normalization_factor: 1.0
     energy:
       total: -7380.221605190052
-meta:
-  elapsed_time: 0:00:03
+meta: {}
 optimisation: null
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014

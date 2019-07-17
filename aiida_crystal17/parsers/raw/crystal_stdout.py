@@ -28,18 +28,30 @@ def read_crystal_stdout(lines):
         },
         "errors": [],
         "warnings": [],
-        "parser_errors": []
+        "parser_errors": [],
+        "parser_warnings": []
     }
 
-    errors, run_warnings = scan_for_errors(lines)
+    errors, run_warnings, telapse_seconds = initial_parse(lines)
 
     output["errors"] += errors
     output["warnings"] += run_warnings
+    if telapse_seconds is not None:
+        output["execution_time_seconds"] = telapse_seconds
+
+    lineno, meta_data = parse_initial_meta(lines)
+    if lineno is None:
+        output["parser_errors"] = [
+            "couldn't find start of program output (denoted *****)"
+        ]
+        return output
+
+    output["meta"] = meta_data
 
     try:
-        (start_line_no, geom_input_end, scf_init_start_no, scf_init_end_no,
-         opt_start_no, opt_end_no, mulliken_starts, final_opt,
-         non_terminating_errors, meta, band_gaps) = split_output(lines)
+        (geom_input_end, scf_init_start_no, scf_init_end_no, opt_start_no,
+         opt_end_no, mulliken_starts, final_opt, non_terminating_errors,
+         band_gaps) = split_output(lines, lineno)
     except Exception as err:
         traceback.print_exc()
         output["parser_errors"] = [str(err)]
@@ -53,60 +65,43 @@ def read_crystal_stdout(lines):
 
     output["errors"] = errors_all
 
-    if start_line_no is None or start_line_no is None:
-        initial = None
+    initial = read_init(lines[geom_input_end:scf_init_start_no],
+                        geom_input_end)
+
+    if scf_init_start_no is None or scf_init_end_no is None:
+        initial["scf"] = None
     else:
-        initial = read_init(lines[geom_input_end:scf_init_start_no],
-                            geom_input_end)
-        if scf_init_start_no is None or scf_init_end_no is None:
-            initial["scf"] = None
+        #  initial["scf_type"] = lines[scf_start_no].replace("CRYSTAL - SCF - TYPE OF CALCULATION :", "").strip(),
+        initial["scf"] = read_scf(
+            lines[scf_init_start_no + 1:scf_init_end_no + 1],
+            scf_init_start_no + 1)
 
+        if opt_start_no is not None:
+            initial = edict.merge([
+                initial,
+                read_post_scf(lines[scf_init_end_no + 1:opt_start_no],
+                              scf_init_start_no + 1)
+            ])
+        elif final_opt is not None:
+            initial = edict.merge([
+                initial,
+                read_post_scf(lines[scf_init_end_no + 1:final_opt],
+                              scf_init_start_no + 1)
+            ])
+        elif mulliken_starts is not None:
+            initial = edict.merge([
+                initial,
+                read_post_scf(lines[scf_init_end_no + 1:mulliken_starts[0]],
+                              scf_init_start_no + 1)
+            ])
         else:
-            #  initial["scf_type"] = lines[scf_start_no].replace("CRYSTAL - SCF - TYPE OF CALCULATION :", "").strip(),
-            initial["scf"] = read_scf(
-                lines[scf_init_start_no + 1:scf_init_end_no + 1],
-                scf_init_start_no + 1)
-            if opt_start_no is not None:
-                initial = edict.merge([
-                    initial,
-                    read_post_scf(lines[scf_init_end_no + 1:opt_start_no],
-                                  scf_init_start_no + 1)
-                ])
-            elif final_opt is not None:
-                initial = edict.merge([
-                    initial,
-                    read_post_scf(lines[scf_init_end_no + 1:final_opt],
-                                  scf_init_start_no + 1)
-                ])
-            elif mulliken_starts is not None:
-                initial = edict.merge([
-                    initial,
-                    read_post_scf(
-                        lines[scf_init_end_no + 1:mulliken_starts[0]],
-                        scf_init_start_no + 1)
-                ])
-            else:
-                initial = edict.merge([
-                    initial,
-                    read_post_scf(lines[scf_init_end_no + 1:],
-                                  scf_init_start_no + 1)
-                ])
+            initial = edict.merge([
+                initial,
+                read_post_scf(lines[scf_init_end_no + 1:],
+                              scf_init_start_no + 1)
+            ])
 
-    # if errors:
-    #     return {"warnings": run_warnings,
-    #             "errors": errors_all,
-    #             "meta": None if start_line_no is None else read_before_run(lines[:start_line_no]),
-    #             "initial": initial,
-    #             "creator": {"program": "Crystal14"}
-    #             }
-
-    output.update({
-        "meta":
-        meta if start_line_no is None else edict.merge(
-            [meta, read_before_run(lines[:start_line_no])]),
-        "initial":
-        initial
-    })
+    output['initial'] = initial
 
     if opt_start_no is not None and opt_end_no is not None:
         if errors:
@@ -169,11 +164,12 @@ def read_crystal_stdout(lines):
     return output
 
 
-def scan_for_errors(lines):
-    """ scan the file for errors """
+def initial_parse(lines):
+    """ scan the file for errors, and find the final elapsed time value """
     errors = []
     warnings = []
     mpi_abort = False
+    telapse_line = None
 
     for i, line in enumerate(lines):
 
@@ -190,22 +186,58 @@ def scan_for_errors(lines):
             if not mpi_abort:
                 errors.append(line.strip())
                 mpi_abort = True
+        elif "TELAPSE" in line:
+            telapse_line = i
 
-    return errors, warnings
+    total_seconds = None
+    if telapse_line:
+        total_seconds = int(
+            split_numbers(lines[telapse_line].split("TELAPSE")[1])[0])
+        # m, s = divmod(total_seconds, 60)
+        # h, m = divmod(m, 60)
+        # elapsed_time = "%d:%02d:%02d" % (h, m, s)
+
+    return errors, warnings, total_seconds
 
 
-def split_output(lines):
+def parse_initial_meta(lines):
+    """ note this is only for runs using runcry (not straight from the binary)"""
+    lineno = 0
+    meta_data = {}
+    num_lines = len(lines)
+    line = lines[lineno]
+    while True:
+        if "************************" in line:
+            # found start of crystal binary stdout
+            break
+
+        elif fnmatch(line, "date:*"):
+            meta_data["date"] = line.replace("date:", "").strip()
+
+        elif fnmatch(line, "resources_used.ncpus =*"):
+            meta_data["nprocs"] = int(
+                line.replace("resources_used.ncpus =", ""))
+
+        lineno += 1
+        if lineno + 1 >= num_lines:
+            return None, None
+        line = lines[lineno]
+
+    return lineno, meta_data
+
+
+def split_output(lines, lineno):
     """ split up the crystal output into sections
 
     Parameters
     ----------
     lines: list of str
+    lineno: int
 
     Returns
     -------
 
     """
-    start_line_no = None
     geom_input_end = None
     scf_init_start_no = None
     scf_init_end_no = None
@@ -215,13 +247,11 @@ def split_output(lines):
     final_opt = None
     non_terminating_errors = []
     second_opt_line = False
-    telapse_line = False
     band_gaps = None
-    meta = {}
     for i, line in enumerate(lines):
-        if "************************" in line and start_line_no is None:
-            start_line_no = i
-        elif line.strip().startswith("* GEOMETRY EDITING"):
+        if i < lineno:
+            pass
+        if line.strip().startswith("* GEOMETRY EDITING"):
             if geom_input_end is None:
                 geom_input_end = i
             else:
@@ -306,24 +336,13 @@ def split_output(lines):
                     "found two lines starting final opt geometry ('FINAL OPTIMIZED GEOMETRY'):"
                     " {0} and {1}".format(final_opt, i))
             final_opt = i
-        elif "TELAPSE" in line:
-            telapse_line = i
-
-    if telapse_line:
-        total_seconds = int(
-            split_numbers(lines[telapse_line].split("TELAPSE")[1])[0])
-        m, s = divmod(total_seconds, 60)
-        h, m = divmod(m, 60)
-        meta["elapsed_time"] = "%d:%02d:%02d" % (h, m, s)
 
     # if errors:
-    #     return (start_line_no, geom_input_end, scf_init_start_no,
+    #     return (geom_input_end, scf_init_start_no,
     #             scf_init_end_no, opt_start_no, opt_end_no, mulliken_starts,
-    #             final_opt, non_terminating_errors, meta,
+    #             final_opt, non_terminating_errors,
     #             band_gaps)
 
-    if start_line_no is None:
-        raise IOError("couldn't find start of program run (denoted *****)")
     if geom_input_end is None:
         raise IOError(
             "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
@@ -338,31 +357,9 @@ def split_output(lines):
     if opt_end_no is not None and opt_start_no is None:
         raise IOError("found end of optimisation but not start")
 
-    return (start_line_no, geom_input_end, scf_init_start_no, scf_init_end_no,
-            opt_start_no, opt_end_no, mulliken_starts, final_opt,
-            non_terminating_errors, meta, band_gaps)
-
-
-def read_before_run(lines):
-    """ read metadata output in the file before the actual program start
-
-    Parameters
-    ----------
-    lines: list of str
-
-    Returns
-    -------
-
-    """
-    meta = {}
-    for line in lines:
-        line = line.strip()
-        if fnmatch(line, "date:*"):
-            meta["date"] = line.replace("date:", "").strip()
-        # TODO fo this better; perhaps "16 PROCESSORS WORKING" just above start of run
-        if fnmatch(line, "resources_used.ncpus =*"):
-            meta["nprocs"] = int(line.replace("resources_used.ncpus =", ""))
-    return meta
+    return (geom_input_end, scf_init_start_no, scf_init_end_no, opt_start_no,
+            opt_end_no, mulliken_starts, final_opt, non_terminating_errors,
+            band_gaps)
 
 
 def get_geometry(dct, i, line, lines, startline=0):

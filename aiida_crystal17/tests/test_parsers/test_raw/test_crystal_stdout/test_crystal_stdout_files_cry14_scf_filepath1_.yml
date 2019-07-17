@@ -1,4 +1,5 @@
 errors: []
+execution_time_seconds: 4
 final:
   energy:
     total_corrected: -34382.95981576187
@@ -1436,8 +1437,6 @@ initial:
     spin_density_total: 2.22826001
 meta:
   date: Tue  5 Sep 20:53:50 BST 2017
-  elapsed_time: 0:00:04
-  nprocs: 16
 mulliken:
   alpha+beta_electrons:
     atomic_numbers:
@@ -1459,6 +1458,7 @@ mulliken:
     - Fe
 optimisation: null
 parser_errors: []
+parser_warnings: []
 units:
   angle: degrees
   conversion: CODATA2014
