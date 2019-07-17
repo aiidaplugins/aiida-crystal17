@@ -1,0 +1,49 @@
+calculation:
+  n_ao: 46
+  n_atoms: 4
+  n_core_el: 40
+  n_electrons: 72
+  n_kpoints_gilat: 75
+  n_kpoints_ibz: 75
+  n_shells: 14
+  n_symops: 16
+  spin: true
+  type: unrestricted open shell
+energy: -85125.876675219
+energy_units: eV
+errors: []
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+mulliken_charges:
+- 0.363
+- 0.363
+- -0.363
+- -0.363
+mulliken_electrons:
+- 27.637
+- 27.637
+- 8.363
+- 8.363
+mulliken_spin_total: 0.0
+mulliken_spins:
+- 3.234
+- -3.234
+- -0.172
+- 0.172
+number_of_assymetric: 4
+number_of_atoms: 4
+opt_iterations: 19
+parser_class: CryMainParser
+parser_errors: []
+parser_exceptions: []
+parser_warnings: []
+scf_iterations: 16
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+volume: 42.492412086
+warnings:
+- WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY

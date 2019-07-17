@@ -83,17 +83,12 @@ class CryMainParser(Parser):
                 init_struct=init_struct,
                 init_settings=init_settings)
 
-        errors = parser_result.nodes.results.get_attribute("errors")
-        parser_errors = parser_result.nodes.results.get_attribute(
-            "parser_errors")
-        if parser_errors:
-            self.logger.warning(
-                "the parser raised the following errors:\n{}".format(
-                    "\n\t".join(parser_errors)))
-        if errors:
-            self.logger.warning(
-                "the calculation raised the following errors:\n{}".format(
-                    "\n\t".join(errors)))
+        for etype in ["errors", "parser_errors", "parser_exceptions"]:
+            errors = parser_result.nodes.results.get_attribute(etype)
+            if errors:
+                self.logger.warning(
+                    "the calculation raised the following {0}:\n{1}".format(
+                        etype, "\n\t".join(errors)))
 
         # add output nodes
         self.out('results', parser_result.nodes.results)

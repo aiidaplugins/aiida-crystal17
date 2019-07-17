@@ -1,0 +1,858 @@
+calculation:
+  functional:
+    correlation: PERDEW-BURKE-ERNZERHOF
+    exchange: PERDEW-BURKE-ERNZERHOF
+  n_ao: 31
+  n_atoms: 1
+  n_core_el: 18
+  n_electrons: 26
+  n_kpoints_gilat: 145
+  n_kpoints_ibz: 29
+  n_shells: 8
+  n_symops: 48
+  spin: true
+  type: unrestricted open shell
+errors: []
+execution_time_seconds: 4
+exit_code: 0
+header:
+  crystal_subversion: 1.0.4
+  crystal_version: 14
+initial_geometry:
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a: 2.869
+      alpha: 90.0
+      b: 2.869
+      beta: 90.0
+      c: 2.869
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    ccoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    cell_parameters:
+      a: 2.48462688
+      alpha: 109.471221
+      b: 2.48462688
+      beta: 109.471221
+      c: 2.48462688
+      gamma: 109.471221
+    cell_vectors:
+      a:
+      - -1.4345
+      - 1.4345
+      - 1.4345
+      b:
+      - 1.4345
+      - -1.4345
+      - 1.4345
+      c:
+      - 1.4345
+      - 1.4345
+      - -1.4345
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+initial_scf:
+  cycles:
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.00075177
+    energy:
+      total: -34385.468864502785
+    spin_density_absolute: 2.0171403
+    spin_density_peratom:
+    - 2.0171403
+    spin_density_total: 2.01714028
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.00075177
+    energy:
+      total: -34396.82809247814
+    spin_density_absolute: 2.0171403
+    spin_density_peratom:
+    - 2.0171403
+    spin_density_total: 2.01714028
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.00075177
+    energy:
+      total: -34397.747292961845
+    spin_density_absolute: 2.0171403
+    spin_density_peratom:
+    - 2.0171403
+    spin_density_total: 2.01714028
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.00075177
+    energy:
+      total: -34397.818189724676
+    spin_density_absolute: 2.0171403
+    spin_density_peratom:
+    - 2.0171403
+    spin_density_total: 2.01714028
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.00075177
+    energy:
+      total: -34397.834440092294
+    spin_density_absolute: 2.0171403
+    spin_density_peratom:
+    - 2.0171403
+    spin_density_total: 2.01714028
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95119310767
+    spin_density_absolute: 2.1786743
+    spin_density_peratom:
+    - 2.1786743
+    spin_density_total: 2.17867434
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95218433683
+    spin_density_absolute: 2.18054
+    spin_density_peratom:
+    - 2.18054
+    spin_density_total: 2.18053999
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95397808418
+    spin_density_absolute: 2.1853903
+    spin_density_peratom:
+    - 2.1853903
+    spin_density_total: 2.18539034
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95857120288
+    spin_density_absolute: 2.2082109
+    spin_density_peratom:
+    - 2.2082109
+    spin_density_total: 2.20821089
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.958399172494
+    spin_density_absolute: 2.207615
+    spin_density_peratom:
+    - 2.207615
+    spin_density_total: 2.20761501
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.958460860704
+    spin_density_absolute: 2.2099832
+    spin_density_peratom:
+    - 2.2099832
+    spin_density_total: 2.20998321
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95876336968
+    spin_density_absolute: 2.2123969
+    spin_density_peratom:
+    - 2.2123969
+    spin_density_total: 2.21239691
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.959528825966
+    spin_density_absolute: 2.2217945
+    spin_density_peratom:
+    - 2.2217945
+    spin_density_total: 2.22179455
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.959566132784
+    spin_density_absolute: 2.2226003
+    spin_density_peratom:
+    - 2.2226003
+    spin_density_total: 2.22260027
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.959797347925
+    spin_density_absolute: 2.2272856
+    spin_density_peratom:
+    - 2.2272856
+    spin_density_total: 2.22728564
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95975470769
+    spin_density_absolute: 2.2269144
+    spin_density_peratom:
+    - 2.2269144
+    spin_density_total: 2.22691436
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95977511622
+    spin_density_absolute: 2.2274106
+    spin_density_peratom:
+    - 2.2274106
+    spin_density_total: 2.22741065
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -34382.95981577004
+    spin_density_absolute: 2.22826
+    spin_density_peratom:
+    - 2.22826
+    spin_density_total: 2.22826001
+  final_energy:
+    total_corrected: -34382.95981576187
+mulliken:
+  alpha+beta_electrons:
+    atomic_numbers:
+    - 26
+    charges:
+    - 26.0
+    ids:
+    - 1
+    symbols:
+    - Fe
+  alpha-beta_electrons:
+    atomic_numbers:
+    - 26
+    charges:
+    - 2.228
+    ids:
+    - 1
+    symbols:
+    - Fe
+non_program:
+  date: Tue  5 Sep 20:53:50 BST 2017
+parser_errors: []
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings: []

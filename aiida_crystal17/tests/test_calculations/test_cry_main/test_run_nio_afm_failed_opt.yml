@@ -51,11 +51,36 @@ outputs:
 - results
 - retrieved
 results:
-  ejplugins_version: 0.11.1
+  calculation:
+    n_ao: 46
+    n_atoms: 4
+    n_core_el: 40
+    n_electrons: 72
+    n_kpoints_gilat: 75
+    n_kpoints_ibz: 75
+    n_shells: 14
+    n_symops: 16
+    spin: true
+    type: unrestricted open shell
+  energy: null
+  energy_units: eV
   errors: []
+  header:
+    crystal_subversion: 1.0.2
+    crystal_version: 17
+  opt_iterations: 20
   parser_class: CryMainParser
   parser_errors:
-  - 'Error parsing CRYSTAL 17 main output: found start of optimisation but not end'
-  parser_version: 0.8.0b4
+  - did not find 'OPT END', after optimisation start at line 804
+  - final primitive cell was not found in the output file
+  - primitive symmops were not found in the output file
+  parser_exceptions: []
   parser_warnings: []
-  warnings: []
+  scf_iterations: 15
+  units:
+    angle: degrees
+    conversion: CODATA2014
+    energy: eV
+    length: angstrom
+  warnings:
+  - WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY
