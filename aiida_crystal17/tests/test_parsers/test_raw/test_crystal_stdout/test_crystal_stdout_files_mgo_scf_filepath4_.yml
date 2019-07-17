@@ -1,8 +1,19 @@
 errors: []
 execution_time_seconds: 3
 exit_code: 0
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
 initial:
   calculation:
+    n_ao: 14
+    n_atoms: 2
+    n_core_el: 12
+    n_electrons: 20
+    n_kpoints_gilat: 29
+    n_kpoints_ibz: 29
+    n_shells: 5
+    n_symops: 48
     spin: false
     type: restricted closed shell
   crystallographic_cell:

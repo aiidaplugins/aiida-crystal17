@@ -1,8 +1,19 @@
 errors: []
 execution_time_seconds: 1098
 exit_code: ERROR_PARSING_STDOUT
+header:
+  crystal_subversion: 1.0.2
+  crystal_version: 17
 initial:
   calculation:
+    n_ao: 46
+    n_atoms: 4
+    n_core_el: 40
+    n_electrons: 72
+    n_kpoints_gilat: 75
+    n_kpoints_ibz: 75
+    n_shells: 14
+    n_symops: 16
     spin: true
     type: unrestricted open shell
   crystallographic_cell: {}
@@ -1482,7 +1493,7 @@ optimisation:
     - O
     - O
 parser_errors:
-- did not find 'OPT END', after optimisation start at line 814
+- did not find 'OPT END', after optimisation start at line 804
 parser_exceptions: []
 units:
   angle: degrees

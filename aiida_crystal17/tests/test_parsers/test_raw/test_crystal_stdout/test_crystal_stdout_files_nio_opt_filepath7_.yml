@@ -267,8 +267,19 @@ final_geometry:
     - 0.0
     - 0.0
     - 0.0
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
 initial:
   calculation:
+    n_ao: 46
+    n_atoms: 4
+    n_core_el: 40
+    n_electrons: 72
+    n_kpoints_gilat: 75
+    n_kpoints_ibz: 75
+    n_shells: 14
+    n_symops: 16
     spin: true
     type: unrestricted open shell
   crystallographic_cell: {}

@@ -71,7 +71,7 @@ KNOWN_ERRORS = (
     ("MPI_Abort", "ERROR_MPI_ABORT"))
 
 
-def read_crystal_stdout(lines):
+def read_crystal_stdout(content):
 
     output = {
         "units": {
@@ -85,6 +85,17 @@ def read_crystal_stdout(lines):
         "parser_errors": [],
         "parser_exceptions": []
     }
+
+    # remove MPI statuses,
+    # which can get mixed with the start of the program stdout and corrupt the output
+    # TODO: removing these will affect the reporting of line numbers in errors
+    regex = re.compile('(\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING\\s*\n)+')
+    content = re.sub(regex, '\n', content)
+    lines = content.splitlines()
+
+    if not lines:
+        output["parser_errors"] += ["the file is empty"]
+        return assign_exit_code(output)
 
     # make an initial parse to find all errors/warnings and start lines for sections
     errors, run_warnings, parser_errors, telapse_seconds, start_lines = initial_parse(
@@ -384,9 +395,14 @@ def parse_calculation_header(lines, initial_lineno):
     """
     data = {}
     for i, line in enumerate(lines[initial_lineno:]):
-        if not line.strip().startswith("*"):
+        if line.strip().startswith("****************") and i != 0:
             return ParsedSection(initial_lineno + i, data, None)
-        # TODO parse version
+        if re.findall(r"\s\s\s\s\sCRYSTAL\d{2}(.*)\*", line):
+            data["crystal_version"] = int(
+                re.findall(r"\s\s\s\s\sCRYSTAL(\d{2})", line)[0])
+        if re.findall('public\\s\\:\\s(.+)\\s\\-', line):
+            data["crystal_subversion"] = re.findall(
+                'public\\s\\:\\s(.+)\\s\\-', line)[0]
     return ParsedSection(initial_lineno + i, data,
                          "couldn't find end of program header")
 
@@ -429,11 +445,14 @@ def parse_calculation_setup(lines, initial_lineno):
 
     """
     data = {"calculation": {"spin": False}}
+    end_lineno = None
+
     for i, line in enumerate(lines[initial_lineno:]):
         curr_lineno = initial_lineno + i
         line = line.strip()
         if line.startswith("CRYSTAL - SCF - TYPE OF CALCULATION :"):
-            return ParsedSection(curr_lineno, data, None)
+            end_lineno = curr_lineno
+            break
 
         elif line.startswith("TYPE OF CALCULATION :"):
             data["calculation"]["type"] = line.replace("TYPE OF CALCULATION :",
@@ -453,8 +472,35 @@ def parse_calculation_setup(lines, initial_lineno):
         parse_geometry_section(data, curr_lineno, line, lines)
         parse_symmetry_section(data, curr_lineno, line, lines)
 
-    return ParsedSection(curr_lineno, data,
-                         "couldn't find start of initial scf calculation")
+    if end_lineno is None:
+        return ParsedSection(curr_lineno, data,
+                             "couldn't find start of initial scf calculation")
+
+    regexes = {
+        'n_atoms':
+        re.compile(r"\sN. OF ATOMS PER CELL\s*(\d*)", re.DOTALL),
+        'n_shells':
+        re.compile(r"\sNUMBER OF SHELLS\s*(\d*)", re.DOTALL),
+        'n_ao':
+        re.compile(r"\sNUMBER OF AO\s*(\d*)", re.DOTALL),
+        'n_electrons':
+        re.compile(r"\sN. OF ELECTRONS PER CELL\s*(\d*)", re.DOTALL),
+        'n_core_el':
+        re.compile(r"\sCORE ELECTRONS PER CELL\s*(\d*)", re.DOTALL),
+        'n_symops':
+        re.compile(r"\sN. OF SYMMETRY OPERATORS\s*(\d*)", re.DOTALL),
+        'n_kpoints_ibz':
+        re.compile(r"\sNUMBER OF K POINTS IN THE IBZ\s*(\d*)", re.DOTALL),
+        'n_kpoints_gilat':
+        re.compile(r"\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d*)", re.DOTALL),
+    }
+    content = "\n".join(lines[initial_lineno:end_lineno])
+    for name, regex in regexes.items():
+        num = regex.search(content)
+        if num is not None:
+            data['calculation'][name] = int(num.groups()[0])
+
+    return ParsedSection(curr_lineno, data, None)
 
 
 def parse_geometry_section(dct, i, line, lines, startline=0):
@@ -968,6 +1014,9 @@ def parse_band_gaps(lines, initial_lineno):
         curr_lineno = initial_lineno + k
         line = line.strip()
         # TODO breaking line?
+        # TODO use regex:
+        # re.compile(r"(DIRECT|INDIRECT) ENERGY BAND GAP:\s*([.\d]*)",
+        #            re.DOTALL),
         if "BAND GAP" in line:
             if fnmatch(line.strip(), "ALPHA BAND GAP:*eV"):
                 bgvalue = split_numbers(line)[0]
