@@ -1,0 +1,2863 @@
+creator:
+  program: CRYSTAL
+errors: []
+final:
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79329605
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79329605
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79329605
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46655742792
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    ccoords:
+      magnitude:
+      - - 0.0
+        - 0.0
+        - 0.0
+      units: angstrom
+    cell_parameters:
+      a:
+        magnitude: 2.41906534
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41906534
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41906534
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    cell_vectors:
+      a:
+        magnitude:
+        - -1.39664802344
+        - 1.39664802344
+        - 1.39664802344
+        units: angstrom
+      b:
+        magnitude:
+        - 1.39664802344
+        - -1.39664802344
+        - 1.39664802344
+        units: angstrom
+      c:
+        magnitude:
+        - 1.39664802344
+        - 1.39664802344
+        - -1.39664802344
+        units: angstrom
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+initial:
+  calculation:
+    functional:
+      correlation: PERDEW-BURKE-ERNZERHOF
+      exchange: PERDEW-BURKE-ERNZERHOF
+    spin: true
+    type: unrestricted open shell
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.866
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.866
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.866
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.41783159084
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    ccoords:
+      magnitude:
+      - - 0.0
+        - 0.0
+        - 0.0
+      units: angstrom
+    cell_parameters:
+      a:
+        magnitude: 2.48202881
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.48202881
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.48202881
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    cell_vectors:
+      a:
+        magnitude:
+        - -1.433
+        - 1.433
+        - 1.433
+        units: angstrom
+      b:
+        magnitude:
+        - 1.433
+        - -1.433
+        - 1.433
+        units: angstrom
+      c:
+        magnitude:
+        - 1.433
+        - 1.433
+        - -1.433
+        units: angstrom
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - -0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -0.0
+    - 0.0
+    - 1.0
+    - -0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 1.0
+    - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - -0.0
+    - -1.0
+    - 1.0
+    - -0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - -0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  scf:
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 0.99948586
+    energy:
+      total:
+        magnitude: -34369.852699244264
+        units: eV
+    spin_density_absolute: 3.9907455
+    spin_density_peratom:
+    - 3.9907455
+    spin_density_total: 3.9907455
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 0.99948586
+    energy:
+      total:
+        magnitude: -34370.613588673295
+        units: eV
+    spin_density_absolute: 3.9907455
+    spin_density_peratom:
+    - 3.9907455
+    spin_density_total: 3.9907455
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 0.99948586
+    energy:
+      total:
+        magnitude: -34370.71149096801
+        units: eV
+    spin_density_absolute: 3.9907455
+    spin_density_peratom:
+    - 3.9907455
+    spin_density_total: 3.9907455
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 0.99948586
+    energy:
+      total:
+        magnitude: -34370.72700262813
+        units: eV
+    spin_density_absolute: 3.9907455
+    spin_density_peratom:
+    - 3.9907455
+    spin_density_total: 3.9907455
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 0.99948586
+    energy:
+      total:
+        magnitude: -34370.758619265434
+        units: eV
+    spin_density_absolute: 3.9907455
+    spin_density_peratom:
+    - 3.9907455
+    spin_density_total: 3.9907455
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.25714201342
+        units: eV
+    spin_density_absolute: 2.7921668
+    spin_density_peratom:
+    - 2.7921668
+    spin_density_total: 2.7921668
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.33994710463
+        units: eV
+    spin_density_absolute: 2.6318526
+    spin_density_peratom:
+    - 2.6318526
+    spin_density_total: 2.6318526
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.38516070008
+        units: eV
+    spin_density_absolute: 2.2802143
+    spin_density_peratom:
+    - 2.2802143
+    spin_density_total: 2.28021433
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.395235770186
+        units: eV
+    spin_density_absolute: 2.338227
+    spin_density_peratom:
+    - 2.338227
+    spin_density_total: 2.33822697
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.39883172764
+        units: eV
+    spin_density_absolute: 2.2998176
+    spin_density_peratom:
+    - 2.2998176
+    spin_density_total: 2.29981756
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.401780162945
+        units: eV
+    spin_density_absolute: 2.1277514
+    spin_density_peratom:
+    - 2.1277514
+    spin_density_total: 2.12775139
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.392569135984
+        units: eV
+    spin_density_absolute: 2.3801907
+    spin_density_peratom:
+    - 2.3801907
+    spin_density_total: 2.3801907
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.391176538884
+        units: eV
+    spin_density_absolute: 2.4136865
+    spin_density_peratom:
+    - 2.4136865
+    spin_density_total: 2.41368649
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.392053861186
+        units: eV
+    spin_density_absolute: 2.4544533
+    spin_density_peratom:
+    - 2.4544533
+    spin_density_total: 2.45445334
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.39673528082
+        units: eV
+    spin_density_absolute: 2.4254947
+    spin_density_peratom:
+    - 2.4254947
+    spin_density_total: 2.42549467
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41250338105
+        units: eV
+    spin_density_absolute: 2.2644547
+    spin_density_peratom:
+    - 2.2644547
+    spin_density_total: 2.26445471
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41264398227
+        units: eV
+    spin_density_absolute: 2.2611134
+    spin_density_peratom:
+    - 2.2611134
+    spin_density_total: 2.26111339
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41276643352
+        units: eV
+    spin_density_absolute: 2.2566604
+    spin_density_peratom:
+    - 2.2566604
+    spin_density_total: 2.25666035
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.412930001155
+        units: eV
+    spin_density_absolute: 2.2504978
+    spin_density_peratom:
+    - 2.2504978
+    spin_density_total: 2.25049776
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41296200175
+        units: eV
+    spin_density_absolute: 2.2489673
+    spin_density_peratom:
+    - 2.2489673
+    spin_density_total: 2.24896727
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41297011074
+        units: eV
+    spin_density_absolute: 2.247416
+    spin_density_peratom:
+    - 2.247416
+    spin_density_total: 2.24741605
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41296981141
+        units: eV
+    spin_density_absolute: 2.2456784
+    spin_density_peratom:
+    - 2.2456784
+    spin_density_total: 2.24567837
+  - atomic_charges_peratom:
+    - 26.0
+    charge_normalization_factor: 1.0
+    energy:
+      total:
+        magnitude: -34383.41298907707
+        units: eV
+    spin_density_absolute: 2.2451841
+    spin_density_peratom:
+    - 2.2451841
+    spin_density_total: 2.24518405
+meta:
+  date: Tue 27 Jun 17:36:57 BST 2017
+  elapsed_time: 0:22:16
+  nprocs: 16
+mulliken:
+  alpha+beta_electrons:
+    atomic_numbers:
+    - 26
+    charges:
+    - 26.0
+    ids:
+    - 1
+    symbols:
+    - Fe
+  alpha-beta_electrons:
+    atomic_numbers:
+    - 26
+    charges:
+    - 2.12
+    ids:
+    - 1
+    symbols:
+    - Fe
+optimisation:
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.85084355
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.85084355
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.85084355
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.43401762802
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.46890293
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.46890293
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.46890293
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.78625164
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.78625164
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.78625164
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46125140085
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.4129647
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.4129647
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.4129647
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.7936758
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.7936758
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.7936758
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46057609316
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41939421
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41939421
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41939421
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.78810768
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.78810768
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.78810768
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.461479081234
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41457208
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41457208
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41457208
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79157079
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79157079
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79157079
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46180953358
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41757122
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41757122
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41757122
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: true
+    rms_displac: true
+    rms_gradient: true
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79348225
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79348225
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79348225
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.461830396554
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41922659
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41922659
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41922659
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79374496
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79374496
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79374496
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.466592936056
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.4194541
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.4194541
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.4194541
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.7929699
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.7929699
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.7929699
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46658878904
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41878289
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41878289
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41878289
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79355119
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79355119
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79355119
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46657810857
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.4192863
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.4192863
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.4192863
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79369651
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79369651
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79369651
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.466594103425
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41941215
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41941215
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41941215
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79359963
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79359963
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79359963
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.466594699355
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41932825
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41932825
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41932825
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79350276
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79350276
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79350276
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46657942832
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41924435
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41924435
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41924435
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79357542
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79357542
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79357542
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46659493337
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41930728
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41930728
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41930728
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: true
+    rms_displac: true
+    rms_gradient: false
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79352698
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79352698
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79352698
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46659286531
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41926533
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41926533
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41926533
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+- convergence:
+    max_displac: true
+    max_gradient: true
+    rms_displac: true
+    rms_gradient: true
+  crystallographic_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.79329605
+        units: angstrom
+      alpha:
+        magnitude: 90.0
+        units: degrees
+      b:
+        magnitude: 2.79329605
+        units: angstrom
+      beta:
+        magnitude: 90.0
+        units: degrees
+      c:
+        magnitude: 2.79329605
+        units: angstrom
+      gamma:
+        magnitude: 90.0
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+  energy:
+    total_corrected:
+      magnitude: -34383.46655742792
+      units: eV
+  primitive_cell:
+    assymetric:
+    - true
+    atomic_numbers:
+    - 26
+    cell_parameters:
+      a:
+        magnitude: 2.41906534
+        units: angstrom
+      alpha:
+        magnitude: 109.471221
+        units: degrees
+      b:
+        magnitude: 2.41906534
+        units: angstrom
+      beta:
+        magnitude: 109.471221
+        units: degrees
+      c:
+        magnitude: 2.41906534
+        units: angstrom
+      gamma:
+        magnitude: 109.471221
+        units: degrees
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    ids:
+    - '1'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Fe
+warnings:
+- WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY
+- WARNING **** SCF **** GRADIENT NOT FULLY IMPLEMENTED FOR CONDUCTING SYSTEMS

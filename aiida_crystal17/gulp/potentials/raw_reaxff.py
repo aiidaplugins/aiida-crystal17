@@ -1,8 +1,7 @@
 from collections import OrderedDict
-from decimal import Decimal
-import re
 import textwrap
 
+from aiida_crystal17.common.parsing import split_numbers
 from aiida_crystal17.validation import validate_against_schema
 from aiida_crystal17.gulp.potentials.common import INDEX_SEP
 
@@ -75,46 +74,6 @@ DEFAULT_TOLERANCES = {
 }
 # NOTE: torsionprod needs to be lower (0.001), to get comparable energy to lammps,
 # but then won't optimize (reaches maximum steps)
-
-
-def split_numbers(string, as_decimal=False):
-    """ get a list of numbers from a string (even with no spacing)
-
-    :type string: str
-    :type as_decimal: bool
-    :param as_decimal: if True return floats as decimal.Decimal objects
-
-    :rtype: list
-
-    :Example:
-
-    >>> split_numbers("1")
-    [1.0]
-
-    >>> split_numbers("1 2")
-    [1.0, 2.0]
-
-    >>> split_numbers("1.1 2.3")
-    [1.1, 2.3]
-
-    >>> split_numbers("1e-3")
-    [0.001]
-
-    >>> split_numbers("-1-2")
-    [-1.0, -2.0]
-
-    >>> split_numbers("1e-3-2")
-    [0.001, -2.0]
-
-    """
-    _match_number = re.compile(
-        '-?\\ *[0-9]+\\.?[0-9]*(?:[Ee]\\ *[+-]?\\ *[0-9]+)?')
-    string = string.replace(" .", " 0.")
-    string = string.replace("-.", "-0.")
-    return [
-        Decimal(s) if as_decimal else float(s)
-        for s in re.findall(_match_number, string)
-    ]
 
 
 def read_lammps_format(lines):

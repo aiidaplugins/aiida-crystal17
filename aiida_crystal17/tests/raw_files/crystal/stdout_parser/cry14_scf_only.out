@@ -1,0 +1,1571 @@
+date:               Tue  5 Sep 20:53:50 BST 2017
+hostname:           cx1-132-1-9
+system:             Linux cx1-132-1-9 3.10.0-327.36.3.el7.x86_64 #1 SMP Mon Oct 24 16:09:20 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+user:               cjs14
+input:              /export101/work/cjs14/bulk_iron/crystal/3_ruth_pbe/bcc_iron.d12
+output:             /export101/work/cjs14/bulk_iron/crystal/3_ruth_pbe/bcc_iron.out
+executable script:  /home/gmallia/CRYSTAL14_cx1/runcry14P.v4
+executable dir:     /home/cjs14/../gmallia/CRYSTAL14_cx1/v4/bin/Linux-mpiifort/Xeon___mpi__intel-5.1___intel-suite__2016.3
+executables:     
+                    -rwxr-xr-x 1 gmallia hpc-users    24001 Nov 10  2016 INFO
+                    -rwxr-xr-x 1 gmallia hpc-users       57 Nov 10  2016 INFO.module.bash
+                    -rwxr-xr-x 1 gmallia hpc-users      101 Nov 10  2016 INFO.module.csh
+                    -rwxr-xr-x 1 gmallia hpc-users 26051333 Nov 10  2016 Pcrystal
+                    -rwxr-xr-x 1 gmallia hpc-users 10122217 Nov 10  2016 Pproperties 
+
+Command:            mpiexec  /home/cjs14/../gmallia/CRYSTAL14_cx1/v4/bin/Linux-mpiifort/Xeon___mpi__intel-5.1___intel-suite__2016.3/Pcrystal
+temporary directory:/var/tmp/pbs.66136.cx1/bcc_iron_16232      
+<qstat -f 66136.cx1>
+Job Id: 66136.cx1
+    Job_Name = 3_ruth_pbe
+    Job_Owner = cjs14@login-2-internal.cx1.hpc.ic.ac.uk
+    resources_used.cpupercent = 0
+    resources_used.cput = 00:00:00
+    resources_used.mem = 0kb
+    resources_used.ncpus = 16
+    resources_used.vmem = 0kb
+    resources_used.walltime = 00:00:00
+    job_state = R
+    queue = singlenode24
+    server = cx1
+    Checkpoint = u
+    ctime = Tue Sep  5 20:53:29 2017
+    Error_Path = login-2-internal.cx1.hpc.ic.ac.uk:/export101/work/cjs14/bulk_i
+	ron/crystal/3_ruth_pbe/3_ruth_pbe.e66136
+    exec_host = cx1-132-1-9/0*16
+    exec_vnode = (cx1-132-1-9:ncpus=16)
+    Hold_Types = n
+    Join_Path = oe
+    Keep_Files = n
+    Mail_Points = bae
+    Mail_Users = c.sewell14@imperial.ac.uk
+    mtime = Tue Sep  5 20:53:49 2017
+    Output_Path = login-2-internal.cx1.hpc.ic.ac.uk:/export101/work/cjs14/bulk_
+	iron/crystal/3_ruth_pbe/3_ruth_pbe.o66136
+    Priority = 0
+    qtime = Tue Sep  5 20:53:29 2017
+    Rerunable = True
+    Resource_List.mem = 600mb
+    Resource_List.ncpus = 16
+    Resource_List.nodect = 1
+    Resource_List.place = free
+    Resource_List.select = 1:ncpus=16
+    Resource_List.tmpspace = 10gb
+    Resource_List.walltime = 00:14:59
+    stime = Tue Sep  5 20:53:48 2017
+    session_id = 16054
+    jobdir = /home/cjs14
+    substate = 42
+    Variable_List = PBS_O_SYSTEM=Linux,PBS_O_SHELL=/bin/bash,
+	PBS_O_HOME=/home/cjs14,PBS_O_LOGNAME=cjs14,
+	PBS_O_WORKDIR=/export101/work/cjs14/bulk_iron/crystal/3_ruth_pbe,
+	PBS_O_LANG=en_GB.UTF-8,
+	PBS_O_PATH=/usr/lib64/qt-3.3/bin:/home/cjs14/perl5/bin:/usr/local/bin:
+	/usr/bin:/usr/local/sbin:/usr/sbin:/opt/pbs/bin,
+	PBS_O_MAIL=/var/spool/mail/cjs14,PBS_O_QUEUE=submit,
+	PBS_O_HOST=login-2-internal.cx1.hpc.ic.ac.uk
+    comment = Job run at Tue Sep 05 at 20:53 on (cx1-132-1-9:ncpus=16)
+    etime = Tue Sep  5 20:53:29 2017
+    run_count = 1
+    Submit_arguments = run.qsub
+    pset = switchgroup=bladechass-6-1
+    project = _pbs_project_default
+
+</qstat -f 66136.cx1>
+input data /export101/work/cjs14/bulk_iron/crystal/3_ruth_pbe/bcc_iron.d12
+Bulk BCC Fe from exp O. Crisan and A. D. Crisan, Journal of Alloys and Compounds 509, 6522 (2011).
+CRYSTAL
+0 0 0
+229
+2.869
+1
+26  0.0  0.0  0.0
+END
+26 8
+0 0 8 2.0  1.0
+ 315379.0      0.000227
+  45690.0      0.0019
+   9677.3      0.0111
+   2520.88     0.0501
+    759.746    0.1705
+    262.964    0.36924
+    102.801    0.4033
+     42.9733   0.1434
+0 1 6 8.0 1.0
+    798.262   -0.0052   0.00850
+    191.162   -0.068    0.0608
+     63.6885  -0.1314   0.2114
+     25.3625   0.2517   0.3944
+     10.7338   0.6433   0.398
+      3.764    0.2825   0.2251
+0 1 4 8.0 1.0
+     48.1434   0.0122  -0.0215
+     17.4579  -0.2278  -0.085
+      6.9972  -0.8801   0.201
+      3.0791   0.9755   1.3024
+0 1 1 0.0 1.0
+      1.3137   1.0      1.0
+0 1 1 0.0 1.0
+      0.5625   1.0      1.0
+0 1 1 0.0 1.0
+      0.225   1.0      1.0
+0 3 4 8.0 1.0
+     30.4821   0.0583
+      8.692    0.2591
+      3.1008   0.5162
+      1.1709   0.5656
+0 3 1 0.0 1.0
+      0.353683   1.0
+99 0
+END
+DFT
+EXCHANGE
+PBE
+CORRELAT
+PBE
+SPIN
+END
+TOLINTEG
+7 7 7 7 14
+SHRINK
+8 16
+FMIXING
+80
+ANDERSON
+SPINLOCK
+2 5
+ATOMSPIN
+1
+1 1
+PPAN
+MAXCYCLE
+200
+ENDDefaulting to ethernet
+No MPI process pinning
+No OMP Thread Affinity
+Starting MPD ring...
+/opt/pbs/default/bin/pbs_tmrsh cx1-132-1-9.cx1.hpc.ic.ac.uk -n /opt/pbs/default/bin/pbs_attach -j 66136.cx1 /apps/intel/impi/5.1.1.109/compilers_and_libraries_2016.0.109/linux/mpi/bin/mpd -n -h cx1-132-1-9 -p 39137 --ncpus=1 -e -d
+PBS has allocated the following nodes:
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+cx1-132-1-9
+---
+mpiexec.intel -genv I_MPI_DEVICE ssm -genv I_MPI_DEBUG 0 -genv I_MPI_FALLBACK_DEVICE disable -genv DAPL_MAX_CM_RETRIES 500 -genv DAPL_MAX_CM_RESPONSE_TIME 300 -genv I_MPI_DAPL_CONNECTION_TIMEOUT 300 -genv I_MPI_PIN no -genv I_MPI_PIN_MODE none -machinefile /var/tmp/pbs.66136.cx1/tmp.fo5iVbLfZ5 -n 16 -wdir /var/tmp/pbs.66136.cx1/bcc_iron_16232 /home/cjs14/../gmallia/CRYSTAL14_cx1/v4/bin/Linux-mpiifort/Xeon___mpi__intel-5.1___intel-suite__2016.3/Pcrystal
+
+Job output begins below
+-----------------------
+          16 PROCESSORS WORKING
+
+         
+ *******************************************************************************
+ *                                                                             *
+ *                               CRYSTAL14                                     *
+ *                      public : 1.0.4 - Feb 23rd, 2016                        *
+ *                       HTTP://WWW.CRYSTAL.UNITO.IT                           *
+ *                                                                             *
+ *                              MAIN AUTHORS                                   *
+ *                                                                             *
+ *  R. DOVESI(1,11), V.R. SAUNDERS(2), C. ROETTI(1,11), R. ORLANDO(1,11),      *
+ *  C.M. ZICOVICH-WILSON(1,3), F. PASCALE(4), B. CIVALLERI(1,11),              *
+ *  K. DOLL(5), N.M. HARRISON(2,6), I. J. BUSH(7), Ph. D'ARCO(8),              *
+ *  M. LLUNELL(9), M. CAUSA'(10), Y. NOEL(8)                                   *
+ *                                                                             *
+ *        CONTRIBUTIONS TO THE CURRENT RELEASE HAVE BEEN GIVEN BY              *
+ *                                                                             *
+ *  L. MASCHIO(1,11), S. CASASSA(1,11), A. ERBA(1,11), M. FERRABONE(1,11),     *
+ *  M. DE LA PIERRE(1,11), M. FERRERO(1,11), V. LACIVITA(1,11),                *
+ *  J. BAIMA(1,11), E. ALBANESE(1,11), M.F. PEINTINGER(12), R. BAST(13),       *
+ *  M. RERAT(14), B. KIRTMAN(15), R. DEMICHELIS(1,16)                          *
+ *                                                                             *
+ * (1) THEORETICAL CHEMISTRY GROUP - UNIVERSITA' DI TORINO - TORINO (ITALY)    *
+ *     http://www.crystal.unito.it                                             *
+ * (2) COMPUTATIONAL SCIENCE & ENGINEERING DEPARTMENT - STFC DARESBURY (UK)    *
+ *     http://www.stfc.ac.uk/CSE/randd/cmg/CRYSTAL/25806.aspx                  *
+ * (3) UNIVERSIDAD AUTONOMA DEL ESTADO DE MORELOS - CUERNAVACA (MEXICO)        *
+ * (4) UNIVERSITE' DE LORRAINE - NANCY (FRANCE)                                *
+ * (5) UNIVERSITAET ULM - ULM (GERMANY); (6) IMPERIAL COLLEGE - LONDON (UK)    *
+ * (7) NAG - OXFORD (UK); (8) UPMC - SORBONNE UNIVERSITES - PARIS (FRANCE)     *
+ * (9) UNIVERSIDAD DE BARCELONA - BARCELONA (SPAIN)                            *
+ *(10) UNIVERSITA' DI NAPOLI "FEDERICO II" - NAPOLI (ITALY)                    *
+ *(11) NIS - NANOSTRUCTURED INTERFACES AND SURFACES - TORINO (ITALY)           *
+ *(12) MPI FUER CHEMISCHE ENERGIEKONVERSION - MUELHEIM AN DER RUHR (GERMANY)   *
+ *(13) UNIVERSITY OF STOCKHOLM - STOCKHOLM (SWEDEN)                            *
+ *(14) UNIVERSITE' DE PAU ET DES PAYS DE L'ADOUR - PAU (FRANCE)                *
+ *(15) UNIVERSITY OF CALIFORNIA SANTA BARBARA - SANTA BARBARA (USA)            *
+ *(16) CURTIN UNIVERSITY - PERTH (AUSTRALIA)                                   *
+ *                                                                             *
+ ********************************************************************************
+ EEEEEEEEEE STARTING  DATE 05 09 2017 TIME 20:53:53.9
+ Bulk BCC Fe from exp O. Crisan and A. D. Crisan, Journal of Alloys and Compounds
+
+ CRYSTAL CALCULATION
+ (INPUT ACCORDING TO THE INTERNATIONAL TABLES FOR X-RAY CRYSTALLOGRAPHY)
+ CRYSTAL FAMILY                       :  CUBIC       
+ CRYSTAL CLASS  (GROTH - 1921)        :  CUBIC HEXAKISOCTAHEDRAL              
+
+ SPACE GROUP (CENTROSYMMETRIC)        :  I M 3 M         
+
+ LATTICE PARAMETERS  (ANGSTROMS AND DEGREES) - CONVENTIONAL CELL
+        A           B           C        ALPHA        BETA       GAMMA
+     2.86900     2.86900     2.86900    90.00000    90.00000    90.00000
+
+
+ NUMBER OF IRREDUCIBLE ATOMS IN THE CONVENTIONAL CELL:    1
+
+ INPUT COORDINATES
+
+ ATOM AT. N.              COORDINATES
+   1  26     0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+
+ *******************************************************************************
+
+ << INFORMATION >>: FROM NOW ON, ALL COORDINATES REFER TO THE PRIMITIVE CELL
+
+ *******************************************************************************
+
+ LATTICE PARAMETERS  (ANGSTROMS AND DEGREES) - PRIMITIVE CELL
+       A          B          C        ALPHA      BETA     GAMMA        VOLUME
+    2.48463    2.48463    2.48463   109.47122 109.47122 109.47122     11.807600
+
+ COORDINATES OF THE EQUIVALENT ATOMS (FRACTIONAL UNITS)
+
+ N. ATOM EQUIV AT. N.          X                  Y                  Z
+
+   1   1   1   26 FE    0.00000000000E+00  0.00000000000E+00  0.00000000000E+00
+
+ NUMBER OF SYMMETRY OPERATORS         :   48
+ *******************************************************************************
+ * GEOMETRY EDITING - INPUT COORDINATES ARE GIVEN IN ANGSTROM         
+ *******************************************************************************
+
+ GEOMETRY NOW FULLY CONSISTENT WITH THE GROUP
+
+ GCALCO - MAX INDICES DIRECT LATTICE VECTOR    14    14    14
+ NO.OF VECTORS CREATED 6999 STARS  122 RMAX    51.14750 BOHR
+
+ GEOMETRY FOR WAVE FUNCTION - DIMENSIONALITY OF THE SYSTEM    3
+ (NON PERIODIC DIRECTION: LATTICE PARAMETER FORMALLY SET TO 500)
+ *******************************************************************************
+ LATTICE PARAMETERS (ANGSTROMS AND DEGREES) - BOHR = 0.5291772083 ANGSTROM
+ PRIMITIVE CELL - CENTRING CODE 6/0 VOLUME=    11.807600 - DENSITY  7.866 g/cm^3
+         A              B              C           ALPHA      BETA       GAMMA 
+     2.48462688     2.48462688     2.48462688   109.471221 109.471221 109.471221
+ *******************************************************************************
+ ATOMS IN THE ASYMMETRIC UNIT    1 - ATOMS IN THE UNIT CELL:    1
+     ATOM              X/A                 Y/B                 Z/C    
+ *******************************************************************************
+   1 T  26 FE    0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+
+ TRANSFORMATION MATRIX PRIMITIVE-CRYSTALLOGRAPHIC CELL
+  0.0000  1.0000  1.0000  1.0000  0.0000  1.0000  1.0000  1.0000  0.0000
+
+ *******************************************************************************
+ CRYSTALLOGRAPHIC CELL (VOLUME=         23.61520091)
+         A              B              C           ALPHA      BETA       GAMMA 
+     2.86900000     2.86900000     2.86900000    90.000000  90.000000  90.000000
+
+ COORDINATES IN THE CRYSTALLOGRAPHIC CELL
+     ATOM              X/A                 Y/B                 Z/C    
+ *******************************************************************************
+   1 T  26 FE    0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+
+ T = ATOM BELONGING TO THE ASYMMETRIC UNIT
+
+ ****   48 SYMMOPS - TRANSLATORS IN FRACTIONAL UNITS
+ **** MATRICES AND TRANSLATORS IN THE CRYSTALLOGRAPHIC REFERENCE FRAME
+   V INV                    ROTATION MATRICES                   TRANSLATORS
+   1   1  1.00  0.00  0.00  0.00  1.00  0.00  0.00  0.00  1.00  0.00  0.00  0.00
+   2   2  0.00  1.00 -1.00  1.00 -0.00 -1.00  0.00 -0.00 -1.00  0.00  0.00  0.00
+   3   3 -1.00  0.00  0.00 -1.00  0.00  1.00 -1.00  1.00  0.00  0.00  0.00  0.00
+   4   4  0.00 -1.00  1.00  0.00 -1.00 -0.00  1.00 -1.00 -0.00  0.00  0.00  0.00
+   5   6 -0.00  0.00  1.00  1.00  0.00  0.00 -0.00  1.00  0.00  0.00  0.00  0.00
+   6   5 -0.00  1.00  0.00 -0.00  0.00  1.00  1.00  0.00  0.00  0.00  0.00  0.00
+   7   8  1.00 -1.00 -0.00  0.00 -1.00  1.00  0.00 -1.00 -0.00  0.00  0.00  0.00
+   8   7  1.00 -0.00 -1.00  0.00 -0.00 -1.00  0.00  1.00 -1.00  0.00  0.00  0.00
+   9  10  0.00 -0.00 -1.00  0.00  1.00 -1.00  1.00 -0.00 -1.00  0.00  0.00  0.00
+  10   9 -1.00  0.00  1.00 -1.00  1.00  0.00 -1.00  0.00  0.00  0.00  0.00  0.00
+  11  12 -1.00  1.00  0.00 -1.00  0.00  0.00 -1.00  0.00  1.00  0.00  0.00  0.00
+  12  11  0.00 -1.00 -0.00  1.00 -1.00 -0.00  0.00 -1.00  1.00  0.00  0.00  0.00
+  13  13  0.00 -1.00 -0.00 -1.00  0.00  0.00  0.00 -0.00 -1.00  0.00  0.00  0.00
+  14  14 -1.00  0.00  1.00  0.00 -1.00  1.00 -0.00  0.00  1.00  0.00  0.00  0.00
+  15  16  1.00 -0.00 -1.00  1.00  0.00  0.00  1.00 -1.00 -0.00  0.00  0.00  0.00
+  16  15 -0.00  1.00  0.00  0.00  1.00 -1.00 -1.00  1.00  0.00  0.00  0.00  0.00
+  17  17 -1.00  0.00  0.00  0.00 -0.00 -1.00  0.00 -1.00 -0.00  0.00  0.00  0.00
+  18  18  0.00 -0.00 -1.00  0.00 -1.00 -0.00 -1.00  0.00  0.00  0.00  0.00  0.00
+  19  21  0.00  1.00 -1.00 -1.00  1.00  0.00 -0.00  1.00  0.00  0.00  0.00  0.00
+  20  22 -0.00  0.00  1.00 -1.00  0.00  1.00  0.00 -1.00  1.00  0.00  0.00  0.00
+  21  19  0.00 -1.00  1.00 -0.00  0.00  1.00 -1.00  0.00  1.00  0.00  0.00  0.00
+  22  20  1.00 -1.00 -0.00  1.00 -0.00 -1.00  1.00  0.00  0.00  0.00  0.00  0.00
+  23  23  1.00  0.00  0.00  1.00 -1.00 -0.00  1.00 -0.00 -1.00  0.00  0.00  0.00
+  24  24 -1.00  1.00  0.00 -0.00  1.00  0.00  0.00  1.00 -1.00  0.00  0.00  0.00
+  25  25 -1.00  0.00  0.00  0.00 -1.00 -0.00  0.00 -0.00 -1.00  0.00  0.00  0.00
+  26  26  0.00 -1.00  1.00 -1.00  0.00  1.00 -0.00  0.00  1.00  0.00  0.00  0.00
+  27  27  1.00  0.00  0.00  1.00 -0.00 -1.00  1.00 -1.00 -0.00  0.00  0.00  0.00
+  28  28  0.00  1.00 -1.00 -0.00  1.00  0.00 -1.00  1.00  0.00  0.00  0.00  0.00
+  29  30  0.00 -0.00 -1.00 -1.00  0.00  0.00  0.00 -1.00 -0.00  0.00  0.00  0.00
+  30  29  0.00 -1.00 -0.00  0.00 -0.00 -1.00 -1.00  0.00  0.00  0.00  0.00  0.00
+  31  32 -1.00  1.00  0.00  0.00  1.00 -1.00 -0.00  1.00  0.00  0.00  0.00  0.00
+  32  31 -1.00  0.00  1.00 -0.00  0.00  1.00  0.00 -1.00  1.00  0.00  0.00  0.00
+  33  34 -0.00  0.00  1.00  0.00 -1.00  1.00 -1.00  0.00  1.00  0.00  0.00  0.00
+  34  33  1.00 -0.00 -1.00  1.00 -1.00 -0.00  1.00  0.00  0.00  0.00  0.00  0.00
+  35  36  1.00 -1.00 -0.00  1.00  0.00  0.00  1.00 -0.00 -1.00  0.00  0.00  0.00
+  36  35 -0.00  1.00  0.00 -1.00  1.00  0.00  0.00  1.00 -1.00  0.00  0.00  0.00
+  37  37 -0.00  1.00  0.00  1.00  0.00  0.00 -0.00  0.00  1.00  0.00  0.00  0.00
+  38  38  1.00 -0.00 -1.00  0.00  1.00 -1.00  0.00 -0.00 -1.00  0.00  0.00  0.00
+  39  40 -1.00  0.00  1.00 -1.00  0.00  0.00 -1.00  1.00  0.00  0.00  0.00  0.00
+  40  39  0.00 -1.00 -0.00  0.00 -1.00  1.00  1.00 -1.00 -0.00  0.00  0.00  0.00
+  41  41  1.00  0.00  0.00 -0.00  0.00  1.00 -0.00  1.00  0.00  0.00  0.00  0.00
+  42  42 -0.00  0.00  1.00 -0.00  1.00  0.00  1.00  0.00  0.00  0.00  0.00  0.00
+  43  45  0.00 -1.00  1.00  1.00 -1.00 -0.00  0.00 -1.00 -0.00  0.00  0.00  0.00
+  44  46  0.00 -0.00 -1.00  1.00 -0.00 -1.00  0.00  1.00 -1.00  0.00  0.00  0.00
+  45  43  0.00  1.00 -1.00  0.00 -0.00 -1.00  1.00 -0.00 -1.00  0.00  0.00  0.00
+  46  44 -1.00  1.00  0.00 -1.00  0.00  1.00 -1.00  0.00  0.00  0.00  0.00  0.00
+  47  47 -1.00  0.00  0.00 -1.00  1.00  0.00 -1.00  0.00  1.00  0.00  0.00  0.00
+  48  48  1.00 -1.00 -0.00  0.00 -1.00 -0.00  0.00 -1.00  1.00  0.00  0.00  0.00
+
+ DIRECT LATTICE VECTORS CARTESIAN COMPONENTS (ANGSTROM)
+          X                    Y                    Z
+  -0.143450000000E+01   0.143450000000E+01   0.143450000000E+01
+   0.143450000000E+01  -0.143450000000E+01   0.143450000000E+01
+   0.143450000000E+01   0.143450000000E+01  -0.143450000000E+01
+
+
+ CARTESIAN COORDINATES - PRIMITIVE CELL
+ *******************************************************************************
+ *      ATOM          X(ANGSTROM)         Y(ANGSTROM)         Z(ANGSTROM)
+ *******************************************************************************
+    1    26 FE    0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+
+ *******************************************************************************
+ LOCAL ATOMIC FUNCTIONS BASIS SET
+ *******************************************************************************
+   ATOM   X(AU)   Y(AU)   Z(AU)  N. TYPE  EXPONENT  S COEF   P COEF   D/F/G COEF
+ *******************************************************************************
+   1 FE   0.000   0.000   0.000
+                                  1 S  
+                                         3.154E+05 2.270E-04 0.000E+00 0.000E+00
+                                         4.569E+04 1.900E-03 0.000E+00 0.000E+00
+                                         9.677E+03 1.110E-02 0.000E+00 0.000E+00
+                                         2.521E+03 5.010E-02 0.000E+00 0.000E+00
+                                         7.597E+02 1.705E-01 0.000E+00 0.000E+00
+                                         2.630E+02 3.692E-01 0.000E+00 0.000E+00
+                                         1.028E+02 4.033E-01 0.000E+00 0.000E+00
+                                         4.297E+01 1.434E-01 0.000E+00 0.000E+00
+                             2-   5 SP 
+                                         7.983E+02-5.200E-03 8.500E-03 0.000E+00
+                                         1.912E+02-6.800E-02 6.080E-02 0.000E+00
+                                         6.369E+01-1.314E-01 2.114E-01 0.000E+00
+                                         2.536E+01 2.517E-01 3.944E-01 0.000E+00
+                                         1.073E+01 6.433E-01 3.980E-01 0.000E+00
+                                         3.764E+00 2.825E-01 2.251E-01 0.000E+00
+                             6-   9 SP 
+                                         4.814E+01 1.220E-02-2.150E-02 0.000E+00
+                                         1.746E+01-2.278E-01-8.500E-02 0.000E+00
+                                         6.997E+00-8.801E-01 2.010E-01 0.000E+00
+                                         3.079E+00 9.755E-01 1.302E+00 0.000E+00
+                            10-  13 SP 
+                                         1.314E+00 1.000E+00 1.000E+00 0.000E+00
+                            14-  17 SP 
+                                         5.625E-01 1.000E+00 1.000E+00 0.000E+00
+                            18-  21 SP 
+                                         2.250E-01 1.000E+00 1.000E+00 0.000E+00
+                            22-  26 D  
+                                         3.048E+01 0.000E+00 0.000E+00 5.830E-02
+                                         8.692E+00 0.000E+00 0.000E+00 2.591E-01
+                                         3.101E+00 0.000E+00 0.000E+00 5.162E-01
+                                         1.171E+00 0.000E+00 0.000E+00 5.656E-01
+                            27-  31 D  
+                                         3.537E-01 0.000E+00 0.000E+00 1.000E+00
+ INFORMATION **** SET_MPP **** PCRYSTAL CALCULATION
+ INFORMATION **** READM2 **** NEW DEFAULT: FOCK/KS MATRIX MIXING SET TO 30 %
+ INFORMATION **** READM2 **** NEW DEFAULT: FULL DIRECT SCF MODE
+ INFORMATION **** READM2 **** NEW DEFAULT: COULOMB BIPOLAR BUFFER SET TO 32 Mb
+ INFORMATION **** READM2 **** NEW DEFAULT: EXCHANGE BIPOLAR BUFFER SET TO 32 Mb
+
+ *******************************************************************************
+ NEW DEFAULT: DFT INTEGRATION GRID INCREASED TO XLGRID
+ NEW DEFAULT: LEVEL SHIFTER 6 0
+ IF THE SYSTEM IS A METAL USE KEYWORD NOSHIFT
+ *******************************************************************************
+
+ INFORMATION **** TOLINTEG **** COULOMB AND EXCHANGE SERIES TOLERANCES MODIFIED
+ INFORMATION **** READM2 **** LEVEL SHIFTING DISABLED BY ANDERSON
+ INFORMATION **** SPINLOCK **** LOCK IN A GIVEN SPIN STATE
+ ALPHA-BETA ELECTRONS LOCKED TO   2 FOR   5 SCF CYCLES
+ SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+ ATOMIC SPINS SET TO (ATOM, AT. N., SPIN)
+   1  26 1
+ INFORMATION **** PPAN ****  MULLIKEN POPULATION ANALYSIS AT THE END OF SCF
+ INFORMATION **** MAXCYCLE **** MAX NUMBER OF SCF CYCLES SET TO         200
+ *******************************************************************************
+ N. OF ATOMS PER CELL         1  COULOMB OVERLAP TOL         (T1) 10**   -7
+ NUMBER OF SHELLS             8  COULOMB PENETRATION TOL     (T2) 10**   -7
+ NUMBER OF AO                31  EXCHANGE OVERLAP TOL        (T3) 10**   20
+ N. OF ELECTRONS PER CELL    26  EXCHANGE PSEUDO OVP (F(G))  (T4) 10**   20
+ CORE ELECTRONS PER CELL     18  EXCHANGE PSEUDO OVP (P(G))  (T5) 10**   20
+ N. OF SYMMETRY OPERATORS    48  POLE ORDER IN MONO ZONE                  4
+ *******************************************************************************
+ TYPE OF CALCULATION :  UNRESTRICTED OPEN SHELL
+ KOHN-SHAM HAMILTONIAN
+
+ (EXCHANGE)[CORRELATION] FUNCTIONAL:(PERDEW-BURKE-ERNZERHOF)[PERDEW-BURKE-ERNZERHOF]
+
+
+ SPIN POLARIZED DFT SELECTED
+ SPIN POLARIZATION - ALPHA-BETA =  2 FOR   5 CYCLES
+
+ CAPPA:IS1  8;IS2  8;IS3  8; K PTS MONK NET  29; SYMMOPS:K SPACE  48;G SPACE  48
+
+ *******************************************************************************
+ MAX NUMBER OF SCF CYCLES     200  CONVERGENCE ON DELTAP        10**-16
+ WEIGHT OF F(I) IN F(I+1)      80% CONVERGENCE ON ENERGY        10**- 6
+ SPIN POLARIZATION - ALPHA-BETA =  2 FOR   5 CYCLES
+ SHRINK. FACT.(MONKH.)    8  8  8  NUMBER OF K POINTS IN THE IBZ     29
+ SHRINKING FACTOR(GILAT NET)   16  NUMBER OF K POINTS(GILAT NET)    145
+ *******************************************************************************
+ *** K POINTS COORDINATES (OBLIQUE COORDINATES IN UNITS OF IS =  8)
+   1-R(  0  0  0)   2-C(  1  0  0)   3-C(  2  0  0)   4-C(  3  0  0)
+   5-R(  4  0  0)   6-C(  1  1  0)   7-C(  2  1  0)   8-C(  3  1  0)
+   9-C(  2  2  0)  10-C(  3  2  0)  11-C(  1  1  1)  12-C(  2  1  1)
+  13-C(  3  1  1)  14-C(  7  1  1)  15-C(  2  2  1)  16-C(  6  2  1)
+  17-C(  5  3  1)  18-C(  6  3  1)  19-C(  4  4  1)  20-C(  5  4  1)
+  21-C(  5  5  1)  22-C(  2  2  2)  23-C(  6  2  2)  24-C(  5  3  2)
+  25-C(  4  4  2)  26-C(  5  4  2)  27-C(  5  3  3)  28-C(  4  4  3)
+  29-R(  4  4  4)
+
+ DIRECT LATTICE VECTORS COMPON. (A.U.)     RECIP. LATTICE VECTORS COMPON. (A.U.) 
+        X            Y            Z              X            Y            Z
+   -2.7108121    2.7108121    2.7108121      0.0000000    1.1589120    1.1589120
+    2.7108121   -2.7108121    2.7108121      1.1589120    0.0000000    1.1589120
+    2.7108121    2.7108121   -2.7108121      1.1589120    1.1589120    0.0000000
+
+ DISK SPACE FOR EIGENVECTORS (FTN 10)       52855 REALS
+
+ SYMMETRY ADAPTION OF THE BLOCH FUNCTIONS ENABLED
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        0.08 TCPU        0.03
+
+ MATRIX SIZE: P(G)   19867, F(G)   10334, P(G) IRR    1688, F(G) IRR    1688
+ MAX G-VECTOR INDEX FOR 1- AND 2-ELECTRON INTEGRALS  89
+
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INPUT       TELAPSE        0.08 TCPU        0.03
+
+ NEIGHBORS OF THE NON-EQUIVALENT ATOMS
+
+ N = NUMBER OF NEIGHBORS AT DISTANCE R
+    ATOM  N     R/ANG      R/AU   NEIGHBORS (ATOM LABELS AND CELL INDICES)
+   1 FE   8     2.4846     4.6953    1 FE  -1-1-1    1 FE   1 1 1    1 FE  -1 0 0
+                                     1 FE   1 0 0    1 FE   0-1 0    1 FE   0 1 0
+                                     1 FE   0 0-1    1 FE   0 0 1
+   1 FE   6     2.8690     5.4216    1 FE  -1-1 0    1 FE   1 1 0    1 FE  -1 0-1
+                                     1 FE   1 0 1    1 FE   0-1-1    1 FE   0 1 1
+   1 FE  12     4.0574     7.6673    1 FE  -2-1-1    1 FE   2 1 1    1 FE  -1-2-1
+                                     1 FE   1 2 1    1 FE  -1-1-2    1 FE   1 1 2
+                                     1 FE  -1 0 1    1 FE   1 0-1    1 FE  -1 1 0
+                                     1 FE   1-1 0    1 FE   0-1 1    1 FE   0 1-1
+   1 FE  24     4.7577     8.9907    1 FE  -2-2-1    1 FE   2 2 1    1 FE  -2-1-2
+                                     1 FE   2 1 2    1 FE  -2-1 0    1 FE   2 1 0
+                                     1 FE  -2 0-1    1 FE   2 0 1    1 FE  -1-2-2
+                                     1 FE   1 2 2    1 FE  -1-2 0    1 FE   1 2 0
+                                     1 FE  -1-1 1    1 FE   1 1-1    1 FE  -1 0-2
+                                     1 FE   1 0 2    1 FE  -1 1-1    1 FE   1-1 1
+                                     1 FE  -1 1 1    1 FE   1-1-1    1 FE   0-2-1
+                                     1 FE   0 2 1    1 FE   0-1-2    1 FE   0 1 2
+   1 FE   8     4.9693     9.3905    1 FE  -2-2-2    1 FE   2 2 2    1 FE  -2 0 0
+                                     1 FE   2 0 0    1 FE   0-2 0    1 FE   0 2 0
+                                     1 FE   0 0-2    1 FE   0 0 2
+   1 FE   6     5.7380    10.8432    1 FE  -2-2 0    1 FE   2 2 0    1 FE  -2 0-2
+                                     1 FE   2 0 2    1 FE   0-2-2    1 FE   0 2 2
+
+
+ THERE ARE NO SYMMETRY ALLOWED DIRECTIONS
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SYMM        TELAPSE        0.11 TCPU        0.05
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INT_SCREEN  TELAPSE        0.11 TCPU        0.05
+ INFORMATION **** EXCBUF **** EXCH. BIPO BUFFER: WORDS USED =           0
+
+ DFT PARAMETERS
+
+     ATOM       ELECTRONS   NET CHARGE   R(ANGSTROM)
+   1  26  FE     26.0000      0.0000     1.26000000
+
+ SIZE OF GRID=        679
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MAKE_GRID2  TELAPSE        0.34 TCPU        0.28
+ BECKE WEIGHT FUNCTION
+ RADSAFE =     2.00
+ TOLERANCES - DENSITY:10**- 6; POTENTIAL:10**- 9; GRID WGT:10**-14
+
+ RADIAL INTEGRATION  - INTERVALS (POINTS,UPPER LIMIT):            1( 75,  4.0*R)
+
+ ANGULAR INTEGRATION - INTERVALS (ACCURACY LEVEL [N. POINTS] UPPER LIMIT):
+  1(  4[  86]   0.2)  2(  8[ 194]   0.5)  3( 12[ 350]   0.9)  4( 16[ 974]   3.5)
+  5( 12[ 350]9999.0)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT INT_CALC    TELAPSE        0.37 TCPU        0.32
+ EEEEEEEEEE INT_CALC TERMINATION  DATE 05 09 2017 TIME 20:53:54.2
+
+ *******************************************************************************
+ Bulk BCC Fe from exp O. Crisan and A. D. Crisan, Journal of Alloys and Compounds
+ CRYSTAL - SCF - TYPE OF CALCULATION :  UNRESTRICTED OPEN SHELL
+ *******************************************************************************
+
+ CAPPA:IS1  8;IS2  8;IS3  8; K PTS MONK NET  29; SYMMOPS:K SPACE  48;G SPACE  48
+
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SDIK        TELAPSE        0.38 TCPU        0.32
+
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+         ATOMIC WAVEFUNCTION(S)
+
+
+ NUCLEAR CHARGE 26.0  SYMMETRY SPECIES            S    P    D
+ N. ELECTRONS   26.0  NUMBER OF PRIMITIVE GTOS   21   13    5
+                      NUMBER OF CONTRACTED GTOS   6    5    2
+                      NUMBER OF CLOSED SHELLS     3    2    0
+                      OPEN SHELL OCCUPATION       0    0    8
+
+  ZNUC SCFIT  TOTAL HF ENERGY   KINETIC ENERGY   VIRIAL THEOREM ACCURACY
+  26.0  17   -1.262005015E+03  1.262475045E+03 -1.999627692E+00  3.6E-06
+
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.00000000
+ TOTAL ATOMIC SPINS  :
+   2.0000000
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        0.39 TCPU        0.33
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        0.43 TCPU        0.36
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        0.50 TCPU        0.43
+ NUMERICALLY INTEGRATED DENSITY     14.0000028886     12.0000017313
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        0.57 TCPU        0.50
+ CYC   0 ETOT(AU) -1.263152077264E+03 DETOT -1.26E+03 tst  0.00E+00 PX  1.00E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        0.58 TCPU        0.51
+
+    ALPHA      ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     14; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     15; K    1; EIG  1.0000000E+00 AU
+
+    BETA       ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     12; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     13; K    1; EIG  1.0000000E+00 AU
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        0.58 TCPU        0.51
+ CHARGE NORMALIZATION FACTOR   1.00075177
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.01714028
+ TOTAL ATOMIC SPINS  :
+   2.0171403
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        0.59 TCPU        0.51
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        0.61 TCPU        0.54
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        0.69 TCPU        0.62
+ NUMERICALLY INTEGRATED DENSITY     14.0085759827     11.9914351338
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        0.88 TCPU        0.80
+ CYC   1 ETOT(AU) -1.263642683957E+03 DETOT -4.91E-01 tst  0.00E+00 PX  1.00E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        0.88 TCPU        0.80
+
+    ALPHA      ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     14; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     15; K    1; EIG  1.0000000E+00 AU
+
+    BETA       ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     12; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     13; K    1; EIG  1.0000000E+00 AU
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        0.88 TCPU        0.80
+ CHARGE NORMALIZATION FACTOR   1.00075177
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.01714028
+ TOTAL ATOMIC SPINS  :
+   2.0171403
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        0.88 TCPU        0.80
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        0.91 TCPU        0.83
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        0.99 TCPU        0.91
+ NUMERICALLY INTEGRATED DENSITY     14.0085747387     11.9914341873
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        1.15 TCPU        1.08
+ CYC   2 ETOT(AU) -1.264060127889E+03 DETOT -4.17E-01 tst  1.20E-02 PX  2.08E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.15 TCPU        1.08
+
+    ALPHA      ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     14; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     15; K    1; EIG  1.0000000E+00 AU
+
+    BETA       ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     12; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     13; K    1; EIG  1.0000000E+00 AU
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.16 TCPU        1.08
+ CHARGE NORMALIZATION FACTOR   1.00075177
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.01714028
+ TOTAL ATOMIC SPINS  :
+   2.0171403
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.16 TCPU        1.08
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        1.18 TCPU        1.10
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.23 TCPU        1.15
+ NUMERICALLY INTEGRATED DENSITY     14.0085743393     11.9914339098
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        1.38 TCPU        1.30
+ CYC   3 ETOT(AU) -1.264093907884E+03 DETOT -3.38E-02 tst  2.14E-03 PX  5.70E-02
+ ANDERSON MIX: BETA=  -6.302659316350E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.38 TCPU        1.30
+
+    ALPHA      ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     14; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     15; K    1; EIG  1.0000000E+00 AU
+
+    BETA       ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     12; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     13; K    1; EIG  1.0000000E+00 AU
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.38 TCPU        1.30
+ CHARGE NORMALIZATION FACTOR   1.00075177
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.01714028
+ TOTAL ATOMIC SPINS  :
+   2.0171403
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.38 TCPU        1.31
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        1.41 TCPU        1.33
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.45 TCPU        1.38
+ NUMERICALLY INTEGRATED DENSITY     14.0085741435     11.9914338359
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        1.60 TCPU        1.52
+ CYC   4 ETOT(AU) -1.264096513292E+03 DETOT -2.61E-03 tst  5.23E-04 PX  2.50E-02
+ ANDERSON MIX: BETA=  -4.206171035905E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.60 TCPU        1.53
+
+    ALPHA      ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     14; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     15; K    1; EIG  1.0000000E+00 AU
+
+    BETA       ELECTRONS
+ INSULATING STATE
+ TOP OF VALENCE BANDS -    BAND     12; K    1; EIG -1.0000000E+00 AU
+ BOTTOM OF VIRTUAL BANDS - BAND     13; K    1; EIG  1.0000000E+00 AU
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.60 TCPU        1.53
+ CHARGE NORMALIZATION FACTOR   1.00075177
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.01714028
+ TOTAL ATOMIC SPINS  :
+   2.0171403
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.61 TCPU        1.53
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        1.63 TCPU        1.55
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.68 TCPU        1.60
+ NUMERICALLY INTEGRATED DENSITY     14.0085741072     11.9914338849
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        1.82 TCPU        1.75
+ CYC   5 ETOT(AU) -1.264097110482E+03 DETOT -5.97E-04 tst  4.46E-05 PX  7.04E-03
+ ANDERSON MIX: BETA=  -1.640926639070E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        1.83 TCPU        1.75
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7832288E-01 (RES. CHARGE  8.74E-10;IT.  8)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        1.84 TCPU        1.76
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.17867434
+ TOTAL ATOMIC SPINS  :
+   2.1786743
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        1.84 TCPU        1.76
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        1.86 TCPU        1.78
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        1.91 TCPU        1.83
+ NUMERICALLY INTEGRATED DENSITY     14.0893410640     11.9106668489
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        2.06 TCPU        1.99
+ CYC   6 ETOT(AU) -1.263550161239E+03 DETOT  5.47E-01 tst  1.55E-04 PX  7.20E-02
+ ANDERSON MIX: BETA=   1.644592480143E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.07 TCPU        1.99
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7133603E-01 (RES. CHARGE  2.21E-08;IT.  8)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.08 TCPU        2.00
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.18053999
+ TOTAL ATOMIC SPINS  :
+   2.1805400
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.08 TCPU        2.00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        2.10 TCPU        2.02
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.15 TCPU        2.07
+ NUMERICALLY INTEGRATED DENSITY     14.0902739010     11.9097340284
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        2.30 TCPU        2.22
+ CYC   7 ETOT(AU) -1.263550197666E+03 DETOT -3.64E-05 tst  1.64E-06 PX  2.04E-03
+ ANDERSON MIX: BETA=   2.675934459503E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.30 TCPU        2.22
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7355345E-01 (RES. CHARGE  1.68E-09;IT.  8)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.31 TCPU        2.23
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.18539034
+ TOTAL ATOMIC SPINS  :
+   2.1853903
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.31 TCPU        2.23
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        2.33 TCPU        2.26
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.38 TCPU        2.30
+ NUMERICALLY INTEGRATED DENSITY     14.0926990715     11.9073088656
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        2.53 TCPU        2.45
+ CYC   8 ETOT(AU) -1.263550263585E+03 DETOT -6.59E-05 tst  5.55E-06 PX  2.61E-03
+ ANDERSON MIX: BETA=  -3.556062445245E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.53 TCPU        2.45
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.8118408E-01 (RES. CHARGE  8.46E-10;IT.  8)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.54 TCPU        2.46
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.20821089
+ TOTAL ATOMIC SPINS  :
+   2.2082109
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.54 TCPU        2.46
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        2.57 TCPU        2.49
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.61 TCPU        2.54
+ NUMERICALLY INTEGRATED DENSITY     14.1041093183     11.8958986344
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        2.76 TCPU        2.68
+ CYC   9 ETOT(AU) -1.263550432379E+03 DETOT -1.69E-04 tst  7.31E-05 PX  9.61E-03
+ ANDERSON MIX: BETA=   1.854774582042E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        2.76 TCPU        2.68
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7935006E-01 (RES. CHARGE  1.80E-10;IT. 10)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        2.77 TCPU        2.70
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.20761501
+ TOTAL ATOMIC SPINS  :
+   2.2076150
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        2.78 TCPU        2.70
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        2.80 TCPU        2.72
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        2.85 TCPU        2.77
+ NUMERICALLY INTEGRATED DENSITY     14.1038113812     11.8961965688
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        3.00 TCPU        2.92
+ CYC  10 ETOT(AU) -1.263550426057E+03 DETOT  6.32E-06 tst  4.90E-07 PX  6.51E-04
+ ANDERSON MIX: BETA=  -1.588261772785E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.00 TCPU        2.92
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7649704E-01 (RES. CHARGE  1.08E-09;IT. 10)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.01 TCPU        2.93
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.20998321
+ TOTAL ATOMIC SPINS  :
+   2.2099832
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.01 TCPU        2.93
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        3.03 TCPU        2.95
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.08 TCPU        3.00
+ NUMERICALLY INTEGRATED DENSITY     14.1049954835     11.8950124666
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        3.23 TCPU        3.15
+ CYC  11 ETOT(AU) -1.263550428324E+03 DETOT -2.27E-06 tst  4.00E-08 PX  4.24E-04
+ ANDERSON MIX: BETA=   1.050333879357E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.23 TCPU        3.15
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7692604E-01 (RES. CHARGE  1.45E-08;IT.  6)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.24 TCPU        3.16
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.21239691
+ TOTAL ATOMIC SPINS  :
+   2.2123969
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.24 TCPU        3.16
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        3.26 TCPU        3.18
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.31 TCPU        3.23
+ NUMERICALLY INTEGRATED DENSITY     14.1062023280     11.8938056236
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        3.46 TCPU        3.38
+ CYC  12 ETOT(AU) -1.263550439441E+03 DETOT -1.11E-05 tst  6.71E-07 PX  9.03E-04
+ ANDERSON MIX: BETA=  -3.367439097016E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.46 TCPU        3.38
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7830697E-01 (RES. CHARGE  9.44E-11;IT.  8)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.47 TCPU        3.39
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.22179455
+ TOTAL ATOMIC SPINS  :
+   2.2217945
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.47 TCPU        3.39
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        3.50 TCPU        3.42
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.54 TCPU        3.46
+ NUMERICALLY INTEGRATED DENSITY     14.1109011401     11.8891068158
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        3.69 TCPU        3.61
+ CYC  13 ETOT(AU) -1.263550467571E+03 DETOT -2.81E-05 tst  8.95E-06 PX  3.10E-03
+ ANDERSON MIX: BETA=   5.235116439651E-02
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.69 TCPU        3.61
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7816360E-01 (RES. CHARGE  2.02E-10;IT.  6)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.70 TCPU        3.62
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.22260027
+ TOTAL ATOMIC SPINS  :
+   2.2226003
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.70 TCPU        3.62
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        3.73 TCPU        3.65
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        3.77 TCPU        3.69
+ NUMERICALLY INTEGRATED DENSITY     14.1113040027     11.8887039529
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        3.92 TCPU        3.84
+ CYC  14 ETOT(AU) -1.263550468942E+03 DETOT -1.37E-06 tst  8.51E-09 PX  2.62E-04
+ ANDERSON MIX: BETA=  -5.141711021206E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        3.92 TCPU        3.84
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7746035E-01 (RES. CHARGE  4.05E-08;IT.  6)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        3.93 TCPU        3.85
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.22728564
+ TOTAL ATOMIC SPINS  :
+   2.2272856
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        3.93 TCPU        3.85
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        3.96 TCPU        3.88
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        4.00 TCPU        3.92
+ NUMERICALLY INTEGRATED DENSITY     14.1136466836     11.8863612720
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        4.15 TCPU        4.07
+ CYC  15 ETOT(AU) -1.263550477439E+03 DETOT -8.50E-06 tst  4.75E-07 PX  1.52E-03
+ ANDERSON MIX: BETA=   2.304004649600E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        4.15 TCPU        4.07
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7766445E-01 (RES. CHARGE  3.23E-10;IT.  6)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        4.16 TCPU        4.08
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.22691436
+ TOTAL ATOMIC SPINS  :
+   2.2269144
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        4.16 TCPU        4.08
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        4.19 TCPU        4.11
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        4.24 TCPU        4.15
+ NUMERICALLY INTEGRATED DENSITY     14.1134610426     11.8865469132
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        4.38 TCPU        4.30
+ CYC  16 ETOT(AU) -1.263550475872E+03 DETOT  1.57E-06 tst  2.26E-09 PX  1.27E-04
+ ANDERSON MIX: BETA=  -4.795203503870E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        4.38 TCPU        4.30
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7778706E-01 (RES. CHARGE  4.93E-11;IT.  6)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        4.39 TCPU        4.31
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.22741065
+ TOTAL ATOMIC SPINS  :
+   2.2274106
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        4.39 TCPU        4.31
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        4.42 TCPU        4.34
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        4.46 TCPU        4.38
+ NUMERICALLY INTEGRATED DENSITY     14.1137091860     11.8862987699
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        4.61 TCPU        4.53
+ CYC  17 ETOT(AU) -1.263550476622E+03 DETOT -7.50E-07 tst  1.65E-08 PX  1.52E-04
+ ANDERSON MIX: BETA=  -5.734015934939E-01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FDIK        TELAPSE        4.61 TCPU        4.53
+ POSSIBLY CONDUCTING STATE - EFERMI(AU) -1.7786404E-01 (RES. CHARGE  1.09E-08;IT.  4)
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT PDIG        TELAPSE        4.62 TCPU        4.54
+ CHARGE NORMALIZATION FACTOR   1.00000000
+ TOTAL ATOMIC CHARGES:
+  26.0000000
+ SUMMED SPIN DENSITY           2.22826001
+ TOTAL ATOMIC SPINS  :
+   2.2282600
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MOQGAD      TELAPSE        4.62 TCPU        4.54
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT SHELLX2     TELAPSE        4.64 TCPU        4.56
+ +++ ENERGIES IN A.U. +++
+ ::: EXT EL-POLE                                  -7.2926533964261E+02
+ ::: EXT EL-SPHEROPOLE                             1.0858355633837E+01
+ ::: BIELET ZONE E-E                               1.0506741648819E+03
+ ::: TOTAL E-E                                     3.3226718087316E+02
+ ::: TOTAL E-N + N-E                              -2.5749867747581E+03
+ ::: TOTAL N-N                                    -2.2688051603663E+02
+ ::: KINETIC ENERGY                                1.2615165706186E+03
+ ::: PSEUDO TOTAL   ENERGY                        -1.2080835393030E+03
+ ::: VIRIAL COEFFICIENT                            1.0216363090935E+00
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT MONMO3      TELAPSE        4.69 TCPU        4.61
+ NUMERICALLY INTEGRATED DENSITY     14.1141338645     11.8858740916
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NUMDFT      TELAPSE        4.84 TCPU        4.76
+ CYC  18 ETOT(AU) -1.263550478116E+03 DETOT -1.49E-06 tst  3.05E-08 PX  1.52E-04
+
+ == SCF ENDED - CONVERGENCE ON ENERGY      E(AU) -1.2635504781157E+03 CYCLES  18
+
+
+ ENERGY EXPRESSION=HARTREE+FOCK EXCH*0.00000+(PBE        EXCH)*1.00000+PBE        CORR
+
+
+ TOTAL ENERGY(DFT)(AU)( 18) -1.2635504781157E+03 DE-1.5E-06 tester 3.1E-08
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT EDFT        TELAPSE        4.84 TCPU        4.76
+
+ NEIGHBORS OF THE NON-EQUIVALENT ATOMS
+
+ N = NUMBER OF NEIGHBORS AT DISTANCE R
+    ATOM  N     R/ANG      R/AU   NEIGHBORS (ATOM LABELS AND CELL INDICES)
+   1 FE   8     2.4846     4.6953    1 FE  -1-1-1    1 FE   1 1 1    1 FE  -1 0 0
+                                     1 FE   1 0 0    1 FE   0-1 0    1 FE   0 1 0
+                                     1 FE   0 0-1    1 FE   0 0 1
+   1 FE   6     2.8690     5.4216    1 FE  -1-1 0    1 FE   1 1 0    1 FE  -1 0-1
+                                     1 FE   1 0 1    1 FE   0-1-1    1 FE   0 1 1
+   1 FE  12     4.0574     7.6673    1 FE  -2-1-1    1 FE   2 1 1    1 FE  -1-2-1
+                                     1 FE   1 2 1    1 FE  -1-1-2    1 FE   1 1 2
+                                     1 FE  -1 0 1    1 FE   1 0-1    1 FE  -1 1 0
+                                     1 FE   1-1 0    1 FE   0-1 1    1 FE   0 1-1
+   1 FE  24     4.7577     8.9907    1 FE  -2-2-1    1 FE   2 2 1    1 FE  -2-1-2
+                                     1 FE   2 1 2    1 FE  -2-1 0    1 FE   2 1 0
+                                     1 FE  -2 0-1    1 FE   2 0 1    1 FE  -1-2-2
+                                     1 FE   1 2 2    1 FE  -1-2 0    1 FE   1 2 0
+                                     1 FE  -1-1 1    1 FE   1 1-1    1 FE  -1 0-2
+                                     1 FE   1 0 2    1 FE  -1 1-1    1 FE   1-1 1
+                                     1 FE  -1 1 1    1 FE   1-1-1    1 FE   0-2-1
+                                     1 FE   0 2 1    1 FE   0-1-2    1 FE   0 1 2
+   1 FE   8     4.9693     9.3905    1 FE  -2-2-2    1 FE   2 2 2    1 FE  -2 0 0
+                                     1 FE   2 0 0    1 FE   0-2 0    1 FE   0 2 0
+                                     1 FE   0 0-2    1 FE   0 0 2
+   1 FE   6     5.7380    10.8432    1 FE  -2-2 0    1 FE   2 2 0    1 FE  -2 0-2
+                                     1 FE   2 0 2    1 FE   0-2-2    1 FE   0 2 2
+
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT AFTER FIRST TELAPSE        4.85 TCPU        4.76
+ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+     ALPHA+BETA ELECTRONS
+ MULLIKEN POPULATION ANALYSIS - NO. OF ELECTRONS   26.000000
+
+  ATOM    Z CHARGE  A.O. POPULATION
+
+   1 FE  26 26.000  2.000  1.917  2.057  2.057  2.057  0.388  0.670  0.670
+                    0.670  1.270  0.945  0.945  0.945  0.336  0.301  0.301
+                    0.301  0.657  0.298  0.298  0.298  0.867  0.951  0.951
+                    0.867  0.951  0.386  0.419  0.419  0.386  0.419
+
+  ATOM    Z CHARGE  SHELL POPULATION
+
+   1 FE  26 26.000  2.000  8.089  2.399  4.105  1.240  1.552  4.587  2.028
+
+ OVERLAP POPULATION CONDENSED TO ATOMS FOR FIRST   6 NEIGHBORS
+
+ ATOM A   1 FE   ATOM B     CELL      R(AB)/AU R(AB)/ANG    OVPOP(AB)
+                  1 FE   ( -1 -1 -1)     4.695     2.485     0.121
+                  1 FE   ( -1 -1  0)     5.422     2.869     0.051
+                  1 FE   ( -2 -1 -1)     7.667     4.057     0.000
+                  1 FE   ( -2 -2 -1)     8.991     4.758     0.000
+                  1 FE   ( -2 -2 -2)     9.391     4.969     0.000
+                  1 FE   ( -2 -2  0)    10.843     5.738    -0.000
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT AFTER FIRST TELAPSE        4.85 TCPU        4.77
+ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+     ALPHA-BETA ELECTRONS
+ MULLIKEN POPULATION ANALYSIS - NO. OF ELECTRONS    2.228260
+
+  ATOM    Z CHARGE  A.O. POPULATION
+
+   1 FE  26  2.228 -0.000  0.001 -0.001 -0.001 -0.001  0.000  0.003  0.003
+                    0.003  0.004  0.003  0.003  0.003  0.004  0.003  0.003
+                    0.003 -0.025 -0.045 -0.045 -0.045  0.534  0.307  0.307
+                    0.534  0.307  0.104  0.053  0.053  0.104  0.053
+
+  ATOM    Z CHARGE  SHELL POPULATION
+
+   1 FE  26  2.228 -0.000 -0.001  0.008  0.012  0.012 -0.159  1.990  0.367
+
+ OVERLAP POPULATION CONDENSED TO ATOMS FOR FIRST   6 NEIGHBORS
+
+ ATOM A   1 FE   ATOM B     CELL      R(AB)/AU R(AB)/ANG    OVPOP(AB)
+                  1 FE   ( -1 -1 -1)     4.695     2.485    -0.024
+                  1 FE   ( -1 -1  0)     5.422     2.869    -0.008
+                  1 FE   ( -2 -1 -1)     7.667     4.057     0.000
+                  1 FE   ( -2 -2 -1)     8.991     4.758     0.000
+                  1 FE   ( -2 -2 -2)     9.391     4.969    -0.000
+                  1 FE   ( -2 -2  0)    10.843     5.738    -0.000
+ EIGENVECTORS IN FORTRAN UNIT  8
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE        4.86 TCPU        4.77
+ EEEEEEEEEE TERMINATION  DATE 05 09 2017 TIME 20:53:58.7
+NODE    0 CPU TIME =         4.774
+NODE    1 CPU TIME =         4.772
+NODE    2 CPU TIME =         4.772
+NODE    3 CPU TIME =         4.772
+NODE    4 CPU TIME =         4.769
+NODE    5 CPU TIME =         4.771
+NODE    6 CPU TIME =         4.771
+NODE    7 CPU TIME =         4.772
+NODE    8 CPU TIME =         4.773
+NODE    9 CPU TIME =         4.773
+NODE   10 CPU TIME =         4.770
+NODE   11 CPU TIME =         4.770
+NODE   12 CPU TIME =         4.773
+NODE   13 CPU TIME =         4.765
+NODE   14 CPU TIME =         4.770
+NODE   15 CPU TIME =         4.769
+    TOTAL CPU TIME =        76.334
+Tue  5 Sep 20:53:58 BST 2017
+Disk usage:total 4668
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 dffit3.dat
+-rw------- 1 cjs14 hpc-users  29024 Sep  5 20:53 fort.10.pe00
+-rw------- 1 cjs14 hpc-users  25248 Sep  5 20:53 fort.10.pe01
+-rw------- 1 cjs14 hpc-users  32336 Sep  5 20:53 fort.10.pe02
+-rw------- 1 cjs14 hpc-users  40032 Sep  5 20:53 fort.10.pe03
+-rw------- 1 cjs14 hpc-users  17488 Sep  5 20:53 fort.10.pe04
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.10.pe05
+-rw------- 1 cjs14 hpc-users  26328 Sep  5 20:53 fort.10.pe06
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.10.pe07
+-rw------- 1 cjs14 hpc-users  38040 Sep  5 20:53 fort.10.pe08
+-rw------- 1 cjs14 hpc-users  25016 Sep  5 20:53 fort.10.pe09
+-rw------- 1 cjs14 hpc-users   7064 Sep  5 20:53 fort.10.pe10
+-rw------- 1 cjs14 hpc-users  17464 Sep  5 20:53 fort.10.pe11
+-rw------- 1 cjs14 hpc-users  16096 Sep  5 20:53 fort.10.pe12
+-rw------- 1 cjs14 hpc-users  26984 Sep  5 20:53 fort.10.pe13
+-rw------- 1 cjs14 hpc-users  30328 Sep  5 20:53 fort.10.pe14
+-rw------- 1 cjs14 hpc-users  20296 Sep  5 20:53 fort.10.pe15
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe00
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe01
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe02
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe03
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe04
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe05
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe06
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe07
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe08
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe09
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe10
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe11
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe12
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe13
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe14
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe15
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe00
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe01
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe02
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe03
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe04
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe05
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe06
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe07
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe08
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe09
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe10
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe11
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe12
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe13
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe14
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe15
+-rw------- 1 cjs14 hpc-users   2848 Sep  5 20:53 fort.61.pe00
+-rw------- 1 cjs14 hpc-users   3424 Sep  5 20:53 fort.61.pe01
+-rw------- 1 cjs14 hpc-users   4448 Sep  5 20:53 fort.61.pe02
+-rw------- 1 cjs14 hpc-users   3440 Sep  5 20:53 fort.61.pe03
+-rw------- 1 cjs14 hpc-users   3280 Sep  5 20:53 fort.61.pe04
+-rw------- 1 cjs14 hpc-users   2512 Sep  5 20:53 fort.61.pe05
+-rw------- 1 cjs14 hpc-users   3664 Sep  5 20:53 fort.61.pe06
+-rw------- 1 cjs14 hpc-users   4448 Sep  5 20:53 fort.61.pe07
+-rw------- 1 cjs14 hpc-users   3920 Sep  5 20:53 fort.61.pe08
+-rw------- 1 cjs14 hpc-users   3776 Sep  5 20:53 fort.61.pe09
+-rw------- 1 cjs14 hpc-users   3344 Sep  5 20:53 fort.61.pe10
+-rw------- 1 cjs14 hpc-users   3712 Sep  5 20:53 fort.61.pe11
+-rw------- 1 cjs14 hpc-users   3968 Sep  5 20:53 fort.61.pe12
+-rw------- 1 cjs14 hpc-users   4336 Sep  5 20:53 fort.61.pe13
+-rw------- 1 cjs14 hpc-users   4320 Sep  5 20:53 fort.61.pe14
+-rw------- 1 cjs14 hpc-users   4144 Sep  5 20:53 fort.61.pe15
+-rw------- 1 cjs14 hpc-users   1696 Sep  5 20:53 fort.62.pe00
+-rw------- 1 cjs14 hpc-users   1776 Sep  5 20:53 fort.62.pe01
+-rw------- 1 cjs14 hpc-users   2192 Sep  5 20:53 fort.62.pe02
+-rw------- 1 cjs14 hpc-users   1664 Sep  5 20:53 fort.62.pe03
+-rw------- 1 cjs14 hpc-users   2160 Sep  5 20:53 fort.62.pe04
+-rw------- 1 cjs14 hpc-users   1152 Sep  5 20:53 fort.62.pe05
+-rw------- 1 cjs14 hpc-users   1648 Sep  5 20:53 fort.62.pe06
+-rw------- 1 cjs14 hpc-users   2256 Sep  5 20:53 fort.62.pe07
+-rw------- 1 cjs14 hpc-users   1776 Sep  5 20:53 fort.62.pe08
+-rw------- 1 cjs14 hpc-users   1120 Sep  5 20:53 fort.62.pe09
+-rw------- 1 cjs14 hpc-users   1360 Sep  5 20:53 fort.62.pe10
+-rw------- 1 cjs14 hpc-users   2016 Sep  5 20:53 fort.62.pe11
+-rw------- 1 cjs14 hpc-users   2192 Sep  5 20:53 fort.62.pe12
+-rw------- 1 cjs14 hpc-users   2144 Sep  5 20:53 fort.62.pe13
+-rw------- 1 cjs14 hpc-users   2656 Sep  5 20:53 fort.62.pe14
+-rw------- 1 cjs14 hpc-users   1984 Sep  5 20:53 fort.62.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe15
+-rw------- 1 cjs14 hpc-users  29024 Sep  5 20:53 fort.8.pe00
+-rw------- 1 cjs14 hpc-users  25248 Sep  5 20:53 fort.8.pe01
+-rw------- 1 cjs14 hpc-users  32336 Sep  5 20:53 fort.8.pe02
+-rw------- 1 cjs14 hpc-users  40032 Sep  5 20:53 fort.8.pe03
+-rw------- 1 cjs14 hpc-users  17488 Sep  5 20:53 fort.8.pe04
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.8.pe05
+-rw------- 1 cjs14 hpc-users  26328 Sep  5 20:53 fort.8.pe06
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.8.pe07
+-rw------- 1 cjs14 hpc-users  38040 Sep  5 20:53 fort.8.pe08
+-rw------- 1 cjs14 hpc-users  25016 Sep  5 20:53 fort.8.pe09
+-rw------- 1 cjs14 hpc-users   7064 Sep  5 20:53 fort.8.pe10
+-rw------- 1 cjs14 hpc-users  17464 Sep  5 20:53 fort.8.pe11
+-rw------- 1 cjs14 hpc-users  16096 Sep  5 20:53 fort.8.pe12
+-rw------- 1 cjs14 hpc-users  26984 Sep  5 20:53 fort.8.pe13
+-rw------- 1 cjs14 hpc-users  30328 Sep  5 20:53 fort.8.pe14
+-rw------- 1 cjs14 hpc-users  20296 Sep  5 20:53 fort.8.pe15
+-rw------- 1 cjs14 hpc-users 152712 Sep  5 20:53 fort.9
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe00
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe01
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe02
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe03
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe04
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe05
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe06
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe07
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe08
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe09
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe10
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe11
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe12
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe13
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe14
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe15
+-rw------- 1 cjs14 hpc-users 392378 Sep  5 20:53 fort.98
+-rw------- 1 cjs14 hpc-users   1093 Sep  5 20:53 INPUT
+-rw------- 1 cjs14 hpc-users   1082 Sep  5 20:53 PPAN.DAT
+5	/var/tmp/pbs.66136.cx1/bcc_iron_16232/
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/sda8      950707968 1299240 949408728   1% /tmp
+/dev/sda8      950707968 1299240 949408728   1% /tmp
+Tue  5 Sep 20:53:58 BST 2017
+cx1-132-1-9.cx1.hpc.ic.ac.uk
+total 4668
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 dffit3.dat
+-rw------- 1 cjs14 hpc-users  29024 Sep  5 20:53 fort.10.pe00
+-rw------- 1 cjs14 hpc-users  25248 Sep  5 20:53 fort.10.pe01
+-rw------- 1 cjs14 hpc-users  32336 Sep  5 20:53 fort.10.pe02
+-rw------- 1 cjs14 hpc-users  40032 Sep  5 20:53 fort.10.pe03
+-rw------- 1 cjs14 hpc-users  17488 Sep  5 20:53 fort.10.pe04
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.10.pe05
+-rw------- 1 cjs14 hpc-users  26328 Sep  5 20:53 fort.10.pe06
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.10.pe07
+-rw------- 1 cjs14 hpc-users  38040 Sep  5 20:53 fort.10.pe08
+-rw------- 1 cjs14 hpc-users  25016 Sep  5 20:53 fort.10.pe09
+-rw------- 1 cjs14 hpc-users   7064 Sep  5 20:53 fort.10.pe10
+-rw------- 1 cjs14 hpc-users  17464 Sep  5 20:53 fort.10.pe11
+-rw------- 1 cjs14 hpc-users  16096 Sep  5 20:53 fort.10.pe12
+-rw------- 1 cjs14 hpc-users  26984 Sep  5 20:53 fort.10.pe13
+-rw------- 1 cjs14 hpc-users  30328 Sep  5 20:53 fort.10.pe14
+-rw------- 1 cjs14 hpc-users  20296 Sep  5 20:53 fort.10.pe15
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe00
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe01
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe02
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe03
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe04
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe05
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe06
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe07
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe08
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe09
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe10
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe11
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe12
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe13
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe14
+-rw------- 1 cjs14 hpc-users  81048 Sep  5 20:53 fort.11.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.17.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.18.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.19.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.1.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.28.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.29.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.38.pe15
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe00
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe01
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe02
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe03
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe04
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe05
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe06
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe07
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe08
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe09
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe10
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe11
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe12
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe13
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe14
+-rw------- 1 cjs14 hpc-users  82680 Sep  5 20:53 fort.3.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.40.pe15
+-rw------- 1 cjs14 hpc-users   2848 Sep  5 20:53 fort.61.pe00
+-rw------- 1 cjs14 hpc-users   3424 Sep  5 20:53 fort.61.pe01
+-rw------- 1 cjs14 hpc-users   4448 Sep  5 20:53 fort.61.pe02
+-rw------- 1 cjs14 hpc-users   3440 Sep  5 20:53 fort.61.pe03
+-rw------- 1 cjs14 hpc-users   3280 Sep  5 20:53 fort.61.pe04
+-rw------- 1 cjs14 hpc-users   2512 Sep  5 20:53 fort.61.pe05
+-rw------- 1 cjs14 hpc-users   3664 Sep  5 20:53 fort.61.pe06
+-rw------- 1 cjs14 hpc-users   4448 Sep  5 20:53 fort.61.pe07
+-rw------- 1 cjs14 hpc-users   3920 Sep  5 20:53 fort.61.pe08
+-rw------- 1 cjs14 hpc-users   3776 Sep  5 20:53 fort.61.pe09
+-rw------- 1 cjs14 hpc-users   3344 Sep  5 20:53 fort.61.pe10
+-rw------- 1 cjs14 hpc-users   3712 Sep  5 20:53 fort.61.pe11
+-rw------- 1 cjs14 hpc-users   3968 Sep  5 20:53 fort.61.pe12
+-rw------- 1 cjs14 hpc-users   4336 Sep  5 20:53 fort.61.pe13
+-rw------- 1 cjs14 hpc-users   4320 Sep  5 20:53 fort.61.pe14
+-rw------- 1 cjs14 hpc-users   4144 Sep  5 20:53 fort.61.pe15
+-rw------- 1 cjs14 hpc-users   1696 Sep  5 20:53 fort.62.pe00
+-rw------- 1 cjs14 hpc-users   1776 Sep  5 20:53 fort.62.pe01
+-rw------- 1 cjs14 hpc-users   2192 Sep  5 20:53 fort.62.pe02
+-rw------- 1 cjs14 hpc-users   1664 Sep  5 20:53 fort.62.pe03
+-rw------- 1 cjs14 hpc-users   2160 Sep  5 20:53 fort.62.pe04
+-rw------- 1 cjs14 hpc-users   1152 Sep  5 20:53 fort.62.pe05
+-rw------- 1 cjs14 hpc-users   1648 Sep  5 20:53 fort.62.pe06
+-rw------- 1 cjs14 hpc-users   2256 Sep  5 20:53 fort.62.pe07
+-rw------- 1 cjs14 hpc-users   1776 Sep  5 20:53 fort.62.pe08
+-rw------- 1 cjs14 hpc-users   1120 Sep  5 20:53 fort.62.pe09
+-rw------- 1 cjs14 hpc-users   1360 Sep  5 20:53 fort.62.pe10
+-rw------- 1 cjs14 hpc-users   2016 Sep  5 20:53 fort.62.pe11
+-rw------- 1 cjs14 hpc-users   2192 Sep  5 20:53 fort.62.pe12
+-rw------- 1 cjs14 hpc-users   2144 Sep  5 20:53 fort.62.pe13
+-rw------- 1 cjs14 hpc-users   2656 Sep  5 20:53 fort.62.pe14
+-rw------- 1 cjs14 hpc-users   1984 Sep  5 20:53 fort.62.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.82.pe15
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe00
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe01
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe02
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe03
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe04
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe05
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe06
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe07
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe08
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe09
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe10
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe11
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe12
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe13
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe14
+-rw------- 1 cjs14 hpc-users      0 Sep  5 20:53 fort.83.pe15
+-rw------- 1 cjs14 hpc-users  29024 Sep  5 20:53 fort.8.pe00
+-rw------- 1 cjs14 hpc-users  25248 Sep  5 20:53 fort.8.pe01
+-rw------- 1 cjs14 hpc-users  32336 Sep  5 20:53 fort.8.pe02
+-rw------- 1 cjs14 hpc-users  40032 Sep  5 20:53 fort.8.pe03
+-rw------- 1 cjs14 hpc-users  17488 Sep  5 20:53 fort.8.pe04
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.8.pe05
+-rw------- 1 cjs14 hpc-users  26328 Sep  5 20:53 fort.8.pe06
+-rw------- 1 cjs14 hpc-users  20832 Sep  5 20:53 fort.8.pe07
+-rw------- 1 cjs14 hpc-users  38040 Sep  5 20:53 fort.8.pe08
+-rw------- 1 cjs14 hpc-users  25016 Sep  5 20:53 fort.8.pe09
+-rw------- 1 cjs14 hpc-users   7064 Sep  5 20:53 fort.8.pe10
+-rw------- 1 cjs14 hpc-users  17464 Sep  5 20:53 fort.8.pe11
+-rw------- 1 cjs14 hpc-users  16096 Sep  5 20:53 fort.8.pe12
+-rw------- 1 cjs14 hpc-users  26984 Sep  5 20:53 fort.8.pe13
+-rw------- 1 cjs14 hpc-users  30328 Sep  5 20:53 fort.8.pe14
+-rw------- 1 cjs14 hpc-users  20296 Sep  5 20:53 fort.8.pe15
+-rw------- 1 cjs14 hpc-users 152712 Sep  5 20:53 fort.9
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe00
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe01
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe02
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe03
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe04
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe05
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe06
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe07
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe08
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe09
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe10
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe11
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe12
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe13
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe14
+-rw------- 1 cjs14 hpc-users  28832 Sep  5 20:53 fort.95.pe15
+-rw------- 1 cjs14 hpc-users 392378 Sep  5 20:53 fort.98
+-rw------- 1 cjs14 hpc-users   1093 Sep  5 20:53 INPUT
+-rw------- 1 cjs14 hpc-users   1082 Sep  5 20:53 PPAN.DAT
+5	/var/tmp/pbs.66136.cx1/bcc_iron_16232/
+Filesystem        1K-blocks        Used  Available Use% Mounted on
+fs13:/export131 13970974720 10391194624 3579780096  75% /export131
+/dev/sda8         950707968     1299240  949408728   1% /tmp
+ 
+TEMPORARY          SAVED (in /export101/work/cjs14/bulk_iron/crystal/3_ruth_pbe)
+fort.9             bcc_iron.f9       152712   Sep 5 20:53
+fort.98            bcc_iron.f98      392378   Sep 5 20:53
+PPAN.DAT           bcc_iron.PPAN     1082     Sep 5 20:53
+ 
+/var/tmp/pbs.66136.cx1/bcc_iron_16232 removed
