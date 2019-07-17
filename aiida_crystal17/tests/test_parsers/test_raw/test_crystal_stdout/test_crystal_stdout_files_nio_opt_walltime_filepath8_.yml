@@ -1,0 +1,1504 @@
+calculation:
+  n_ao: 46
+  n_atoms: 4
+  n_core_el: 40
+  n_electrons: 72
+  n_kpoints_gilat: 75
+  n_kpoints_ibz: 75
+  n_shells: 14
+  n_symops: 16
+  spin: true
+  type: unrestricted open shell
+errors: []
+execution_time_seconds: 1098
+exit_code: ERROR_PARSING_STDOUT
+header:
+  crystal_subversion: 1.0.2
+  crystal_version: 17
+initial_geometry:
+  crystallographic_cell: {}
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    ccoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 1.4721963185
+      - 1.4721963185
+      - 2.082
+    - - 0.0
+      - 0.0
+      - 2.082
+    - - 1.4721963185
+      - 1.4721963185
+      - 0.0
+    cell_parameters:
+      a: 2.94439264
+      alpha: 90.0
+      b: 2.94439264
+      beta: 90.0
+      c: 4.164
+      gamma: 90.0
+    cell_vectors:
+      a:
+      - 2.944392637
+      - 0.0
+      - 0.0
+      b:
+      - 0.0
+      - 2.944392637
+      - 0.0
+      c:
+      - 0.0
+      - 0.0
+      - 4.164
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+initial_scf:
+  cycles:
+  - atomic_charges_peratom:
+    - 26.5371819
+    - 26.5395407
+    - 9.4622654
+    - 9.461012
+    charge_normalization_factor: 0.9998915
+    energy:
+      total: -85031.00966021749
+    spin_density_absolute: 10.039434
+    spin_density_peratom:
+    - 5.0037637
+    - -5.0093687
+    - -0.0142541
+    - 0.0120475
+    spin_density_total: -0.00781165
+  - atomic_charges_peratom:
+    - 28.1815033
+    - 28.1855358
+    - 7.8150937
+    - 7.8178672
+    charge_normalization_factor: 0.99967459
+    energy:
+      total: -85075.56482541416
+    spin_density_absolute: 5.122072
+    spin_density_peratom:
+    - 2.5347604
+    - -2.5331306
+    - -0.0279054
+    - 0.0262756
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.7262128
+    - 27.7242476
+    - 8.2754078
+    - 8.2741318
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85121.57427921785
+    spin_density_absolute: 6.1288984
+    spin_density_peratom:
+    - 3.0426898
+    - -3.0421557
+    - -0.0222935
+    - 0.0217594
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.664163
+    - 27.6639819
+    - 8.3351581
+    - 8.3366971
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.14482214554
+    spin_density_absolute: 6.2709562
+    spin_density_peratom:
+    - 3.1221495
+    - -3.1217554
+    - -0.0137227
+    - 0.0133286
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6183762
+    - 27.6189166
+    - 8.3824453
+    - 8.3802618
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.72523140372
+    spin_density_absolute: 6.3342234
+    spin_density_peratom:
+    - 3.1468199
+    - -3.1466202
+    - -0.0204915
+    - 0.0202918
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6089715
+    - 27.6082625
+    - 8.390197
+    - 8.392569
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.86198823787
+    spin_density_absolute: 6.3219272
+    spin_density_peratom:
+    - 3.1248614
+    - -3.1247748
+    - -0.0361888
+    - 0.0361022
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6057521
+    - 27.6060832
+    - 8.3946262
+    - 8.3935385
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.8803641957
+    spin_density_absolute: 6.3099463
+    spin_density_peratom:
+    - 3.1095788
+    - -3.1095008
+    - -0.0454723
+    - 0.0453944
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6025056
+    - 27.6009308
+    - 8.3955673
+    - 8.4009963
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.8921975023
+    spin_density_absolute: 6.2867063
+    spin_density_peratom:
+    - 3.0823074
+    - -3.082275
+    - -0.0610781
+    - 0.0610458
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6012379
+    - 27.6020712
+    - 8.399796
+    - 8.396895
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89361690261
+    spin_density_absolute: 6.2720257
+    spin_density_peratom:
+    - 3.0691446
+    - -3.0691164
+    - -0.0668964
+    - 0.0668683
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6021519
+    - 27.6020717
+    - 8.3977654
+    - 8.3980111
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89385317908
+    spin_density_absolute: 6.2624762
+    spin_density_peratom:
+    - 3.0614602
+    - -3.0614407
+    - -0.0697974
+    - 0.0697779
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6022338
+    - 27.6022497
+    - 8.3977925
+    - 8.3977239
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89375652424
+    spin_density_absolute: 6.2586398
+    spin_density_peratom:
+    - 3.0587044
+    - -3.0586927
+    - -0.0706272
+    - 0.0706155
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6021964
+    - 27.6022019
+    - 8.3978119
+    - 8.3977899
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89372495902
+    spin_density_absolute: 6.2570721
+    spin_density_peratom:
+    - 3.0577254
+    - -3.057719
+    - -0.0708171
+    - 0.0708106
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.602217
+    - 27.6022156
+    - 8.3977817
+    - 8.3977857
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89372093175
+    spin_density_absolute: 6.2563821
+    spin_density_peratom:
+    - 3.057452
+    - -3.0574481
+    - -0.0707429
+    - 0.0707391
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6022264
+    - 27.6022247
+    - 8.3977718
+    - 8.3977771
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89372212904
+    spin_density_absolute: 6.2559754
+    spin_density_peratom:
+    - 3.0573287
+    - -3.0573264
+    - -0.0706613
+    - 0.070659
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6022305
+    - 27.6022297
+    - 8.3977687
+    - 8.3977711
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.8937225372
+    spin_density_absolute: 6.2557036
+    spin_density_peratom:
+    - 3.0572501
+    - -3.0572488
+    - -0.070603
+    - 0.0706017
+    spin_density_total: 0.0
+  final_energy:
+    total_corrected: -85124.89372253176
+optimisation:
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.82356462118
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.11667881
+      alpha: 90.0
+      b: 3.11667881
+      beta: 90.0
+      c: 4.43630074
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.85890365636
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.09779922
+      alpha: 90.0
+      b: 3.09779922
+      beta: 90.0
+      c: 4.4385012
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.86263414146
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.09074327
+      alpha: 90.0
+      b: 3.09074327
+      beta: 90.0
+      c: 4.45189791
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.86856663723
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07178065
+      alpha: 90.0
+      b: 3.07178065
+      beta: 90.0
+      c: 4.50116552
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.86860203107
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07186034
+      alpha: 90.0
+      b: 3.07186034
+      beta: 90.0
+      c: 4.50464971
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.86859771535
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07201737
+      alpha: 90.0
+      b: 3.07201737
+      beta: 90.0
+      c: 4.50493134
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - -0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.86860062697
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07189607
+      alpha: 90.0
+      b: 3.07189607
+      beta: 90.0
+      c: 4.50472779
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.8768661671
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07124069
+      alpha: 90.0
+      b: 3.07124069
+      beta: 90.0
+      c: 4.50902259
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87695557013
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07156693
+      alpha: 90.0
+      b: 3.07156693
+      beta: 90.0
+      c: 4.50456474
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87690952573
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07331153
+      alpha: 90.0
+      b: 3.07331153
+      beta: 90.0
+      c: 4.50188164
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - -0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87695852255
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.0719041
+      alpha: 90.0
+      b: 3.0719041
+      beta: 90.0
+      c: 4.50368202
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87696058518
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07194431
+      alpha: 90.0
+      b: 3.07194431
+      beta: 90.0
+      c: 4.50341317
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87696048449
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07200739
+      alpha: 90.0
+      b: 3.07200739
+      beta: 90.0
+      c: 4.50316393
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - -0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - -0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87696124369
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07202093
+      alpha: 90.0
+      b: 3.07202093
+      beta: 90.0
+      c: 4.50309942
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87696078382
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07204775
+      alpha: 90.0
+      b: 3.07204775
+      beta: 90.0
+      c: 4.50297015
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - -0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87666141504
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07377253
+      alpha: 90.0
+      b: 3.07377253
+      beta: 90.0
+      c: 4.50023271
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87673348983
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07165646
+      alpha: 90.0
+      b: 3.07165646
+      beta: 90.0
+      c: 4.49920519
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - -0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- convergence:
+    max_displac: true
+    max_gradient: false
+    rms_displac: true
+    rms_gradient: false
+  energy:
+    total_corrected: -85125.87669672181
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07326637
+      alpha: 90.0
+      b: 3.07326637
+      beta: 90.0
+      c: 4.49896432
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - -0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - 0.5
+      - -0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+- primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    cell_parameters:
+      a: 3.07205406
+      alpha: 90.0
+      b: 3.07205406
+      beta: 90.0
+      c: 4.49934791
+      gamma: 90.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.5
+      - 0.5
+      - -0.5
+    - - 0.0
+      - 0.0
+      - -0.5
+    - - 0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+parser_errors:
+- did not find 'OPT END', after optimisation start at line 804
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings:
+- WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY

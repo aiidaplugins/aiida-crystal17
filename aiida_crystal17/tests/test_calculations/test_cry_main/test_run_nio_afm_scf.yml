@@ -1,0 +1,47 @@
+calculation:
+  n_ao: 46
+  n_atoms: 4
+  n_core_el: 40
+  n_electrons: 72
+  n_kpoints_gilat: 75
+  n_kpoints_ibz: 75
+  n_shells: 14
+  n_symops: 16
+  spin: true
+  type: unrestricted open shell
+energy: -85124.893667339
+energy_units: eV
+errors: []
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+mulliken_charges:
+- 0.398
+- 0.397
+- -0.398
+- -0.397
+mulliken_electrons:
+- 27.602
+- 27.603
+- 8.398
+- 8.397
+mulliken_spin_total: 0.0
+mulliken_spins:
+- 3.057
+- -3.057
+- -0.072
+- 0.072
+number_of_assymetric: 4
+number_of_atoms: 4
+parser_class: CryMainParser
+parser_errors: []
+parser_exceptions: []
+parser_warnings: []
+scf_iterations: 13
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+volume: 36.099581472
+warnings: []

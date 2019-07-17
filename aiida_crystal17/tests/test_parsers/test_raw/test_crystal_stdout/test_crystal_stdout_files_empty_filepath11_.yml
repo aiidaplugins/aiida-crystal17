@@ -1,0 +1,11 @@
+errors: []
+exit_code: ERROR_PARSING_STDOUT
+parser_errors:
+- the file is empty
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings: []

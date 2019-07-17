@@ -3,13 +3,11 @@ parse the main output file and create the required output nodes
 """
 from collections import Mapping
 import traceback
-# TODO remove dependancy on ejplugins?
-import ejplugins
 from aiida_crystal17.symmetry import convert_structure
-from ejplugins.crystal import CrystalOutputPlugin
 from aiida.plugins import DataFactory
 from aiida_crystal17 import __version__
 from aiida_crystal17.calculations.cry_main import CryMainCalculation
+from aiida_crystal17.parsers.raw import crystal_stdout
 
 
 class OutputNodes(Mapping):
@@ -72,23 +70,6 @@ class ParserResult(object):
         self.nodes = OutputNodes()
 
 
-# a mapping of known error messages to exit codes, in order of importance
-KNOWN_ERRORS = (
-    ("END OF DATA IN INPUT DECK", "ERROR_CRYSTAL_INPUT"),
-    ("FORMAT ERROR IN INPUT DECK", "ERROR_CRYSTAL_INPUT"),
-    ("GEOMETRY DATA FILE NOT FOUND", "ERROR_CRYSTAL_INPUT"),
-    ("Wavefunction file can not be found", "ERROR_WAVEFUNCTION_NOT_FOUND"),  # restart error
-    ("SCF ENDED - TOO MANY CYCLES", "UNCONVERGED_SCF"),
-    ("SCF FAILED", "UNCONVERGED_SCF"),  # usually found after: SCF ENDED - TOO MANY CYCLES
-    ("GEOMETRY OPTIMIZATION FAILED", "UNCONVERGED_GEOMETRY"),  # usually because run out of steps
-    ("CONVERGENCE TESTS UNSATISFIED", "UNCONVERGED_GEOMETRY"),  # usually found after: OPT END - FAILED
-    ("OPT END - FAILED", "UNCONVERGED_GEOMETRY"),
-    ("BASIS SET LINEARLY DEPENDENT", "BASIS_SET_LINEARLY_DEPENDENT"),  # occurs during geometry optimisations
-    ("SCF abnormal end", "ERROR_SCF_ABNORMAL_END"),  # catch all error
-    ("MPI_Abort", "ERROR_MPI_ABORT")
-)
-
-
 # pylint: disable=too-many-locals,too-many-statements
 def parse_main_out(fileobj, parser_class,
                    init_struct=None,
@@ -109,28 +90,23 @@ def parse_main_out(fileobj, parser_class,
     results_data = {
         "parser_version": str(__version__),
         "parser_class": str(parser_class),
-        "ejplugins_version": str(ejplugins.__version__),
         "parser_errors": [],
         "parser_warnings": [],
+        "parser_exceptions": [],
         "errors": [],
         "warnings": []
     }
 
-    cryparse = CrystalOutputPlugin()
     try:
-        data = cryparse.read_file(fileobj, log_warnings=False)
+        data = crystal_stdout.read_crystal_stdout(fileobj.read())
     except IOError as err:
+        # should never happen
         traceback.print_exc()
         parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
-        results_data["parser_errors"].append(
+        results_data["parser_exceptions"].append(
             "Error parsing CRYSTAL 17 main output: {0}".format(err))
         parser_result.nodes.results = DataFactory("dict")(dict=results_data)
         return parser_result
-
-    # data contains the top-level keys:
-    # "warnings" (list), "errors" (list), "meta" (dict), "creator" (dict),
-    # "initial" (None or dict), "optimisation" (None or dict), "final" (dict)
-    # "mulliken" (optional dict)
 
     # TODO could also read .gui file for definitive final (primitive) geometry,
     # with symmetries
@@ -139,78 +115,48 @@ def parse_main_out(fileobj, parser_class,
     # to get (primitive) geometries (+ symmetries) for each opt step
     # Note the above files are only available for optimisation runs
 
-    results_data["errors"] = data["errors"]
-    results_data["warnings"] = data["warnings"]
+    results_data.update(data)
 
-    # get meta data
-    meta_data = data.pop("meta")
-    if "elapsed_time" in meta_data:
-        h, m, s = meta_data["elapsed_time"].split(':')
-        wall_time = int(h) * 3600 + int(m) * 60 + int(s)
-        results_data["wall_time_seconds"] = wall_time
+    # TODO handle errors
+    try:
+        final_info = crystal_stdout.extract_final_info(data)
+    except ValueError:
+        traceback.print_exc()
+        final_info = {}
 
-    # get initial data
-    initial_data = data.pop("initial")
-    initial_data = {} if not initial_data else initial_data
-    for name, val in initial_data.get("calculation", {}).items():
-        results_data["calculation_{}".format(name)] = val
-    init_scf_data = initial_data.get("scf", [])
-    if init_scf_data:
-        results_data["scf_iterations"] = len(init_scf_data)
-        # TODO create TrajectoryData from init_scf_data data
-    else:
-        pass
+    results_data.pop("initial_geometry", None)
+    initial_scf = results_data.pop("initial_scf", None)
+    optimisation = results_data.pop("optimisation", None)
+    results_data.pop("final_geometry", None)
+    mulliken_analysis = results_data.pop("mulliken", None)
+    stdout_exit_code = results_data.pop("exit_code")
 
-    # optimisation trajectory data
-    opt_data = data.pop("optimisation")
-    if opt_data:
-        results_data["opt_iterations"] = len(
-            opt_data) + 1  # the first optimisation step is the initial scf
-    # TODO create TrajectoryData from optimisation data
-
-    final_data = data.pop("final")
+    if initial_scf is not None:
+        results_data["scf_iterations"] = len(initial_scf.get("cycles", []))
+    if optimisation is not None:
+        # the first optimisation step is the initial scf
+        results_data["opt_iterations"] = len(optimisation) + 1
 
     # TODO read separate energy contributions
-    energy = final_data["energy"]["total_corrected"]
-    results_data["energy"] = energy["magnitude"]
-    results_data["energy_units"] = energy["units"]
+    results_data["energy"] = final_info.get("energy", None)
+    # we include this for back compatibility
+    results_data["energy_units"] = results_data.get("units", {}).get("energy", "eV")
 
-    # TODO read from .gui file and check consistency of final cell/symmops
-    structure = _extract_structure(
-        final_data["primitive_cell"], init_struct, results_data)
-    if opt_data or not init_struct:
+    # TODO read from fort.34 (initial and final) file and check consistency of final cell/symmops
+    structure = _extract_structure(final_info, init_struct, results_data, parser_result, exit_codes)
+    if structure is not None and (optimisation is not None or not init_struct):
         parser_result.nodes.structure = structure
-    else:
-        pass
-        # TODO test intput structure is same as output structure
 
     _extract_symmetry(
-        final_data, init_settings, results_data, parser_result, exit_codes)
+        final_info, init_settings, results_data, parser_result, exit_codes)
 
-    _extract_mulliken(data, results_data)
+    if mulliken_analysis is not None:
+        _extract_mulliken(mulliken_analysis, results_data)
 
     parser_result.nodes.results = DataFactory("dict")(dict=results_data)
 
-    # if array_dict:
-    #     arraydata = DataFactory("array")()
-    #     for name, array in array_dict.items():
-    #         arraydata.set_array(name, np.array(array))
-    # else:
-    #     arraydata = None
-
-    if data["errors"]:
-        # select the most appropriate exit code
-        exit_code = exit_codes.ERROR_CRYSTAL_RUN
-        for known_error_msg, code_name in KNOWN_ERRORS:
-            found = False
-            for error_msg in data["errors"]:
-                if known_error_msg in error_msg:
-                    found = True
-                    break
-            if found:
-                exit_code = exit_codes[code_name]
-                break
-        parser_result.exit_code = exit_code
+    if stdout_exit_code:
+        parser_result.exit_code = exit_codes[stdout_exit_code]
 
     return parser_result
 
@@ -219,44 +165,51 @@ def _extract_symmetry(final_data, init_settings, param_data,
                       parser_result, exit_codes):
     """extract symmetry operations"""
 
-    if "primitive_symmops" in final_data:
-
-        if init_settings:
-            if init_settings.num_symops != len(final_data["primitive_symmops"]):
-                param_data["parser_errors"].append(
-                    "number of symops different")
-                parser_result.exit_code = exit_codes.ERROR_SYMMETRY_INCONSISTENCY
-            # differences = init_settings.compare_operations(
-            #     final_data["primitive_symmops"])
-            # if differences:
-            #     param_data["parser_errors"].append(
-            #         "output symmetry operations were not the same as "
-            #         "those input: {}".format(differences))
-            #     parser_result.success = False
-        else:
-            from aiida.plugins import DataFactory
-            symmetry_data_cls = DataFactory('crystal17.symmetry')
-            data_dict = {
-                "operations": final_data["primitive_symmops"],
-                "basis": "fractional",
-                "hall_number": None
-            }
-            parser_result.nodes.symmetry = symmetry_data_cls(data=data_dict)
-    else:
+    if "primitive_symmops" not in final_data:
         param_data["parser_errors"].append(
             "primitive symmops were not found in the output file")
         parser_result.exit_code = exit_codes.ERROR_SYMMETRY_NOT_FOUND
+        return
+
+    if init_settings:
+        if init_settings.num_symops != len(final_data["primitive_symmops"]):
+            param_data["parser_errors"].append(
+                "number of symops different")
+            parser_result.exit_code = exit_codes.ERROR_SYMMETRY_INCONSISTENCY
+        # differences = init_settings.compare_operations(
+        #     final_data["primitive_symmops"])
+        # if differences:
+        #     param_data["parser_errors"].append(
+        #         "output symmetry operations were not the same as "
+        #         "those input: {}".format(differences))
+        #     parser_result.success = False
+    else:
+        from aiida.plugins import DataFactory
+        symmetry_data_cls = DataFactory('crystal17.symmetry')
+        data_dict = {
+            "operations": final_data["primitive_symmops"],
+            "basis": "fractional",
+            "hall_number": None
+        }
+        parser_result.nodes.symmetry = symmetry_data_cls(data=data_dict)
 
 
-def _extract_structure(cell_data, init_struct, results_data):
+def _extract_structure(final_data, init_struct, results_data, parser_result, exit_codes):
     """create a StructureData object of the final configuration"""
+    if "primitive_cell" not in final_data:
+        results_data["parser_errors"].append(
+            "final primitive cell was not found in the output file")
+        parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
+        return None
+
+    cell_data = final_data["primitive_cell"]
+
     results_data["number_of_atoms"] = len(cell_data["atomic_numbers"])
     results_data["number_of_assymetric"] = sum(cell_data["assymetric"])
 
     cell_vectors = []
     for n in "a b c".split():
-        assert cell_data["cell_vectors"][n]["units"] == "angstrom"
-        cell_vectors.append(cell_data["cell_vectors"][n]["magnitude"])
+        cell_vectors.append(cell_data["cell_vectors"][n])
 
     # we want to reuse the kinds from the input structure, if available
     if not init_struct:
@@ -271,25 +224,23 @@ def _extract_structure(cell_data, init_struct, results_data):
         "lattice": cell_vectors,
         "pbc": cell_data["pbc"],
         "symbols": cell_data["symbols"],
-        "ccoords": cell_data["ccoords"]["magnitude"],
+        "ccoords": cell_data["ccoords"],
         "kinds": kinds
     }, "aiida")
     results_data["volume"] = structure.get_cell_volume()
     return structure
 
 
-def _extract_mulliken(indata, param_data):
+def _extract_mulliken(data, param_data):
     """extract mulliken electronic charge partition data"""
-    if indata.get("mulliken", False):
-        if "alpha+beta_electrons" in indata["mulliken"]:
-            electrons = indata["mulliken"]["alpha+beta_electrons"]["charges"]
-            anum = indata["mulliken"]["alpha+beta_electrons"]["atomic_numbers"]
-            param_data["mulliken_electrons"] = electrons
-            param_data["mulliken_charges"] = [
-                a - e for a, e in zip(anum, electrons)
-            ]
-        if "alpha-beta_electrons" in indata["mulliken"]:
-            param_data["mulliken_spins"] = indata["mulliken"][
-                "alpha-beta_electrons"]["charges"]
-            param_data["mulliken_spin_total"] = sum(
-                param_data["mulliken_spins"])
+    if "alpha+beta_electrons" in data:
+        electrons = data["alpha+beta_electrons"]["charges"]
+        anum = data["alpha+beta_electrons"]["atomic_numbers"]
+        param_data["mulliken_electrons"] = electrons
+        param_data["mulliken_charges"] = [
+            a - e for a, e in zip(anum, electrons)
+        ]
+    if "alpha-beta_electrons" in data:
+        param_data["mulliken_spins"] = data["alpha-beta_electrons"]["charges"]
+        param_data["mulliken_spin_total"] = sum(
+            param_data["mulliken_spins"])

@@ -10,7 +10,7 @@ from aiida.common.folders import SandboxFolder
 from aiida.plugins import DataFactory, CalculationFactory
 
 from aiida_crystal17.parsers.raw.inputd12_read import extract_data
-from ejplugins.crystal import CrystalOutputPlugin
+from aiida_crystal17.parsers.raw import crystal_stdout
 
 
 # pylint: disable=too-many-locals
@@ -71,16 +71,15 @@ def populate_builder(remote_data, code=None, metadata=None):
         remote_data.getfile(out_file_name,
                             os.path.join(folder.abspath, out_file_name))
 
-        cryparse = CrystalOutputPlugin()
         with folder.open(out_file_name, mode='r') as handle:
             try:
-                data = cryparse.read_file(handle, log_warnings=False)
+                data = crystal_stdout.read_crystal_stdout(handle.read())
             except IOError as err:
                 raise OutputParsingError(
                     "Error in CRYSTAL 17 run output: {}".format(err))
 
     # we retrieve the initial primitive geometry and symmetry
-    atoms = _create_atoms(data)
+    atoms = _create_atoms(data, "initial_geometry")
 
     # convert fragment (i.e. unfixed) to fixed
     if "fragment" in atom_props:
@@ -106,7 +105,7 @@ def populate_builder(remote_data, code=None, metadata=None):
         kinds = None
 
     symmetry = symmetry_cls(data={
-        "operations": data["initial"]["primitive_symmops"],
+        "operations": data["initial_geometry"]["primitive_symmops"],
         "basis": "fractional",
         "hall_number": None
     })
@@ -133,14 +132,13 @@ def populate_builder(remote_data, code=None, metadata=None):
     return builder
 
 
-def _create_atoms(data, section="initial"):
-    """create ase.Atoms from ejplugins parsed data"""
+def _create_atoms(data, section):
+    """create ase.Atoms from stdout parsed data"""
     cell_data = data[section]["primitive_cell"]
     cell_vectors = []
     for n in "a b c".split():
-        assert cell_data["cell_vectors"][n]["units"] == "angstrom"
-        cell_vectors.append(cell_data["cell_vectors"][n]["magnitude"])
-    ccoords = cell_data["ccoords"]["magnitude"]
+        cell_vectors.append(cell_data["cell_vectors"][n])
+    ccoords = cell_data["ccoords"]
     atoms = ase.Atoms(
         cell=cell_vectors,
         pbc=cell_data["pbc"],
