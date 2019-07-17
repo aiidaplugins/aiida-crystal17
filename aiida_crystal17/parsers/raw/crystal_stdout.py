@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+Basic outline of parsing sections:
 
 ::
 
@@ -7,19 +8,21 @@
     ***************************
     <parse_calculation_header>
     ***************************
-    <initial geometry input>
+    <parse_geometry_input>
     * GEOMETRY EDITING
     <parse_calculation_setup>
     CRYSTAL - SCF - TYPE OF CALCULATION :
-    <parse_initial_scf>
+    <parse_scf_section>
     SCF ENDED
-    <>
+    <parse_scf_final_energy>
     OPTOPTOPTOPT
-    <>
+    <parse_optimisation>
     OPT END -
-    <>
+    <parse_band_gaps>
     FINAL OPTIMIZED GEOMETRY
-    <>
+    <parse_final_geometry>
+    MULLIKEN POPULATION ANALYSIS
+    <parse_mulliken_analysis>
 
 """
 from collections import namedtuple
@@ -46,6 +49,26 @@ ParsedSection = namedtuple(
     'ParsedSection',
     ['next_lineno', 'data', 'parser_error', 'non_terminating_error'])
 ParsedSection.__new__.__defaults__ = (None, ) * len(ParsedSection._fields)
+
+# a mapping of known error messages to exit codes, in order of importance
+KNOWN_ERRORS = (
+    ("END OF DATA IN INPUT DECK", "ERROR_CRYSTAL_INPUT"),
+    ("FORMAT ERROR IN INPUT DECK", "ERROR_CRYSTAL_INPUT"),
+    ("GEOMETRY DATA FILE NOT FOUND", "ERROR_CRYSTAL_INPUT"),
+    ("Wavefunction file can not be found",
+     "ERROR_WAVEFUNCTION_NOT_FOUND"),  # restart error
+    ("SCF ENDED - TOO MANY CYCLES", "UNCONVERGED_SCF"),
+    ("SCF FAILED",
+     "UNCONVERGED_SCF"),  # usually found after: SCF ENDED - TOO MANY CYCLES
+    ("GEOMETRY OPTIMIZATION FAILED",
+     "UNCONVERGED_GEOMETRY"),  # usually because run out of steps
+    ("CONVERGENCE TESTS UNSATISFIED",
+     "UNCONVERGED_GEOMETRY"),  # usually found after: OPT END - FAILED
+    ("OPT END - FAILED", "UNCONVERGED_GEOMETRY"),
+    ("BASIS SET LINEARLY DEPENDENT",
+     "BASIS_SET_LINEARLY_DEPENDENT"),  # occurs during geometry optimisations
+    ("SCF abnormal end", "ERROR_SCF_ABNORMAL_END"),  # catch all error
+    ("MPI_Abort", "ERROR_MPI_ABORT"))
 
 
 def read_crystal_stdout(lines):
@@ -78,35 +101,35 @@ def read_crystal_stdout(lines):
     outcome = parse_section(parse_pre_header, lines, lineno, output,
                             "non_program")
     if outcome is None or outcome.parser_error is not None:
-        return output
+        return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # parse the program header section
     outcome = parse_section(parse_calculation_header, lines, lineno, output,
                             "header")
     if outcome is None or outcome.parser_error is not None:
-        return output
+        return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # parse the initial geometry input
     outcome = parse_section(parse_geometry_input, lines, lineno, output,
                             "geometry_input")
     if outcome is None or outcome.parser_error is not None:
-        return output
+        return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # parse the calculation setup
     outcome = parse_section(parse_calculation_setup, lines, lineno, output,
                             "initial")
     if outcome is None or outcome.parser_error is not None:
-        return output
+        return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # parse the initial SCF run
     outcome = parse_section(parse_scf_section, lines, lineno, output,
                             ("initial_scf", "cycles"))
     if outcome is None or outcome.parser_error is not None:
-        return output
+        return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # parse the final energy of the scf run
@@ -153,7 +176,7 @@ def read_crystal_stdout(lines):
         if outcome is not None:
             lineno = outcome.next_lineno
 
-    return output
+    return assign_exit_code(output)
 
 
 def parse_section(func, lines, initial_lineno, output, key_name):
@@ -194,6 +217,30 @@ def parse_section(func, lines, initial_lineno, output, key_name):
         output["parser_errors"].append(outcome.parser_error)
 
     return outcome
+
+
+def assign_exit_code(output):
+
+    exit_code = 0
+
+    if output["errors"]:
+        exit_code = "ERROR_CRYSTAL_RUN"
+        for known_error_msg, code_name in KNOWN_ERRORS:
+            found = False
+            for error_msg in output["errors"]:
+                if known_error_msg in error_msg:
+                    found = True
+                    break
+            if found:
+                exit_code = code_name
+                break
+    elif output["parser_errors"]:
+        exit_code = "ERROR_PARSING_STDOUT"
+    elif output["parser_exceptions"]:
+        exit_code = "ERROR_PARSING_STDOUT"
+
+    output["exit_code"] = exit_code
+    return output
 
 
 def initial_parse(lines):
@@ -312,7 +359,9 @@ def parse_pre_header(lines, initial_lineno=0):
 
         lineno += 1
         if lineno + 1 >= num_lines:
-            return None, meta_data
+            return ParsedSection(
+                lineno, meta_data,
+                "couldn't find start of program header (denoted *****)")
         line = lines[lineno]
 
     return ParsedSection(

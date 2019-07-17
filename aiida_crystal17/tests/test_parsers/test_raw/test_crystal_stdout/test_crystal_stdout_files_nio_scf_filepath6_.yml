@@ -1,5 +1,6 @@
 errors: []
 execution_time_seconds: 187
+exit_code: 0
 initial:
   calculation:
     spin: true

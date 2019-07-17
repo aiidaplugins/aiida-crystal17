@@ -29,3 +29,18 @@ def test_crystal_stdout_files(name, filepath, data_regression):
     output = read_crystal_stdout(lines)
     output = recursive_round(output, 12)
     data_regression.check(output)
+
+
+# with open("/Users/cjs14/GitHub/aiida-crystal17/aiida_crystal17/tests/test_parsers/test_raw/filenames.txt") as handle:
+#     filepaths = [f for f in handle.read().splitlines()
+#     if not f.endswith(".ech3.crystal.out") and not f.endswith(".doss.crystal.out")]
+
+
+# @pytest.mark.parametrize('filepath', filepaths)
+# def test_crystal_stdout_files_all(filepath):
+#     with open(filepath) as handle:
+#         lines = handle.read().splitlines()
+#     output = read_crystal_stdout(lines)
+#     if not output["errors"]:
+#         assert output["parser_exceptions"] == [], (output["parser_exceptions"], output["parser_errors"])
+#         assert [s for s in output["parser_errors"] if 'OPT END' not in s and 'end of SCF' not in s] == [], (output["parser_exceptions"], output["parser_errors"])

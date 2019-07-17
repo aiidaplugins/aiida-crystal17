@@ -1,5 +1,6 @@
 errors: []
 execution_time_seconds: 1098
+exit_code: ERROR_PARSING_STDOUT
 initial:
   calculation:
     spin: true

@@ -1,5 +1,6 @@
 errors: []
 execution_time_seconds: 4
+exit_code: 0
 initial:
   calculation:
     functional:

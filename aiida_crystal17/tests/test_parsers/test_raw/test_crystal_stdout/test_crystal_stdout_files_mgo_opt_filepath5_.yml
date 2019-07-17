@@ -2,6 +2,7 @@ band_gaps:
   all: 17.4781
 errors: []
 execution_time_seconds: 102
+exit_code: 0
 final_geometry:
   crystallographic_cell:
     assymetric:

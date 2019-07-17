@@ -1,5 +1,6 @@
 errors: []
 execution_time_seconds: 3018
+exit_code: 0
 final_geometry:
   crystallographic_cell: {}
   primitive_cell:
