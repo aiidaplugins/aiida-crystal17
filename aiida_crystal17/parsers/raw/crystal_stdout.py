@@ -32,17 +32,12 @@ import re
 import traceback
 
 from jsonextended import edict
-from aiida_crystal17.common.parsing import split_numbers
+from aiida_crystal17.common.parsing import split_numbers, convert_units
 
 try:
     from distutils.util import strtobool
 except ImportError:
     from distutils import strtobool
-
-
-def convert_units(value, in_units, out_units, standard="codata2014"):
-    if in_units == "hartree" and out_units == "eV":
-        return value * 27.21138602
 
 
 ParsedSection = namedtuple(

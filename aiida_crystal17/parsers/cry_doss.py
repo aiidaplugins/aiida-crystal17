@@ -10,7 +10,7 @@ from aiida.engine import ExitCode
 from aiida.orm import Dict, ArrayData
 from aiida.parsers.parser import Parser
 
-from aiida_crystal17.parsers.raw.doss_output_f25 import read_doss_f25_content
+from aiida_crystal17.parsers.raw.crystal_fort25 import parse_crystal_fort25_aiida
 from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
@@ -42,7 +42,7 @@ class CryDossParser(Parser):
 
         try:
             with output_folder.open(output_isovalue_fname) as handle:
-                data, arrays = read_doss_f25_content(
+                data, arrays = parse_crystal_fort25_aiida(
                     handle, self.__class__.__name__)
         except Exception:
             traceback.print_exc()

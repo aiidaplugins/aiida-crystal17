@@ -2,6 +2,12 @@ from decimal import Decimal
 import re
 
 
+def convert_units(value, in_units, out_units, standard="codata2014"):
+    # TODO use units.yaml
+    if in_units == "hartree" and out_units == "eV":
+        return value * 27.21138602
+
+
 def split_numbers(string, as_decimal=False):
     """ get a list of numbers from a string (even with no spacing)
 
