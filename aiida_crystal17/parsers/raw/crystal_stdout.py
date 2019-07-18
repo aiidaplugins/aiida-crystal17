@@ -224,7 +224,10 @@ def assign_exit_code(output):
                 exit_code = code_name
                 break
     elif output["parser_errors"]:
-        exit_code = "ERROR_PARSING_STDOUT"
+        if any(["TESTGEOM  DIRECTIVE" in msg for msg in output["warnings"]]):
+            exit_code = "TESTGEOM_DIRECTIVE"
+        else:
+            exit_code = "ERROR_PARSING_STDOUT"
     elif output["parser_exceptions"]:
         exit_code = "ERROR_PARSING_STDOUT"
 
@@ -455,7 +458,7 @@ def parse_calculation_setup(lines, initial_lineno):
 
 
 def parse_geometry_section(data, initial_lineno, line, lines):
-    """ update dict get geometry related variables
+    """ parse a section of geometry related variables
 
     Parameters
     ----------
@@ -466,11 +469,59 @@ def parse_geometry_section(data, initial_lineno, line, lines):
         the current line
     lines: list[str]
 
+    Notes
+    -----
+
+    For initial and 'FINAL OPTIMIZED GEOMETRY' only::
+
+        DIRECT LATTICE VECTORS CARTESIAN COMPONENTS (ANGSTROM)
+                X                    Y                    Z
+        0.355114561000E+01   0.000000000000E+00   0.000000000000E+00
+        0.000000000000E+00   0.355114561000E+01   0.000000000000E+00
+        0.000000000000E+00   0.000000000000E+00   0.535521437000E+01
+
+
+        CARTESIAN COORDINATES - PRIMITIVE CELL
+        *******************************************************************************
+        *      ATOM          X(ANGSTROM)         Y(ANGSTROM)         Z(ANGSTROM)
+        *******************************************************************************
+            1    26 FE    0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+            2    26 FE    1.775572805000E+00  1.775572805000E+00  0.000000000000E+00
+            3    16 S    -1.110223024625E-16  1.775572805000E+00  1.393426779074E+00
+            4    16 S     1.775572805000E+00  7.885127240037E-16 -1.393426779074E+00
+
+    For initial, final and optimisation steps:
+
+    Primitive cell::
+
+        PRIMITIVE CELL - CENTRING CODE 1/0 VOLUME=    36.099581 - DENSITY  6.801 g/cm^3
+                A              B              C           ALPHA      BETA       GAMMA
+            2.94439264     2.94439264     4.16400000    90.000000  90.000000  90.000000
+        *******************************************************************************
+        ATOMS IN THE ASYMMETRIC UNIT    4 - ATOMS IN THE UNIT CELL:    4
+            ATOM                 X/A                 Y/B                 Z/C
+        *******************************************************************************
+            1 T  28 NI    0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+
+    Crystallographic cell (only if the geometry is not originally primitive)::
+
+        CRYSTALLOGRAPHIC CELL (VOLUME=         74.61846100)
+                A              B              C           ALPHA      BETA       GAMMA
+            4.21000000     4.21000000     4.21000000    90.000000  90.000000  90.000000
+
+        COORDINATES IN THE CRYSTALLOGRAPHIC CELL
+            ATOM                 X/A                 Y/B                 Z/C
+        *******************************************************************************
+            1 T  12 MG    0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+
     """
+
+    # check that units are correct (probably not needed)
     if fnmatch(line, "LATTICE PARAMETERS*(*)"):
         if not ("ANGSTROM" in line and "DEGREES" in line):
             raise IOError("was expecting lattice parameters in angstroms and degrees on line:"
                           " {0}, got: {1}".format(initial_lineno, line))
+        return
 
     for pattern, field, pattern2 in [('PRIMITIVE*CELL*', "primitive_cell", "ATOMS IN THE ASYMMETRIC UNIT*"),
                                      ('CRYSTALLOGRAPHIC*CELL*', "crystallographic_cell",
@@ -486,7 +537,7 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                     dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], split_numbers(lines[initial_lineno + 2])))
                 }
             ])
-        if fnmatch(line, pattern2):
+        elif fnmatch(line, pattern2):
             periodic = [True, True, True]
             if not fnmatch(lines[initial_lineno + 1].strip(), "ATOM*X/A*Y/B*Z/C"):
                 # for 2d (slab) can get z in angstrom (and similar for 1d)
@@ -530,7 +581,8 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 atom_data.pop("fcoords")
             data[field] = edict.merge([data.get(field, {}), atom_data])
 
-    # TODO These ccoords DON'T work with lattice parameters (at least for final run)
+    # TODO These coordinates are present in initial and final optimized sections,
+    # but DON'T work with lattice parameters
     if fnmatch(line, "CARTESIAN COORDINATES - PRIMITIVE CELL*"):
         if not fnmatch(lines[initial_lineno + 2].strip(), "*ATOM*X(ANGSTROM)*Y(ANGSTROM)*Z(ANGSTROM)"):
             raise IOError("was expecting ATOM X(ANGSTROM) Y(ANGSTROM) Z(ANGSTROM) on line:"
@@ -547,7 +599,7 @@ def parse_geometry_section(data, initial_lineno, line, lines):
             curr_lineno += 1
         data["primitive_cell"] = edict.merge([data.get("primitive_cell", {}), atom_data])
 
-    if fnmatch(line, "DIRECT LATTICE VECTORS CARTESIAN COMPONENTS*"):
+    elif fnmatch(line, "DIRECT LATTICE VECTORS CARTESIAN COMPONENTS*"):
         if "ANGSTROM" not in line:
             raise IOError("was expecting lattice vectors in angstroms on line:"
                           " {0}, got: {1}".format(initial_lineno, line))
