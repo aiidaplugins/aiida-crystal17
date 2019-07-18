@@ -20,24 +20,26 @@ def parse_crystal_fort25(content):
     -----
     File Format:
 
-    1ST RECORD : -%-,IHFERM,TYPE,NROW,NCOL,DX,DY,COSXY (format : A3,I1,A4,2I5,1P,(3E12.5))
-    2ND RECORD : X0,Y0 (format : 1P,6E12.5)
-    3RD RECORD : I1,I2,I3,I4,I5,I6 (format : 6I3)
-    4TH RECORD
-    AND FOLLOWING : ((RDAT(I,J),I=1,NROW),J=1,NCOL) (format : 1P,6E12.5)
+    ::
 
-    Meaning of the variables:
-    1   NROW            1 (DOSS are written one projection at a time)
-        NCOL            number of energy points in which the DOS is calculated
-        DX              energy increment (hartree)
-        DY              not used
-        COSXY           Fermi energy (hartree)
-    2   X0              energy corresponding to the first point
-        Y0              not used
-    3   I1              number of the projection;
-        I2              number of atomic orbitals of the projection;
-        I3,I4,I5,I6     not used
-    4   RO(J),J=1,NCOL  DOS: density of states ro(eps(j)) (atomic units).
+        1ST RECORD : -%-,IHFERM,TYPE,NROW,NCOL,DX,DY,COSXY (format : A3,I1,A4,2I5,1P,(3E12.5))
+        2ND RECORD : X0,Y0 (format : 1P,6E12.5)
+        3RD RECORD : I1,I2,I3,I4,I5,I6 (format : 6I3)
+        4TH RECORD
+        AND FOLLOWING : ((RDAT(I,J),I=1,NROW),J=1,NCOL) (format : 1P,6E12.5)
+
+        Meaning of the variables:
+        1   NROW            1 (DOSS are written one projection at a time)
+            NCOL            number of energy points in which the DOS is calculated
+            DX              energy increment (hartree)
+            DY              not used
+            COSXY           Fermi energy (hartree)
+        2   X0              energy corresponding to the first point
+            Y0              not used
+        3   I1              number of the projection;
+            I2              number of atomic orbitals of the projection;
+            I3,I4,I5,I6     not used
+        4   RO(J),J=1,NCOL  DOS: density of states ro(eps(j)) (atomic units).
 
     """
     system_type = None
