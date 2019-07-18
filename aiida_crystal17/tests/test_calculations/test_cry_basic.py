@@ -3,13 +3,11 @@
 """
 import os
 
-import ejplugins
-from jsonextended import edict
 import pytest
 
-import aiida_crystal17
 from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
+from aiida_crystal17.common import recursive_round
 
 
 def test_calcjob_submission(db_test_app, data_regression):
@@ -44,7 +42,7 @@ def test_calcjob_submission(db_test_app, data_regression):
     ('mgo_sto3g_scf_external', True)
 ))
 @pytest.mark.process_execution
-def test_calcjob_run(db_test_app, infolder, external_geom):
+def test_calcjob_run(db_test_app, infolder, external_geom, data_regression):
     # type: (AiidaTestApp, str, str) -> None
     """Test running an optimisation calculation"""
     from aiida.engine import run_get_node
@@ -82,137 +80,16 @@ def test_calcjob_run(db_test_app, infolder, external_geom):
     db_test_app.check_calculation(
         calc_node, ["results", "structure", "symmetry"])
 
-    results = calc_node.get_outgoing().get_node_by_label('results')
-    compare_expected_results(infolder, results)
+    results_attributes = calc_node.outputs.results.attributes
+    results_attributes.pop("execution_time_seconds")
+    results_attributes.pop("parser_version")
+    results_attributes = recursive_round(results_attributes, 9)
+    data_regression.check(results_attributes)
 
-    structure = calc_node.get_outgoing().get_node_by_label('structure')
-    compare_expected_structure(infolder, structure)
-
-
-def compare_expected_results(infolder, result_node):
-    if infolder == "mgo_sto3g_scf":
-        expected = {
-            'parser_version': str(aiida_crystal17.__version__),
-            'ejplugins_version': str(ejplugins.__version__),
-            'parser_class': 'CryMainParser',
-            'parser_errors': [],
-            'parser_warnings': ["no initial structure available, "
-                                "creating new kinds for atoms"],
-            'errors': [],
-            'warnings': [],
-            'energy': -2.7121814374931E+02 * 27.21138602,
-            'energy_units': 'eV',  # hartree to eV
-            'calculation_type':
-            'restricted closed shell',
-            'calculation_spin': False,
-            # 'wall_time_seconds': 3,
-            'number_of_atoms': 2,
-            'number_of_assymetric': 2,
-            'scf_iterations': 7,
-            'volume': 18.65461527264623,
-        }
-    elif infolder == "mgo_sto3g_scf_external":
-        expected = {
-            'parser_version': str(aiida_crystal17.__version__),
-            'ejplugins_version': str(ejplugins.__version__),
-            'parser_class': 'CryMainParser',
-            'parser_errors': [],
-            'parser_warnings': [
-                "no initial structure available, "
-                "creating new kinds for atoms"],
-            'errors': [],
-            'warnings': [],
-            'energy': -2.7121814374931E+02 * 27.21138602,
-            'energy_units': 'eV',  # hartree to eV
-            'calculation_type': 'restricted closed shell',
-            'calculation_spin': False,
-            # 'wall_time_seconds': 3,
-            'number_of_atoms': 2,
-            'number_of_assymetric': 2,
-            'scf_iterations': 7,
-            'volume': 18.65461527264623,
-            'mulliken_charges': [0.777, -0.777],
-            'mulliken_electrons': [11.223, 8.777],
-        }
-    elif infolder == "mgo_sto3g_opt":
-        expected = {
-            'parser_version': str(aiida_crystal17.__version__),
-            'ejplugins_version': str(ejplugins.__version__),
-            'parser_class': 'CryMainParser',
-            'parser_errors': [],
-            'parser_warnings': ["no initial structure available, "
-                                "creating new kinds for atoms"],
-            'errors': [],
-            'warnings': ['WARNING **** INT_SCREEN **** '
-                         'CELL PARAMETERS OPTIMIZATION ONLY'],
-            'energy': -2.712596206888E+02 * 27.21138602,
-            'energy_units': 'eV',  # hartree to eV
-            'calculation_type': 'restricted closed shell',
-            'calculation_spin': False,
-            # 'wall_time_seconds': 102,
-            'number_of_atoms': 2,
-            'number_of_assymetric': 2,
-            'scf_iterations': 8,
-            'opt_iterations': 6,
-            'volume': 14.652065094424696,
-        }
-    else:
-        raise ValueError(infolder)
-
-    attributes = result_node.get_dict()
-    attributes.pop('wall_time_seconds', None)
-    assert set(attributes.keys()) == set(expected.keys())
-    assert edict.diff(attributes, expected, np_allclose=True) == {}
-
-
-def compare_expected_structure(infile, structure):
-    if infile in ["mgo_sto3g_scf",
-                  "mgo_sto3g_scf_external"]:
-        expected = {
-            'cell': [[0.0, 2.105, 2.105],
-                     [2.105, 0.0, 2.105],
-                     [2.105, 2.105, 0.0]],
-            'kinds': [
-                {'mass': 24.305,
-                 'name': 'Mg',
-                 'symbols': ['Mg'],
-                 'weights': [1.0]},
-                {'mass': 15.999,
-                 'name': 'O',
-                 'symbols': ['O'],
-                 'weights': [1.0]}],
-            'pbc1': True,
-            'pbc2': True,
-            'pbc3': True,
-            'sites': [{'kind_name': 'Mg', 'position': [0.0, 0.0, 0.0]},
-                      {'kind_name': 'O', 'position': [2.105, 2.105, 2.105]}]
-        }
-    elif infile == "mgo_sto3g_opt":
-        expected = {
-            'cell': [[0.0, 1.94218061274, 1.94218061274],
-                     [1.94218061274, 0.0, 1.94218061274],
-                     [1.94218061274, 1.94218061274, 0.0]],
-            'kinds': [
-                {'mass': 24.305,
-                 'name': 'Mg',
-                 'symbols': ['Mg'],
-                 'weights': [1.0]},
-                {'mass': 15.999,
-                 'name': 'O',
-                 'symbols': ['O'],
-                 'weights': [1.0]}],
-            'pbc1': True,
-            'pbc2': True,
-            'pbc3': True,
-            'sites': [
-                {'kind_name': 'Mg',
-                 'position': [0.0, 0.0, 0.0]},
-                {'kind_name': 'O',
-                 'position': [1.94218061274, 1.94218061274, 1.94218061274]}]}
-    else:
-        raise ValueError()
-
-    assert edict.diff(structure.attributes, expected, np_allclose=True) == {}
+    data_regression.check(
+        recursive_round(calc_node.outputs.structure.attributes, 9),
+        "test_calcjob_run_{}_{}_struct".format(infolder, external_geom)
+    )
 
 
 def compare_symmetry():

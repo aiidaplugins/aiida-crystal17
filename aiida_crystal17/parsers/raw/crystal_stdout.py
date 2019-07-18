@@ -1120,21 +1120,33 @@ def extract_final_info(parsed_data):
         if "optimisation" in parsed_data:
             data["primitive_cell"] = copy.deepcopy(
                 parsed_data["optimisation"][-1].get("primitive_cell", None))
-        else:
-            data["primitive_cell"] = copy.deepcopy(parsed_data["initial"].get(
+        elif "initial_geometry" in parsed_data:
+            data["primitive_cell"] = copy.deepcopy(parsed_data["initial_geometry"].get(
                 "primitive_cell", None))
+        else:
+            raise ValueError("no primitive_cell available in parsed data")
+
     if "energy" not in data:
         if "optimisation" in parsed_data:
-            data["energy"] = copy.deepcopy(parsed_data["optimisation"][-1].get(
-                "energy", None))
+            energies = parsed_data["optimisation"][-1].get("energy", {})
+            if "total_corrected" not in energies:
+                raise ValueError("no optimised energy available in parsed data")
+            data["energy"] = energies["total_corrected"]
+        elif "initial_scf" in parsed_data:
+            energies = parsed_data["initial_scf"].get("final_energy", {})
+            if "total_corrected" not in energies:
+                raise ValueError("no scf energy available in parsed data")
+            data["energy"] = energies["total_corrected"]
         else:
-            data["energy"] = copy.deepcopy(parsed_data["initial_scf"].get(
-                "final_energy", None))
+            raise ValueError("no energy available in parsed data")
 
     if "primitive_symmops" not in data:
-        if "primitive_symmops" in parsed_data[
-                "initial"] and "optimisation" not in parsed_data:
+        if "optimisation" in parsed_data:
+            raise ValueError("optimisation, but no primitive_symops specified in final_geometry")
+        if "initial_geometry" in parsed_data and "primitive_symmops" in parsed_data["initial_geometry"]:
             data["primitive_symmops"] = copy.deepcopy(
-                parsed_data["initial"]["primitive_symmops"])
+                parsed_data["initial_geometry"]["primitive_symmops"])
+        else:
+            raise ValueError("no primitive_symops available in parsed data")
 
     return data
