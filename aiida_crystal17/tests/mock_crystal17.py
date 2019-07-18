@@ -32,16 +32,19 @@ hash_map = {
             "stdout": ("mgo_sto3g_scf", "main.out")}},
     "ee3e7aa100e0ffcd8c23ac626c54c538": {
         None: {
-            "output": (),
+            "output": [(("mgo_sto3g_scf_external", "mock_fort.9"),
+                        ("fort.9",))],
             "stdout": ("mgo_sto3g_scf_external", "main.out")}},
     "ee712942682b1e4fa73a6c8456dd6fda": {
         None: {
-            "output": (),
+            "output": [(("mgo_sto3g_scf_external", "mock_fort.9"),
+                        ("fort.9",))],
             "stdout": ("mgo_sto3g_scf_external", "main.out")}},
     # TODO I think the above two are the same just with minor differences (and 4bfb50cb82980b82aabc6eb00e17f62c)
     "ff77b996a5081e64ab2e9970c6cd15cb": {
         None: {
-            "output": (),
+            "output": [(("mgo_sto3g_scf_external", "mock_fort.9"),
+                        ("fort.9",))],
             "stdout": ("mgo_sto3g_scf_external", 'main.out')}},
     "a7bfd39835be4b6730b0df448f5f6a79": {
         None: {
