@@ -32,7 +32,7 @@ class CryPropertiesWorkChain(WorkChain):
         super(CryPropertiesWorkChain, cls).define(spec)
 
         spec.expose_inputs(CryDossCalculation, include=['wf_folder'])
-        spec.expose_inputs(CryDossCalculation, namespace=cls._doss_namespace, exclude=('wf_folder'))
+        spec.expose_inputs(CryDossCalculation, namespace=cls._doss_namespace, exclude=('wf_folder',))
         spec.input('{}.metadata.options.resources'.format(cls._doss_namespace), valid_type=dict, required=False)
         spec.input('{}.meta_options'.format(cls._calc_namespace),
                    valid_type=dict, required=False, non_db=True,

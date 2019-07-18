@@ -93,7 +93,7 @@ gulp_version: 4.5.3
 num_cycles: 1
 parser_class: null
 parser_errors: []
-parser_version: 0.8.0b4
+parser_version: 0.9.0b5
 parser_warnings: []
 peak_dynamic_memory_mb: 0.52
 total_configurations: 3
