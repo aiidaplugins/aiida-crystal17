@@ -88,7 +88,7 @@ class CryMainParser(Parser):
             if errors:
                 self.logger.warning(
                     "the calculation raised the following {0}:\n{1}".format(
-                        "\n\t".join(etype, errors)))
+                        etype, "\n\t".join(errors)))
 
         # add output nodes
         self.out('results', parser_result.nodes.results)
