@@ -85,7 +85,8 @@
             "pytest-regressions"
         ],
         "code_style": [
-            "flake8<3.8.0,>=3.7.0"
+            "flake8<3.8.0,>=3.7.0",
+            "yapf==0.26.0"
         ],
         "docs": [
             "sphinx>=1.6,<2",
