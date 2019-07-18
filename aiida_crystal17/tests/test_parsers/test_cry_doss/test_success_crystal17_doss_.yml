@@ -10,7 +10,6 @@ arrays:
   array|total_beta:
   - 1002
 results:
-  ejplugins_version: 0.11.1
   energy_max: 13.7420025
   energy_min: -21.0529868
   energy_units: eV
@@ -32,4 +31,5 @@ results:
   parser_warnings: []
   spin: true
   system_type: open shell, conducting system
+  units_conversion: CODATA2014
   warnings: []

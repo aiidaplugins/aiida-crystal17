@@ -35,7 +35,6 @@ calc:
   symlink_wf: true
   withmpi: false
 results:
-  ejplugins_version: 0.11.1
   energy_max: 10.4040617
   energy_min: -10.2020112
   energy_units: eV
@@ -49,4 +48,5 @@ results:
   parser_warnings: []
   spin: false
   system_type: closed shell, insulating system
+  units_conversion: CODATA2014
   warnings: []
