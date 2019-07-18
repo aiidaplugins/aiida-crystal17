@@ -13,6 +13,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    user_guide/get_started
    user_guide/calc_basic
    user_guide/calc_main
+   user_guide/workflow_base
    user_guide/calc_main_immigrant
    user_guide/calc_gulp
    api_index
