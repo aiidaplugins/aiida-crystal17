@@ -70,8 +70,7 @@
         "spglib>=1.10.0,<2.0.0",
         "ase>=3.12.0,<4.0.0",
         "PyCifRW==4.2.1; python_version < '3'",
-        "PyCifRW==4.4; python_version >= '3'",
-        "graphviz"
+        "PyCifRW==4.4; python_version >= '3'"
     ],
     "extras_require": {
         "testing": [

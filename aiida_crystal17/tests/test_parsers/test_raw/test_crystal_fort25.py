@@ -1,7 +1,6 @@
 import os
 from textwrap import dedent
 
-import numpy as np
 import six
 
 from aiida_crystal17.tests import TEST_FILES
