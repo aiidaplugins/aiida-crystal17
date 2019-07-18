@@ -30,7 +30,7 @@ def test_calcjob_submit_mgo(db_test_app):
                 "num_mpiprocs_per_machine": 1,
             },
             "max_wallclock_seconds": 30,
-            "input_wf_name": "mgo_sto3g_scf.f9"
+            "input_wf_name": "fort.9"
         },
         "dry_run": True
     }
@@ -95,7 +95,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
                 "num_mpiprocs_per_machine": 1,
             },
             "max_wallclock_seconds": 30,
-            "input_wf_name": "mgo_sto3g_scf.f9"
+            "input_wf_name": "fort.9"
         }
     }
     builder.parameters = Dict(dict={

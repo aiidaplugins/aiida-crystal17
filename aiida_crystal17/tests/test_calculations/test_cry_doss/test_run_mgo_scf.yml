@@ -10,7 +10,7 @@ calc:
   exit_status: 0
   import_sys_environment: true
   input_file_name: INPUT
-  input_wf_name: mgo_sto3g_scf.f9
+  input_wf_name: fort.9
   max_wallclock_seconds: 30
   mpirun_extra_params: []
   output_isovalue_fname: fort.25
@@ -32,7 +32,7 @@ calc:
   scheduler_stderr: _scheduler-stderr.txt
   scheduler_stdout: _scheduler-stdout.txt
   sealed: true
-  symlink_wf: true
+  symlink_wf: false
   version:
     core: 1.0.0b5
     plugin: 0.9.0b5
