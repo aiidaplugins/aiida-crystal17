@@ -1,0 +1,16 @@
+calc_info:
+  local_copy_list: []
+  remote_copy_list: []
+  remote_symlink_list: []
+  retrieve_list:
+  - HESSOPT.DAT
+  - fort.34
+  - main.out
+  retrieve_temporary_list:
+  - opt[ac][0-9][0-9][0-9]
+code_infos:
+- cmdline_params: []
+  join_files: true
+  stdin_name: INPUT
+  stdout_name: main.out
+  withmpi: false

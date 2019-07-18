@@ -1,0 +1,19 @@
+calc_node:
+  exit_status: 0
+  process_label: CryPropertiesWorkChain
+  process_state: finished
+  sealed: true
+  stepper_state_info: 2:check_doss_calculation
+  version:
+    core: 1.0.0b5
+    plugin: 0.9.0b5
+incoming:
+- doss__code
+- doss__parameters
+- wf_folder
+outgoing:
+- doss__arrays
+- doss__remote_folder
+- doss__results
+- doss__retrieved
+- doss_calc

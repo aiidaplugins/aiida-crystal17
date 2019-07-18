@@ -1,0 +1,38 @@
+calculation:
+  n_ao: 14
+  n_atoms: 2
+  n_core_el: 12
+  n_electrons: 20
+  n_kpoints_gilat: 29
+  n_kpoints_ibz: 29
+  n_shells: 5
+  n_symops: 48
+  spin: false
+  type: restricted closed shell
+energy: -7380.22160519
+energy_units: eV
+errors: []
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+mulliken_charges:
+- 0.777
+- -0.777
+mulliken_electrons:
+- 11.223
+- 8.777
+number_of_assymetric: 2
+number_of_atoms: 2
+parser_class: CryMainParser
+parser_errors: []
+parser_exceptions: []
+parser_warnings:
+- no initial structure available, creating new kinds for atoms
+scf_iterations: 7
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+volume: 18.65461525
+warnings: []

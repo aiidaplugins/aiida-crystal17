@@ -5,7 +5,7 @@ from jsonextended import edict
 from aiida.cmdline.commands.cmd_verdi import verdi
 from aiida.cmdline.params import types
 from aiida.cmdline.utils import decorators
-from aiida_crystal17.common import get_data_plugin
+from aiida.plugins import DataFactory
 from aiida_crystal17.cmndline import options
 
 
@@ -35,7 +35,7 @@ def try_grab_description(ctx, param, value):
 
     This is a click parameter callback.
     """
-    basis_data_cls = get_data_plugin('crystal17.basisset')
+    basis_data_cls = DataFactory('crystal17.basisset')
     group_name = ctx.params['name']
     existing_groups = basis_data_cls.get_basis_groups()
     existing_group_names = [group.name for group in existing_groups]
@@ -64,7 +64,7 @@ def try_grab_description(ctx, param, value):
 def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
     """Upload a family of CRYSTAL Basis Set files."""
 
-    basis_data_cls = get_data_plugin('crystal17.basisset')
+    basis_data_cls = DataFactory('crystal17.basisset')
     with cli_spinner():
         nfiles, num_uploaded = basis_data_cls.upload_basisset_family(
             path,
@@ -93,7 +93,7 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
 def listfamilies(element, with_description, list_pks):
     """List available families of CRYSTAL Basis Set files."""
 
-    basis_data_cls = get_data_plugin('crystal17.basisset')
+    basis_data_cls = DataFactory('crystal17.basisset')
     groups = basis_data_cls.get_basis_groups(
         filter_elements=None if not element else element)
 

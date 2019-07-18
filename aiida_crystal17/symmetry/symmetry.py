@@ -1,15 +1,139 @@
 """
-a module for computing the symmetry of an AiiDA StructureData object.
+A module for computing the symmetry of an AiiDA StructureData object.
+
+When computing symmetry, atomic sites with the same **Kind** are treated as
+symmetrically equivalent (rather than just the atomic elements).
+
+Currently only 3D structures are considered.
 
 NB: this module is not specific to CRYSTAL,
 and may be move to a separate package at a later date
 """
-import numpy as np
+from textwrap import dedent
 from ase import Atoms
 from ase.symbols import symbols2numbers
+import numpy as np
 import spglib
 
 from aiida_crystal17 import __version__
+
+
+def structure_info(structure, max_srows=None, round_dp=4):
+    """get a formatted string,
+    with information about a StructureData cell and sites
+
+    Parameters
+    ----------
+    structure : aiida.StructureData
+    max_srows : None or int
+        limit the number of site lines returned
+    round_dp : int
+        round numbers to n decimal places
+
+    Returns
+    -------
+    str
+
+    """
+    a, b, c = structure.cell_lengths
+    l, m, n = structure.cell_angles
+    cell = [item for sublist in np.round(structure.cell, round_dp)
+            for item in sublist]
+    pa, pb, pc = structure.pbc
+    header = dedent("""\
+    StructureData Summary
+    Lattice
+        abc : {0:5.4} {1:5.4} {2:5.4}
+     angles : {3:5.4} {4:5.4} {5:5.4}
+     volume : {6:5.4}
+        pbc : {7} {8} {9}
+          A : {10:5.4} {11:5.4} {12:5.4}
+          B : {13:5.4} {14:5.4} {15:5.4}
+          C : {16:5.4} {17:5.4} {18:5.4}
+    Kind  Symbols Position
+    ----  ------- --------
+    """.format(a, b, c, l, m, n,
+               structure.get_cell_volume(),
+               pa, pb, pc, *cell))
+    slines = []
+    for site in structure.sites:
+        name = site.kind_name
+        kind = structure.get_kind(name)
+        slines.append(
+            "{0:5} {1:7} {2:<7.4} {3:<7.4} {4:<7.4}".format(
+                name, kind.get_symbols_string(),
+                *np.round(site.position, round_dp)))
+
+    if max_srows is not None:
+        if len(slines) > max_srows:
+            slines = slines[:max_srows] + ["..."]
+
+    return header + "\n".join(slines)
+
+
+def print_structure(structure, max_srows=None, round_dp=4):
+    """print a formatted string,
+    with information about a StructureData cell and sites
+
+    Parameters
+    ----------
+    structure : aiida.StructureData
+    max_srows : None or int
+        limit the number of site lines returned
+    round_dp : int
+        round numbers to n decimal places
+
+    """
+    print(structure_info(structure, max_srows=max_srows, round_dp=round_dp))
+
+
+def reset_kind_names(structure, kind_names):
+    """reset the kind names (per site) of a StructureData node
+
+    Parameters
+    ----------
+    structure : aiida.StructureData
+    kind_names : list[str]
+        a name for each site of the structure
+
+    Returns
+    -------
+    aiida.StructureData
+        a cloned node
+
+    Raises
+    ------
+    AssertionError
+        if the kind_names are not compatible with the current sites
+
+    """
+    from aiida.orm.nodes.data.structure import Kind, Site
+    if len(structure.sites) != len(kind_names):
+        raise AssertionError("lengths of sites & names not equal")
+    sites = structure.sites
+    kinds = {k.name: k for k in structure.kinds}
+    structure = structure.clone()
+    structure.clear_sites()
+    structure.clear_kinds()
+
+    new_kinds = {}
+    for site, name in zip(sites, kind_names):
+        if name not in new_kinds:
+            kind_dict = kinds[site.kind_name].get_raw()
+            kind_dict["name"] = name
+            new_kind = Kind(raw=kind_dict)
+            structure.append_kind(new_kind)
+            new_kinds[name] = new_kind
+        old_symbols = kinds[site.kind_name].symbols
+        new_symbols = new_kinds[name].symbols
+        if old_symbols != new_symbols:
+            raise AssertionError(
+                "inconsistent symbols: {} != {}".format(
+                    old_symbols, new_symbols))
+        new_site = Site(kind_name=name, position=site.position)
+        structure.append_site(new_site)
+
+    return structure
 
 
 def frac_to_cartesian(lattice, fcoords):
@@ -51,7 +175,8 @@ def cartesian_to_frac(lattice, ccoords):
 
 
 def prepare_for_spglib(structure):
-    """ prepare an AiiDa Structure for parsing to spglib
+    """ prepare an AiiDa Structure for parsing to spglib,
+    labelling sites with the same **Kind** as equivalent
 
     Parameters
     ----------
@@ -81,7 +206,10 @@ def prepare_for_spglib(structure):
 
 def compute_symmetry_dataset(structure, symprec, angle_tolerance):
     """ compute the symmetry of a Structure, with
-    periodic boundary conditions in all axes, using spglib
+    periodic boundary conditions in all axes, using spglib.
+
+    When computing symmetry, atomic sites with the same **Kind** are treated as
+    symmetrically equivalent (rather than just the atomic elements).
 
     Parameters
     ----------
@@ -111,6 +239,9 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
 def compute_symmetry_dict(structure, symprec, angle_tolerance):
     """ compute the symmetry of a Structure, with
     periodic boundary conditions in all axes, using spglib
+
+    When computing symmetry, atomic sites with the same **Kind** are treated as
+    symmetrically equivalent (rather than just the atomic elements).
 
     Parameters
     ----------
@@ -184,6 +315,9 @@ def get_hall_number_from_symmetry(operations, basis="fractional",
 def find_primitive(structure, symprec, angle_tolerance):
     """ compute the primitive cell for an AiiDA structure
 
+    When computing symmetry, atomic sites with the same **Kind** are treated as
+    symmetrically equivalent (rather than just the atomic elements).
+
     Parameters
     ----------
     structure: aiida.StructureData
@@ -224,6 +358,9 @@ def find_primitive(structure, symprec, angle_tolerance):
 def standardize_cell(structure, symprec, angle_tolerance,
                      to_primitive=False, no_idealize=False):
     """ compute the standardised cell for an AiiDA structure
+
+    When computing symmetry, atomic sites with the same **Kind** are treated as
+    symmetrically equivalent (rather than just the atomic elements).
 
     Parameters
     ----------

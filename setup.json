@@ -13,10 +13,11 @@
         "Topic :: Scientific/Engineering :: Physics",
         "Framework :: AiiDA"
     ],
-    "version": "0.6.0b3",
+    "version": "0.9.0b5",
     "entry_points": {
         "console_scripts": [
-            "mock_runcry17 = aiida_crystal17.tests.mock_runcry17:main",
+            "mock_crystal17 = aiida_crystal17.tests.mock_crystal17:main",
+            "mock_properties17 = aiida_crystal17.tests.mock_properties17:main",
             "mock_gulp = aiida_crystal17.tests.mock_gulp:main"
         ],
         "aiida.data": [
@@ -29,16 +30,24 @@
         "aiida.calculations": [
             "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
             "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation",
+            "crystal17.doss = aiida_crystal17.calculations.cry_doss:CryDossCalculation",
+            "crystal17.fermi = aiida_crystal17.calculations.cry_fermi:CryFermiCalculation",
             "gulp.single = aiida_crystal17.gulp.calculations.gulp_single:GulpSingleCalculation",
-            "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation"
+            "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation",
+            "gulp.fitting = aiida_crystal17.gulp.calculations.gulp_fitting:GulpFittingCalculation"
         ],
         "aiida.parsers": [
             "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser",
-            "gulp.single = aiida_crystal17.gulp.parsers.parse_main:GulpSingleParser",
-            "gulp.optimize = aiida_crystal17.gulp.parsers.parse_main:GulpOptParser"
+            "crystal17.doss = aiida_crystal17.parsers.cry_doss:CryDossParser",
+            "crystal17.fermi = aiida_crystal17.parsers.cry_fermi:CryFermiParser",
+            "gulp.single = aiida_crystal17.gulp.parsers.parse_single:GulpSingleParser",
+            "gulp.optimize = aiida_crystal17.gulp.parsers.parse_opt:GulpOptParser",
+            "gulp.fitting = aiida_crystal17.gulp.parsers.parse_fitting:GulpFittingParser"
         ],
         "aiida.workflows": [
-            "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure"
+            "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure",
+            "crystal17.main.base = aiida_crystal17.workflows.crystal_main.base:CryMainBaseWorkChain",
+            "crystal17.properties = aiida_crystal17.workflows.crystal_props.cry_doss:CryPropertiesWorkChain"
         ],
         "aiida.cmdline.data": [
             "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
@@ -53,17 +62,15 @@
     "include_package_data": true,
     "reentry_register": true,
     "install_requires": [
-        "aiida-core==1.0.0b3",
+        "aiida-core==1.0.0b5",
         "six",
         "ruamel.yaml",
-        "ejplugins>=0.9.7",
         "jsonextended>=0.7.10",
-        "numpy==1.16.1",
+        "jsonschema",
         "spglib>=1.10.0,<2.0.0",
         "ase>=3.12.0,<4.0.0",
         "PyCifRW==4.2.1; python_version < '3'",
-        "PyCifRW==4.4; python_version >= '3'",
-        "graphviz"
+        "PyCifRW==4.4; python_version >= '3'"
     ],
     "extras_require": {
         "testing": [
@@ -78,7 +85,8 @@
             "pytest-regressions"
         ],
         "code_style": [
-            "flake8<3.8.0,>=3.7.0"
+            "flake8<3.8.0,>=3.7.0",
+            "yapf==0.26.0"
         ],
         "docs": [
             "sphinx>=1.6,<2",

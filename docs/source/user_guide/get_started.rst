@@ -39,16 +39,25 @@ to set up an AiiDA code for that plugin.
 CRYSTAL17 Executable
 ++++++++++++++++++++
 
-``aiida-crystal17`` is designed to call the ``runcry17`` executable,
-as supplied by CRYSTAL, and also can be found within the
-`aiida-crystal17 repository <https://github.com/chrisjsewell/aiida-crystal17/tree/master/cry17_scripts>`_.
+``aiida-crystal17`` is designed to directly call
+the ``crystal`` binary executable.
 This is required to be available on the computer
 that the calculations are being run on.
 
-For test purposes, a ``mock_runcry17`` executable is installed with
+Note, using the standard AiiDA schedulers,
+the calculations will run directly in the working directory,
+i.e. the files will not be copied to/from a temporary directory.
+If this is required, then the ``prepend_text`` and ``append_text``
+features of the ``Code`` node should be utilised.
+
+.. seealso::
+
+    AiiDA documentation: :ref:`aiida:setup_code`
+
+For test purposes, a ``mock_crystal17`` executable is installed with
 ``aiida-crystal17``, that will return pre-computed output files,
 if parsed specific test input files. When running the test suite,
-this executable will be used in place of ``runcry17``,
+this executable will be used in place of ``crystal``,
 if the global variable ``export MOCK_CRY17_EXECUTABLES=true`` is set.
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/aiida-crystal17.svg

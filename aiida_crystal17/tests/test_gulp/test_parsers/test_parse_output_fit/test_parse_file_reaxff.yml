@@ -1,0 +1,101 @@
+calculated_observables:
+  final:
+  - 9.43757
+  - -10.47811
+  - 0.04054
+  initial:
+  - -21.32977
+  - -41.24546
+  - -30.7268
+  observable:
+  - 1
+  - 2
+  - 3
+  type:
+  - Energy
+  - Energy
+  - Energy
+  value:
+  - -1.0
+  - -1.0
+  - 1.0
+energy_shifts:
+  configuration:
+  - 1
+  - 2
+  - 3
+  energy:
+  - 31.7673
+  - 31.7673
+  - 31.7673
+  scale_factor:
+  - 1.0
+  - 1.0
+  - 1.0
+errors: []
+final_gradients:
+  gradient:
+  - 0.0
+  - 0.0
+  - 0.0
+  parameter:
+  - 1
+  - 2
+  - 3
+  type:
+  - Energy shift
+  - RFF0 bond boc1
+  - RFF0 bond boc2
+final_parameters:
+  final:
+  - 31.767342
+  - 50.0
+  - 9.5469
+  original:
+  - 1.0
+  - 50.0
+  - 9.5469
+  parameter:
+  - 1
+  - 2
+  - 3
+  type:
+  - Energy shift
+  - RFF0 bond boc1
+  - RFF0 bond boc2
+final_residuals:
+  calculated:
+  - 9.43757
+  - -10.47811
+  - 0.04054
+  error:
+  - 1043.757
+  - -947.811
+  - -95.946
+  observable:
+  - 1
+  - 2
+  - 3
+  residual:
+  - 10894.2869
+  - 8983.46633
+  - 92.05541
+  type:
+  - Energy
+  - Energy
+  - Energy
+  value:
+  - -1.0
+  - -1.0
+  - 1.0
+fit_succeeded: true
+gulp_version: 4.5.3
+num_cycles: 1
+parser_class: null
+parser_errors: []
+parser_version: 0.9.0b5
+parser_warnings: []
+peak_dynamic_memory_mb: 0.52
+total_configurations: 3
+total_time_second: 0.4232
+warnings: []

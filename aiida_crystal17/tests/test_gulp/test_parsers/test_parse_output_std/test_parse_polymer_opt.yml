@@ -1,0 +1,63 @@
+energy_contributions:
+  bond: -5.088171
+  bpen: 0.0
+  coa: 0.0
+  conj: 0.0
+  coulomb: 0.0
+  hb: 0.0
+  lonepair: -0.0
+  over: -0.000162
+  pen: 0.0
+  self: 0.0
+  tors: 0.0
+  under: -0.878614
+  val: 0.0
+  vdw: 0.917701
+energy_units: eV
+errors: []
+final_coords:
+  id:
+  - 1
+  - 2
+  label:
+  - S
+  - S
+  radius:
+  - 0.0
+  - 0.0
+  type:
+  - c
+  - c
+  x:
+  - 0.0
+  - 0.18645
+  y:
+  - 0.0
+  - 0.0
+  z:
+  - 0.0
+  - 0.0
+final_energy: -5.049245
+final_primitive_energy: -5.049245
+gulp_version: 4.5.3
+initial_energy: -5.041883
+initial_primitive_energy: -5.041883
+opt_succeeded: true
+opt_time_second: 0.0083
+opt_type: polymer
+parser_class: test_class
+parser_errors: []
+parser_warnings: []
+peak_dynamic_memory_mb: 0.48
+reaxff_charges:
+  atomic_number:
+  - 16
+  - 16
+  charge:
+  - 0.0
+  - 0.0
+  index:
+  - 1
+  - 2
+total_time_second: 0.0085
+warnings: []

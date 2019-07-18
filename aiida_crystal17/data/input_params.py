@@ -8,7 +8,7 @@ from aiida_crystal17.common import unflatten_dict
 
 
 class CryInputParamsData(Data):
-    """stores additional data for StructureData Kinds"""
+    """stores a validated dictionary of input parameters for CryMainCalculations"""
     _data_schema = None
 
     @classproperty
@@ -19,16 +19,28 @@ class CryInputParamsData(Data):
             cls._data_schema = load_schema("inputd12.schema.json")
         return copy.deepcopy(cls._data_schema)
 
-    def __init__(self, **kwargs):
-        """Stores the symmetry data for a structure
+    @classmethod
+    def validate_parameters(cls, dct):
+        """validate an input dictionary
 
-        - symmetry operations are stored on file (in the style of ArrayData)
-        - the rest of the values are stored as attributes in the database
+        Parameters
+        ----------
+        dct : dict
 
-        :param data: the data to set
         """
-        data = kwargs.pop('data', None)
-        unflatten = kwargs.pop('unflatten', False)
+        validate_against_schema(dct, cls.data_schema)
+
+    def __init__(self, data=None, unflatten=False, **kwargs):
+        """stores a validated dictionary of input parameters for CryMainCalculations
+
+        Parameters
+        ----------
+        data : dict
+            the data to set
+        unflatten : bool
+            whether to unflatten the dictionary, e.g. from {"a.b": 1} to {"a": {"b": 1}}
+
+        """
         super(CryInputParamsData, self).__init__(**kwargs)
         if data is not None:
             if unflatten:
@@ -38,7 +50,7 @@ class CryInputParamsData(Data):
     def _validate(self):
         super(CryInputParamsData, self)._validate()
 
-        validate_against_schema(self.get_dict(), self.data_schema)
+        self.validate_parameters(self.get_dict())
 
         return True
 
@@ -51,7 +63,7 @@ class CryInputParamsData(Data):
         from aiida.common.exceptions import ModificationNotAllowed
 
         # first validate the inputs
-        validate_against_schema(data, self.data_schema)
+        self.validate_parameters(data)
 
         # store all but the symmetry operations as attributes
         backup_dict = copy.deepcopy(dict(self.attributes))

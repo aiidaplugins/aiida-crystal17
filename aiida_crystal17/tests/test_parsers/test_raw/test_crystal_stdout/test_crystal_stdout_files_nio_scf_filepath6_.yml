@@ -1,0 +1,533 @@
+calculation:
+  n_ao: 46
+  n_atoms: 4
+  n_core_el: 40
+  n_electrons: 72
+  n_kpoints_gilat: 75
+  n_kpoints_ibz: 75
+  n_shells: 14
+  n_symops: 16
+  spin: true
+  type: unrestricted open shell
+errors: []
+execution_time_seconds: 187
+exit_code: 0
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+initial_geometry:
+  crystallographic_cell: {}
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    - true
+    - true
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    ccoords:
+    - - 0.0
+      - -2.082
+      - -2.082
+    - - -2.082
+      - -2.082
+      - 0.0
+    - - -2.082
+      - -2.082
+      - -2.082
+    - - 0.0
+      - -2.082
+      - 0.0
+    cell_parameters:
+      a: 2.94439264
+      alpha: 90.0
+      b: 2.94439264
+      beta: 90.0
+      c: 4.164
+      gamma: 90.0
+    cell_vectors:
+      a:
+      - 0.0
+      - -2.082
+      - -2.082
+      b:
+      - 0.0
+      - -2.082
+      - 2.082
+      c:
+      - -4.164
+      - 0.0
+      - 0.0
+    fcoords:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - -0.5
+      - 0.5
+      - 0.5
+    - - 0.0
+      - 0.0
+      - 0.5
+    - - -0.5
+      - 0.5
+      - 0.0
+    ids:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+initial_scf:
+  cycles:
+  - atomic_charges_peratom:
+    - 26.5371819
+    - 26.5395407
+    - 9.4622654
+    - 9.461012
+    charge_normalization_factor: 0.9998915
+    energy:
+      total: -85031.00965986375
+    spin_density_absolute: 10.039434
+    spin_density_peratom:
+    - 5.0037637
+    - -5.0093687
+    - -0.0142541
+    - 0.0120475
+    spin_density_total: -0.00781165
+  - atomic_charges_peratom:
+    - 29.2092688
+    - 29.2098966
+    - 6.7883701
+    - 6.7924645
+    charge_normalization_factor: 0.99983727
+    energy:
+      total: -85027.27506306753
+    spin_density_absolute: 3.6631649
+    spin_density_peratom:
+    - 1.720405
+    - -1.7199806
+    - -0.1116018
+    - 0.1111775
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.3303858
+    - 27.3284693
+    - 8.6713971
+    - 8.6697478
+    charge_normalization_factor: 0.99956616
+    energy:
+      total: -85092.65420251295
+    spin_density_absolute: 7.0501678
+    spin_density_peratom:
+    - 3.4904625
+    - -3.4905068
+    - -0.0345771
+    - 0.0346214
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.7778786
+    - 27.7723138
+    - 8.2253178
+    - 8.2244898
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85123.56990017218
+    spin_density_absolute: 6.4209476
+    spin_density_peratom:
+    - 3.1972812
+    - -3.1969581
+    - -0.0135157
+    - 0.0131926
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6881944
+    - 27.6713489
+    - 8.3250677
+    - 8.315389
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.49831707068
+    spin_density_absolute: 6.3866371
+    spin_density_peratom:
+    - 3.1810473
+    - -3.1805088
+    - -0.0128098
+    - 0.0122712
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6586603
+    - 27.6545323
+    - 8.3442121
+    - 8.3425953
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.7316116846
+    spin_density_absolute: 6.3573106
+    spin_density_peratom:
+    - 3.1532788
+    - -3.1533401
+    - -0.0253152
+    - 0.0253765
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6530936
+    - 27.6501006
+    - 8.3493307
+    - 8.3474752
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.76280540256
+    spin_density_absolute: 6.3496158
+    spin_density_peratom:
+    - 3.1449225
+    - -3.1450463
+    - -0.0297616
+    - 0.0298854
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6490007
+    - 27.6463648
+    - 8.3527164
+    - 8.3519181
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.7846608531
+    spin_density_absolute: 6.3426711
+    spin_density_peratom:
+    - 3.1377568
+    - -3.1379168
+    - -0.0334188
+    - 0.0335787
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.6295078
+    - 27.6295912
+    - 8.3719002
+    - 8.3690008
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.85943934735
+    spin_density_absolute: 6.3072943
+    spin_density_peratom:
+    - 3.1026337
+    - -3.1027778
+    - -0.0508694
+    - 0.0510134
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6050214
+    - 27.6041456
+    - 8.3930323
+    - 8.3978007
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89336038088
+    spin_density_absolute: 6.2602676
+    spin_density_peratom:
+    - 3.0574352
+    - -3.0573514
+    - -0.0727824
+    - 0.0726986
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6041277
+    - 27.6051473
+    - 8.3964861
+    - 8.3942389
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89362234488
+    spin_density_absolute: 6.2591368
+    spin_density_peratom:
+    - 3.05742
+    - -3.0573208
+    - -0.0722476
+    - 0.0721484
+    spin_density_total: -0.0
+  - atomic_charges_peratom:
+    - 27.603272
+    - 27.6029727
+    - 8.3960046
+    - 8.3977508
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89361412705
+    spin_density_absolute: 6.2574919
+    spin_density_peratom:
+    - 3.0566965
+    - -3.0565913
+    - -0.0721547
+    - 0.0720494
+    spin_density_total: 0.0
+  - atomic_charges_peratom:
+    - 27.6022769
+    - 27.602682
+    - 8.3980152
+    - 8.3970259
+    charge_normalization_factor: 1.0
+    energy:
+      total: -85124.89366735252
+    spin_density_absolute: 6.2567303
+    spin_density_peratom:
+    - 3.0566533
+    - -3.0565699
+    - -0.0717952
+    - 0.0717119
+    spin_density_total: -0.0
+  final_energy:
+    total_corrected: -85124.89366733891
+mulliken:
+  alpha+beta_electrons:
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    charges:
+    - 27.602
+    - 27.603
+    - 8.398
+    - 8.397
+    ids:
+    - 1
+    - 2
+    - 3
+    - 4
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+  alpha-beta_electrons:
+    atomic_numbers:
+    - 28
+    - 28
+    - 8
+    - 8
+    charges:
+    - 3.057
+    - -3.057
+    - -0.072
+    - 0.072
+    ids:
+    - 1
+    - 2
+    - 3
+    - 4
+    symbols:
+    - Ni
+    - Ni
+    - O
+    - O
+parser_errors: []
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings: []

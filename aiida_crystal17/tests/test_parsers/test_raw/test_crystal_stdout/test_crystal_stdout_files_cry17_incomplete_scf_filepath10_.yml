@@ -1,0 +1,428 @@
+calculation:
+  n_ao: 20
+  n_atoms: 2
+  n_core_el: 4
+  n_electrons: 8
+  n_kpoints_gilat: 793
+  n_kpoints_ibz: 133
+  n_shells: 8
+  n_symops: 24
+  spin: false
+  type: restricted closed shell
+errors: []
+execution_time_seconds: 4
+exit_code: ERROR_PARSING_STDOUT
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+initial_geometry:
+  crystallographic_cell: {}
+  primitive_cell:
+    assymetric:
+    - true
+    - false
+    atomic_numbers:
+    - 4
+    - 4
+    ccoords:
+    - - -1.322132116444
+      - 0.0
+      - 0.8975
+    - - -0.661066058222
+      - -1.145
+      - -0.8975
+    cell_parameters:
+      a: 2.29
+      alpha: 90.0
+      b: 2.29
+      beta: 90.0
+      c: 3.59
+      gamma: 120.0
+    cell_vectors:
+      a:
+      - 1.98319817467
+      - -1.145
+      - 0.0
+      b:
+      - 0.0
+      - 2.29
+      - 0.0
+      c:
+      - 0.0
+      - 0.0
+      - 3.59
+    fcoords:
+    - - 0.333333333333
+      - -0.333333333333
+      - 0.25
+    - - -0.333333333333
+      - 0.333333333333
+      - -0.25
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - true
+    - true
+    - true
+    symbols:
+    - Be
+    - Be
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 0.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 0.0
+    - -1.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - -1.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.5
+  - - 1.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.5
+initial_scf:
+  cycles:
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -792.589181937555
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -795.163583608206
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.013369542526
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.098908009028
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.112610521782
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.113289899477
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.113275482068
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.113326869138
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -796.113330909212
+  - atomic_charges_peratom:
+    - 4.0
+    - 4.0
+    charge_normalization_factor: 1.0
+parser_errors:
+- Did not find end of SCF section (starting on line 311)
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings: []

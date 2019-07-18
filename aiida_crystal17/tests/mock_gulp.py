@@ -20,28 +20,45 @@ import os
 import sys
 from shutil import copyfile
 
+import six
+
 import aiida_crystal17.tests as tests
 
 # map of input file hashes to output files
 hash_map = {
-    "95db701a89083842f917418f7cf59f3d": {
-        "output": [("single_lj_pyrite.gout", ".gout", None)]
+    "14b7194e25eb366328198908b3bcf840": {
+        "stdout": ("single_lj_pyrite", "main.gout"),
+        "output": ()
     },
-    "1f639518b936001e435bf032e2f764fe": {
-        "output": [("optimize_lj_pyrite.gout", ".gout", None),
-                   ("optimize_lj_pyrite.cif", ".cif", "output")]
+    "e2b297d73de5174741c94d52432e7b79": {
+        "stdout": ("optimize_lj_pyrite", "main.gout"),
+        "output": [(("optimize_lj_pyrite", "output.cif"), ("output.cif",))]
     },
-    "dc0eac053e11561ee13acea272345e20": {
-        "output": [("optimize_lj_pyrite_symm.gout", ".gout", None),
-                   ("optimize_lj_pyrite_symm.cif", ".cif", "output")]
+    "6f373e02f3245c3b989f468c524a0d9d": {
+        "stdout": ("optimize_lj_pyrite_symm", "main.gout"),
+        "output": [(("optimize_lj_pyrite_symm", "output.cif"), ("output.cif",))]
     },
-    "ec39b0c69c6ef97d2a701f86054702ee": {
-        "stdout": None,
-        "output": [("opt_reaxff_pyrite.gout", ".gout", None),
-                   ("opt_reaxff_pyrite.cif", ".cif", "output")]},
-    "57649b5ce90996cd71e233e2509068b7": {
-        "stdout": None,
-        "output": [("single_reaxff_pyrite.gout", ".gout", None)]},
+    "f104b6cc996c97be76b3ee31761b7898": {
+        "stdout": ("single_reaxff_pyrite", "main.gout"),
+        "output": ()
+    },
+    "5dc8cb9621091a1a029b8149b0e02e33": {
+        "stdout": ("optimize_reaxff_pyrite", "main.gout"),
+        "output": [(("optimize_reaxff_pyrite", "output.cif"), ("output.cif",))]
+    },
+    "99595ec1cba6fb909a1de2377e21d82a": {
+        "stdout": ("optimize_reaxff_pyrite_symm", "main.gout"),
+        "output": [(("optimize_reaxff_pyrite_symm", "output.cif"), ("output.cif",))],
+        "stderr": ("optimize_reaxff_pyrite_symm", "main_stderr.txt")
+    },
+    "1f77dad9265e394d88b58cd909f34f18": {
+        "stdout": ("fit_lj_fes", "main.gout"),
+        "output": [(("fit_lj_fes", "fitting.grs"), ("fitting.grs",))]
+    },
+    "bbfcc242e70205e5d418001dea5e3d63": {
+        "stdout": ("fit_reaxff_fes", "main.gout"),
+        "output": [(("fit_reaxff_fes", "fitting.grs"), ("fitting.grs",))]
+    }
 }
 
 
@@ -50,46 +67,36 @@ def main(sys_args=None):
     if sys_args is None:
         sys_args = sys.argv[1:]
 
-    if len(sys_args) < 1:
-        raise ValueError("no input name given (as 1st argument)")
-
-    if sys_args[0] == "--test":
+    if sys_args and sys_args[0] == "--test":
         # this used in the conda recipe, to test the executable is present
         return
 
-    # script_path = os.path.dirname(os.path.realpath(__file__))
-    test_path = os.path.dirname(tests.__file__)
-    # runcry17 requires input file name without extension as first arg
-    input_name = sys_args[0]
+    test_path = os.path.join(tests.TEST_FILES, "gulp")
 
-    with open(input_name + ".gin", "rb") as f:
-        content = f.read()
-        # hashkey = hashlib.md5(content).digest()
-        hashkey = hashlib.md5(content).hexdigest()
+    content = six.ensure_text(sys.stdin.read())
+    hashkey = hashlib.md5(content.encode()).hexdigest()
 
     if str(hashkey) not in hash_map:
         raise IOError(
-            "contents of {0} not in hash list, hashkey: {1}".format(
-                os.path.basename(input_name + ".gin"), str(hashkey)))
+            "contents from stdin not in hash list, hashkey: {0}\n{1}".format(
+                str(hashkey), content))
 
     outfiles = hash_map[hashkey]
 
-    for inname, outext, outname in outfiles.get("output", []):
-        src = os.path.join(test_path, "gulp_output_files", inname)
-        if outname is None:
-            dst = os.path.join(".", input_name + outext)
-        else:
-            dst = os.path.join(".", outname + outext)
+    for inpath, outpath in outfiles.get("output", []):
+        src = os.path.join(test_path, *inpath)
+        dst = os.path.join(".", *outpath)
         copyfile(src, dst)
 
-    if outfiles.get("stdout", None) is None:
-        sys.stdout.write(
-            "running mock gulp for input arg: {}".format(input_name))
-    else:
-        outpath = os.path.join(
-            test_path, "gulp_output_files", outfiles["stdout"])
+    if outfiles.get("stdout", None) is not None:
+        outpath = os.path.join(test_path, *outfiles["stdout"])
         with open(outpath) as f:
             sys.stdout.write(f.read())
+
+    if outfiles.get("stderr", None) is not None:
+        outpath = os.path.join(test_path, *outfiles["stderr"])
+        with open(outpath) as f:
+            sys.stderr.write(f.read())
 
 
 if __name__ == "__main__":

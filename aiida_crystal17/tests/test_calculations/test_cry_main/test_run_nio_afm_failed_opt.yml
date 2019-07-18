@@ -1,0 +1,89 @@
+calc_node:
+  append_text: ''
+  custom_scheduler_commands: ''
+  environment_variables: {}
+  exit_message: The calculation stopped prematurely because it ran out of walltime.
+  exit_status: 400
+  import_sys_environment: true
+  input_file_name: INPUT
+  max_wallclock_seconds: 1800
+  mpirun_extra_params: []
+  output_main_file_name: main.out
+  parser_name: crystal17.main
+  prepend_text: ''
+  process_label: CryMainCalculation
+  process_state: finished
+  resources:
+    num_machines: 1
+    num_mpiprocs_per_machine: 1
+  retrieve_list:
+  - HESSOPT.DAT
+  - _scheduler-stderr.txt
+  - _scheduler-stdout.txt
+  - fort.34
+  - main.out
+  retrieve_temporary_list:
+  - opt[ac][0-9][0-9][0-9]
+  scheduler_state: done
+  scheduler_stderr: _scheduler-stderr.txt
+  scheduler_stdout: _scheduler-stdout.txt
+  sealed: true
+  version:
+    core: 1.0.0b5
+    plugin: 0.9.0b5
+  withmpi: false
+optimisation:
+  array|cells:
+  - 16
+  - 3
+  - 3
+  array|positions:
+  - 16
+  - 4
+  - 3
+  array|steps:
+  - 16
+  symbols:
+  - Ni1
+  - Ni2
+  - O
+  - O
+outputs:
+- optimisation
+- remote_folder
+- results
+- retrieved
+results:
+  calculation:
+    n_ao: 46
+    n_atoms: 4
+    n_core_el: 40
+    n_electrons: 72
+    n_kpoints_gilat: 75
+    n_kpoints_ibz: 75
+    n_shells: 14
+    n_symops: 16
+    spin: true
+    type: unrestricted open shell
+  energy: null
+  energy_units: eV
+  errors: []
+  header:
+    crystal_subversion: 1.0.2
+    crystal_version: 17
+  opt_iterations: 20
+  parser_class: CryMainParser
+  parser_errors:
+  - did not find 'OPT END', after optimisation start at line 804
+  - final primitive cell was not found in the output file
+  - primitive symmops were not found in the output file
+  parser_exceptions: []
+  parser_warnings: []
+  scf_iterations: 15
+  units:
+    angle: degrees
+    conversion: CODATA2014
+    energy: eV
+    length: angstrom
+  warnings:
+  - WARNING **** INT_SCREEN **** CELL PARAMETERS OPTIMIZATION ONLY

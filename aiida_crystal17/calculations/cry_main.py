@@ -3,11 +3,10 @@ Plugin to create a CRYSTAL17 output file,
 from input files created via data nodes
 """
 import os
-
 import six
-from aiida.common.datastructures import (CalcInfo, CodeInfo)
+
 from aiida.common.exceptions import InputValidationError
-from aiida.orm import Code
+from aiida.orm import Code, RemoteData, StructureData, TrajectoryData
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
@@ -30,12 +29,12 @@ class CryMainCalculation(CryAbstractCalculation):
         spec.input(
             'parameters', valid_type=DataFactory('crystal17.parameters'),
             required=True,
+            serializer=lambda x: DataFactory('crystal17.parameters')(data=x),
             help='the input parameters to create the .d12 file content.')
         spec.input(
-            'structure', valid_type=DataFactory('structure'),
+            'structure', valid_type=StructureData,
             required=True,
-            help=('the structure used to construct the input .gui file '
-                  '(fort.34)'))
+            help='structure used to construct the input fort.34 (gui) file')
         spec.input(
             'symmetry', valid_type=DataFactory('crystal17.symmetry'),
             required=False,
@@ -55,6 +54,22 @@ class CryMainCalculation(CryAbstractCalculation):
                   "atomic element symbol for which you want to use this "
                   "basis set."))
 
+        spec.input(
+            'wf_folder', valid_type=RemoteData, required=False,
+            help=('An optional working directory, '
+                  'of a previously completed calculation, '
+                  'containing a fort.9 wavefunction file to restart from'))
+
+        # TODO allow for input of HESSOPT.DAT file
+
+        # Note: OPTINFO.DAT is also meant for geometry restarts (with RESTART),
+        #       but on both crystal and Pcrystal, a read file error is encountered trying to use it.
+
+        spec.output(
+            'optimisation',
+            valid_type=TrajectoryData, required=False,
+            help="atomic configurations, for each optimisation step")
+
     # pylint: disable=too-many-arguments
     @classmethod
     def create_builder(cls, parameters, structure, bases,
@@ -67,7 +82,7 @@ class CryMainCalculation(CryAbstractCalculation):
         ----------
         parameters: dict or CryInputParamsData
             input parameters to create the input .d12 file
-        structure: aiida.orm.StructureData
+        structure: aiida.StructureData
             the structure node
         bases: str or dict
             string of the BasisSetFamily to use,
@@ -144,68 +159,124 @@ class CryMainCalculation(CryAbstractCalculation):
                     ', '.join(self.inputs.basissets.keys()),
                     ', '.join(list(symbols))))
 
-        self._create_input_files(
-            self.inputs.basissets,
-            self.inputs.structure,
-            self.inputs.parameters,
-            tempfolder,
-            self.inputs.get("symmetry", None),
-            self.inputs.get("kinds", None)
-        )
+        # set the initial parameters
+        parameters = self.inputs.parameters.get_dict()
+        restart_fnames = []
+        remote_copy_list = []
 
-        # Prepare CodeInfo object for aiida,
-        # describes how a code has to be executed
-        code = self.inputs.code
-        codeinfo = CodeInfo()
-        codeinfo.code_uuid = code.uuid
-        codeinfo.cmdline_params = [
-            os.path.splitext(self.metadata.options.input_file_name)[0]
-        ]
-        codeinfo.withmpi = self.metadata.options.withmpi
+        # deal with scf restarts
+        if "wf_folder" in self.inputs:
+            # TODO it would be good to check if the fort.9 exists and is not empty
+            # (fort.9 is present but empty if crystal is killed by SIGTERM (e.g. when walltime reached))
+            # but this would involve connecting to the remote computer, which could fail
+            # Ideally would want to use the process exponential backoff & pause functionality
+            remote_copy_list.append((
+                self.inputs.wf_folder.computer.uuid,
+                os.path.join(self.inputs.wf_folder.get_remote_path(), 'fort.9'),
+                'fort.20'))
+            restart_fnames.append('fort.20')
 
-        # Prepare CalcInfo object for aiida
-        calcinfo = CalcInfo()
-        calcinfo.uuid = self.uuid
-        calcinfo.codes_info = [codeinfo]
-        calcinfo.local_copy_list = []
-        calcinfo.remote_copy_list = []
-        calcinfo.retrieve_list = [
-            self.metadata.options.output_main_file_name,
-            self.metadata.options.external_file_name
-        ]
-        calcinfo.retrieve_temporary_list = []
+        # modify parameters to use restart files
+        parameters = self._modify_parameters(parameters, restart_fnames)
 
-        return calcinfo
-
-    # pylint: disable=too-many-arguments
-    def _create_input_files(self, basissets, structure, parameters,
-                            tempfolder, symmetry=None, kinds=None):
-        """ create input files in temporary folder
-
-        :param basissets:
-        :param structure:
-        :param parameters:
-        :param setting:
-        :param tempfolder:
-
-        """
-        # create .gui external geometry file and place it in tempfolder
-        gui_content = gui_file_write(structure, symmetry)
-        with tempfolder.open(self.metadata.options.external_file_name, 'w') as f:
+        # create fort.34 external geometry file and place it in tempfolder
+        gui_content = gui_file_write(self.inputs.structure,
+                                     self.inputs.get("symmetry", None))
+        with tempfolder.open("fort.34", 'w') as f:
             f.write(six.u("\n".join(gui_content)))
 
-        atom_props = create_atom_properties(structure, kinds)
-
         # create .d12 input file and place it in tempfolder
+        atom_props = create_atom_properties(
+            self.inputs.structure, self.inputs.get("kinds", None))
         try:
-            d12_filecontent = write_input(parameters.get_dict(),
-                                          list(basissets.values()), atom_props)
+            d12_filecontent = write_input(
+                parameters,
+                [self.inputs.basissets[k] for k in sorted(self.inputs.basissets.keys())],
+                atom_props)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError(
                 "an input file could not be created from the parameters: {}".
                 format(err))
-
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
             f.write(d12_filecontent)
 
-        return True
+        # setup the calculation info
+        return self.create_calc_info(
+            tempfolder,
+            remote_copy_list=remote_copy_list,
+            retrieve_list=[
+                self.metadata.options.output_main_file_name,
+                "fort.34",
+                "HESSOPT.DAT"
+            ],
+            retrieve_temporary_list=["opt[ac][0-9][0-9][0-9]"]
+        )
+
+    @staticmethod
+    def _modify_parameters(parameters, restart_fnames):
+        """ modify the parameters,
+        according to what restart files are available
+        """
+        if not restart_fnames:
+            return parameters
+
+        if "fort.20" in restart_fnames:
+            parameters["scf"]["GUESSP"] = True
+
+        if "HESSOPT.DAT" in restart_fnames:
+            if parameters.get("geometry", {}).get("optimise", False):
+                if isinstance(parameters["geometry"]["optimise"], bool):
+                    parameters["geometry"]["optimise"] = {}
+                parameters["geometry"]["optimise"]["hessian"] = "HESSOPT"
+
+        if "OPTINFO.DAT" in restart_fnames:
+            if parameters.get("geometry", {}).get("optimise", False):
+                if isinstance(parameters["geometry"]["optimise"], bool):
+                    parameters["geometry"]["optimise"] = {}
+                parameters["geometry"]["optimise"]["restart"] = True
+
+        return parameters
+
+    @staticmethod
+    def _check_remote(remote_folder, file_names):
+        """tests if files are present and note empty on a remote folder
+
+        Parameters
+        ----------
+        remote_folder : aiida.orm.nodes.data.remote.RemoteData
+        file_names: list[str]
+
+        Returns
+        -------
+        result: dict
+            {<file_name>: bool, ...}
+
+        Raises
+        ------
+        IOError
+            if the remote_folder's path does not exist on the remote computer
+
+        """
+        result = {}
+        # open a transport to the parent computer, and find viable restart files
+        # TODO this will fail if not connected to the remote path,
+        # but if the calculation is part of a workflow this would be unwanted
+        # (i.e. should be paused until connection is established)
+        trans = remote_folder.get_authinfo().get_transport()
+        with trans:
+            if not trans.isdir(remote_folder.get_remote_path()):
+                raise IOError(
+                    "the remote_folder's path does not exist on the remote computer")
+            trans.chdir(remote_folder.get_remote_path())
+            remote_fnames = trans.listdir()
+            for file_name in file_names:
+                if file_name not in remote_fnames:
+                    result[file_name] = False
+                elif trans.isdir(file_name):
+                    result[file_name] = False
+                elif trans.get_attribute(file_name).st_size <= 0:
+                    result[file_name] = False
+                else:
+                    result[file_name] = True
+
+        return result

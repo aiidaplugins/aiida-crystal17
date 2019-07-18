@@ -1,0 +1,23 @@
+basis: fractional
+computation:
+  angle_tolerance: null
+  computation_class: aiida_crystal17.symmetry.symmetry
+  computation_version: 0.9.0b5
+  symmetry_program: spglib
+  symmetry_version: 1.13.0
+  symprec: 0.01
+equivalent_sites:
+- 0
+- 0
+- 0
+- 0
+- 4
+- 4
+- 4
+- 4
+- 4
+- 4
+- 4
+- 4
+hall_number: 501
+num_symops: 24

@@ -1,0 +1,12 @@
+description: Lennard-Jones potential, of the form; E = A/r**m - B/r**n
+fitting_flags: false
+fitting_json: fitting.json
+input_lines_md5: 35449283e18a3393ba70f925a16ba6a5
+number_flagged: 0
+pair_style: lj
+potential_filename: potential.pot
+potential_json: potential.json
+species:
+- Fe core
+- S core
+total_flags: 6
