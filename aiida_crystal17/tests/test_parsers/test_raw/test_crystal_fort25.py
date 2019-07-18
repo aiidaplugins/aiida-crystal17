@@ -1,26 +1,14 @@
 import os
 from textwrap import dedent
+
 import numpy as np
 import six
+
 from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.common import recursive_round
 from aiida_crystal17.parsers.raw.doss_input import (read_doss_contents,
                                                     create_doss_content)
-from aiida_crystal17.parsers.raw.newk_output import read_newk_content
-from aiida_crystal17.parsers.raw.doss_output_f25 import read_doss_f25_content
-
-
-def test_read_newk_out_file(data_regression):
-    with open(
-            os.path.join(TEST_FILES, "doss", "cubic_rocksalt_orbitals",
-                         "cubic-rocksalt_2x1_pdos.doss.out")) as handle:
-        data = read_newk_content(handle, "dummy_parser_class")
-
-    data = {
-        k: round(i, 7) if isinstance(i, float) else i
-        for k, i in data.items()
-    }
-
-    data_regression.check(data)
+from aiida_crystal17.parsers.raw.crystal_fort25 import parse_crystal_fort25_aiida
 
 
 def test_read_doss_contents(data_regression):
@@ -80,21 +68,13 @@ def test_create_doss_content(file_regression):
         six.ensure_text("\n".join(create_doss_content(params))))
 
 
-def test_read_doss_f25_content(data_regression, num_regression):
+def test_read_crystal_fort25(data_regression):
     with open(
             os.path.join(TEST_FILES, "doss", "cubic_rocksalt_orbitals",
                          "cubic-rocksalt_2x1_pdos.doss.f25")) as handle:
-        data, arrays = read_doss_f25_content(handle, "dummy_parser_class")
+        data, arrays = parse_crystal_fort25_aiida(handle, "dummy_parser_class")
 
-    data_regression.check(data)
-
-    # TODO add pandas to test requirements?
-    try:
-        num_regression.check({
-            "energies": np.array(arrays["energies"]),
-            "total_alpha": np.array(arrays["total_alpha"]),
-            "total_beta": np.array(arrays["total_beta"])
-        },
-                             default_tolerance=dict(atol=1e-6, rtol=1e-4))
-    except ImportError:
-        pass
+    data_regression.check({
+        "results": recursive_round(data, 9),
+        "arrays": recursive_round(arrays, 9)
+        })
