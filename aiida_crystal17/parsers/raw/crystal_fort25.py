@@ -161,7 +161,7 @@ def parse_crystal_fort25(content):
             "conversion": "CODATA2014",
             "energy": "eV"
         },
-        "energy":
+    "energy":
         energies,
         "system_type":
         system_type,
