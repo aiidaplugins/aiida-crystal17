@@ -26,6 +26,9 @@ calc:
   scheduler_stdout: _scheduler-stdout.txt
   sealed: true
   symlink_wf: false
+  version:
+    core: 1.0.0b5
+    plugin: 0.9.0b5
   withmpi: false
 fermi: -4.0000737
 results:
@@ -34,6 +37,6 @@ results:
   fermi_energy: -4.0000737
   parser_class: CryFermiParser
   parser_errors: []
-  parser_version: 0.8.0b4
+  parser_version: 0.9.0b5
   parser_warnings: []
   warnings: []

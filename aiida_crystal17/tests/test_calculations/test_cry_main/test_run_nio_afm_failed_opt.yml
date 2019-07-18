@@ -28,6 +28,9 @@ calc_node:
   scheduler_stderr: _scheduler-stderr.txt
   scheduler_stdout: _scheduler-stdout.txt
   sealed: true
+  version:
+    core: 1.0.0b5
+    plugin: 0.9.0b5
   withmpi: false
 optimisation:
   array|cells:
