@@ -268,6 +268,8 @@ def initial_parse(lines):
                 mpi_abort = True
         elif "CONVERGENCE TESTS UNSATISFIED" in line.upper():
             errors.append(line.strip())
+        elif "Note: The following floating-point exceptions are signalling:" in line:
+            warnings.append(line.strip())
         elif "TELAPSE" in line:
             telapse_line = lineno
 
