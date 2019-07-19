@@ -24,7 +24,7 @@ class CryDossCalculation(CryAbstractCalculation):
         spec.input('metadata.options.input_wf_name',
                    valid_type=six.string_types, default='fort.9')
         spec.input('metadata.options.symlink_wf',
-                   valid_type=bool, default=True)
+                   valid_type=bool, default=False)
         spec.input('metadata.options.output_isovalue_fname',
                    valid_type=six.string_types, default='fort.25')
 

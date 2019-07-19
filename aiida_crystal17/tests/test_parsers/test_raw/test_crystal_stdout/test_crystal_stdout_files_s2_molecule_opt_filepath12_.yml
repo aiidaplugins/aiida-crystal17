@@ -1,0 +1,384 @@
+band_gaps:
+  alpha: 5.9497
+  beta: 4.6668
+calculation:
+  functional:
+    correlation: PERDEW-BURKE-ERNZERHOF
+    exchange: HSE06 SR/GGA
+  n_ao: 44
+  n_atoms: 2
+  n_core_el: 20
+  n_electrons: 32
+  n_shells: 20
+  n_symops: 1
+  spin: true
+  type: unrestricted open shell
+errors: []
+execution_time_seconds: 45
+exit_code: 0
+final_geometry:
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    atomic_numbers:
+    - 16
+    - 16
+    cell_parameters:
+      a: 500.0
+      alpha: 90.0
+      b: 500.0
+      beta: 90.0
+      c: 500.0
+      gamma: 90.0
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - false
+    - false
+    - false
+    symbols:
+    - S
+    - S
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+initial_geometry:
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    atomic_numbers:
+    - 16
+    - 16
+    cell_parameters:
+      a: 500.0
+      alpha: 90.0
+      b: 500.0
+      beta: 90.0
+      c: 500.0
+      gamma: 90.0
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - false
+    - false
+    - false
+    symbols:
+    - S
+    - S
+  primitive_symmops:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+initial_scf:
+  cycles:
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.00004535
+    energy:
+      total: -21655.024814732107
+    spin_density_absolute: 0.0033424
+    spin_density_peratom:
+    - 0.0016712
+    - 0.0016712
+    spin_density_total: 0.00334248
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.746801084748
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.755412266633
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.77114072803
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.78081235395
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.802100847104
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.805759246527
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.805775064506
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.805778860493
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 16.0
+    - 16.0
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.805778860493
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  - atomic_charges_peratom:
+    - 15.9999999
+    - 16.0000001
+    charge_normalization_factor: 1.0
+    energy:
+      total: -21655.805778865935
+    spin_density_absolute: 2.0
+    spin_density_peratom:
+    - 1.0
+    - 1.0
+    spin_density_total: 2.0
+  final_energy:
+    total_corrected: -21655.805778865935
+mulliken:
+  alpha+beta_electrons:
+    atomic_numbers:
+    - 16
+    - 16
+    charges:
+    - 16.0
+    - 16.0
+    ids:
+    - 1
+    - 2
+    symbols:
+    - S
+    - S
+  alpha-beta_electrons:
+    atomic_numbers:
+    - 16
+    - 16
+    charges:
+    - 1.0
+    - 1.0
+    ids:
+    - 1
+    - 2
+    symbols:
+    - S
+    - S
+optimisation:
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  energy:
+    total_corrected: -21655.83371264459
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    atomic_numbers:
+    - 16
+    - 16
+    cell_parameters:
+      a: 500.0
+      alpha: 90.0
+      b: 500.0
+      beta: 90.0
+      c: 500.0
+      gamma: 90.0
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - false
+    - false
+    - false
+    symbols:
+    - S
+    - S
+- convergence:
+    max_displac: false
+    max_gradient: false
+    rms_displac: false
+    rms_gradient: false
+  energy:
+    total_corrected: -21655.837385304956
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    atomic_numbers:
+    - 16
+    - 16
+    cell_parameters:
+      a: 500.0
+      alpha: 90.0
+      b: 500.0
+      beta: 90.0
+      c: 500.0
+      gamma: 90.0
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - false
+    - false
+    - false
+    symbols:
+    - S
+    - S
+- convergence:
+    max_displac: true
+    max_gradient: true
+    rms_displac: true
+    rms_gradient: true
+  energy:
+    total_corrected: -21655.837429461142
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    atomic_numbers:
+    - 16
+    - 16
+    cell_parameters:
+      a: 500.0
+      alpha: 90.0
+      b: 500.0
+      beta: 90.0
+      c: 500.0
+      gamma: 90.0
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - false
+    - false
+    - false
+    symbols:
+    - S
+    - S
+- convergence:
+    max_displac: true
+    max_gradient: true
+    rms_displac: true
+    rms_gradient: true
+  energy:
+    total_corrected: -21655.83769268341
+  primitive_cell:
+    assymetric:
+    - true
+    - true
+    atomic_numbers:
+    - 16
+    - 16
+    cell_parameters:
+      a: 500.0
+      alpha: 90.0
+      b: 500.0
+      beta: 90.0
+      c: 500.0
+      gamma: 90.0
+    ids:
+    - '1'
+    - '2'
+    pbc:
+    - false
+    - false
+    - false
+    symbols:
+    - S
+    - S
+parser_errors: []
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings:
+- WARNING **** RDDFTP **** HSE06-HJS ACTIVE
+- WARNING **** SHRINK **** MOLECULAR CASE - SHRINKING NOT USED
