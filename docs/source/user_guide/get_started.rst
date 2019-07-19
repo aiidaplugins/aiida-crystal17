@@ -45,13 +45,14 @@ the ``crystal`` or ``properties`` binary executables
 This is required to be available on the computer
 that the calculations are being run on.
 
-If the code is called as a serial run (``withmpi=False``),
+If the code is called as a serial run (``metadata.options.withmpi=False``),
 then the input file will be piped to the executable *via* stdout
 (as required by ``crystal``)::
 
     crystal < INPUT > main.out 2>&1
 
-Whereas, if the code is called as a parallel run (``withmpi=True``),
+Whereas, if the code is called as a parallel run
+(``metadata.options.withmpi=True``),
 then the ``INPUT`` file is placed in the directory,
 and the executable will read from it (as required by ``Pcrystal``)::
 
@@ -67,8 +68,9 @@ features of the ``Code`` node should be utilised.
 
     AiiDA documentation: :ref:`aiida:setup_code`
 
-For test purposes, a ``mock_crystal17`` executable is installed with
-``aiida-crystal17``, that will return pre-computed output files,
+For test purposes, ``mock_crystal17`` and ``mock_properties17`` executables
+are installed with ``aiida-crystal17``,
+that will return pre-computed output files,
 if parsed specific test input files. When running the test suite,
 this executable will be used in place of ``crystal``,
 if the global variable ``export MOCK_CRY17_EXECUTABLES=true`` is set.
