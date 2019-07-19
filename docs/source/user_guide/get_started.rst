@@ -40,11 +40,24 @@ CRYSTAL17 Executable
 ++++++++++++++++++++
 
 ``aiida-crystal17`` is designed to directly call
-the ``crystal`` binary executable.
+the ``crystal`` or ``properties`` binary executables
+(or their parallel variants, e.g. ``Pcrystal``).
 This is required to be available on the computer
 that the calculations are being run on.
 
-Note, using the standard AiiDA schedulers,
+If the code is called as a serial run (``withmpi=False``),
+then the input file will be piped to the executable *via* stdout
+(as required by ``crystal``)::
+
+    crystal < INPUT > main.out 2>&1
+
+Whereas, if the code is called as a parallel run (``withmpi=True``),
+then the ``INPUT`` file is placed in the directory,
+and the executable will read from it (as required by ``Pcrystal``)::
+
+    mpiexec Pcrystal > main.out 2>&1
+
+Note that, using the standard AiiDA schedulers,
 the calculations will run directly in the working directory,
 i.e. the files will not be copied to/from a temporary directory.
 If this is required, then the ``prepend_text`` and ``append_text``
