@@ -1,0 +1,12 @@
+# Usage: conda env create -n myenvname -f environment.yml python=3.6
+---
+name: aiida_crystal17
+channels:
+- conda-forge
+dependencies:
+- aiida-core==1.0.0b5
+- six
+- ruamel.yaml
+- jsonextended>=0.7.10
+- jsonschema
+- spglib>=1.10.0,<2.0.0

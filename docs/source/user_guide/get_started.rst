@@ -22,7 +22,7 @@ To install from Conda (recommended)::
 
 To install from pypi::
 
-    >> pip install aiida-crystal17
+    >> pip install --pre aiida-crystal17
 
 To install the development version::
 
