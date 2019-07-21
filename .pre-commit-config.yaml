@@ -2,35 +2,24 @@
 # pre-commit install
 
 - repo: git://github.com/pre-commit/pre-commit-hooks
-  sha: v1.1.1
+  sha: v2.2.3
   hooks:
-
+  - id: check-json
   - id: check-yaml
-
+  - id: end-of-file-fixer
   - id: trailing-whitespace
-    name: Trim Trailing Whitespace
-    description: This hook trims trailing whitespace.
-    entry: trailing-whitespace-fixer
-    language: python
-    types: [text]
+  - id: double-quote-string-fixer
+  - id: flake8
 
 - repo: local
   hooks:
 
   - id: yapf
     name: yapf
-    description: Yet another python formatter
     entry: yapf
     language: system
     types: [python]
-    exclude: '^(aiida_crystal17/tests/)'
-
-  - id: flake8
-    name: flake8
-    description: Lint all files with flake8
-    entry: flake8
-    language: system
-    types: [python]
+    args: ["-i", "-vv"]
 
   - id: version-number
     name: Check version numbers
