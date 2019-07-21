@@ -1,23 +1,36 @@
 # Install pre-commit hooks via
 # pre-commit install
 
+- repo: git://github.com/pre-commit/pre-commit-hooks
+  sha: v1.1.1
+  hooks:
+
+  - id: check-yaml
+
+  - id: trailing-whitespace
+    name: Trim Trailing Whitespace
+    description: This hook trims trailing whitespace.
+    entry: trailing-whitespace-fixer
+    language: python
+    types: [text]
+
 - repo: local
   hooks:
 
-  # - id: yapf
-  #   name: yapf
-  #   description: Yet another python formatter
-  #   entry: yapf
-  #   language: system
-  #   types: [python]
-    # exclude: '^(aiida_crystal17/tests/)'
+  - id: yapf
+    name: yapf
+    description: Yet another python formatter
+    entry: yapf
+    language: system
+    types: [python]
+    exclude: '^(aiida_crystal17/tests/)'
 
   - id: flake8
-    language: system
     name: flake8
     description: Lint all files with flake8
-    types: [python]
     entry: flake8
+    language: system
+    types: [python]
 
   - id: version-number
     name: Check version numbers
@@ -30,7 +43,7 @@
         aiida_crystal17/__init__.py
       )$
     pass_filenames: false
-  
+
   - id: conda
     name: Validating environment.yml
     entry: python ./.travis-data/check_version.py conda
@@ -50,8 +63,3 @@
     files: .travis.yml
     language: ruby
     additional_dependencies: ['travis']
-
-- repo: git://github.com/pre-commit/pre-commit-hooks
-  sha: v1.1.1
-  hooks:
-  - id: check-yaml
