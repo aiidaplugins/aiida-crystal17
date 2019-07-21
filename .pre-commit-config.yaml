@@ -15,7 +15,7 @@
   hooks:
 
   - id: yapf
-    name: yapf
+    name: Yet Another Python Formatter
     entry: yapf
     language: system
     types: [python]
@@ -34,7 +34,7 @@
     pass_filenames: false
 
   - id: conda
-    name: Validating environment.yml
+    name: Create environment.yml
     entry: python ./.travis-data/check_version.py conda
     language: system
     files: >-
@@ -47,7 +47,7 @@
     pass_filenames: false
 
   - id: travis-linter
-    name: travis
+    name: Travis Lint
     entry: travis lint
     files: .travis.yml
     language: ruby
