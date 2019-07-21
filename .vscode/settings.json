@@ -14,7 +14,7 @@
         "**/.eggs": true
     },
 
-    "python.pythonPath": "/anaconda/envs/aiida-workshop/bin/python",
+    "python.pythonPath": "/anaconda/envs/aiida_crystal17/bin/python",
     "python.formatting.provider": "yapf",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
