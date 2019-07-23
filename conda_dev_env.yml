@@ -28,5 +28,5 @@ dependencies:
 - pre-commit==1.14.4
 - yapf==0.26.0
 # docs
-- ipypublish>=0.10.6
+- ipypublish>=0.10.7
 - sphinx>=1.6

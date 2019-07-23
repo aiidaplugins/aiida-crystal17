@@ -71,7 +71,8 @@ ipysphinx_export_config = 'sphinx_ipypublish_all.ext.noexec'
 ipysphinx_show_prompts = True
 ipysphinx_input_prompt = 'In:'
 ipysphinx_output_prompt = 'Out:'
-ipysphinx_code_toggle = True
+ipysphinx_input_toggle = True
+ipysphinx_output_toggle = True
 
 git_commands = ['git', 'rev-parse', 'HEAD']
 try:
