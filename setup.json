@@ -92,7 +92,7 @@
     ],
     "docs": [
       "sphinx>=1.6",
-      "ipypublish>=0.10.1"
+      "ipypublish>=0.10.6"
     ]
   }
 }

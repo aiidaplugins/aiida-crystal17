@@ -42,7 +42,7 @@
         setup.json|
         setup.py|
         .travis-data/check_version.py|
-        environment.yml|
+        conda_dev_env.yml|
       )$
     pass_filenames: false
 

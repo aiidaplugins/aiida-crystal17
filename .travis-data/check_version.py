@@ -60,14 +60,16 @@ def validate_version():
 @cli.command('conda')
 def update_environment_yml():
     """
-    Updates environment.yml file for conda.
+    Updates conda_dev_env.yml file for conda.
     """
     import re
     from ruamel.yaml.comments import CommentedMap, CommentedSeq
     from ruamel.yaml import YAML
 
+    environment_filename = 'conda_dev_env.yml'
+
     cmap = CommentedMap()
-    cmap.yaml_set_start_comment('Usage: conda env create -n myenvname -f environment.yml python=3.6')
+    cmap.yaml_set_start_comment('Usage: conda env create -n myenvname -f {} python=3.6'.format(environment_filename))
     cmap['name'] = 'aiida_crystal17'
     cmap['channels'] = CommentedSeq(['conda-forge', 'cjs'])
     cmap['channels'].yaml_add_eol_comment('for sqlalchemy-diff and pgtest', 1)
@@ -97,7 +99,6 @@ def update_environment_yml():
     yaml.default_flow_style = False
     yaml.encoding = 'utf-8'
     yaml.allow_unicode = True
-    environment_filename = 'environment.yml'
     file_path = os.path.join(ROOT_DIR, environment_filename)
     with open(file_path, 'w') as env_file:
         yaml.dump(cmap, env_file)
