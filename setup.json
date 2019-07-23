@@ -91,7 +91,7 @@
       "pre-commit==1.14.4"
     ],
     "docs": [
-      "sphinx>=1.6,<2",
+      "sphinx>=1.6",
       "ipypublish>=0.10.1"
     ]
   }
