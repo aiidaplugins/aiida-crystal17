@@ -5,7 +5,6 @@ Validates consistency of setup.json and
  * environment.yml
  * version in aiida/__init__.py
 """
-from collections import OrderedDict
 import json
 import os
 import sys
@@ -20,8 +19,8 @@ FILEPATH_SETUP_JSON = os.path.join(ROOT_DIR, FILENAME_SETUP_JSON)
 
 def get_setup_json():
     """Return the `setup.json` as a python dictionary """
-    with open(FILEPATH_SETUP_JSON, 'r') as fil:
-        setup_json = json.load(fil, object_pairs_hook=OrderedDict)
+    with open(FILEPATH_SETUP_JSON, 'r') as handle:
+        setup_json = json.load(handle)  # , object_pairs_hook=OrderedDict)
 
     return setup_json
 
@@ -45,7 +44,7 @@ def validate_version():
 
     setup_content = get_setup_json()
     if version != setup_content['version']:
-        click.echo("Version number mismatch detected:")
+        click.echo('Version number mismatch detected:')
         click.echo("Version number in '{}': {}".format(FILENAME_SETUP_JSON, setup_content['version']))
         click.echo("Version number in '{}/__init__.py': {}".format('aiida_crystal17', version))
         click.echo("Updating version in '{}' to: {}".format(FILENAME_SETUP_JSON, version))
@@ -63,44 +62,45 @@ def update_environment_yml():
     """
     Updates environment.yml file for conda.
     """
-    import yaml
     import re
+    from ruamel.yaml.comments import CommentedMap, CommentedSeq
+    from ruamel.yaml import YAML
 
-    # needed for ordered dict, see
-    # https://stackoverflow.com/a/52621703
-    yaml.add_representer(
-        OrderedDict,
-        lambda self, data: yaml.representer.SafeRepresenter.represent_dict(self, data.items()),
-        Dumper=yaml.SafeDumper)
+    cmap = CommentedMap()
+    cmap.yaml_set_start_comment('Usage: conda env create -n myenvname -f environment.yml python=3.6')
+    cmap['name'] = 'aiida_crystal17'
+    cmap['channels'] = CommentedSeq(['conda-forge', 'cjs'])
+    cmap['channels'].yaml_add_eol_comment('for sqlalchemy-diff and pgtest', 1)
+    cmap['dependencies'] = dmap = CommentedSeq()
 
     # fix incompatibilities between conda and pypi
     replacements = {}
-    install_requires = get_setup_json()['install_requires']
+    setup_json = get_setup_json()
 
-    conda_requires = []
-    for req in install_requires:
-        # skip packages required for specific python versions
-        # (environment.yml aims at the latest python version)
-        if req.find("python_version") != -1:
-            continue
+    for base, key in [(None, 'install_requires'), ('extras_require', 'testing'), ('extras_require', 'code_style'),
+                      ('extras_require', 'docs')]:
+        requirements = setup_json.get(base, setup_json)[key]
+        count = 0
+        for req in sorted(requirements, key=lambda x: x.lower()):
+            # skip packages required for specific python versions < 3
+            if re.findall("python_version\\s*\\<\\s*\\'?3", req):
+                continue
+            req = req.split(';')[0]
+            for (regex, replacement) in iter(replacements.items()):
+                req = re.sub(regex, replacement, req)
+            count += 1
+            dmap.append(req.lower())
 
-        for (regex, replacement) in iter(replacements.items()):
-            req = re.sub(regex, replacement, req)
+        dmap.yaml_set_comment_before_after_key(len(dmap) - count, before=key)
 
-        conda_requires.append(req)
-
-    environment = OrderedDict([
-        ('name', 'aiida_crystal17'),
-        ('channels', ['conda-forge']),
-        ('dependencies', conda_requires),
-    ])
-
+    yaml = YAML(typ='rt')
+    yaml.default_flow_style = False
+    yaml.encoding = 'utf-8'
+    yaml.allow_unicode = True
     environment_filename = 'environment.yml'
     file_path = os.path.join(ROOT_DIR, environment_filename)
     with open(file_path, 'w') as env_file:
-        env_file.write('# Usage: conda env create -n myenvname -f environment.yml python=3.6\n')
-        yaml.safe_dump(
-            environment, env_file, explicit_start=True, default_flow_style=False, encoding='utf-8', allow_unicode=True)
+        yaml.dump(cmap, env_file)
 
 
 if __name__ == '__main__':
