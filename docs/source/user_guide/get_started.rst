@@ -2,14 +2,10 @@
 Getting Started
 ===============
 
-We show below a number of tutorials for the main CRYSTAL17 code
-that will guide you through submitting your calculations using AiiDA.
+.. seealso::
 
-Note: these tutorials assume you already installed AiiDA and
-properly configured AiiDA and configured one CRYSTAL17 code.
-You can check the
-`main AiiDA-core documentation <http://aiida-core.readthedocs.io/en/latest/index.html>`_
-for more information on how to perform these steps.
+    The `AiiDA documentation <http://aiida-core.readthedocs.io>`_,
+    for more general information on configuring and working with AiiDa.
 
 Installation
 ++++++++++++
