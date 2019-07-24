@@ -146,6 +146,16 @@ Optionally you can run ``yapf`` and ``flake8`` separately:
 Editors like VS Code also have automatic code reformat utilities, which
 can check and adhere to this standard.
 
+Documentation
+~~~~~~~~~~~~~
+
+The documentation can be created locally by:
+
+.. code:: shell
+
+   >> cd aiida-crystal17/docs
+   >> make clean
+   >> make  # or make debug
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/aiida-crystal17.svg
    :target: https://pypi.python.org/pypi/aiida-crystal17/
