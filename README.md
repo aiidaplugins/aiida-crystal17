@@ -37,7 +37,7 @@ To install the development version:
 >> verdi calculation plugins  # should now show the calclulation plugins (with prefix crystal17.)
 ```
 
-## Tests
+## Development
 
 The following will discover and run all unit test:
 
@@ -47,32 +47,26 @@ The following will discover and run all unit test:
 >> pytest -v
 ```
 
-To omit tests which call `runcry17`:
+To omit tests which call `crystal` executable:
 
 ```shell
 >> pytest -v -m "not process_execution"
 ```
 
-or alternatively to call the `mock_runcry17` executable,
+or alternatively to call the `mock_crystal17` executable,
 first set the global environmental variable:
 
 ```shell
->> export MOCK_EXECUTABLES=true
+>> export MOCK_CRY17_EXECUTABLES=true
 ```
-
-## Development and Testing Notes
-
-The original plugin template was created from the 
-[aiida-plugin-cutter
-](https://github.com/aiidateam/aiida-plugin-cutter/tree/e614256377a4ac0c03f0ffca1dfe7bd9bb618983).
 
 ### Coding Style Requirements
 
-The code style is tested using [prospector](https://prospector.readthedocs.io/en/master/),
-with the configuration set in `.prospector.yaml`, and [yapf](https://github.com/google/yapf).
+The code style is tested using [flake8](http://flake8.pycqa.org),
+with the configuration set in `.flake8`, and code should be formatted with [yapf](https://github.com/google/yapf) (configuration set in `.style.yapf`).
 
-Installing with `aiida-crystal17[pre-commit]` makes the [pre-commit](https://pre-commit.com/)
-package available, which will ensure these tests are passed by reformatting the code 
+Installing with `aiida-crystal17[code_style]` makes the [pre-commit](https://pre-commit.com/)
+package available, which will ensure these tests are passed by reformatting the code
 and testing for lint errors before submitting a commit.
 It can be setup by:
 
@@ -81,14 +75,14 @@ It can be setup by:
 >> pre-commit install
 ```
 
-Optionally you can run `yapf` and `prospector` separately:
+Optionally you can run `yapf` and `flake8` separately:
 
 ```shell
 >> yapf -r -i .  # recrusively find and format files in-place
->> prospector 
+>> flake8
 ```
 
-Editors like PyCharm also have automatic code reformat utilities, which should adhere to this standard.
+Editors like VS Code also have automatic code reformat utilities, which can adhere to this standard.
 
 ### Testing against mock CRYSTAL17 executables
 
@@ -107,7 +101,7 @@ To set up local version of CRYSTAL17 on a mac (after downloading a copy from the
 1. Remove the quarantine from the executable permissions:
 
     ```shell
-    xattr -c crystal 
+    xattr -c crystal
     xattr -c properties
     ```
 
@@ -118,7 +112,7 @@ To set up local version of CRYSTAL17 on a mac (after downloading a copy from the
     sudo cp /opt/local/lib/lapack/liblapack.3.dylib /usr/local/opt/lapack/lib/liblapack.3.dylib
     sudo cp /opt/local/lib/lapack/libblas.3.dylib /usr/local/opt/lapack/lib/libblas.3.dylib
     ```
-    
+
 3. Define environmental variables in `~/.bashrc`, as detailed in `cry17_scripts/cry17.bashrc`
 4. Copy or symlink the `cry17_scripts/runcry17` script into `/usr/local/bin/`
 

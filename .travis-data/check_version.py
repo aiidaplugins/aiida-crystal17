@@ -78,6 +78,7 @@ def update_environment_yml():
     cmap['dependencies'] = dmap = CommentedSeq()
 
     # additional packages
+    dmap.append('pip')
     dmap.append('aiida-core.services')
 
     # fix incompatibilities between conda and pypi
