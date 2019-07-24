@@ -4,7 +4,7 @@
 name: aiida_crystal17
 channels:
 - conda-forge
-- cjs  # for sqlalchemy-diff and pgtest
+- cjs14  # for sqlalchemy-diff and pgtest
 dependencies:
 - pip
 - aiida-core.services
@@ -28,8 +28,9 @@ dependencies:
 - sqlalchemy-diff==0.1.3
 - wheel>=0.31
 # code_style
+- doc8<0.9.0,>=0.8.0
 - flake8<3.8.0,>=3.7.0
-- pre-commit==1.14.4
+- pre_commit==1.14.4
 - yapf==0.26.0
 # docs
 - ipypublish>=0.10.7

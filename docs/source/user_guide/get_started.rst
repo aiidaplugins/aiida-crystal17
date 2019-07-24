@@ -1,12 +1,3 @@
-===============
-Getting Started
-===============
-
-.. seealso::
-
-    The `AiiDA documentation <http://aiida-core.readthedocs.io>`_,
-    for more general information on configuring and working with AiiDa.
-
 Installation
 ++++++++++++
 
@@ -46,6 +37,11 @@ To configure aiida::
 
 Then use ``verdi code setup`` with a ``crystal17.`` input plugin
 to set up an AiiDA code for that plugin.
+
+.. seealso::
+
+    The `AiiDA documentation <http://aiida-core.readthedocs.io>`_,
+    for more general information on configuring and working with AiiDa.
 
 CRYSTAL17 Executable
 ++++++++++++++++++++

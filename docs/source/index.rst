@@ -8,14 +8,37 @@ The aiida-crystal17 plugin for `AiiDA`_
 ``aiida-crystal17`` is available at http://github.com/chrisjsewell/aiida-crystal17
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: Getting Started
+   :hidden:
 
    user_guide/get_started
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Calculations
+   :hidden:
+
    user_guide/calc_basic
    user_guide/calc_main
-   user_guide/workflow_base
    user_guide/calc_main_immigrant
+   user_guide/calc_doss
    user_guide/calc_gulp
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Workflows
+   :hidden:
+
+   devel_guide/restart_wkchain
+   user_guide/workflow_base
+   user_guide/workflow_properties
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API reference
+   :hidden:
+
    api_index
 
 If you use this plugin for your research, please cite the Github repository
@@ -41,4 +64,3 @@ Indices and tables
 * :ref:`search`
 
 .. _AiiDA: http://www.aiida.net
-
