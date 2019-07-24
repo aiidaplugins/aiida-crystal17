@@ -66,15 +66,13 @@ class BaseRestartWorkChain(WorkChain):
         super(BaseRestartWorkChain, self).__init__(*args, **kwargs)
 
         if self._calculation_class is None or not issubclass(self._calculation_class, CalcJob):
-            raise ValueError(
-                'no valid CalcJob class defined for `_calculation_class` attribute')
+            raise ValueError('no valid CalcJob class defined for `_calculation_class` attribute')
 
         self._load_error_handlers()
 
     @override
     def load_instance_state(self, saved_state, load_context):
-        super(BaseRestartWorkChain, self).load_instance_state(
-            saved_state, load_context)
+        super(BaseRestartWorkChain, self).load_instance_state(saved_state, load_context)
         self._load_error_handlers()
 
     def _load_error_handlers(self):
@@ -82,8 +80,7 @@ class BaseRestartWorkChain(WorkChain):
         if self._error_handler_entry_point is not None:
             for entry_point_name in get_entry_point_names(self._error_handler_entry_point):
                 try:
-                    load_entry_point(
-                        self._error_handler_entry_point, entry_point_name)
+                    load_entry_point(self._error_handler_entry_point, entry_point_name)
                     self.logger.info("loaded the '%s' entry point for the '%s' error handlers category",
                                      entry_point_name, self._error_handler_entry_point)
                 except exceptions.EntryPointError as exception:
@@ -170,7 +167,8 @@ class BaseRestartWorkChain(WorkChain):
             handler = self._handle_calculation_sanity_checks(
                 calculation)  # pylint: disable=assignment-from-no-return
 
-            if isinstance(handler, ErrorHandlerReport) and handler.exit_code.status != 0:
+            if (isinstance(handler, ErrorHandlerReport)
+                    and handler.exit_code is not None and handler.exit_code.status != 0):
                 # Sanity check returned a handler with an exit code that is non-zero, so we abort
                 self.report('{}<{}> finished successfully, but sanity check detected unrecoverable problem'.format(
                     self.ctx.calc_name, calculation.pk))
@@ -199,13 +197,20 @@ class BaseRestartWorkChain(WorkChain):
         except UnexpectedCalculationFailure as exception:
             exit_code = self._handle_unexpected_failure(calculation, exception)
 
+        # If the exit code returned actually has status `0` that means we consider the calculation as successful
+        if isinstance(exit_code, ExitCode) and exit_code.status == 0:
+            self.ctx.is_finished = True
+
         return exit_code
 
     def results(self):
         """Attach the outputs specified in the output specification from the last completed calculation."""
         calculation = self.ctx.calculations[self.ctx.iteration - 1]
 
-        if calculation.is_failed and self.ctx.iteration >= self.inputs.max_iterations.value:
+        # We check the `is_finished` attribute of the work chain and not the successfulness of the last calculation
+        # because the error handlers in the last iteration can have qualified a "failed" calculation as satisfactory
+        # for the outcome of the work chain and so have marked it as `is_finished=True`.
+        if not self.ctx.is_finished and self.ctx.iteration >= self.inputs.max_iterations.value:
             # Abort: exceeded maximum number of retries
             self.report('reached the maximum number of iterations {}: last ran {}<{}>'.format(
                 self.inputs.max_iterations.value, self.ctx.calc_name, calculation.pk))
@@ -350,7 +355,7 @@ as its sole argument. If the condition of the error handler is met, it should re
 """
 
 ErrorHandlerReport = namedtuple('ErrorHandlerReport', 'is_handled do_break exit_code')
-ErrorHandlerReport.__new__.__defaults__ = (False, False, ExitCode())
+ErrorHandlerReport.__new__.__defaults__ = (False, False, None)
 """
 A namedtuple to define an error handler report for a :class:`~aiida.engine.processes.workchains.workchain.WorkChain`.
 
