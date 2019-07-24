@@ -90,8 +90,11 @@ if parsed specific test input files. When running the test suite,
 this executable will be used in place of ``crystal``,
 if the global variable ``export MOCK_CRY17_EXECUTABLES=true`` is set.
 
+Development
++++++++++++
+
 Testing
-+++++++
+~~~~~~~
 
 |Build Status| |Coverage Status|
 
