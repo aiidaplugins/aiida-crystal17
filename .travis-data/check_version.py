@@ -69,7 +69,9 @@ def update_environment_yml():
     environment_filename = 'conda_dev_env.yml'
 
     cmap = CommentedMap()
-    cmap.yaml_set_start_comment('Usage: conda env create -n myenvname -f {} python=3.6'.format(environment_filename))
+    cmap.yaml_set_start_comment(('Usage: conda env create -n myenvname -f {} python=3.6\n'
+                                 '       conda activate myenvname\n'
+                                 '       pip install --no-deps -e .'.format(environment_filename)))
     cmap['name'] = 'aiida_crystal17'
     cmap['channels'] = CommentedSeq(['conda-forge', 'cjs'])
     cmap['channels'].yaml_add_eol_comment('for sqlalchemy-diff and pgtest', 1)

@@ -1,4 +1,6 @@
 # Usage: conda env create -n myenvname -f conda_dev_env.yml python=3.6
+#        conda activate myenvname
+#        pip install --no-deps -e .
 name: aiida_crystal17
 channels:
 - conda-forge
