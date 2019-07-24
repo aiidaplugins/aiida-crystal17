@@ -73,7 +73,7 @@ def update_environment_yml():
                                  '       conda activate myenvname\n'
                                  '       pip install --no-deps -e .'.format(environment_filename)))
     cmap['name'] = 'aiida_crystal17'
-    cmap['channels'] = CommentedSeq(['conda-forge', 'cjs'])
+    cmap['channels'] = CommentedSeq(['conda-forge', 'cjs14'])
     cmap['channels'].yaml_add_eol_comment('for sqlalchemy-diff and pgtest', 1)
     cmap['dependencies'] = dmap = CommentedSeq()
 
@@ -82,7 +82,7 @@ def update_environment_yml():
     dmap.append('aiida-core.services')
 
     # fix incompatibilities between conda and pypi
-    replacements = {}
+    replacements = {'pre-commit': 'pre_commit'}
     setup_json = get_setup_json()
 
     for base, key in [(None, 'install_requires'), ('extras_require', 'testing'), ('extras_require', 'code_style'),

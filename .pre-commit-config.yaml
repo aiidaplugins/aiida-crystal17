@@ -52,3 +52,9 @@
     files: .travis.yml
     language: ruby
     additional_dependencies: ['travis']
+
+  - id: doc8
+    entry: doc8
+    language: system
+    types: [rst]
+    name: doc8 - Lint the documentation.
