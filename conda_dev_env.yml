@@ -4,6 +4,7 @@ channels:
 - conda-forge
 - cjs  # for sqlalchemy-diff and pgtest
 dependencies:
+- aiida-core.services
 # install_requires
 - aiida-core==1.0.0b5
 - ase>=3.12.0,<4.0.0

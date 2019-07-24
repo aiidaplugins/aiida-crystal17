@@ -75,6 +75,9 @@ def update_environment_yml():
     cmap['channels'].yaml_add_eol_comment('for sqlalchemy-diff and pgtest', 1)
     cmap['dependencies'] = dmap = CommentedSeq()
 
+    # additional packages
+    dmap.append('aiida-core.services')
+
     # fix incompatibilities between conda and pypi
     replacements = {}
     setup_json = get_setup_json()
