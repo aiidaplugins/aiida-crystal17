@@ -52,6 +52,7 @@
     "aiida.cmdline.data": [
       "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
       "crystal17.basis = aiida_crystal17.cmndline.basis_set:basisset",
+      "crystal17.parse = aiida_crystal17.cmndline.cmd_parser:parse",
       "gulp.potentials = aiida_crystal17.gulp.cmndline.potentials:potentials"
     ],
     "gulp.potentials": [

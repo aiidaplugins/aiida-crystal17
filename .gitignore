@@ -18,3 +18,4 @@ _archive/
 databases/
 test_workdir/
 _archive/
+pip-wheel-metadata/
