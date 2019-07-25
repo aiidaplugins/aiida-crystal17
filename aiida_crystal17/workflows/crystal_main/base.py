@@ -16,21 +16,18 @@ BasisSetsData = DataFactory('crystal17.basisset')
 
 def _validate_kpoint_distance(float_data):
     if float_data and not float_data.value > 0:
-        raise InputValidationError("kpoints_distance must be greater than 0")
+        raise InputValidationError('kpoints_distance must be greater than 0')
 
 
 class CryMainBaseWorkChain(BaseRestartWorkChain):
     """Workchain to run a standard CRYSTAL17 calculation with automated error handling and restarts."""
 
     _calculation_class = CryCalculation
-    _error_handler_entry_point = None
+    _error_handler_entry_point = 'aiida_crystal17.workflow_error_handlers.main.base'
 
     _calc_namespace = 'cry'
 
-    defaults = AttributeDict({
-        'fmixing': 30,
-        'delta_factor_fmixing': 0.8
-    })
+    defaults = AttributeDict({'fmixing': 30, 'delta_factor_fmixing': 0.8})
 
     @classmethod
     def define(cls, spec):
@@ -122,12 +119,12 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
             if is_value[0] == is_value[1] == is_value[2]:
                 is_value = is_value[0]
 
-            curr_kpoints = list(self.ctx.inputs.parameters["scf"]["k_points"])
+            curr_kpoints = list(self.ctx.inputs.parameters['scf']['k_points'])
             if curr_kpoints != [is_value, isp_value]:
-                self.report("changing the intput kpoints ({0}) to the computed kpoints ({1})".format(
+                self.report('changing the intput kpoints ({0}) to the computed kpoints ({1})'.format(
                     curr_kpoints, [is_value, isp_value]
                 ))
-                self.ctx.inputs.parameters["scf"]["k_points"] = [is_value, isp_value]
+                self.ctx.inputs.parameters['scf']['k_points'] = [is_value, isp_value]
 
     def validate_basis_sets(self):
         """Validate the inputs related to basis sets.
@@ -169,7 +166,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
 
             self.ctx.inputs.pop('wf_folder', None)
 
-            if "optimisation" in self.ctx.restart_calc.outputs:
+            if 'optimisation' in self.ctx.restart_calc.outputs:
                 # use the last recorded structure of an optimisation
                 self.ctx.inputs.structure = self.ctx.restart_calc.outputs.optimisation.get_step_structure(
                     -1, custom_kinds=self.ctx.inputs.structure.kinds)

@@ -7,8 +7,8 @@ from aiida.orm import ArrayData, Float, List, Dict
 from aiida_crystal17.common import recursive_round
 from aiida_crystal17.calcfunctions.band_gap import calculate_band_gap, calcfunction_band_gap
 
-TestData = namedtuple(
-    'TestData', ['energies', 'densities', 'left_edge', 'right_edge', 'fermi', 'try_fshifts'])
+DataTest = namedtuple(
+    'DataTest', ['energies', 'densities', 'left_edge', 'right_edge', 'fermi', 'try_fshifts'])
 
 
 def get_test_data(name):
@@ -109,7 +109,7 @@ def get_test_data(name):
     else:
         raise ValueError(name)
 
-    return TestData(energies, densities, left_edge, right_edge, fermi, try_fshifts)
+    return DataTest(energies, densities, left_edge, right_edge, fermi, try_fshifts)
 
 
 @pytest.mark.parametrize('dtype', ("zero", "non-zero", "no-left", "no-right",

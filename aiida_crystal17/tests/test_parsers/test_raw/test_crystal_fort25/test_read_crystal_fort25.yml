@@ -5032,7 +5032,7 @@ results:
   npts: 1002
   parser_class: dummy_parser_class
   parser_errors: []
-  parser_version: 0.9.0b5
+  parser_version: 0.9.1b5
   parser_warnings: []
   spin: true
   system_type: open shell, conducting system

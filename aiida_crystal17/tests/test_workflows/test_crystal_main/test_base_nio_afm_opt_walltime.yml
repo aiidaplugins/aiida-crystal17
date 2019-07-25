@@ -4,9 +4,6 @@ calc_node:
   process_state: finished
   sealed: true
   stepper_state_info: 5:results
-  version:
-    core: 1.0.0b5
-    plugin: 0.9.0b5
 incoming:
 - clean_workdir
 - cry__basissets__Ni

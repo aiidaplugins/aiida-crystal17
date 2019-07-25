@@ -22,6 +22,8 @@ from aiida_crystal17.parsers.raw.crystal_stdout import read_crystal_stdout
     ('cry17_incomplete_scf',
      ('crystal', 'stdout_parser', 'cry17_incomplete_scf.out')),
     ('empty', ('crystal', 'stdout_parser', 'empty.out')),
+    ('s2_molecule_opt', ('crystal', 's2_molecule_opt', 'main.out')),
+    ('slab_testgeom', ('crystal', 'slab_testgeom', 'main.out'))
 ))
 def test_crystal_stdout_files(name, filepath, data_regression):
 

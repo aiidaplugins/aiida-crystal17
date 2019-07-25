@@ -12,11 +12,7 @@ def test_symmetry_show(db_test_app):
     from aiida.plugins import DataFactory
     node_cls = DataFactory('crystal17.symmetry')
 
-    symmdata = {
-        "operations": [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]],
-        "hall_number": 1,
-        "basis": "fractional"
-    }
+    symmdata = {'operations': [[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]], 'hall_number': 1, 'basis': 'fractional'}
     node = node_cls(data=symmdata)
     node.store()
 
@@ -35,8 +31,7 @@ def test_symmetry_show(db_test_app):
 
     assert expected == str(result.output)
 
-    result2 = runner.invoke(symmetry,
-                            ['show', "-s", str(node.pk)])
+    result2 = runner.invoke(symmetry, ['show', '-s', str(node.pk)])
 
     assert result2.exit_code == 0
 
@@ -45,8 +40,7 @@ def test_basis_show(db_test_app):
 
     from aiida.plugins import DataFactory
     basis_cls = DataFactory('crystal17.basisset')
-    node, created = basis_cls.get_or_create(
-        os.path.join(TEST_FILES, "basis_sets", "sto3g", 'sto3g_O.basis'))
+    node, created = basis_cls.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
 
     runner = CliRunner()
     result = runner.invoke(basisset, ['show', str(node.pk)])
@@ -74,12 +68,9 @@ def test_basis_show(db_test_app):
 
 def test_basis_upload(db_test_app):
 
-    path = os.path.join(TEST_FILES, "basis_sets", "sto3g")
+    path = os.path.join(TEST_FILES, 'basis_sets', 'sto3g')
     runner = CliRunner()
-    result = runner.invoke(basisset, [
-        'uploadfamily', '--path', path, '--name', 'sto3g', '--description',
-        'STO3G'
-    ])
+    result = runner.invoke(basisset, ['uploadfamily', '--path', path, '--name', 'sto3g', '--description', 'STO3G'])
 
     print(result.output)
 
