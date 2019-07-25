@@ -1,8 +1,8 @@
 import io
 
 from aiida.cmdline.commands.cmd_verdi import verdi
-from aiida.cmdline.params import arguments, options
-from aiida.cmdline.utils import echo
+from aiida.cmdline.params import arguments
+from aiida_crystal17.cmndline import options
 
 
 @verdi.group('crystal17.parse')
@@ -21,7 +21,7 @@ def stdin(input_file, keys, fmt):
         data, bases, atom_props = extract_data(handle.read())
     if keys is not None:
         data = {k: v for k, v in data.items() if k in keys}
-    echo.echo_dictionary(data, fmt=fmt)
+    options.echo_dictionary(data, fmt=fmt)
 
 
 @parse.command()
@@ -35,4 +35,4 @@ def stdout(input_file, keys, fmt):
         data = read_crystal_stdout(handle.read())
     if keys is not None:
         data = {k: v for k, v in data.items() if k in keys}
-    echo.echo_dictionary(data, fmt=fmt)
+    options.echo_dictionary(data, fmt=fmt)
