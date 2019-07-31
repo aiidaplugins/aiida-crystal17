@@ -1,7 +1,7 @@
 import numpy as np
 
 from aiida_crystal17.symmetry import convert_structure, operation_cart_to_frac
-from aiida_crystal17.parsers.raw.gui_parse import get_crystal_type_name
+from aiida_crystal17.parsers.raw.parse_fort34 import get_crystal_type_name
 from aiida_crystal17.validation import validate_against_schema
 
 
