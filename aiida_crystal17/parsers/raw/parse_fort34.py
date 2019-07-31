@@ -62,8 +62,8 @@ CENTERING_CODE_MAP = {
 }
 
 
-def gui_file_read(lines, check_final_line=False):
-    """read CRYSTAL geometry (.gui) file
+def parse_fort34(lines, check_final_line=False):
+    """read CRYSTAL geometry fort.34 (aka .gui) file
 
     Parameters
     ----------
