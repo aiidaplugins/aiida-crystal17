@@ -61,7 +61,7 @@ class CryAbstractCalculation(CalcJob):
         spec.exit_code(  # TODO is this an unrecoverable error?
             301,
             'ERROR_PARSING_OPTIMISATION_GEOMTRIES',
-            message=("An error occurred parsing the 'opta'/'optc' geomerty files"))
+            message=("An error occurred parsing the 'opta'/'optc' geometry files"))
         spec.exit_code(
             302, 'TESTGEOM_DIRECTIVE', message=('The crystal exec stdout file denoted that the run was a testgeom'))
 
