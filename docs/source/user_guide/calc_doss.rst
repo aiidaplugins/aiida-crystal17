@@ -37,7 +37,7 @@ executable for DOSS calculations, from an existing ``fort.9``.
                 210:  The main (stdout) output file was not found
                 211:  The temporary retrieved folder was not found
                 300:  An error was flagged trying to parse the crystal exec stdout file
-                301:  An error occurred parsing the 'opta'/'optc' geomerty files
+                301:  An error occurred parsing the 'opta'/'optc' geometry files
                 302:  The crystal exec stdout file denoted that the run was a testgeom
                 350:  The input file could not be read by crystal
                 351:  Crystal could not find the required wavefunction file
@@ -69,8 +69,10 @@ The :ref:`doss_input_schema` gives the allowed format of the input dictionary, f
         "band_units": "eV"
     })
 
-Projections
-~~~~~~~~~~~
+.. _doss_projections:
+
+Computing Projections
+~~~~~~~~~~~~~~~~~~~~~
 
 Projections can be added per atom or per orbital set:
 
