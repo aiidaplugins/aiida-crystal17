@@ -232,8 +232,7 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
     return gbasis
 
 
-OrbitalResult = namedtuple('OrbitalResult',
-                           ['electrons', 'inner_electrons', 'number_ao', 'orbital_types', 'ao_indices'])
+OrbitalResult = namedtuple('OrbitalResult', ['electrons', 'core_electrons', 'number_ao', 'orbital_types', 'ao_indices'])
 
 
 def compute_orbitals(atoms, basis_sets):
@@ -253,22 +252,22 @@ def compute_orbitals(atoms, basis_sets):
     OrbitalResult
 
     """
-    total_electrons = total_inner_electrons = total_aos = 0
+    total_electrons = total_core_electrons = total_aos = 0
     aos_indices = {}
     orbital_types = []
 
     for atom_index, atom in enumerate(atoms):
-        if isinstance(atom, int):
-            electrons = atom
-            symbol = SYMBOLS[atom]
-        else:
+        try:
+            electrons = int(atom)
+            symbol = SYMBOLS[int(atom)]
+        except (TypeError, ValueError):
             symbol = atom
             electrons = SYMBOLS_R[atom]
         if basis_sets[symbol]['type'] == 'valence-electron':
             raise NotImplementedError('computing for bases with core pseudopotentials')
         outer_electrons = sum([i for n, i in ELECTRON_CONFIGURATIONS[electrons]['outer']])
         total_electrons += electrons
-        total_inner_electrons += electrons - outer_electrons
+        total_core_electrons += electrons - outer_electrons
         type_count = {}
         for orbital in basis_sets[symbol]['bs']:
             type_count.setdefault(orbital['type'], 0)
@@ -284,4 +283,4 @@ def compute_orbitals(atoms, basis_sets):
                     'index': type_count[orbital['type']]
                 }
 
-    return OrbitalResult(total_electrons, total_inner_electrons, total_aos, orbital_types, aos_indices)
+    return OrbitalResult(total_electrons, total_core_electrons, total_aos, orbital_types, aos_indices)

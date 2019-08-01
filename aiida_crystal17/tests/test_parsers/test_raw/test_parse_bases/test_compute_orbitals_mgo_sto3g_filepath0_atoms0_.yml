@@ -70,7 +70,7 @@ ao_indices:
     index: 1
     type: SP
 electrons: 20
-inner_electrons: 12
+core_electrons: 12
 number_ao: 14
 orbital_types:
 - - Mg

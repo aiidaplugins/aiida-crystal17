@@ -230,7 +230,7 @@ ao_indices:
     index: 1
     type: SP
 electrons: 72
-inner_electrons: 40
+core_electrons: 40
 number_ao: 46
 orbital_types:
 - - Ni

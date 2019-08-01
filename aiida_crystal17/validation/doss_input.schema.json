@@ -51,11 +51,13 @@
                 "array",
                 "null"
             ],
+            "maxItems": 15,
             "items": {
                 "type": "array",
                 "minItems": 1,
                 "items": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 }
             },
             "default": null
@@ -66,11 +68,13 @@
                 "array",
                 "null"
             ],
+            "maxItems": 15,
             "items": {
                 "type": "array",
                 "minItems": 1,
                 "items": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 }
             },
             "default": null
