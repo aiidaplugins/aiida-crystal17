@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 """
 Plugin to run GULP
 """
@@ -9,7 +24,7 @@ from aiida.plugins import DataFactory
 
 
 def potential_validator(potential):
-    assert not potential.has_fitting_flags, "fitting flags should not be set for the potential"
+    assert not potential.has_fitting_flags, 'fitting flags should not be set for the potential'
 
 
 class GulpAbstractCalculation(CalcJob):
@@ -27,25 +42,26 @@ class GulpAbstractCalculation(CalcJob):
 
         super(GulpAbstractCalculation, cls).define(spec)
 
-        spec.input('metadata.options.input_file_name',
-                   valid_type=six.string_types, default='main.gin')
-        spec.input('metadata.options.output_main_file_name',
-                   valid_type=six.string_types, default='main.gout')
-        spec.input('metadata.options.output_stderr_file_name',
-                   valid_type=six.string_types, default='main_stderr.txt')
+        spec.input('metadata.options.input_file_name', valid_type=six.string_types, default='main.gin')
+        spec.input('metadata.options.output_main_file_name', valid_type=six.string_types, default='main.gout')
+        spec.input('metadata.options.output_stderr_file_name', valid_type=six.string_types, default='main_stderr.txt')
 
         spec.input(
-            'structure', valid_type=DataFactory('structure'),
+            'structure',
+            valid_type=DataFactory('structure'),
             required=True,
             help=('atomic structure used to create the '
                   'geometry section of .gin file content.'))
         spec.input(
-            'potential', valid_type=DataFactory('gulp.potential'),
-            required=True, validator=potential_validator,
+            'potential',
+            valid_type=DataFactory('gulp.potential'),
+            required=True,
+            validator=potential_validator,
             help=('parameters to create the '
                   'potential section of the .gin file content.'))
         spec.input(
-            'parameters', valid_type=DataFactory('dict'),
+            'parameters',
+            valid_type=DataFactory('dict'),
             required=False,
             help=('additional input parameters '
                   'to create the .gin file content.'))
@@ -54,39 +70,36 @@ class GulpAbstractCalculation(CalcJob):
 
         # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
         spec.exit_code(
-            200, 'ERROR_NO_RETRIEVED_FOLDER',
-            message='The retrieved folder data node could not be accessed.')
-        spec.exit_code(
-            210, 'ERROR_OUTPUT_FILE_MISSING',
-            message='the main output file was not found')
+            200, 'ERROR_NO_RETRIEVED_FOLDER', message='The retrieved folder data node could not be accessed.')
+        spec.exit_code(210, 'ERROR_OUTPUT_FILE_MISSING', message='the main output file was not found')
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
         spec.exit_code(
-            300, 'ERROR_PARSING_STDOUT',
-            message=('An error was flagged trying to parse the '
-                     'main gulp output file'))
-        spec.exit_code(
-            301, 'ERROR_STDOUT_EMPTY',
-            message=('The stdout file is empty'))
+            300, 'ERROR_PARSING_STDOUT', message=('An error was flagged trying to parse the '
+                                                  'main gulp output file'))
+        spec.exit_code(301, 'ERROR_STDOUT_EMPTY', message=('The stdout file is empty'))
 
         # Significant errors but calculation can be used to restart
         spec.exit_code(
-            400, 'ERROR_GULP_UNHANDLED',
-            message='The main gulp output file flagged an error not handled elsewhere')
+            400, 'ERROR_GULP_UNHANDLED', message='The main gulp output file flagged an error not handled elsewhere')
         spec.exit_code(
-            410, 'ERROR_OPTIMISE_UNSUCCESFUL',
+            410,
+            'ERROR_OPTIMISE_UNSUCCESFUL',
             message='The main gulp output file did not signal that an expected optimisation completed')
         spec.exit_code(
-            411, 'ERROR_OPTIMISE_MAX_ATTEMPTS',
+            411,
+            'ERROR_OPTIMISE_MAX_ATTEMPTS',
             message='The main gulp output file did not signal that an expected optimisation completed')
         spec.exit_code(
-            412, 'ERROR_OPTIMISE_MAX_CALLS',
+            412,
+            'ERROR_OPTIMISE_MAX_CALLS',
             message='The main gulp output file did not signal that an expected optimisation completed')
 
-        spec.output(cls.link_output_results,
-                    valid_type=DataFactory('dict'),
-                    required=True,
-                    help='the data extracted from the main output file')
+        spec.output(
+            cls.link_output_results,
+            valid_type=DataFactory('dict'),
+            required=True,
+            help='the data extracted from the main output file')
         spec.default_output_node = cls.link_output_results
 
     def prepare_for_submission(self, tempfolder):
@@ -97,12 +110,8 @@ class GulpAbstractCalculation(CalcJob):
         :param tempfolder: an aiida.common.folders.Folder subclass
                            where the plugin should put all its files.
         """
-        content = self.create_input(
-            self.inputs.structure,
-            self.inputs.potential,
-            self.inputs.get("parameters", None),
-            self.inputs.get("symmetry", None)
-        )
+        content = self.create_input(self.inputs.structure, self.inputs.potential, self.inputs.get('parameters', None),
+                                    self.inputs.get('symmetry', None))
 
         if not isinstance(content, six.text_type):
             content = six.u(content)
@@ -130,15 +139,10 @@ class GulpAbstractCalculation(CalcJob):
 
         return calcinfo
 
-    def create_input(self,
-                     structure, potential,
-                     parameters=None, symmetry=None):
+    def create_input(self, structure, potential, parameters=None, symmetry=None):
         """ should return the content for main.gin"""
         raise NotImplementedError
 
     def get_retrieve_list(self):
         """ should return the files to be retrieved """
-        return [
-            self.metadata.options.output_main_file_name,
-            self.metadata.options.output_stderr_file_name
-        ]
+        return [self.metadata.options.output_main_file_name, self.metadata.options.output_stderr_file_name]

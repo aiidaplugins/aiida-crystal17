@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 import json
 import os
 
@@ -56,9 +71,8 @@ def load_validator(schema):
     def is_array(checker, instance):
         return isinstance(instance, (tuple, list))
 
-    type_checker = validator_cls.TYPE_CHECKER.redefine("array", is_array)
-    validator_cls = jsonschema.validators.extend(
-        validator_cls, type_checker=type_checker)
+    type_checker = validator_cls.TYPE_CHECKER.redefine('array', is_array)
+    validator_cls = jsonschema.validators.extend(validator_cls, type_checker=type_checker)
 
     validator = validator_cls(schema=schema)
     return validator
@@ -91,10 +105,8 @@ def validate_against_schema(data, schema):
     # validator.validate(data)
     errors = sorted(validator.iter_errors(data), key=lambda e: e.path)
     if errors:
-        raise jsonschema.ValidationError(
-            "\n".join(["- {} [key path: '{}']".format(
-                error.message, "/".join([str(p) for p in error.path]))
-                for error in errors])
-        )
+        raise jsonschema.ValidationError('\n'.join([
+            "- {} [key path: '{}']".format(error.message, '/'.join([str(p) for p in error.path])) for error in errors
+        ]))
 
     return True
