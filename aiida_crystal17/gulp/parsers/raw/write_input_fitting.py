@@ -1,9 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 from aiida_crystal17.gulp.parsers.raw.write_geometry import create_geometry_lines
 
 
-def create_input_lines(potential, structures, observable_datas,
-                       observables, delta=None,
-                       dump_file="fitting.grs",):
+def create_input_lines(
+        potential,
+        structures,
+        observable_datas,
+        observables,
+        delta=None,
+        dump_file='fitting.grs',
+):
     """create the input file for a potential fitting
 
     Parameters
@@ -34,44 +54,44 @@ def create_input_lines(potential, structures, observable_datas,
     snames = []
 
     # intial key words
-    lines.append("fit noflags")
-    lines.append("")
+    lines.append('fit noflags')
+    lines.append('')
 
     if delta is not None:
-        lines.append("delta")
-        lines.append("{0:.8f}".format(delta))
-        lines.append("")
+        lines.append('delta')
+        lines.append('{0:.8f}'.format(delta))
+        lines.append('')
 
     # The following command makes a uniform shift
     # to the energies of all structures to remove
     # the constant offset => we are only fitting
     # the local curvature.
-    lines.extend(["shift", str(1.0)])
-    lines.append("")
+    lines.extend(['shift', str(1.0)])
+    lines.append('')
 
     for name in sorted(structures.keys()):
         snames.append(name)
         lines.extend(create_geometry_lines(structures[name], name=name))
-        lines.append("")
-        lines.append("observables")
+        lines.append('')
+        lines.append('observables')
 
         for oname in sorted(observables.keys()):
             lines.append(oname)
             value, weighting = observables[oname](observable_datas[name])
-            lines.append("{0:.8f} {1:.8f}".format(value, weighting))
+            lines.append('{0:.8f} {1:.8f}'.format(value, weighting))
 
-        lines.append("end")
-        lines.append("")
+        lines.append('end')
+        lines.append('')
 
     # Tell the program to fit the overall shift
-    lines.extend(["vary", "shift", "end"])
-    lines.append("")
+    lines.extend(['vary', 'shift', 'end'])
+    lines.append('')
 
     # Force Field
     lines.extend(potential.get_input_lines())
 
-    lines.append("")
-    lines.append("dump {}".format(dump_file))
+    lines.append('')
+    lines.append('dump {}'.format(dump_file))
     # NOTE can also dump every interval ('noover' will output to separate files)
 
     return lines, snames

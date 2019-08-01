@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 """common parsing functions for GULP output files """
 import re
 
@@ -45,26 +60,26 @@ def read_gulp_table(lines, lineno, field_names, field_conversions, star_to_none=
 
     """
     if not len(field_names) == len(field_conversions):
-        raise AssertionError("the length of field_names ({}) and field_conversions ({}) "
-                             "are different".format(len(field_names), len(field_conversions)))
+        raise AssertionError('the length of field_names ({}) and field_conversions ({}) '
+                             'are different'.format(len(field_names), len(field_conversions)))
     num_fields = len(field_conversions)
     start_lineno = lineno
     line = lines[lineno]
-    while not line.strip().startswith("---"):
+    while not line.strip().startswith('---'):
         lineno += 1
         if lineno >= len(lines):
-            raise IOError("reached end of file trying to find start of table, "
-                          "starting from line #{}".format(start_lineno))
+            raise IOError('reached end of file trying to find start of table, '
+                          'starting from line #{}'.format(start_lineno))
         line = lines[lineno]
 
     lineno += 1
     line = lines[lineno]
 
-    while not line.strip().startswith("---"):
+    while not line.strip().startswith('---'):
         lineno += 1
         if lineno >= len(lines):
-            raise IOError("reached end of file trying to find end of table header, "
-                          "starting from line #{}".format(start_lineno))
+            raise IOError('reached end of file trying to find end of table header, '
+                          'starting from line #{}'.format(start_lineno))
         line = lines[lineno]
 
     lineno += 1
@@ -72,25 +87,24 @@ def read_gulp_table(lines, lineno, field_names, field_conversions, star_to_none=
 
     values = {f: [] for f in field_names}
 
-    while not line.strip().startswith("---"):
+    while not line.strip().startswith('---'):
         value_list = line.strip().split(None, num_fields - 1)
         if not len(value_list) == num_fields:
-            raise IOError("line #{} did not have at least the expected number of fields ({}): "
-                          "{}".format(lineno, num_fields, value_list))
+            raise IOError('line #{} did not have at least the expected number of fields ({}): '
+                          '{}'.format(lineno, num_fields, value_list))
         try:
             for value, name, convert in zip(value_list, field_names, field_conversions):
-                if value.startswith("******") and star_to_none:
+                if value.startswith('******') and star_to_none:
                     values[name].append(None)
                 else:
                     values[name].append(convert(value))
         except Exception as err:
-            raise IOError("line #{} could not be converted to the required format: "
-                          "{}".format(lineno, err))
+            raise IOError('line #{} could not be converted to the required format: ' '{}'.format(lineno, err))
 
         lineno += 1
         if lineno >= len(lines):
-            raise IOError("reached end of file trying to find end of table, "
-                          "starting from line #{}".format(start_lineno))
+            raise IOError('reached end of file trying to find end of table, '
+                          'starting from line #{}'.format(start_lineno))
         line = lines[lineno]
 
     return lineno, values
@@ -143,47 +157,47 @@ def read_energy_components(lines, lineno):
     """
     start_lineno = lineno
     line = lines[lineno]
-    while not line.strip().startswith("---"):
+    while not line.strip().startswith('---'):
         lineno += 1
         if lineno >= len(lines):
-            raise IOError("reached end of file trying to find start of energy components, "
-                          "starting from line {}".format(start_lineno))
+            raise IOError('reached end of file trying to find start of energy components, '
+                          'starting from line {}'.format(start_lineno))
         line = lines[lineno]
 
     lineno += 1
     line = lines[lineno]
 
-    while not line.strip().startswith("---"):
+    while not line.strip().startswith('---'):
         # TODO parse this section
         lineno += 1
         if lineno >= len(lines):
-            raise IOError("reached end of file trying to find start of total energy section, "
-                          "starting from line {}".format(start_lineno))
+            raise IOError('reached end of file trying to find start of total energy section, '
+                          'starting from line {}'.format(start_lineno))
         line = lines[lineno]
 
     lineno += 1
     line = lines[lineno]
 
-    if "Total lattice energy" not in line:
+    if 'Total lattice energy' not in line:
         raise IOError("Expected line {} to contain 'Total lattice energy': {}".format(lineno, line))
 
-    if "=" in line:
+    if '=' in line:
         # structure is primitive
-        energy_match = re.findall("Total lattice energy[\\s]*=[\\s]*([^\\s]+) eV", line)
+        energy_match = re.findall('Total lattice energy[\\s]*=[\\s]*([^\\s]+) eV', line)
         if not energy_match:
             raise IOError("Expected line {} to match 'Total lattice energy = () eV': {}".format(lineno, line))
         energy = primitive_energy = float(energy_match[0])
-    elif ":" in line:
+    elif ':' in line:
         # structure is non-primitive
         lineno += 1
         line = lines[lineno]
-        energy_match = re.findall("Primitive unit cell[\\s]*=[\\s]*([^\\s]+) eV", line)
+        energy_match = re.findall('Primitive unit cell[\\s]*=[\\s]*([^\\s]+) eV', line)
         if not energy_match:
             raise IOError("Expected line {} to match 'Primitive unit cell = () eV': {}".format(lineno, line))
         primitive_energy = float(energy_match[0])
         lineno += 1
         line = lines[lineno]
-        energy_match = re.findall("Non-primitive unit cell[\\s]*=[\\s]*([^\\s]+) eV", line)
+        energy_match = re.findall('Non-primitive unit cell[\\s]*=[\\s]*([^\\s]+) eV', line)
         if not energy_match:
             raise IOError("Expected line {} to match 'Non-primitive unit cell = () eV': {}".format(lineno, line))
         energy = float(energy_match[0])
@@ -226,9 +240,9 @@ def read_reaxff_econtribs(lines, lineno):
 
     energies = {}
 
-    while "=" in line:
+    while '=' in line:
 
-        energy_match = re.findall("E\\((.+)\\)[\\s]*=[\\s]*([^\\s]+) eV", line)
+        energy_match = re.findall('E\\((.+)\\)[\\s]*=[\\s]*([^\\s]+) eV', line)
         if not energy_match:
             raise IOError("Expected line {} to start 'E\\((.+)\\)[\\s]*=[\\s]*([^\\s]+) eV': {}".format(lineno, line))
         energies[energy_match[0][0]] = float(energy_match[0][1])

@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 import copy
 import tempfile
 
@@ -22,7 +37,7 @@ class SymmetryData(Data):
       are stored as attributes in the database
 
     """
-    _ops_filename = "operations.npy"
+    _ops_filename = 'operations.npy'
     _data_schema = None
 
     @classproperty
@@ -30,7 +45,7 @@ class SymmetryData(Data):
         """ return the data schema,
         which is loaded from file the first time it is called"""
         if cls._data_schema is None:
-            cls._data_schema = load_schema("symmetry.schema.json")
+            cls._data_schema = load_schema('symmetry.schema.json')
         return copy.deepcopy(cls._data_schema)
 
     def __init__(self, **kwargs):
@@ -51,7 +66,7 @@ class SymmetryData(Data):
 
         fname = self._ops_filename
         if fname not in self.list_object_names():
-            raise SchemeError("operations not set")
+            raise SchemeError('operations not set')
 
         validate_against_schema(self.get_dict(), self.data_schema)
 
@@ -72,10 +87,8 @@ class SymmetryData(Data):
 
         try:
             # Clear existing attributes and set the new dictionary
-            self._update_attributes(
-                {k: v
-                 for k, v in data.items() if k != "operations"})
-            self.set_attribute("num_symops", len(data["operations"]))
+            self._update_attributes({k: v for k, v in data.items() if k != 'operations'})
+            self.set_attribute('num_symops', len(data['operations']))
         except ModificationNotAllowed:  # pylint: disable=try-except-raise
             # I re-raise here to avoid to go in the generic 'except' below that
             # would raise the same exception again
@@ -87,7 +100,7 @@ class SymmetryData(Data):
             raise
 
         # store the symmetry operations on file
-        self._set_operations(data["operations"])
+        self._set_operations(data['operations'])
 
     def _update_attributes(self, data):
         """
@@ -116,14 +129,12 @@ class SymmetryData(Data):
 
             # Write the numpy array to the repository,
             # keeping the byte representation
-            self.put_object_from_filelike(handle, fname,
-                                          mode='wb', encoding=None)
+            self.put_object_from_filelike(handle, fname, mode='wb', encoding=None)
 
     def _get_operations(self):
         filename = self._ops_filename
         if filename not in self.list_object_names():
-            raise KeyError("symmetry operations not set for node pk={}".format(
-                self.pk))
+            raise KeyError('symmetry operations not set for node pk={}'.format(self.pk))
 
         # Open a handle in binary read mode as the arrays are written
         # as binary files as well
@@ -138,37 +149,37 @@ class SymmetryData(Data):
         Return the data as an AttributeDict
         """
         data = dict(self.attributes)
-        if "num_symops" in data:
-            data.pop("num_symops")
-        data["operations"] = self._get_operations()
+        if 'num_symops' in data:
+            data.pop('num_symops')
+        data['operations'] = self._get_operations()
         return AttributeDict(data)
 
     def get_dict(self):
         """get dictionary of data"""
         data = dict(self.attributes)
-        if "num_symops" in data:
-            data.pop("num_symops")
-        data["operations"] = self._get_operations()
+        if 'num_symops' in data:
+            data.pop('num_symops')
+        data['operations'] = self._get_operations()
         return data
 
     def get_description(self):
         """ return a short string description of the data """
         desc = []
-        hall_number = self.get_attribute("hall_number", None)
-        num_symops = self.get_attribute("num_symops", None)
+        hall_number = self.get_attribute('hall_number', None)
+        num_symops = self.get_attribute('num_symops', None)
         if hall_number is not None:
-            desc.append("hall_number: {}".format(hall_number))
+            desc.append('hall_number: {}'.format(hall_number))
         if num_symops is not None:
-            desc.append("symmops: {}".format(num_symops))
-        return "\n".join(desc)
+            desc.append('symmops: {}'.format(num_symops))
+        return '\n'.join(desc)
 
     @property
     def num_symops(self):
-        return self.get_attribute("num_symops", None)
+        return self.get_attribute('num_symops', None)
 
     @property
     def hall_number(self):
-        return self.get_attribute("hall_number", None)
+        return self.get_attribute('hall_number', None)
 
     @property
     def spacegroup_info(self):
@@ -177,14 +188,13 @@ class SymmetryData(Data):
         """
         info = spglib.get_spacegroup_type(self.hall_number)
         if info is None:
-            raise ValueError("the hall number could not be converted")
+            raise ValueError('the hall number could not be converted')
         return AttributeDict(info)
 
     def add_path(self, src_abs, dst_path):
         from aiida.common.exceptions import ModificationNotAllowed
 
-        raise ModificationNotAllowed(
-            "Cannot add files or directories to StructSettingsData object")
+        raise ModificationNotAllowed('Cannot add files or directories to StructSettingsData object')
 
     def compare_operations(self, ops, decimal=5):
         """compare operations against stored ones
@@ -196,14 +206,13 @@ class SymmetryData(Data):
         ops_orig = self._get_operations()
 
         # create a set for each
-        ops_orig = set(
-            [tuple([round(i, decimal) for i in op]) for op in ops_orig])
+        ops_orig = set([tuple([round(i, decimal) for i in op]) for op in ops_orig])
         ops_new = set([tuple([round(i, decimal) for i in op]) for op in ops])
 
         differences = {}
         if ops_orig.difference(ops_new):
-            differences["missing"] = ops_orig.difference(ops_new)
+            differences['missing'] = ops_orig.difference(ops_new)
         if ops_new.difference(ops_orig):
-            differences["additional"] = ops_new.difference(ops_orig)
+            differences['additional'] = ops_new.difference(ops_orig)
 
         return differences
