@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 import copy
 
 import jsonschema
@@ -12,27 +27,26 @@ from aiida.orm import Data
 class KindData(Data):
     """stores additional data for StructureData Kinds"""
     _data_schema = {
-        "$schema": "http://json-schema.org/draft-07/schema",
-        "title": "additional kind data",
-        "type": "object",
-        "required": [
-            "kind_names"
-        ],
-        "additionalProperties": False,
-        "properties": {
-            "kind_names": {
-                "type": "array",
-                "minimum": 1,
-                "items": {"type": "string"},
-                "uniqueItems": True,
+        '$schema': 'http://json-schema.org/draft-07/schema',
+        'title': 'additional kind data',
+        'type': 'object',
+        'required': ['kind_names'],
+        'additionalProperties': False,
+        'properties': {
+            'kind_names': {
+                'type': 'array',
+                'minimum': 1,
+                'items': {
+                    'type': 'string'
+                },
+                'uniqueItems': True,
             }
         },
-        "patternProperties": {
-            ".+": {
-                "type": "array"
+        'patternProperties': {
+            '.+': {
+                'type': 'array'
             }
         }
-
     }
 
     def __init__(self, data=None, **kwargs):
@@ -57,12 +71,10 @@ class KindData(Data):
         except SchemeError as err:
             raise ValidationError(err)
 
-        kinds = self.data["kind_names"]
+        kinds = self.data['kind_names']
         for key, value in self.get_dict().items():
             if len(value) != len(kinds):
-                raise ValidationError(
-                    "'{}' array not the same length as 'kind_names'"
-                    "".format(key))
+                raise ValidationError("'{}' array not the same length as 'kind_names'" ''.format(key))
 
     def set_data(self, data):
         """
@@ -78,12 +90,10 @@ class KindData(Data):
         except SchemeError as err:
             raise ValidationError(err)
 
-        kinds = data["kind_names"]
+        kinds = data['kind_names']
         for key, value in data.items():
             if len(value) != len(kinds):
-                raise ValidationError(
-                    "'{}' array not the same length as 'kind_names'"
-                    "".format(key))
+                raise ValidationError("'{}' array not the same length as 'kind_names'" ''.format(key))
 
         # store all but the symmetry operations as attributes
         backup_dict = copy.deepcopy(self.get_dict())
@@ -136,7 +146,7 @@ class KindData(Data):
         Return an AttributeDict with nested keys <kind_name>.<field> = value
         """
         data = dict(self.attributes)
-        kind_names = data.pop("kind_names")
+        kind_names = data.pop('kind_names')
         dct = {k: {} for k in kind_names}
         for key, values in data.items():
             for kind, value in zip(kind_names, values):
@@ -149,7 +159,7 @@ class KindData(Data):
         Return an AttributeDict with nested keys <field>.<kind_name> = value
         """
         data = dict(self.attributes)
-        kind_names = data.pop("kind_names")
+        kind_names = data.pop('kind_names')
         dct = {}
         for key, values in data.items():
             dct[key] = {}

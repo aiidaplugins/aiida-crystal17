@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 """
 A module for computing the symmetry of an AiiDA StructureData object.
 
@@ -37,8 +52,7 @@ def structure_info(structure, max_srows=None, round_dp=4):
     """
     a, b, c = structure.cell_lengths
     l, m, n = structure.cell_angles
-    cell = [item for sublist in np.round(structure.cell, round_dp)
-            for item in sublist]
+    cell = [item for sublist in np.round(structure.cell, round_dp) for item in sublist]
     pa, pb, pc = structure.pbc
     header = dedent("""\
     StructureData Summary
@@ -52,23 +66,19 @@ def structure_info(structure, max_srows=None, round_dp=4):
           C : {16:5.4} {17:5.4} {18:5.4}
     Kind  Symbols Position
     ----  ------- --------
-    """.format(a, b, c, l, m, n,
-               structure.get_cell_volume(),
-               pa, pb, pc, *cell))
+    """.format(a, b, c, l, m, n, structure.get_cell_volume(), pa, pb, pc, *cell))
     slines = []
     for site in structure.sites:
         name = site.kind_name
         kind = structure.get_kind(name)
-        slines.append(
-            "{0:5} {1:7} {2:<7.4} {3:<7.4} {4:<7.4}".format(
-                name, kind.get_symbols_string(),
-                *np.round(site.position, round_dp)))
+        slines.append('{0:5} {1:7} {2:<7.4} {3:<7.4} {4:<7.4}'.format(name, kind.get_symbols_string(),
+                                                                      *np.round(site.position, round_dp)))
 
     if max_srows is not None:
         if len(slines) > max_srows:
-            slines = slines[:max_srows] + ["..."]
+            slines = slines[:max_srows] + ['...']
 
-    return header + "\n".join(slines)
+    return header + '\n'.join(slines)
 
 
 def print_structure(structure, max_srows=None, round_dp=4):
@@ -109,7 +119,7 @@ def reset_kind_names(structure, kind_names):
     """
     from aiida.orm.nodes.data.structure import Kind, Site
     if len(structure.sites) != len(kind_names):
-        raise AssertionError("lengths of sites & names not equal")
+        raise AssertionError('lengths of sites & names not equal')
     sites = structure.sites
     kinds = {k.name: k for k in structure.kinds}
     structure = structure.clone()
@@ -120,16 +130,14 @@ def reset_kind_names(structure, kind_names):
     for site, name in zip(sites, kind_names):
         if name not in new_kinds:
             kind_dict = kinds[site.kind_name].get_raw()
-            kind_dict["name"] = name
+            kind_dict['name'] = name
             new_kind = Kind(raw=kind_dict)
             structure.append_kind(new_kind)
             new_kinds[name] = new_kind
         old_symbols = kinds[site.kind_name].symbols
         new_symbols = new_kinds[name].symbols
         if old_symbols != new_symbols:
-            raise AssertionError(
-                "inconsistent symbols: {} != {}".format(
-                    old_symbols, new_symbols))
+            raise AssertionError('inconsistent symbols: {} != {}'.format(old_symbols, new_symbols))
         new_site = Site(kind_name=name, position=site.position)
         structure.append_site(new_site)
 
@@ -152,7 +160,7 @@ def frac_to_cartesian(lattice, fcoords):
         Nx3 array of cartesian coordinate
 
     """
-    return np.einsum("ij, jk -> ik", fcoords, lattice).tolist()
+    return np.einsum('ij, jk -> ik', fcoords, lattice).tolist()
 
 
 def cartesian_to_frac(lattice, ccoords):
@@ -190,16 +198,14 @@ def prepare_for_spglib(structure):
         maps integer values in inequivalent list to AiiDa Kind objects
 
     """
-    structure = convert_structure(structure, "aiida")
+    structure = convert_structure(structure, 'aiida')
 
     lattice = structure.cell
     ccoords = [s.position for s in structure.sites]
     fcoords = cartesian_to_frac(lattice, ccoords)
-    kind2int_map = {name: i
-                    for i, name in enumerate(structure.get_kind_names())}
+    kind2int_map = {name: i for i, name in enumerate(structure.get_kind_names())}
     int2kind_map = {i: name for name, i in kind2int_map.items()}
-    inequivalent = [kind2int_map[name]
-                    for name in structure.get_site_kindnames()]
+    inequivalent = [kind2int_map[name] for name in structure.get_site_kindnames()]
 
     return (lattice, fcoords, inequivalent), int2kind_map
 
@@ -230,8 +236,7 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
     cell, int2kind_map = prepare_for_spglib(structure)
 
     dataset = spglib.get_symmetry_dataset(
-        cell, symprec=symprec,
-        angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
 
     return dataset
 
@@ -262,32 +267,30 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
     cell, int2kind_map = prepare_for_spglib(structure)
 
     dataset = spglib.get_symmetry_dataset(
-        cell, symprec=symprec,
-        angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
 
     operations = []
-    for rotation, trans in zip(dataset["rotations"], dataset["translations"]):
+    for rotation, trans in zip(dataset['rotations'], dataset['translations']):
         operations.append(rotation.flatten().tolist() + trans.tolist())
 
     data = {
-        "hall_number": dataset["hall_number"],
-        "basis": "fractional",
-        "operations": operations,
-        "equivalent_sites": dataset["equivalent_atoms"].tolist(),
-        "computation": {
-            "symmetry_program": "spglib",
-            "symmetry_version": spglib.__version__,
-            "computation_class": __name__,
-            "computation_version": __version__,
-            "symprec": symprec,
-            "angle_tolerance": angle_tolerance
+        'hall_number': dataset['hall_number'],
+        'basis': 'fractional',
+        'operations': operations,
+        'equivalent_sites': dataset['equivalent_atoms'].tolist(),
+        'computation': {
+            'symmetry_program': 'spglib',
+            'symmetry_version': spglib.__version__,
+            'computation_class': __name__,
+            'computation_version': __version__,
+            'symprec': symprec,
+            'angle_tolerance': angle_tolerance
         }
     }
     return data
 
 
-def get_hall_number_from_symmetry(operations, basis="fractional",
-                                  lattice=None, symprec=1e-5):
+def get_hall_number_from_symmetry(operations, basis='fractional', lattice=None, symprec=1e-5):
     """obtain the Hall number from the symmetry operations
 
     Parameters
@@ -302,14 +305,13 @@ def get_hall_number_from_symmetry(operations, basis="fractional",
     int
 
     """
-    if basis == "cartesian":
+    if basis == 'cartesian':
         operations = operations_cart_to_frac(operations, lattice)
-    elif basis != "fractional":
-        raise ValueError("basis should be cartesian or fractional")
+    elif basis != 'fractional':
+        raise ValueError('basis should be cartesian or fractional')
     rotations = [[o[0:3], o[3:6], o[6:9]] for o in operations]
     translations = [o[9:12] for o in operations]
-    return spglib.get_hall_number_from_symmetry(
-        rotations, translations, symprec=symprec)
+    return spglib.get_hall_number_from_symmetry(rotations, translations, symprec=symprec)
 
 
 def find_primitive(structure, symprec, angle_tolerance):
@@ -334,29 +336,26 @@ def find_primitive(structure, symprec, angle_tolerance):
 
     """
     from aiida.orm.nodes.data.structure import Site
-    structure = convert_structure(structure, "aiida")
+    structure = convert_structure(structure, 'aiida')
 
     cell, int2kind_map = prepare_for_spglib(structure)
 
     new_cell = spglib.find_primitive(
-        cell, symprec=symprec,
-        angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
     if new_cell is None:
-        raise ValueError("standardization of cell failed")
+        raise ValueError('standardization of cell failed')
 
     new_structure = structure.clone()
     new_structure.clear_sites()
     new_structure.cell = new_cell[0].tolist()
     positions = frac_to_cartesian(new_structure.cell, new_cell[1])
     for position, eid in zip(positions, new_cell[2].tolist()):
-        new_structure.append_site(
-            Site(kind_name=int2kind_map[eid], position=position))
+        new_structure.append_site(Site(kind_name=int2kind_map[eid], position=position))
 
     return new_structure
 
 
-def standardize_cell(structure, symprec, angle_tolerance,
-                     to_primitive=False, no_idealize=False):
+def standardize_cell(structure, symprec, angle_tolerance, to_primitive=False, no_idealize=False):
     """ compute the standardised cell for an AiiDA structure
 
     When computing symmetry, atomic sites with the same **Kind** are treated as
@@ -383,24 +382,25 @@ def standardize_cell(structure, symprec, angle_tolerance,
 
     """
     from aiida.orm.nodes.data.structure import Site
-    structure = convert_structure(structure, "aiida")
+    structure = convert_structure(structure, 'aiida')
 
     cell, int2kind_map = prepare_for_spglib(structure)
 
     new_cell = spglib.standardize_cell(
-        cell, to_primitive=to_primitive, no_idealize=no_idealize,
+        cell,
+        to_primitive=to_primitive,
+        no_idealize=no_idealize,
         symprec=symprec,
         angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
     if new_cell is None:
-        raise ValueError("standardization of cell failed")
+        raise ValueError('standardization of cell failed')
 
     new_structure = structure.clone()
     new_structure.clear_sites()
     new_structure.cell = new_cell[0].tolist()
     positions = frac_to_cartesian(new_structure.cell, new_cell[1])
     for position, eid in zip(positions, new_cell[2].tolist()):
-        new_structure.append_site(
-            Site(kind_name=int2kind_map[eid], position=position))
+        new_structure.append_site(Site(kind_name=int2kind_map[eid], position=position))
 
     return new_structure
 
@@ -423,13 +423,13 @@ def get_crystal_system_name(sg_number):
         return i <= sg_number <= j
 
     cs = {
-        "triclinic": (1, 2),
-        "monoclinic": (3, 15),
-        "orthorhombic": (16, 74),
-        "tetragonal": (75, 142),
-        "trigonal": (143, 167),
-        "hexagonal": (168, 194),
-        "cubic": (195, 230)
+        'triclinic': (1, 2),
+        'monoclinic': (3, 15),
+        'orthorhombic': (16, 74),
+        'tetragonal': (75, 142),
+        'trigonal': (143, 167),
+        'hexagonal': (168, 194),
+        'cubic': (195, 230)
     }
 
     crystal_system = None
@@ -440,9 +440,7 @@ def get_crystal_system_name(sg_number):
             break
 
     if crystal_system is None:
-        raise ValueError(
-            "could not find crystal system of space group number: {}".format(
-                sg_number))
+        raise ValueError('could not find crystal system of space group number: {}'.format(sg_number))
 
     return crystal_system
 
@@ -466,9 +464,9 @@ def get_lattice_type_name(sg_number):
     """
     system = get_crystal_system_name(sg_number)
     if sg_number in [146, 148, 155, 160, 161, 166, 167]:
-        return "rhombohedral"
-    elif system == "trigonal":
-        return "hexagonal"
+        return 'rhombohedral'
+    elif system == 'trigonal':
+        return 'hexagonal'
 
     return system
 
@@ -597,10 +595,9 @@ def operation_to_affine(operation):
 
     """
     if not len(operation) == 12:
-        raise ValueError("operation should be of length 12")
+        raise ValueError('operation should be of length 12')
     affine_matrix = np.eye(4)
-    affine_matrix[0:3][:, 0:3] = [
-        operation[0:3], operation[3:6], operation[6:9]]
+    affine_matrix[0:3][:, 0:3] = [operation[0:3], operation[3:6], operation[6:9]]
     affine_matrix[0:3][:, 3] = operation[9:12]
     return affine_matrix
 
@@ -642,70 +639,66 @@ def convert_structure(structure, out_type):
     structure_data_cls = DataFactory('structure')
 
     if isinstance(structure, dict):
-        if "symbols" in structure and "atomic_numbers" not in structure:
-            structure["atomic_numbers"] = symbols2numbers(structure["symbols"])
-        if ("fcoords" in structure and "lattice" in structure and "ccoords" not in structure):
-            structure["ccoords"] = frac_to_cartesian(
-                structure["lattice"], structure["fcoords"])
-        required_keys = ["pbc", "lattice", "ccoords", "atomic_numbers"]
+        if 'symbols' in structure and 'atomic_numbers' not in structure:
+            structure['atomic_numbers'] = symbols2numbers(structure['symbols'])
+        if ('fcoords' in structure and 'lattice' in structure and 'ccoords' not in structure):
+            structure['ccoords'] = frac_to_cartesian(structure['lattice'], structure['fcoords'])
+        required_keys = ['pbc', 'lattice', 'ccoords', 'atomic_numbers']
         if not set(structure.keys()).issuperset(required_keys):
-            raise AssertionError(
-                "dict keys are not a superset of: {}".format(required_keys))
+            raise AssertionError('dict keys are not a superset of: {}'.format(required_keys))
 
-    if out_type == "dict":
+    if out_type == 'dict':
         if isinstance(structure, dict):
             return structure
         if isinstance(structure, structure_data_cls):
             return structure_to_dict(structure)
         if isinstance(structure, Atoms):
             return {
-                "pbc": structure.pbc.tolist(),
-                "atomic_numbers": structure.get_atomic_numbers().tolist(),
-                "ccoords": structure.positions.tolist(),
-                "lattice": structure.cell.tolist(),
-                "equivalent": structure.get_tags().tolist()
+                'pbc': structure.pbc.tolist(),
+                'atomic_numbers': structure.get_atomic_numbers().tolist(),
+                'ccoords': structure.positions.tolist(),
+                'lattice': structure.cell.tolist(),
+                'equivalent': structure.get_tags().tolist()
             }
-        raise TypeError("structure: {}".format(structure))
-    elif out_type == "ase":
+        raise TypeError('structure: {}'.format(structure))
+    elif out_type == 'ase':
         if isinstance(structure, Atoms):
             return structure
         if isinstance(structure, structure_data_cls):
             return structure.get_ase()
         if isinstance(structure, dict):
             return Atoms(
-                numbers=structure["atomic_numbers"],
-                cell=structure["lattice"],
-                positions=structure["ccoords"],
-                pbc=structure["pbc"],
-                tags=structure.get("equivalent", None))
-        raise TypeError("structure: {}".format(structure))
-    elif out_type == "aiida":
+                numbers=structure['atomic_numbers'],
+                cell=structure['lattice'],
+                positions=structure['ccoords'],
+                pbc=structure['pbc'],
+                tags=structure.get('equivalent', None))
+        raise TypeError('structure: {}'.format(structure))
+    elif out_type == 'aiida':
         if isinstance(structure, structure_data_cls):
             return structure
         if isinstance(structure, Atoms):
             return structure_data_cls(ase=structure)
         if isinstance(structure, dict):
-            if structure.get("kinds") is not None:
+            if structure.get('kinds') is not None:
                 struct = structure_data_cls(cell=structure['lattice'])
-                struct.set_pbc(structure["pbc"])
-                for kind, ccoord in zip(structure["kinds"],
-                                        structure['ccoords']):
+                struct.set_pbc(structure['pbc'])
+                for kind, ccoord in zip(structure['kinds'], structure['ccoords']):
                     if not isinstance(kind, Kind):
                         kind = Kind(raw=kind)
                     if kind.name not in struct.get_site_kindnames():
                         struct.append_kind(kind)
-                    struct.append_site(Site(
-                        position=ccoord, kind_name=kind.name))
+                    struct.append_site(Site(position=ccoord, kind_name=kind.name))
                 return struct
             else:
                 atoms = Atoms(
-                    numbers=structure["atomic_numbers"],
-                    cell=structure["lattice"],
-                    positions=structure["ccoords"],
-                    pbc=structure["pbc"],
-                    tags=structure.get("equivalent", None))
+                    numbers=structure['atomic_numbers'],
+                    cell=structure['lattice'],
+                    positions=structure['ccoords'],
+                    pbc=structure['pbc'],
+                    tags=structure.get('equivalent', None))
                 return structure_data_cls(ase=atoms)
-    raise ValueError("out_type: {}".format(out_type))
+    raise ValueError('out_type: {}'.format(out_type))
 
 
 def structure_to_dict(structure):
@@ -727,18 +720,13 @@ def structure_to_dict(structure):
 
     for kind in structure.kinds:
         if kind.is_alloy:
-            raise InputValidationError(
-                "Kind '{}' is an alloy. This is not allowed for CRYSTAL input structures."
-                "".format(kind.name))
+            raise InputValidationError("Kind '{}' is an alloy. This is not allowed for CRYSTAL input structures."
+                                       ''.format(kind.name))
         if kind.has_vacancies:
-            raise InputValidationError(
-                "Kind '{}' has vacancies. This is not allowed for CRYSTAL input structures."
-                "".format(kind.name))
+            raise InputValidationError("Kind '{}' has vacancies. This is not allowed for CRYSTAL input structures."
+                                       ''.format(kind.name))
 
-    kindname_symbol_map = {
-        kind.name: kind.symbols[0]
-        for kind in structure.kinds
-    }
+    kindname_symbol_map = {kind.name: kind.symbols[0] for kind in structure.kinds}
     kindname_id_map = {kind.name: i for i, kind in enumerate(structure.kinds)}
     id_kind_map = {i: kind for i, kind in enumerate(structure.kinds)}
     kind_names = [site.kind_name for site in structure.sites]
@@ -747,12 +735,12 @@ def structure_to_dict(structure):
     kinds = [id_kind_map[e] for e in equivalent]
 
     sdata = {
-        "lattice": structure.cell,
-        "atomic_numbers": symbols2numbers(symbols),
-        "ccoords": [site.position for site in structure.sites],
-        "pbc": structure.pbc,
-        "equivalent": equivalent,
-        "kinds": kinds,
+        'lattice': structure.cell,
+        'atomic_numbers': symbols2numbers(symbols),
+        'ccoords': [site.position for site in structure.sites],
+        'pbc': structure.pbc,
+        'equivalent': equivalent,
+        'kinds': kinds,
     }
 
     return sdata

@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 from collections import namedtuple
 import traceback
 
@@ -6,16 +21,10 @@ import numpy as np
 from aiida.orm import ArrayData, Dict, Float, List
 from aiida.engine import calcfunction, ExitCode
 
-BandResult = namedtuple('BandResult',
-                        ['fermi', 'left_edge', 'right_edge', 'non_zero_fermi'])
+BandResult = namedtuple('BandResult', ['fermi', 'left_edge', 'right_edge', 'non_zero_fermi'])
 
 
-def calculate_band_gap(energies,
-                       densities,
-                       fermi=0,
-                       dtol=1e-8,
-                       try_fshifts=(),
-                       missing_edge=None):
+def calculate_band_gap(energies, densities, fermi=0, dtol=1e-8, try_fshifts=(), missing_edge=None):
     """calculate the band gap, given an energy vs density plot
 
     Parameters
@@ -40,11 +49,11 @@ def calculate_band_gap(energies,
     energies = np.array(energies, float)
     densities = np.abs(np.array(densities, float))
     if not len(energies) == len(densities):
-        raise AssertionError("the energies and densities arrays are of different lengths")
+        raise AssertionError('the energies and densities arrays are of different lengths')
     if not fermi < energies.max():
-        raise AssertionError("the energies range does not contain the fermi energy")
+        raise AssertionError('the energies range does not contain the fermi energy')
     if not fermi > energies.min():
-        raise AssertionError("the energies range does not contain the fermi energy")
+        raise AssertionError('the energies range does not contain the fermi energy')
 
     # sort energies
     order = np.argsort(energies)
@@ -68,8 +77,7 @@ def calculate_band_gap(energies,
             fermi_idx = new_index
 
     if fermi_non_zero:
-        return BandResult(
-            energies[fermi_idx], missing_edge, missing_edge, True)
+        return BandResult(energies[fermi_idx], missing_edge, missing_edge, True)
 
     # find left edge
     found_left = False
@@ -85,10 +93,8 @@ def calculate_band_gap(energies,
             found_right = True
             break
 
-    return BandResult(energies[fermi_idx],
-                      energies[left_idx] if found_left else missing_edge,
-                      energies[right_idx] if found_right else missing_edge,
-                      False)
+    return BandResult(energies[fermi_idx], energies[left_idx] if found_left else missing_edge,
+                      energies[right_idx] if found_right else missing_edge, False)
 
 
 @calcfunction
@@ -107,53 +113,42 @@ def calcfunction_band_gap(doss_results, doss_array, dtol=None, try_fshifts=None)
 
     """
     if not isinstance(doss_results, Dict):
-        return ExitCode(
-            101, 'doss_results is not of type `aiida.orm.Dict`: {}'.format(doss_results))
-    if "fermi_energy" not in doss_results.get_dict():
-        return ExitCode(
-            102, '`fermi_energy` not in doss_results')
-    if "energy_units" not in doss_results.get_dict():
-        return ExitCode(
-            102, '`energy_units` not in doss_results')
+        return ExitCode(101, 'doss_results is not of type `aiida.orm.Dict`: {}'.format(doss_results))
+    if 'fermi_energy' not in doss_results.get_dict():
+        return ExitCode(102, '`fermi_energy` not in doss_results')
+    if 'energy_units' not in doss_results.get_dict():
+        return ExitCode(102, '`energy_units` not in doss_results')
     if not isinstance(doss_array, ArrayData):
-        return ExitCode(
-            103, 'doss_array is not of type `aiida.orm.ArrayData`: {}'.format(doss_array))
+        return ExitCode(103, 'doss_array is not of type `aiida.orm.ArrayData`: {}'.format(doss_array))
 
-    kwargs = {
-        "fermi": doss_results.get_dict()["fermi_energy"]
-    }
+    kwargs = {'fermi': doss_results.get_dict()['fermi_energy']}
 
     if dtol is not None:
         if not isinstance(dtol, Float):
-            return ExitCode(
-                104, 'dtol is not of type `aiida.orm.Float`: {}'.format(dtol))
-        kwargs["dtol"] = dtol.value
+            return ExitCode(104, 'dtol is not of type `aiida.orm.Float`: {}'.format(dtol))
+        kwargs['dtol'] = dtol.value
 
     if try_fshifts is not None:
         if not isinstance(try_fshifts, List):
-            return ExitCode(
-                105, 'try_fshifts is not of type `aiida.orm.List`: {}'.format(try_fshifts))
-        kwargs["try_fshifts"] = try_fshifts.get_list()
+            return ExitCode(105, 'try_fshifts is not of type `aiida.orm.List`: {}'.format(try_fshifts))
+        kwargs['try_fshifts'] = try_fshifts.get_list()
 
     array_names = doss_array.get_arraynames()
-    if "energies" not in array_names:
-        return ExitCode(
-            111, 'doss_array does not contain array `energies`: {}'.format(doss_array))
-    if "total" in array_names:
-        if "total_alpha" in array_names and "total_beta" in array_names:
-            return ExitCode(
-                112, ('doss_array does not contains both array `total` and '
-                      '`total_alpha`, `total_beta`: {}'.format(doss_array)))
-    elif "total_alpha" in array_names and "total_beta" in array_names:
-        if "total" in array_names:
-            return ExitCode(
-                112, ('doss_array does not contains both array `total` and '
-                      '`total_alpha`, `total_beta`: {}'.format(doss_array)))
+    if 'energies' not in array_names:
+        return ExitCode(111, 'doss_array does not contain array `energies`: {}'.format(doss_array))
+    if 'total' in array_names:
+        if 'total_alpha' in array_names and 'total_beta' in array_names:
+            return ExitCode(112, ('doss_array does not contains both array `total` and '
+                                  '`total_alpha`, `total_beta`: {}'.format(doss_array)))
+    elif 'total_alpha' in array_names and 'total_beta' in array_names:
+        if 'total' in array_names:
+            return ExitCode(112, ('doss_array does not contains both array `total` and '
+                                  '`total_alpha`, `total_beta`: {}'.format(doss_array)))
     else:
         return ExitCode(
             113, 'doss_array does not contain array `total` or `total_alpha` and `total_beta`: {}'.format(doss_array))
 
-    if "total" in array_names:
+    if 'total' in array_names:
         calcs = {'total': doss_array.get_array('total')}
     else:
         alpha_density = doss_array.get_array('total_alpha')
@@ -161,16 +156,11 @@ def calcfunction_band_gap(doss_results, doss_array, dtol=None, try_fshifts=None)
         total_density = np.abs(alpha_density) + np.abs(beta_density)
         calcs = {'alpha': alpha_density, 'beta': beta_density, 'total': total_density}
 
-    final_dict = {
-        "energy_units": doss_results.get_dict()["energy_units"]
-    }
+    final_dict = {'energy_units': doss_results.get_dict()['energy_units']}
 
     for name, density in calcs.items():
         try:
-            result = calculate_band_gap(
-                doss_array.get_array('energies'),
-                density,
-                **kwargs)
+            result = calculate_band_gap(doss_array.get_array('energies'), density, **kwargs)
         except Exception:
             traceback.print_exc()
             return ExitCode(201, 'calculate_band_gap failed')
@@ -180,14 +170,12 @@ def calcfunction_band_gap(doss_results, doss_array, dtol=None, try_fshifts=None)
             bandgap = None
         else:
             bandgap = result.right_edge - result.left_edge
-        final_dict.update(
-            {
-                name+'_fermi': result.fermi,
-                name+'_left_edge': result.left_edge,
-                name+'_right_edge': result.right_edge,
-                name+'_zero_fermi': not result.non_zero_fermi,
-                name+'_bandgap': bandgap
-            }
-        )
+        final_dict.update({
+            name + '_fermi': result.fermi,
+            name + '_left_edge': result.left_edge,
+            name + '_right_edge': result.right_edge,
+            name + '_zero_fermi': not result.non_zero_fermi,
+            name + '_bandgap': bandgap
+        })
 
-    return {"results": Dict(dict=final_dict)}
+    return {'results': Dict(dict=final_dict)}

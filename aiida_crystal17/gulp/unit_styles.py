@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 """
 set unit styles that have a compatibility between LAMMPS
 """
@@ -67,7 +82,6 @@ def get_style_map(style):
             'density': 'kilograms/meter^dim',
         },
         'cgs': {
-
             'mass': 'grams',
             'distance': 'centimeters',
             'time': 'seconds',
@@ -84,7 +98,6 @@ def get_style_map(style):
             'density': 'grams/cm^dim',
         },
         'electron': {
-
             'mass': 'amu',
             'distance': 'Bohr',
             'time': 'femtoseconds',
@@ -98,7 +111,6 @@ def get_style_map(style):
             'electric_field': 'volts/cm',
         },
         'micro': {
-
             'mass': 'picograms',
             'distance': 'micrometers',
             'time': 'microseconds',
@@ -115,7 +127,6 @@ def get_style_map(style):
             'density': 'picograms/micrometer^dim',
         },
         'nano': {
-
             'mass': 'attograms',
             'distance': 'nanometers',
             'time': 'nanoseconds',
@@ -173,9 +184,9 @@ def get_units_dict(style, quantities):
     out_dict = {}
     for quantity in quantities:
         units = get_style_map(style)[quantity]
-        if units == "bar":
+        if units == 'bar':
             units = 'kbar'
         if quantity == 'energy':
             units = 'eV'
-        out_dict[quantity + "_units"] = units
+        out_dict[quantity + '_units'] = units
     return out_dict

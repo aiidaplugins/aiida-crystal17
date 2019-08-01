@@ -1,4 +1,18 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 """
 Immigrate a CalcJob that was not run using AiiDa.
 """
@@ -44,8 +58,7 @@ def immigrate_existing(builder, remote_data, seal=True):
     # link remote folder to calc_node
     if not remote_data.is_stored:
         remote_data.store()
-    remote_data.add_incoming(
-        calc_node, link_type=LinkType.CREATE, link_label='remote_folder')
+    remote_data.add_incoming(calc_node, link_type=LinkType.CREATE, link_label='remote_folder')
     calc_node.set_remote_workdir(remote_data.get_remote_path())
     transport = remote_data.computer.get_transport()
 
