@@ -1,0 +1,27 @@
+Ni:
+  bs:
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: S
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: SP
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: SP
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: SP
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: D
+  type: all-electron
+O:
+  bs:
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: S
+  - functions:
+    - STO-nG(nd) type 3-21G core shell
+    type: SP
+  type: all-electron
