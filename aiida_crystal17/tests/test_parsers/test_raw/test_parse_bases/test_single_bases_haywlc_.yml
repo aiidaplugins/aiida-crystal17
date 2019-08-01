@@ -1,0 +1,32 @@
+Ni:
+  bs:
+  - functions:
+    - - 1.257
+      - 0.113
+      - 0.02676
+    - - 1.052
+      - -0.1742
+      - -0.01961
+    type: SP
+  - functions:
+    - - 0.079
+      - 1.0
+      - 1.0
+    type: SP
+  - functions:
+    - - 43.58
+      - 0.03204
+    - - 11.997
+      - 0.17577
+    - - 3.8938
+      - 0.41461
+    - - 1.271
+      - 0.46122
+    type: D
+  - functions:
+    - - 0.385
+      - 1.0
+    type: D
+  ecp:
+  - Hay-Wadt large core
+  type: valence-electron
