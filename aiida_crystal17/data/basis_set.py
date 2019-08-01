@@ -26,7 +26,9 @@ import six
 from ruamel.yaml import YAML
 from aiida.common.utils import classproperty
 from aiida.orm import Data, Str
-from aiida_crystal17.common import (flatten_dict, unflatten_dict, SYMBOLS)
+from aiida_crystal17.common import flatten_dict, unflatten_dict
+from aiida_crystal17.common.atoms import SYMBOLS_R
+from aiida_crystal17.parsers.raw.parse_bases import parse_bsets_stdin
 
 BASISGROUP_TYPE = 'crystal17.basisset'
 
@@ -65,90 +67,6 @@ def _retrieve_basis_sets(files, stop_if_existing):
             basis_and_created.append((existing_basis, False))
 
     return basis_and_created
-
-
-def _parse_first_line(line, fname):
-    """ parse the first line of the basis set
-
-    :param line: the line string
-    :param fname: the filename string
-    :return: (atomic_number, basis_type, num_shells)
-    """
-    from aiida.common.exceptions import ParsingError
-
-    # first line should contain the atomic number as the first argument
-    first_line = line.strip().split()
-    if not len(first_line) == 2:
-        raise ParsingError("The first line should contain only two fields: '{}' for file {}".format(line, fname))
-
-    atomic_number_str = first_line[0]
-
-    if not atomic_number_str.isdigit():
-        raise ParsingError("The first field should be the atomic number '{}' for file {}".format(line, fname))
-    anumber = int(atomic_number_str)
-    atomic_number = None
-    basis_type = None
-    if anumber < 99:
-        atomic_number = anumber
-        basis_type = 'all-electron'
-
-    elif 200 < anumber < 999:
-        raise NotImplementedError('valence electron basis sets not currently supported')
-        # TODO support valence electron basis sets not currently supported
-        # (ECP must also be defined)
-        # atomic_number = anumber % 100
-        # basis_type = "valence-electron"
-
-    elif anumber > 1000:
-        atomic_number = anumber % 100
-        basis_type = 'all-electron'
-
-    if atomic_number is None:
-        raise ParsingError('Illegal atomic number {} for file {}'.format(anumber, fname))
-
-    num_shells_str = first_line[1]
-    if not num_shells_str.isdigit():
-        raise ParsingError('The second field should be the number of shells {} for file {}'.format(line, fname))
-    num_shells = int(num_shells_str)
-
-    # we would deal with different numbering at .d12 creation time
-    newline = '{0} {1}\n'.format(atomic_number if basis_type == 'all-electron' else 200 + atomic_number, num_shells)
-
-    return atomic_number, basis_type, num_shells, newline
-
-
-def validate_basis_string(instr):
-    """ validate that only one basis set is present,
-    in a recognised format
-
-    :param instr: content of basis set
-    :return: passed
-    """
-    lines = instr.strip().splitlines()
-    indx = 0
-
-    try:
-        anum, nshells = lines[indx].strip().split()  # pylint: disable=unused-variable
-        anum, nshells = int(anum), int(nshells)
-    except ValueError:
-        raise ValueError("expected 'anum nshells': {}".format(lines[indx].strip()))
-    for i in range(nshells):
-        indx += 1
-        try:
-            btype, stype, nfuncs, charge, scale = lines[indx].strip().split()
-            btype, stype, nfuncs = [int(i) for i in [btype, stype, nfuncs]]
-            charge, scale = [float(i) for i in [charge, scale]]  # pylint: disable=unused-variable
-        except ValueError:
-            raise ValueError("expected 'btype, stype, nfuncs, charge, scale': {}".format(lines[indx].strip()))
-        if btype == 0:
-            for _ in range(nfuncs):
-                indx += 1
-
-    if len(lines) > indx + 1:
-        raise ValueError('the basis set string contains more than one basis set '
-                         'or has trailing empty lines:\n{}'.format(instr))
-
-    return True
 
 
 def parse_basis(fname):
@@ -191,7 +109,7 @@ def parse_basis(fname):
         fname = fname.name
     except AttributeError:
         with io.open(fname, encoding='utf8') as f:
-            contentlines = f.readlines()
+            contentlines = f.read().splitlines()
 
     for line in contentlines:
         # ignore commented and blank lines
@@ -203,7 +121,7 @@ def parse_basis(fname):
                 continue
             else:
                 yaml = YAML(typ='safe')
-                head_data = yaml.load(''.join(yaml_lines))
+                head_data = yaml.load('\n'.join(yaml_lines))
                 head_data = {} if not head_data else head_data
                 if not isinstance(head_data, dict):
                     raise ParsingError('the header data could not be read for file: {}'.format(fname))
@@ -220,22 +138,29 @@ def parse_basis(fname):
 
         parsing_data = True
 
-        if not content:
-            (atomic_number, basis_type, num_shells, line) = _parse_first_line(line, fname)
+        content.append(line.strip())
 
-            meta_data['atomic_number'] = atomic_number
-            meta_data['element'] = SYMBOLS[atomic_number]
-            meta_data['basis_type'] = basis_type
-            meta_data['num_shells'] = num_shells
+    data = parse_bsets_stdin('\n'.join(content), isolated=True)
+    if len(data) > 1:
+        raise ParsingError('the basis set string contains more than one basis set: {}'.format(list(data.keys())))
+    atomic_symbol = list(data.keys())[0]
 
-        content.append(line)
+    meta_data['atomic_number'] = atomic_number = SYMBOLS_R[atomic_symbol]
+    meta_data['element'] = atomic_symbol
+    meta_data['basis_type'] = basis_type = data[atomic_symbol]['type']
+    meta_data['num_shells'] = num_shells = len(data[atomic_symbol]['bs'])
+    meta_data['orbital_types'] = [o['type'] for o in data[atomic_symbol]['bs']]
 
-    if not content:
-        raise ParsingError('The basis set file contains no content: {}'.format(fname))
+    # the input atomic number may be > 100, but we should standardise this in the stored file
+    first_line = content[0].strip().split()
+    if len(first_line) != 2 or first_line[1] != str(num_shells):
+        raise ParsingError(
+            "The first line should contain only the atomic id and num shells ({}): '{}' for file {}".format(
+                num_shells, line, fname))
+    newline = '{0} {1}'.format(atomic_number if basis_type == 'all-electron' else 200 + atomic_number, num_shells)
+    content[0] = newline
 
-    validate_basis_string(''.join(content))
-
-    return meta_data, ''.join(content)
+    return meta_data, '\n'.join(content)
 
 
 def md5_from_string(string, encoding='utf-8'):
@@ -390,6 +315,8 @@ class BasisSetData(Data):
             raise ValueError('filepath must be an absolute path')
 
         _, content = parse_basis(filepath)
+        print()
+        print(content)
         md5sum = md5_from_string(content)
 
         basissets = cls.from_md5(md5sum)
@@ -465,8 +392,8 @@ class BasisSetData(Data):
         try:
             with self.open('r') as handle:
                 metadata, content = parse_basis(handle)
-        except ParsingError:
-            raise ValidationError("The file '{}' could not be " 'parsed')
+        except (ParsingError, IOError, NotImplementedError) as err:
+            raise ValidationError("The file '{}' could not be " 'parsed: {}'.format(err))
         md5 = md5_from_string(content)
 
         try:
