@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 import copy
 from hashlib import md5
 import json
@@ -46,8 +61,7 @@ class EmpiricalPotential(Data):
         potential_writer = self.load_pair_style(pair_style)()
 
         description = potential_writer.get_description()
-        output = potential_writer.create_content(
-            potential_data, fitting_data=fitting_data)
+        output = potential_writer.create_content(potential_data, fitting_data=fitting_data)
 
         with self.open(self._default_potential_filename, 'w') as handle:
             handle.write(six.ensure_text(output.content))
@@ -63,7 +77,7 @@ class EmpiricalPotential(Data):
             'pair_style': pair_style,
             'description': description,
             'species': potential_data['species'],
-            'input_lines_md5': md5(output.content.encode("utf-8")).hexdigest(),
+            'input_lines_md5': md5(output.content.encode('utf-8')).hexdigest(),
             'fitting_flags': fitting_data is not None,
             'total_flags': output.number_of_flags,
             'number_flagged': output.number_flagged,
@@ -72,7 +86,7 @@ class EmpiricalPotential(Data):
             'fitting_json': self._default_fitting_json
         }
         if additional_data is not None:
-            dictionary["additional"] = additional_data
+            dictionary['additional'] = additional_data
 
         dictionary_backup = copy.deepcopy(self.attributes)
 
@@ -106,8 +120,7 @@ class EmpiricalPotential(Data):
         """
         potential_json = self.get_attribute('potential_json')
         if potential_json not in self.list_object_names():
-            raise KeyError("potential dict not set for node pk={}".format(
-                self.pk))
+            raise KeyError('potential dict not set for node pk={}'.format(self.pk))
 
         with self.open(potential_json, mode='r') as handle:
             data = json.load(handle)
@@ -121,8 +134,7 @@ class EmpiricalPotential(Data):
         """
         fitting_json = self.get_attribute('fitting_json')
         if fitting_json not in self.list_object_names():
-            raise KeyError("fitting dict not set for node pk={}".format(
-                self.pk))
+            raise KeyError('fitting dict not set for node pk={}'.format(self.pk))
 
         with self.open(fitting_json, mode='r') as handle:
             data = json.load(handle)
@@ -155,8 +167,7 @@ class EmpiricalPotential(Data):
     def get_input_lines(self):
         potential_filename = self.get_attribute('potential_filename')
         if potential_filename not in self.list_object_names():
-            raise KeyError("potential file not set for node pk={}".format(
-                self.pk))
+            raise KeyError('potential file not set for node pk={}'.format(self.pk))
 
         with self.open(potential_filename, mode='r') as handle:
             lines = handle.read()

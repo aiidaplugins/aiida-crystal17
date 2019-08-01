@@ -1,0 +1,15 @@
+Si:
+  bs:
+  - functions:
+    - 3(6)-21G(nd) type 3-21G core shell
+    type: S
+  - functions:
+    - 3(6)-21G(nd) type 3-21G core shell
+    type: SP
+  - functions:
+    - 3(6)-21G(nd) type n-21G inner valence shell
+    type: SP
+  - functions:
+    - 3(6)-21G(nd) type n-21G outer valence shell
+    type: SP
+  type: all-electron

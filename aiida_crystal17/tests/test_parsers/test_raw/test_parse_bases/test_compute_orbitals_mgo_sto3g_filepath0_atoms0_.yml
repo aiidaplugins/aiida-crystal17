@@ -1,0 +1,90 @@
+ao_indices:
+  1:
+    atom: 0
+    element: Mg
+    index: 1
+    type: S
+  2:
+    atom: 0
+    element: Mg
+    index: 1
+    type: SP
+  3:
+    atom: 0
+    element: Mg
+    index: 1
+    type: SP
+  4:
+    atom: 0
+    element: Mg
+    index: 1
+    type: SP
+  5:
+    atom: 0
+    element: Mg
+    index: 1
+    type: SP
+  6:
+    atom: 0
+    element: Mg
+    index: 2
+    type: SP
+  7:
+    atom: 0
+    element: Mg
+    index: 2
+    type: SP
+  8:
+    atom: 0
+    element: Mg
+    index: 2
+    type: SP
+  9:
+    atom: 0
+    element: Mg
+    index: 2
+    type: SP
+  10:
+    atom: 1
+    element: O
+    index: 1
+    type: S
+  11:
+    atom: 1
+    element: O
+    index: 1
+    type: SP
+  12:
+    atom: 1
+    element: O
+    index: 1
+    type: SP
+  13:
+    atom: 1
+    element: O
+    index: 1
+    type: SP
+  14:
+    atom: 1
+    element: O
+    index: 1
+    type: SP
+core_electrons: 12
+electrons: 20
+number_ao: 14
+orbital_types:
+- - Mg
+  - S
+  - 1
+- - Mg
+  - SP
+  - 1
+- - Mg
+  - SP
+  - 2
+- - O
+  - S
+  - 1
+- - O
+  - SP
+  - 1

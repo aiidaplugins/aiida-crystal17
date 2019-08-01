@@ -2,9 +2,7 @@ basis: fractional
 computation:
   angle_tolerance: null
   computation_class: aiida_crystal17.symmetry.symmetry
-  computation_version: 0.9.1b5
   symmetry_program: spglib
-  symmetry_version: 1.13.0
   symprec: 0.01
 equivalent_sites:
 - 0

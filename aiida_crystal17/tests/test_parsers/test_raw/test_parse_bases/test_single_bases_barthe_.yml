@@ -1,0 +1,32 @@
+Ni:
+  bs:
+  - functions:
+    - - 1.55
+      - 0.24985
+      - 1.0
+    - - 1.24
+      - -0.41636
+      - 1.0
+    type: SP
+  - functions:
+    - - 0.0818
+      - 1.0
+      - 1.0
+    type: SP
+  - functions:
+    - - 43.842
+      - 0.03337
+    - - 12.069
+      - 0.17443
+    - - 3.9173
+      - 0.42273
+    - - 1.1997
+      - 0.48809
+    type: D
+  - functions:
+    - - 0.333
+      - 1.0
+    type: D
+  ecp:
+  - Durand-Barthelat
+  type: valence-electron

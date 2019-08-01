@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 from aiida.common import AttributeDict, LinkType
 from aiida.engine import if_, ToContext, WorkChain
 from aiida.manage.caching import disable_caching
@@ -100,12 +115,12 @@ class CryPropertiesWorkChain(WorkChain):
         incoming = self.inputs.wf_folder.get_incoming(
             node_class=CryCalculation, link_type=LinkType.CREATE).all_nodes()
         if not incoming:
-            self.report("{} was not created by a CryMainCalculation".format(self.inputs.wf_folder))
+            self.report('{} was not created by a CryMainCalculation'.format(self.inputs.wf_folder))
             return self.exit_codes.ERROR_NO_INCOMING_CALC
 
         previous_calc = incoming[0]
         if not previous_calc.is_finished_ok:
-            self.report("{} did not finish ok: {}".format(previous_calc, previous_calc.exit_status))
+            self.report('{} did not finish ok: {}'.format(previous_calc, previous_calc.exit_status))
             return self.exit_codes.ERROR_FAILED_INCOMING_CALC
 
         # create a restart calculation
@@ -114,9 +129,9 @@ class CryPropertiesWorkChain(WorkChain):
         # we only want to run a single-point calculation, so can remove any geometry optimisation
         try:
             params = builder.parameters.get_dict()
-            params.get("geometry", {}).pop("optimise", None)
+            params.get('geometry', {}).pop('optimise', None)
         except AttributeError:
-            self.report("{} has no `parameters` intput".format(previous_calc))
+            self.report('{} has no `parameters` intput'.format(previous_calc))
             return self.exit_codes.ERROR_INCOMPLETE_INCOMING_CALC
 
         self.ctx.calc_params = params
@@ -124,40 +139,40 @@ class CryPropertiesWorkChain(WorkChain):
         try:
             self.ctx.calc_options = builder.metadata.options
         except AttributeError:
-            self.report("{} has no `metadata.options` set".format(previous_calc))
+            self.report('{} has no `metadata.options` set'.format(previous_calc))
             return self.exit_codes.ERROR_INCOMPLETE_INCOMING_CALC
 
         # if new metadata options have been supplied then use them
-        if "meta_options" in self.inputs.cry:
-            self.report("replacing metadata of calculation")
-            self.ctx.calc_options.update(self.inputs.cry["meta_options"])
+        if 'meta_options' in self.inputs.cry:
+            self.report('replacing metadata of calculation')
+            self.ctx.calc_options.update(self.inputs.cry['meta_options'])
 
         # use the final structure (output if the previous calculation was an optimization)
-        if "structure" in previous_calc.outputs:
-            self.report("using optimised structure")
+        if 'structure' in previous_calc.outputs:
+            self.report('using optimised structure')
             builder.structure = previous_calc.outputs.structure
 
         # we want to use the final structure, so the input wavefunction will not apply
-        if "wf_folder" in builder:
-            builder.pop("wf_folder")
+        if 'wf_folder' in builder:
+            builder.pop('wf_folder')
         # TODO add a `remove_restarts` function to CryMainCalculation,
         # to remove e.g. GUESSP, HESSOPT, RESTART keywords
-        self.ctx.calc_params.setdefault("scf", {}).pop("GUESSP", None)
+        self.ctx.calc_params.setdefault('scf', {}).pop('GUESSP', None)
 
         builder.parameters = CryInputParamsData(data=params)
         builder.metadata.options = self.ctx.calc_options
 
         if 'test_run' in self.inputs and self.inputs.test_run.value:
-            self.report("`test_run` specified, stopping before submitting scf calculation")
+            self.report('`test_run` specified, stopping before submitting scf calculation')
             return self.exit_codes.END_OF_TEST_RUN
 
         # TODO could submit CryMainBaseWorkChain
-        builder.metadata.call_link_label = "scf_calc"
+        builder.metadata.call_link_label = 'scf_calc'
         try:
             with disable_caching():
                 calculation = self.submit(builder)
         except Exception as err:
-            self.report("{} submission failed: {}".format(previous_calc, err))
+            self.report('{} submission failed: {}'.format(previous_calc, err))
             return self.exit_codes.ERROR_INCOMPLETE_INCOMING_CALC
 
         self.report('launching SCF calculation {}'.format(calculation))
@@ -167,19 +182,19 @@ class CryPropertiesWorkChain(WorkChain):
     def check_scf_calculation(self):
 
         if not self.ctx.calc_scf.is_finished_ok:
-            self.report("{} failed with exit code: {}".format(self.ctx.calc_scf, self.ctx.calc_scf.exit_status))
+            self.report('{} failed with exit code: {}'.format(self.ctx.calc_scf, self.ctx.calc_scf.exit_status))
             return self.exit_codes.ERROR_SCF_CALC_FAILED
-        self.report("{} finished successfully".format(self.ctx.calc_scf))
+        self.report('{} finished successfully'.format(self.ctx.calc_scf))
         self.ctx.wf_folder = self.ctx.calc_scf.outputs.remote_folder
 
     def submit_doss_calculation(self):
         if 'test_run' in self.inputs and self.inputs.test_run.value:
-            self.report("`test_run` specified, stopping before submitting doss calculation")
+            self.report('`test_run` specified, stopping before submitting doss calculation')
             return self.exit_codes.END_OF_TEST_RUN
 
         inputs = AttributeDict(self.exposed_inputs(CryDossCalculation, self._doss_namespace))
         inputs.wf_folder = self.ctx.wf_folder
-        inputs['metadata']['call_link_label'] = "doss_calc"
+        inputs['metadata']['call_link_label'] = 'doss_calc'
         calculation = self.submit(CryDossCalculation, **inputs)
         self.report('launching DOSS calculation {}'.format(calculation))
         return ToContext(calc_doss=calculation)
@@ -187,11 +202,11 @@ class CryPropertiesWorkChain(WorkChain):
     def check_doss_calculation(self):
 
         if not self.ctx.calc_doss.is_finished_ok:
-            self.report("{} failed with exit code: {}".format(
+            self.report('{} failed with exit code: {}'.format(
                 self.ctx.calc_doss, self.ctx.calc_doss.exit_status))
             return self.exit_codes.ERROR_DOSS_CALC_FAILED
 
-        self.report("{} finished successfully".format(self.ctx.calc_doss))
+        self.report('{} finished successfully'.format(self.ctx.calc_doss))
 
         namespace_separator = self.spec().namespace_separator
         for link_triple in self.ctx.calc_doss.get_outgoing(link_type=LinkType.CREATE).link_triples:
@@ -201,7 +216,7 @@ class CryPropertiesWorkChain(WorkChain):
         """Clean the working directories of all child calculations if `clean_workdir=True` in the inputs."""
         super(CryPropertiesWorkChain, self).on_terminated()
 
-        if "clean_workdir" not in self.inputs or self.inputs.clean_workdir.value is False:
+        if 'clean_workdir' not in self.inputs or self.inputs.clean_workdir.value is False:
             self.report('remote folders will not be cleaned')
             return
 

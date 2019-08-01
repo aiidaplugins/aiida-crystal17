@@ -36,9 +36,10 @@ The aiida-crystal17 plugin for `AiiDA`_
 
 .. toctree::
    :maxdepth: 1
-   :caption: API reference
+   :caption: Additional
    :hidden:
 
+   changelog
    api_index
 
 If you use this plugin for your research, please cite the Github repository
@@ -51,7 +52,7 @@ If you use AiiDA for your research, please cite the following work:
   for computational science*, Comp. Mat. Sci 111, 218-230 (2016);
   http://dx.doi.org/10.1016/j.commatsci.2015.09.013; http://www.aiida.net.
 
-``aiida-crystal17`` is released under the MIT license.
+``aiida-crystal17`` is released under the GNU Lesser General Public License.
 
 Please contact chrisj_sewell@hotmail.com for information concerning ``aiida-crystal17``
 and the `AiiDA mailing list <http://www.aiida.net/mailing-list/>`_ for questions concerning ``aiida``

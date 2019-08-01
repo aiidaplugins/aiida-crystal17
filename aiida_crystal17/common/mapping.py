@@ -1,4 +1,18 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#
+# Copyright 2019 Chris Sewell
+#
+# This file is part of aiida-crystal17.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms and conditions
+# of version 3 of the GNU Lesser General Public License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
 from __future__ import absolute_import
 
 from collections import Mapping
@@ -42,11 +56,12 @@ def update_mapping(original, source):
         source = source.get_dict()
 
     for key, value in source.items():
-        if (
-            key in original and
-            (isinstance(value, Mapping) or isinstance(value, Dict)) and
-            (isinstance(original[key], Mapping) or isinstance(original[key], Dict))
-        ):
+        if key not in original:
+            original[key] = value
+            continue
+        mappable_value = (isinstance(value, Mapping) or isinstance(value, Dict))
+        mappable_original = (isinstance(original[key], Mapping) or isinstance(original[key], Dict))
+        if mappable_value and mappable_original:
             original[key] = update_mapping(original[key], value)
         else:
             original[key] = value
