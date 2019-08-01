@@ -294,6 +294,10 @@ class BasisSetData(Data):
         """return the element symbol associated with the basis set"""
         return self.get_attribute('element', None)
 
+    def get_data(self):
+        """ return the basis set content, parsed to a JSON format"""
+        return parse_bsets_stdin(self.content, isolated=True)[self.element]
+
     @classmethod
     def get_or_create(cls, filepath, use_first=False, store_basis=True):
         """

@@ -229,8 +229,8 @@ ao_indices:
     element: O
     index: 1
     type: SP
+core_electrons: 40
 electrons: 72
-inner_electrons: 40
 number_ao: 46
 orbital_types:
 - - Ni

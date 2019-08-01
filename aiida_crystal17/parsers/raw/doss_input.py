@@ -136,6 +136,9 @@ def create_doss_content(params):
     if erange is not None:
         lines.append(erange)
 
+    if len(proj_atoms) + len(proj_orbitals) > 15:
+        raise AssertionError('only 15 projections are allowed per calculation')
+
     for atoms in proj_atoms:
         lines.append('{} {}'.format(-1 * len(atoms), ' '.join([str(a) for a in atoms])))
     for orbitals in proj_orbitals:
