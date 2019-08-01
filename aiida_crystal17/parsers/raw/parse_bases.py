@@ -18,13 +18,15 @@ import copy
 from aiida_crystal17.common import SYMBOLS
 
 
-def parse_bsets_stdin(content, isolated=False):
+def parse_bsets_stdin(content, allow_comments=False, isolated=False):
     """parse basis sets from a crystal intput file
 
     Parameters
     ----------
     content : str
         file content to parse
+    allow_comments : bool
+        if True, comments will be stripped before parsing
     isolated : bool
         if the basis sets are not within the crystal input file
 
@@ -113,11 +115,12 @@ def parse_bsets_stdin(content, isolated=False):
             continue
 
         # strip end of line comments
-        for s in comment_signals:
-            pos = line.find(s)
-            if pos != -1:
-                line = line[:pos]
-                break
+        if allow_comments:
+            for s in comment_signals:
+                pos = line.find(s)
+                if pos != -1:
+                    line = line[:pos]
+                    break
 
         parts = line.split()
 
@@ -219,164 +222,10 @@ def parse_bsets_stdin(content, isolated=False):
             distrib = 1
             in_pseudo, in_basis = True, False
 
-    return correct_bs_ghost(gbasis)
-
-
-def correct_bs_ghost(gbasis):
-    """ correct basis sets containing ghost atoms """
     for k, v in gbasis.items():
         # sometimes no BS for host atom is printed when it is replaced by Xx: account for it
         if not len(v['bs']) and k != 'X' and 'X' in gbasis:
             gbasis[k] = copy.deepcopy(gbasis['X'])
-
-    # NOTE: no GHOST deletion should be performed, since it breaks orbitals order for band structure plotting
+        # NOTE: no GHOST deletion should be performed, since it breaks orbitals order for band structure plotting
 
     return gbasis
-
-
-# TODO parse_bsets_stdout works but the output format needs to be updated,
-# inline with parse_bsets_stdin, and tests need to be added
-# def parse_bsets_stdout(content):
-#     """parse basis sets from a crystal STDOUT file
-
-#     Parameters
-#     ----------
-#     content : str
-#         file content to parse
-
-#     Returns
-#     -------
-#     dict
-#         {'bs': {<atom_type>: {'type': <type>, 'functions': []}}, 'ecp': {}}
-
-#     Raises
-#     ------
-#     IOError
-#         if an error occurs during the parsing
-#     NotImplementedError
-#         if more than 2 basis sets / pseudopotentials are set for one atom type
-
-#     """
-#     gbasis = {'bs': {}, 'ecp': {}}
-
-#     if " ATOM   X(AU)   Y(AU)   Z(AU)  N. TYPE" in content:
-#         bs = content.split(" ATOM   X(AU)   Y(AU)   Z(AU)  N. TYPE")  # CRYSTAL<14
-#     else:
-#         bs = content.split(" ATOM  X(AU)  Y(AU)  Z(AU)    NO. TYPE  EXPONENT ")  # CRYSTAL14
-
-#     if len(bs) == 1:
-#         # no basis sets found
-#         return None
-
-#     bs = bs[-1].split("*******************************************************************************\n",
-#                       1)[-1]  # NO BASE FIXINDEX IMPLEMENTED!
-
-#     bs = bs.splitlines()
-
-#     atom_order = []
-#     atom_type = bs_concurrency = None  # TODO these were not originally initialised
-
-#     for line in bs:
-#         if line.startswith(" " * 20):  # gau type or exponents
-#             if line.startswith(" " * 40):  # exponents
-#                 line = line.strip()
-#                 if line[:1] != '-':
-#                     line = ' ' + line
-#                 n = 0
-#                 gaussians = []
-#                 for s in line:
-#                     if not n % 10:
-#                         gaussians.append(' ')
-#                     gaussians[-1] += s
-#                     n += 1
-
-#                 gaussians = [x for x in map(float, gaussians) if x != 0]
-#                 # for i in range(len(gaussians)-1, -1, -1):
-#                 #    if gaussians[i] == 0: gaussians.pop()
-#                 #    else: break
-#                 gbasis['bs'][atom_type][-1]["functions"].append(tuple(gaussians))
-
-#             else:  # gau type
-#                 orbital_type = line.split()[-1]
-
-#                 if bs_concurrency:
-#                     atom_type += '1'
-#                     bs_concurrency = False
-#                     try:
-#                         gbasis['bs'][atom_type]
-#                     except KeyError:
-#                         gbasis['bs'][atom_type] = []
-#                     else:
-#                         raise NotImplementedError('More than two different basis sets for one element')
-#                 gbasis['bs'][atom_type].append({"type": orbital_type, "functions": []})
-
-#         else:  # atom No or end
-#             test = line.split()
-#             if test and test[0] == 'ATOM':
-#                 continue  # C03: can be odd string ATOM  X(AU)  Y(AU)  Z(AU)
-#             try:
-#                 float(test[0])
-#             except (ValueError, IndexError):
-#                 # endb, e.g. void space or INFORMATION **** READM2 **** FULL DIRECT SCF (MONO AND BIEL INT) SELECTED
-#                 break
-
-#             atom_type = test[1][:2].capitalize()
-#             if atom_type == 'Xx':
-#                 atom_type = 'X'
-#             atom_order.append(atom_type)
-
-#             try:
-#                 gbasis['bs'][atom_type]
-#             except KeyError:
-#                 gbasis['bs'][atom_type] = []
-#                 bs_concurrency = False
-#             else:
-#                 bs_concurrency = True
-
-#     # PSEUDOPOTENTIALS
-#     ecp = content.split(" *** PSEUDOPOTENTIAL INFORMATION ***")
-#     if len(ecp) > 1:
-#         ecp = ecp[-1].split("*******************************************************************************\n",
-#                             2)[-2]  # NO BASE FIXINDEX IMPLEMENTED
-#         ecp = ecp.splitlines()
-#         for line in ecp:
-#             if 'PSEUDOPOTENTIAL' in line:
-#                 atnum = int(line.split(',')[0].replace('ATOMIC NUMBER', ''))
-#                 # int(nc.replace('NUCLEAR CHARGE', ''))
-#                 if 200 < atnum < 1000:
-#                     atnum = int(str(atnum)[-2:])
-#                 atom_type = SYMBOLS[atnum]
-#                 try:
-#                     gbasis['ecp'][atom_type]
-#                 except KeyError:
-#                     gbasis['ecp'][atom_type] = []
-#                 else:
-#                     atom_type += '1'
-#                     try:
-#                         gbasis['ecp'][atom_type]
-#                     except KeyError:
-#                         gbasis['ecp'][atom_type] = []
-#                     else:
-#                         raise NotImplementedError(
-#                             'More than two pseudopotentials for one element - not supported case!')
-#             else:
-#                 lines = line.split()
-#                 try:
-#                     float(lines[-2])
-#                 except (ValueError, IndexError):
-#                     continue
-#                 else:
-#                     if 'TMS' in line:
-#                         gbasis['ecp'][atom_type].append([lines[0]])
-#                         lines = lines[2:]
-#                     lines = list(map(float, lines))
-#                     for i in range(len(lines) // 3):
-#                         gbasis['ecp'][atom_type][-1].append(
-#                             tuple([lines[0 + i * 3], lines[1 + i * 3], lines[2 + i * 3]]))
-
-#     # sometimes ghost basis set is printed without exponents and we should determine what atom was replaced
-#     if 'X' in gbasis['bs'] and not len(gbasis['bs']['X']):
-#         replaced = atom_order[atom_order.index('X') - 1]
-#         gbasis['bs']['X'] = copy.deepcopy(gbasis['bs'][replaced])
-
-#     return correct_bs_ghost(gbasis)
