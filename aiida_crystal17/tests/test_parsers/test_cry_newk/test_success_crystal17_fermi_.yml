@@ -5,6 +5,6 @@ results:
   fermi_energy: -3.4014233
   parser_class: CryFermiParser
   parser_errors: []
-  parser_version: 0.9.1b5
+  parser_version: 0.9.2b5
   parser_warnings: []
   warnings: []
