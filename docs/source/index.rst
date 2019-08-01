@@ -36,9 +36,10 @@ The aiida-crystal17 plugin for `AiiDA`_
 
 .. toctree::
    :maxdepth: 1
-   :caption: API reference
+   :caption: Additional
    :hidden:
 
+   changelog
    api_index
 
 If you use this plugin for your research, please cite the Github repository

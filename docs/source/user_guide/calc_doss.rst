@@ -78,6 +78,7 @@ Computing Projections
 Projections can be added per atom or per orbital set:
 
 .. nbinput:: python
+    :no-output:
 
     Dict(dict={
         "shrink_is": 18,
@@ -207,6 +208,7 @@ To observe DoS at the fermi level,
 these results can also be used to choose a sensible range of bands:
 
 .. nbinput:: python
+    :no-output:
 
     filled_bands = int(result.electrons / 2)
     first_band = int(result.core_electrons / 2) + 1
