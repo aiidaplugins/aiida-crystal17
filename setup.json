@@ -13,7 +13,7 @@
     "Topic :: Scientific/Engineering :: Physics",
     "Framework :: AiiDA"
   ],
-  "version": "0.9.1b5",
+  "version": "0.9.2b5",
   "entry_points": {
     "console_scripts": [
       "mock_crystal17 = aiida_crystal17.tests.mock_crystal17:main",
