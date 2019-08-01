@@ -58,6 +58,7 @@ executable for DOSS calculations, from an existing ``fort.9``.
 The :ref:`doss_input_schema` gives the allowed format of the input dictionary, for example:
 
 .. nbinput:: python
+    :no-output:
 
     from aiida.orm import Dict
     Dict(dict={
