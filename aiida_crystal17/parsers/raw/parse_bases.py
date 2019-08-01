@@ -15,7 +15,8 @@
 # GNU Lesser General Public License for more details.
 import copy
 
-from aiida_crystal17.common import SYMBOLS
+from collections import namedtuple
+from aiida_crystal17.common.atoms import (GAUSSIAN_ORBITALS, ELECTRON_CONFIGURATIONS, SYMBOLS, SYMBOLS_R)
 
 
 def parse_bsets_stdin(content, allow_comments=False, isolated=False):
@@ -229,3 +230,58 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
         # NOTE: no GHOST deletion should be performed, since it breaks orbitals order for band structure plotting
 
     return gbasis
+
+
+OrbitalResult = namedtuple('OrbitalResult',
+                           ['electrons', 'inner_electrons', 'number_ao', 'orbital_types', 'ao_indices'])
+
+
+def compute_orbitals(atoms, basis_sets):
+    # type: (list, dict) -> OrbitalResult
+    """compute data for all atomic orbitals in a structure,
+    given elemental representations by crystal basis sets
+
+    Parameters
+    ----------
+    atoms : list[str] or list[int]
+        list of atomic numbers or symbols which the structure comprises of
+    basis_sets : dict[str, dict]
+        basis set data, in the format returned from ``parse_bsets_stdin``
+
+    Returns
+    -------
+    OrbitalResult
+
+    """
+    total_electrons = total_inner_electrons = total_aos = 0
+    aos_indices = {}
+    orbital_types = []
+
+    for atom_index, atom in enumerate(atoms):
+        if isinstance(atom, int):
+            electrons = atom
+            symbol = SYMBOLS[atom]
+        else:
+            symbol = atom
+            electrons = SYMBOLS_R[atom]
+        if basis_sets[symbol]['type'] == 'valence-electron':
+            raise NotImplementedError('computing for bases with core pseudopotentials')
+        outer_electrons = sum([i for n, i in ELECTRON_CONFIGURATIONS[electrons]['outer']])
+        total_electrons += electrons
+        total_inner_electrons += electrons - outer_electrons
+        type_count = {}
+        for orbital in basis_sets[symbol]['bs']:
+            type_count.setdefault(orbital['type'], 0)
+            type_count[orbital['type']] += 1
+            for i in range(GAUSSIAN_ORBITALS[orbital['type']]):
+                total_aos += 1
+                if (symbol, orbital['type'], type_count[orbital['type']]) not in orbital_types:
+                    orbital_types.append((symbol, orbital['type'], type_count[orbital['type']]))
+                aos_indices[total_aos] = {
+                    'atom': atom_index,
+                    'element': symbol,
+                    'type': orbital['type'],
+                    'index': type_count[orbital['type']]
+                }
+
+    return OrbitalResult(total_electrons, total_inner_electrons, total_aos, orbital_types, aos_indices)
