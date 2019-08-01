@@ -54,8 +54,9 @@ def test_basis_show(db_test_app):
         class:         sto3g
         element:       O
         filename:      sto3g_O.basis
-        md5:           73a9c7315dc6edf6ab8bd4427a66f31c
+        md5:           1ca6e23f7f1b1f5517117bec1d581ca2
         num_shells:    2
+        orbital_types: [S, SP]
         year:          1999
         """
 
