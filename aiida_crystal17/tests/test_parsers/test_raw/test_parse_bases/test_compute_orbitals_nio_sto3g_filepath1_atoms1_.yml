@@ -1,0 +1,256 @@
+ao_indices:
+  1:
+    atom: 0
+    element: Ni
+    index: 1
+    type: S
+  2:
+    atom: 0
+    element: Ni
+    index: 1
+    type: SP
+  3:
+    atom: 0
+    element: Ni
+    index: 1
+    type: SP
+  4:
+    atom: 0
+    element: Ni
+    index: 1
+    type: SP
+  5:
+    atom: 0
+    element: Ni
+    index: 1
+    type: SP
+  6:
+    atom: 0
+    element: Ni
+    index: 2
+    type: SP
+  7:
+    atom: 0
+    element: Ni
+    index: 2
+    type: SP
+  8:
+    atom: 0
+    element: Ni
+    index: 2
+    type: SP
+  9:
+    atom: 0
+    element: Ni
+    index: 2
+    type: SP
+  10:
+    atom: 0
+    element: Ni
+    index: 3
+    type: SP
+  11:
+    atom: 0
+    element: Ni
+    index: 3
+    type: SP
+  12:
+    atom: 0
+    element: Ni
+    index: 3
+    type: SP
+  13:
+    atom: 0
+    element: Ni
+    index: 3
+    type: SP
+  14:
+    atom: 0
+    element: Ni
+    index: 1
+    type: D
+  15:
+    atom: 0
+    element: Ni
+    index: 1
+    type: D
+  16:
+    atom: 0
+    element: Ni
+    index: 1
+    type: D
+  17:
+    atom: 0
+    element: Ni
+    index: 1
+    type: D
+  18:
+    atom: 0
+    element: Ni
+    index: 1
+    type: D
+  19:
+    atom: 1
+    element: Ni
+    index: 1
+    type: S
+  20:
+    atom: 1
+    element: Ni
+    index: 1
+    type: SP
+  21:
+    atom: 1
+    element: Ni
+    index: 1
+    type: SP
+  22:
+    atom: 1
+    element: Ni
+    index: 1
+    type: SP
+  23:
+    atom: 1
+    element: Ni
+    index: 1
+    type: SP
+  24:
+    atom: 1
+    element: Ni
+    index: 2
+    type: SP
+  25:
+    atom: 1
+    element: Ni
+    index: 2
+    type: SP
+  26:
+    atom: 1
+    element: Ni
+    index: 2
+    type: SP
+  27:
+    atom: 1
+    element: Ni
+    index: 2
+    type: SP
+  28:
+    atom: 1
+    element: Ni
+    index: 3
+    type: SP
+  29:
+    atom: 1
+    element: Ni
+    index: 3
+    type: SP
+  30:
+    atom: 1
+    element: Ni
+    index: 3
+    type: SP
+  31:
+    atom: 1
+    element: Ni
+    index: 3
+    type: SP
+  32:
+    atom: 1
+    element: Ni
+    index: 1
+    type: D
+  33:
+    atom: 1
+    element: Ni
+    index: 1
+    type: D
+  34:
+    atom: 1
+    element: Ni
+    index: 1
+    type: D
+  35:
+    atom: 1
+    element: Ni
+    index: 1
+    type: D
+  36:
+    atom: 1
+    element: Ni
+    index: 1
+    type: D
+  37:
+    atom: 2
+    element: O
+    index: 1
+    type: S
+  38:
+    atom: 2
+    element: O
+    index: 1
+    type: SP
+  39:
+    atom: 2
+    element: O
+    index: 1
+    type: SP
+  40:
+    atom: 2
+    element: O
+    index: 1
+    type: SP
+  41:
+    atom: 2
+    element: O
+    index: 1
+    type: SP
+  42:
+    atom: 3
+    element: O
+    index: 1
+    type: S
+  43:
+    atom: 3
+    element: O
+    index: 1
+    type: SP
+  44:
+    atom: 3
+    element: O
+    index: 1
+    type: SP
+  45:
+    atom: 3
+    element: O
+    index: 1
+    type: SP
+  46:
+    atom: 3
+    element: O
+    index: 1
+    type: SP
+electrons: 72
+inner_electrons: 40
+number_ao: 46
+orbital_types:
+- - Ni
+  - S
+  - 1
+- - Ni
+  - SP
+  - 1
+- - Ni
+  - SP
+  - 2
+- - Ni
+  - SP
+  - 3
+- - Ni
+  - D
+  - 1
+- - O
+  - S
+  - 1
+- - O
+  - SP
+  - 1
