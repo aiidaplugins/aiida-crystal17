@@ -99,8 +99,11 @@ script:
 - |
   if [[ "$TEST_TYPE" == "conda" ]]; then
     conda env create -f conda_dev_env.yml -n test-environment python=$TRAVIS_PYTHON_VERSION
-    source activate test-environment
     conda list -n test-environment
+    source activate test-environment
+    pip install --no-deps -e .
+    reentry scan
+    verdi data crystal17.parse --help
   fi
 
 after_success:
