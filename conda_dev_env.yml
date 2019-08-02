@@ -30,8 +30,8 @@ dependencies:
 # code_style
 - doc8<0.9.0,>=0.8.0
 - flake8<3.8.0,>=3.7.0
-- pre_commit==1.14.4
-- yapf==0.26.0
+- pre_commit==1.17.0
+- yapf==0.28.0
 # docs
 - ipypublish>=0.10.7
 - sphinx>=1.6

@@ -73,8 +73,12 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
 
     basis_data_cls = DataFactory('crystal17.basisset')
     with cli_spinner():
-        nfiles, num_uploaded = basis_data_cls.upload_basisset_family(
-            path, name, description, stop_if_existing=stop_if_existing, extension='.{}'.format(ext), dry_run=dry_run)
+        nfiles, num_uploaded = basis_data_cls.upload_basisset_family(path,
+                                                                     name,
+                                                                     description,
+                                                                     stop_if_existing=stop_if_existing,
+                                                                     extension='.{}'.format(ext),
+                                                                     dry_run=dry_run)
 
     click.echo('Basis Set files found and added to family: {}, of those {} '
                'were newly uploaded'.format(nfiles, num_uploaded))
@@ -83,8 +87,10 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
 
 
 @basisset.command()
-@click.option(
-    '-e', '--element', multiple=True, help='Filter for families containing potentials for all given elements.')
+@click.option('-e',
+              '--element',
+              multiple=True,
+              help='Filter for families containing potentials for all given elements.')
 @click.option('-d', '--with-description', is_flag=True)
 @click.option('-p', '--list-pks', is_flag=True)
 @decorators.with_dbenv()

@@ -47,46 +47,50 @@ class CryAbstractCalculation(CalcJob):
         # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
 
         # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
-        spec.exit_code(
-            200, 'ERROR_NO_RETRIEVED_FOLDER', message='The retrieved folder data node could not be accessed.')
+        spec.exit_code(200,
+                       'ERROR_NO_RETRIEVED_FOLDER',
+                       message='The retrieved folder data node could not be accessed.')
         spec.exit_code(210, 'ERROR_OUTPUT_FILE_MISSING', message='the main (stdout) output file was not found')
         spec.exit_code(211, 'ERROR_TEMP_FOLDER_MISSING', message='the temporary retrieved folder was not found')
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
-        spec.exit_code(
-            300,
-            'ERROR_PARSING_STDOUT',
-            message=('An error was flagged trying to parse the '
-                     'crystal exec stdout file'))
+        spec.exit_code(300,
+                       'ERROR_PARSING_STDOUT',
+                       message=('An error was flagged trying to parse the '
+                                'crystal exec stdout file'))
         spec.exit_code(  # TODO is this an unrecoverable error?
             301,
             'ERROR_PARSING_OPTIMISATION_GEOMTRIES',
             message=("An error occurred parsing the 'opta'/'optc' geometry files"))
-        spec.exit_code(
-            302, 'TESTGEOM_DIRECTIVE', message=('The crystal exec stdout file denoted that the run was a testgeom'))
+        spec.exit_code(302,
+                       'TESTGEOM_DIRECTIVE',
+                       message=('The crystal exec stdout file denoted that the run was a testgeom'))
 
         spec.exit_code(350, 'ERROR_CRYSTAL_INPUT', message='the input file could not be read by CRYSTAL')
-        spec.exit_code(
-            351, 'ERROR_WAVEFUNCTION_NOT_FOUND', message='CRYSTAL could not find the required wavefunction file')
+        spec.exit_code(351,
+                       'ERROR_WAVEFUNCTION_NOT_FOUND',
+                       message='CRYSTAL could not find the required wavefunction file')
 
         # Significant errors but calculation can be used to restart
-        spec.exit_code(
-            400, 'ERROR_OUT_OF_WALLTIME', message='The calculation stopped prematurely because it ran out of walltime.')
-        spec.exit_code(
-            401, 'ERROR_OUT_OF_MEMORY', message='The calculation stopped prematurely because it ran out of memory.')
-        spec.exit_code(
-            402,
-            'ERROR_OUT_OF_VMEMORY',
-            message='The calculation stopped prematurely because it ran out of virtual memory.')
+        spec.exit_code(400,
+                       'ERROR_OUT_OF_WALLTIME',
+                       message='The calculation stopped prematurely because it ran out of walltime.')
+        spec.exit_code(401,
+                       'ERROR_OUT_OF_MEMORY',
+                       message='The calculation stopped prematurely because it ran out of memory.')
+        spec.exit_code(402,
+                       'ERROR_OUT_OF_VMEMORY',
+                       message='The calculation stopped prematurely because it ran out of virtual memory.')
 
-        spec.exit_code(
-            411, 'UNCONVERGED_SCF', message='SCF convergence did not finalise (usually due to reaching step limit)')
-        spec.exit_code(
-            412,
-            'UNCONVERGED_GEOMETRY',
-            message='Geometry convergence did not finalise (usually due to reaching step limit)')
-        spec.exit_code(
-            413, 'BASIS_SET_LINEARLY_DEPENDENT', message='an error encountered usually during geometry optimisation')
+        spec.exit_code(411,
+                       'UNCONVERGED_SCF',
+                       message='SCF convergence did not finalise (usually due to reaching step limit)')
+        spec.exit_code(412,
+                       'UNCONVERGED_GEOMETRY',
+                       message='Geometry convergence did not finalise (usually due to reaching step limit)')
+        spec.exit_code(413,
+                       'BASIS_SET_LINEARLY_DEPENDENT',
+                       message='an error encountered usually during geometry optimisation')
         spec.exit_code(414, 'ERROR_SCF_ABNORMAL_END', message='an error was encountered during an SCF computation')
         spec.exit_code(415, 'ERROR_MPI_ABORT', message='an unknown error was encountered, causing the MPI to abort')
         spec.exit_code(499, 'ERROR_CRYSTAL_RUN', message='The main crystal output file flagged an unhandled error')
@@ -95,22 +99,19 @@ class CryAbstractCalculation(CalcJob):
         spec.exit_code(510, 'ERROR_SYMMETRY_INCONSISTENCY', message=('inconsistency in the input and output symmetry'))
         spec.exit_code(520, 'ERROR_SYMMETRY_NOT_FOUND', message=('primitive symmops were not found in the output file'))
 
-        spec.output(
-            cls.link_output_results,
-            valid_type=DataFactory('dict'),
-            required=True,
-            help='the data extracted from the main output file')
+        spec.output(cls.link_output_results,
+                    valid_type=DataFactory('dict'),
+                    required=True,
+                    help='the data extracted from the main output file')
         spec.default_output_node = cls.link_output_results
-        spec.output(
-            cls.link_output_structure,
-            valid_type=DataFactory('structure'),
-            required=False,
-            help='the structure output from the calculation')
-        spec.output(
-            cls.link_output_symmetry,
-            valid_type=DataFactory('crystal17.symmetry'),
-            required=False,
-            help='the symmetry data from the calculation')
+        spec.output(cls.link_output_structure,
+                    valid_type=DataFactory('structure'),
+                    required=False,
+                    help='the structure output from the calculation')
+        spec.output(cls.link_output_symmetry,
+                    valid_type=DataFactory('crystal17.symmetry'),
+                    required=False,
+                    help='the symmetry data from the calculation')
 
     def create_calc_info(self,
                          tempfolder,

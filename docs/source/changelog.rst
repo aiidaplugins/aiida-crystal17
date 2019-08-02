@@ -234,8 +234,6 @@ v0.6.0b3 (2019-06-22)
 - Retrieve input file for GULP computations.
 - Add method for getting the spacegroup info of a symmetry node.
 - Require correct symmetry input node type (crystal17.symmetry)
-- Version bump.
-- Spelling error fix.
 - Remove pypi deployment flag from python=2.7 tests.
 
 
@@ -271,10 +269,8 @@ v0.4.0 (2019-03-02)
 - Update geometry.py.
 - Update test_cry_basic.py.
 - Remove pymatgen dependency from tests.
-- Fix pymatgen dependecies.
 - Update .travis.yml.
 - Setup for conda dist.
-- Test style fix.
 - Updated computer get method for develop (1.0.0a2)
 
 
@@ -285,11 +281,7 @@ v0.3.2a1 (2018-09-15)
 
 v0.3.1a1 (2018-09-15)
 ---------------------
-- Remove file.
-- Install in development mode.
-- Fix coverage (4)
-- Fix coverage (3)
-- Only cover package.
+
 - Omit tests from coverage report.
 - Updated doc on installation.
 - Updated readme and added pypi deployment.
@@ -297,24 +289,19 @@ v0.3.1a1 (2018-09-15)
 
 v0.3.0a1 (2018-09-12)
 ---------------------
-- Update version.
-- Finished documentation.
+
 - Updated documentation.
 - Potential fix for aiida v0.12 process runs.
 - Added cmndline tests.
 - Added cmnd line plugins.
-- Add to test.
 - Don't output structure in no optimisation.
-- Added test.
 - Store fractional symops instead of cartesian.
 - Convert output operations fractional coordinates to cartesian
   coordinates.
 - Compare_operations improvement.
 - Moved operation comparison to StructSettingsData.
-- Test update.
 - Replaced output_arrays with output_settings.
 - Refactored structure manipulation as two-step process.
-- Tests fix.
 - Added full run test for main calc.
 - Use input structure to get kinds.
 - Added run_get_node util.
@@ -338,19 +325,14 @@ v0.3.0a1 (2018-09-12)
 - Added pytest-tornado.
 - Added pytest-timeout.
 - Added migration workflow function.
-- Doc fix.
 - Api documentation update.
 - Refactored parser to extract mainout parsing.
 - Added immigrant as plugin.
 - Add to test.
 - Added CryMainImmigrant (and tests)
-- Sqlalchemy fix.
-- Aiida v1 test fix.
-- V1 test fix.
 - Added computer configuration to computer configuration.
 - Added migrate.create_inputs.
 - Added basis set validation.
-- Style test fix.
 - Added read_inputd12 (and tests)
 - Removed diff modules and updated version.
 
@@ -371,13 +353,11 @@ v0.2.0a0 (2018-09-05)
 - Added test with spin.
 - Added atom specific properties to output d12.
 - Move validation to separate module.
-- Pre-commit test fix.
 - Break symmetry by kind.
 - Added kinds section to settings dict.
 - Added BasisSetData input to .d12 creation.
 - Refactored BasisSetData to store file content separately to metadata.
 - Added python 3 compatabilty.
-- Prospector test fix.
 - Added BasisSetData plugin (and tests)
 - Added settings schema.
 - Added inputd12 writer.
@@ -408,7 +388,6 @@ v0.2.0a0 (2018-09-05)
 - Added user guide for ``crystal17.basic``
 - Added example and documentation.
 - Remove ase install.
-- Attempt to fix build failure of readthedocs.
 - Added to readme.
 - Updated some things in line with aiida-plugin-cutter.
 
@@ -435,7 +414,6 @@ v0.2.0a0 (2018-09-05)
 
   As per https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions.
 - Changes to pass pylint test.
-- Pre commit fix.
 - Revert "try adding pre-commit test (6)"
 
   This reverts commit 6e7a33d1ac4baa2f406f200e799484376d087f13.

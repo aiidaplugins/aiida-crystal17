@@ -6,4 +6,4 @@ def test_list_potentials():
     runner = CliRunner()
     result = runner.invoke(potentials, ['list'])
     assert result.exit_code == 0
-    assert "lj" in str(result.output)
+    assert 'lj' in str(result.output)

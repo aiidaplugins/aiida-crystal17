@@ -6,7 +6,7 @@ from aiida_crystal17.parsers.raw.inputd12_read import extract_data
 from jsonextended import edict
 
 
-@pytest.fixture("function")
+@pytest.fixture('function')
 def input_str():
     return """a title
 EXTERNAL
@@ -132,7 +132,7 @@ END
 
 
 def test_read_fail(input_str):
-    input_str = input_str.replace("PPAN", "WRONG")
+    input_str = input_str.replace('PPAN', 'WRONG')
     with pytest.raises(NotImplementedError):
         extract_data(input_str)
 
@@ -142,80 +142,75 @@ def test_full_read(input_str):
 
     assert len(basis_sets) == 2
 
-    assert atom_props == {
-        'fragment': [1, 3],
-        'ghosts': [5, 6],
-        'spin_alpha': [1, 3],
-        'spin_beta': [2, 4]
-    }
+    assert atom_props == {'fragment': [1, 3], 'ghosts': [5, 6], 'spin_alpha': [1, 3], 'spin_beta': [2, 4]}
 
     expected = {
-        "title": "a title",
-        "geometry": {
-            "info_print": ["ATOMSYMM", "SYMMOPS"],
-            "info_external": ["STRUCPRT"],
-            "optimise": {
-                "type": "FULLOPTG",
-                "hessian": "HESSIDEN",
-                "gradient": "NUMGRATO",
-                "info_print": ["PRINTOPT", "PRINTFORCES"],
-                "convergence": {
-                    "TOLDEG": 0.0003,
-                    "TOLDEX": 0.0012,
-                    "TOLDEE": 7,
-                    "MAXCYCLE": 50,
-                    "FINALRUN": 4
+        'title': 'a title',
+        'geometry': {
+            'info_print': ['ATOMSYMM', 'SYMMOPS'],
+            'info_external': ['STRUCPRT'],
+            'optimise': {
+                'type': 'FULLOPTG',
+                'hessian': 'HESSIDEN',
+                'gradient': 'NUMGRATO',
+                'info_print': ['PRINTOPT', 'PRINTFORCES'],
+                'convergence': {
+                    'TOLDEG': 0.0003,
+                    'TOLDEX': 0.0012,
+                    'TOLDEE': 7,
+                    'MAXCYCLE': 50,
+                    'FINALRUN': 4
                 },
             }
         },
-        "basis_set": {
-            "CHARGED": True,
+        'basis_set': {
+            'CHARGED': True,
         },
-        "scf": {
-            "dft": {
-                "xc": ["LDA", "PZ"],
+        'scf': {
+            'dft': {
+                'xc': ['LDA', 'PZ'],
                 # or
                 # "xc": "HSE06",
                 # or
                 # "xc": {
                 #     "LSRSH-PBE": [0.11, 0.25, 0.00001]
                 # },
-                "SPIN": True,
-                "grid": "XLGRID",
-                "grid_weights": "BECKE",
-                "numerical": {
-                    "TOLLDENS": 6,
-                    "TOLLGRID": 14,
-                    "LIMBEK": 400
+                'SPIN': True,
+                'grid': 'XLGRID',
+                'grid_weights': 'BECKE',
+                'numerical': {
+                    'TOLLDENS': 6,
+                    'TOLLGRID': 14,
+                    'LIMBEK': 400
                 }
             },
             # or
             # "single": "UHF",
-            "k_points": [8, 8],
-            "numerical": {
-                "BIPOLAR": [18, 14],
-                "BIPOSIZE": 4000000,
-                "EXCHSIZE": 4000000,
-                "EXCHPERM": True,
-                "ILASIZE": 6000,
-                "INTGPACK": 0,
-                "MADELIND": 50,
-                "POLEORDR": 4,
-                "TOLINTEG": [6, 6, 6, 6, 12],
-                "TOLPSEUD": 6,
-                "FMIXING": 0,
-                "MAXCYCLE": 50,
-                "TOLDEE": 6,
-                "LEVSHIFT": [2, 1],
-                "SMEAR": 0.1
+            'k_points': [8, 8],
+            'numerical': {
+                'BIPOLAR': [18, 14],
+                'BIPOSIZE': 4000000,
+                'EXCHSIZE': 4000000,
+                'EXCHPERM': True,
+                'ILASIZE': 6000,
+                'INTGPACK': 0,
+                'MADELIND': 50,
+                'POLEORDR': 4,
+                'TOLINTEG': [6, 6, 6, 6, 12],
+                'TOLPSEUD': 6,
+                'FMIXING': 0,
+                'MAXCYCLE': 50,
+                'TOLDEE': 6,
+                'LEVSHIFT': [2, 1],
+                'SMEAR': 0.1
             },
-            "fock_mixing": "DIIS",
+            'fock_mixing': 'DIIS',
             # or
             # "fock_mixing": ["BROYDEN", 0.0001, 50, 2],
-            "spinlock": {
-                "SPINLOCK": [1, 10]
+            'spinlock': {
+                'SPINLOCK': [1, 10]
             },
-            "post_scf": ["GRADCAL", "PPAN"]
+            'post_scf': ['GRADCAL', 'PPAN']
         }
     }
 
@@ -223,7 +218,7 @@ def test_full_read(input_str):
 
 
 def test_mgo_sto3g_scf():
-    path = os.path.join(TEST_FILES, "crystal", "mgo_sto3g_scf", 'INPUT')
+    path = os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_scf', 'INPUT')
     with open(path) as f:
         input_str = f.read()
 
@@ -237,7 +232,7 @@ def test_mgo_sto3g_scf():
 
 
 def test_mgo_sto3g_opt():
-    path = os.path.join(TEST_FILES, "crystal", "mgo_sto3g_opt", 'INPUT')
+    path = os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_opt', 'INPUT')
     with open(path) as f:
         input_str = f.read()
 
@@ -261,7 +256,7 @@ def test_mgo_sto3g_opt():
 
 
 def test_nio_sto3g_afm():
-    path = os.path.join(TEST_FILES, "crystal", "nio_sto3g_afm_scf", 'INPUT')
+    path = os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf', 'INPUT')
     with open(path) as f:
         input_str = f.read()
 

@@ -114,9 +114,9 @@ Coding Style Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The code style is tested using `flake8 <http://flake8.pycqa.org>`__,
-with the configuration set in ``.flake8``, and code should be formatted
-with `yapf <https://github.com/google/yapf>`__ (configuration set in
-``.style.yapf``).
+with the configuration set in ``.flake8``, and
+`yapf <https://github.com/google/yapf>`__, with the configuration set in
+``.style.yapf``.
 
 Installing with ``aiida-crystal17[code_style]`` makes the
 `pre-commit <https://pre-commit.com/>`__ package available, which will

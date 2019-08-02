@@ -233,9 +233,9 @@ def write_lammps_format(data):
         species = species[:-5]
         output.extend([
             species + ' ' + ' '.join([format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[:8]]),
-            ' '.join([format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[8:16]]), ' '.join([
-                format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[16:24]
-            ]), ' '.join([format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[24:32]])
+            ' '.join([format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[8:16]]),
+            ' '.join([format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[16:24]]),
+            ' '.join([format_lammps_value(data['1body'][str(i)][k]) for k in KEYS_1BODY[24:32]])
         ])
 
     # two-body angle parameters
@@ -245,8 +245,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_2BODY_BONDS):
             continue
         suboutout.extend([
-            ' '.join(key.split(INDEX_SEP)) + ' ' + ' '.join(
-                [format_lammps_value(subdata[k]) for k in KEYS_2BODY_BONDS[:8]]),
+            ' '.join(key.split(INDEX_SEP)) + ' ' +
+            ' '.join([format_lammps_value(subdata[k]) for k in KEYS_2BODY_BONDS[:8]]),
             ' '.join([format_lammps_value(subdata[k]) for k in KEYS_2BODY_BONDS[8:16]])
         ])
 
@@ -262,8 +262,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_2BODY_OFFDIAG):
             continue
         suboutout.extend([
-            ' '.join(key.split(INDEX_SEP)) + ' ' + ' '.join(
-                [format_lammps_value(subdata[k]) for k in KEYS_2BODY_OFFDIAG]),
+            ' '.join(key.split(INDEX_SEP)) + ' ' +
+            ' '.join([format_lammps_value(subdata[k]) for k in KEYS_2BODY_OFFDIAG]),
         ])
 
     output.extend(['{0} ! Nr of off-diagonal terms; Ediss;Ro;gamma;rsigma;rpi;rpi2'.format(len(suboutout))] + suboutout)
@@ -275,8 +275,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_3BODY_ANGLES):
             continue
         suboutout.extend([
-            ' '.join(key.split(INDEX_SEP)) + ' ' + ' '.join(
-                [format_lammps_value(subdata[k]) for k in KEYS_3BODY_ANGLES]),
+            ' '.join(key.split(INDEX_SEP)) + ' ' +
+            ' '.join([format_lammps_value(subdata[k]) for k in KEYS_3BODY_ANGLES]),
         ])
 
     output.extend(['{0} ! Nr of angles;at1;at2;at3;Thetao,o;ka;kb;pv1;pv2'.format(len(suboutout))] + suboutout)
@@ -288,8 +288,8 @@ def write_lammps_format(data):
         if not set(subdata.keys()).issuperset(KEYS_4BODY_TORSION):
             continue
         suboutout.extend([
-            ' '.join(key.split(INDEX_SEP)) + ' ' + ' '.join(
-                [format_lammps_value(subdata[k]) for k in KEYS_4BODY_TORSION]),
+            ' '.join(key.split(INDEX_SEP)) + ' ' +
+            ' '.join([format_lammps_value(subdata[k]) for k in KEYS_4BODY_TORSION]),
         ])
 
     output.extend(['{0} ! Nr of torsions;at1;at2;at3;at4;;V1;V2;V3;V2(BO);vconj;n.u;n'.format(len(suboutout))] +
@@ -414,8 +414,12 @@ def write_gulp_format(data, fitting_data=None, global_val_fmt='{:.5E}', species_
 
     arguments = {'reaxff1_under': ['kcal'], 'reaxff1_lonepair': ['kcal'], 'reaxff1_morse': ['kcal']}
 
-    field_lines, num_vars, num_fit = create_gulp_fields(
-        data, '1body', fields, species_val_fmt, arguments=arguments, fitting_data=fitting_data)
+    field_lines, num_vars, num_fit = create_gulp_fields(data,
+                                                        '1body',
+                                                        fields,
+                                                        species_val_fmt,
+                                                        arguments=arguments,
+                                                        fitting_data=fitting_data)
     total_flags += num_vars
     fitting_flags += num_fit
     output.extend(field_lines)
@@ -430,8 +434,9 @@ def write_gulp_format(data, fitting_data=None, global_val_fmt='{:.5E}', species_
         'reaxff2_bond': ['reaxff2_bond1', 'reaxff2_bond2', 'reaxff2_bond3', 'reaxff2_bond4', 'reaxff2_bond5'],
         'reaxff2_over': ['reaxff2_over'],
         'reaxff2_pen': ['reaxff2_pen1', 'global.reaxff2_pen2', 'global.reaxff2_pen'],
-        'reaxff2_morse':
-        ['reaxff2_morse1', 'reaxff2_morse2', 'reaxff2_morse3', 'reaxff2_morse4', 'reaxff2_morse5', 'reaxff2_morse6']
+        'reaxff2_morse': [
+            'reaxff2_morse1', 'reaxff2_morse2', 'reaxff2_morse3', 'reaxff2_morse4', 'reaxff2_morse5', 'reaxff2_morse6'
+        ]
     }
 
     def reaxff2_bo_args(bodata):
@@ -454,8 +459,13 @@ def write_gulp_format(data, fitting_data=None, global_val_fmt='{:.5E}', species_
 
     conditions = {'reaxff2_pen': lambda s: s['reaxff2_pen1'] > 0.0}
 
-    field_lines, num_vars, num_fit = create_gulp_fields(
-        data, '2body', fields, species_val_fmt, conditions, arguments=arguments, fitting_data=fitting_data)
+    field_lines, num_vars, num_fit = create_gulp_fields(data,
+                                                        '2body',
+                                                        fields,
+                                                        species_val_fmt,
+                                                        conditions,
+                                                        arguments=arguments,
+                                                        fitting_data=fitting_data)
     total_flags += num_vars
     fitting_flags += num_fit
     output.extend(field_lines)
@@ -466,8 +476,9 @@ def write_gulp_format(data, fitting_data=None, global_val_fmt='{:.5E}', species_
     output.append('#')
 
     fields = {
-        'reaxff3_angle':
-        ['reaxff3_angle1', 'reaxff3_angle2', 'reaxff3_angle3', 'reaxff3_angle4', 'reaxff3_angle5', 'reaxff3_angle6'],
+        'reaxff3_angle': [
+            'reaxff3_angle1', 'reaxff3_angle2', 'reaxff3_angle3', 'reaxff3_angle4', 'reaxff3_angle5', 'reaxff3_angle6'
+        ],
         # TODO reaxff3_angle6 is taken from a global value, if not present,
         # need to find out what this value is, so it can be set in the input data
         'reaxff3_penalty': ['reaxff3_penalty'],
@@ -488,8 +499,13 @@ def write_gulp_format(data, fitting_data=None, global_val_fmt='{:.5E}', species_
         'reaxff3_conjugation': lambda s: abs(s['reaxff3_coa1']) > 1.0E-4
     }
 
-    field_lines, num_vars, num_fit = create_gulp_fields(
-        data, '3body', fields, species_val_fmt, conditions, arguments=arguments, fitting_data=fitting_data)
+    field_lines, num_vars, num_fit = create_gulp_fields(data,
+                                                        '3body',
+                                                        fields,
+                                                        species_val_fmt,
+                                                        conditions,
+                                                        arguments=arguments,
+                                                        fitting_data=fitting_data)
     total_flags += num_vars
     fitting_flags += num_fit
     output.extend(field_lines)
@@ -502,14 +518,19 @@ def write_gulp_format(data, fitting_data=None, global_val_fmt='{:.5E}', species_
     output.append('#')
 
     fields = {
-        'reaxff4_torsion':
-        ['reaxff4_torsion1', 'reaxff4_torsion2', 'reaxff4_torsion3', 'reaxff4_torsion4', 'reaxff4_torsion5'],
+        'reaxff4_torsion': [
+            'reaxff4_torsion1', 'reaxff4_torsion2', 'reaxff4_torsion3', 'reaxff4_torsion4', 'reaxff4_torsion5'
+        ],
     }
 
     arguments = {'reaxff4_torsion': ['kcal']}
 
-    field_lines, num_vars, num_fit = create_gulp_fields(
-        data, '4body', fields, species_val_fmt, arguments=arguments, fitting_data=fitting_data)
+    field_lines, num_vars, num_fit = create_gulp_fields(data,
+                                                        '4body',
+                                                        fields,
+                                                        species_val_fmt,
+                                                        arguments=arguments,
+                                                        fitting_data=fitting_data)
     total_flags += num_vars
     fitting_flags += num_fit
     output.extend(field_lines)

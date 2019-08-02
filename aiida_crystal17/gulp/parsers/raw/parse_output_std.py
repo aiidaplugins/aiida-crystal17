@@ -199,8 +199,8 @@ def parse_file(file_obj, parser_class=None, single_point_only=False):
                     output['total_time_second'] = float(mem_match[0])
                 continue
 
-    return output, assign_exit_code(
-        output.get('opt_succeeded', None), output['errors'], output['parser_errors'], single_point_only)
+    return output, assign_exit_code(output.get('opt_succeeded', None), output['errors'], output['parser_errors'],
+                                    single_point_only)
 
 
 def assign_exit_code(opt_succeeded, gulp_errors, parser_errors, single_point_only):

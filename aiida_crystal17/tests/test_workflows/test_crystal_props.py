@@ -67,8 +67,8 @@ def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_s
         # TODO this is required while awaiting fix for aiidateam/aiida-core#3143
         del CryPropertiesWorkChain._spec
 
-    remote_folder = RemoteData(
-        remote_path=os.path.join(TEST_FILES, 'doss', 'mgo_sto3g_scf'), computer=db_test_app.get_or_create_computer())
+    remote_folder = RemoteData(remote_path=os.path.join(TEST_FILES, 'doss', 'mgo_sto3g_scf'),
+                               computer=db_test_app.get_or_create_computer())
 
     wc_builder = CryPropertiesWorkChain.get_builder()
     wc_builder.wf_folder = remote_folder
@@ -111,16 +111,20 @@ def test_run_prop_mgo_with_scf(db_test_app, get_structure_and_symm, upload_basis
         mark_completed=True,
         remote_path=os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_scf'),
         input_nodes={
-            'parameters': CryInputParamsData(data={
-                'title': 'MgO Bulk',
-                'scf': {
-                    'k_points': (8, 8),
-                    'post_scf': ['PPAN']
-                }
-            }),
-            'code': db_test_app.get_or_create_code('crystal17.main'),
-            'structure': structure,
-            'symmetry': symmetry,
+            'parameters':
+                CryInputParamsData(data={
+                    'title': 'MgO Bulk',
+                    'scf': {
+                        'k_points': (8, 8),
+                        'post_scf': ['PPAN']
+                    }
+                }),
+            'code':
+                db_test_app.get_or_create_code('crystal17.main'),
+            'structure':
+                structure,
+            'symmetry':
+                symmetry,
             'basissets': {k: v for k, v in upload_basis_set_family().items() if k in ['Mg', 'O']}
         },
         options=db_test_app.get_default_metadata()['options'])

@@ -175,9 +175,9 @@ def _read_dft_block(lines, output_dict, schema):
         line = _pop_line(lines)
         if line == 'SPIN':
             output_dict['scf.dft.SPIN'] = True
-        elif line in get_keys(
-                schema, ['properties', 'scf', 'properties', 'dft', 'properties', 'xc', 'oneOf', 1, 'enum'],
-                raise_error=True):
+        elif line in get_keys(schema,
+                              ['properties', 'scf', 'properties', 'dft', 'properties', 'xc', 'oneOf', 1, 'enum'],
+                              raise_error=True):
             output_dict['scf.dft.xc'] = line
         elif line == 'CORRELAT':
             line = _pop_line(lines)
@@ -188,16 +188,15 @@ def _read_dft_block(lines, output_dict, schema):
         elif line == 'LSRSH-PBE':
             line = _pop_line(lines)
             output_dict['scf.dft.xc.LSRSH-PBE'] = _split_line(line)
-        elif line in get_keys(
-                schema, ['properties', 'scf', 'properties', 'dft', 'properties', 'grid', 'enum'], raise_error=True):
+        elif line in get_keys(schema, ['properties', 'scf', 'properties', 'dft', 'properties', 'grid', 'enum'],
+                              raise_error=True):
             output_dict['scf.dft.grid'] = line
-        elif line in get_keys(
-                schema, ['properties', 'scf', 'properties', 'dft', 'properties', 'grid_weights', 'enum'],
-                raise_error=True):
+        elif line in get_keys(schema, ['properties', 'scf', 'properties', 'dft', 'properties', 'grid_weights', 'enum'],
+                              raise_error=True):
             output_dict['scf.dft.grid_weights'] = line
-        elif line in get_keys(
-                schema, ['properties', 'scf', 'properties', 'dft', 'properties', 'numerical', 'properties'],
-                raise_error=True).keys():
+        elif line in get_keys(schema,
+                              ['properties', 'scf', 'properties', 'dft', 'properties', 'numerical', 'properties'],
+                              raise_error=True).keys():
             key = line
             line = _pop_line(lines)
             output_dict['scf.dft.numerical.{}'.format(key)] = _split_line(line)
@@ -290,9 +289,9 @@ def _read_geom_block(lines, output_dict, schema):
                 'MOLEBSSE', 'ATOMBSSE'
         ]:
             raise NotImplementedError('Geometry Block: {}'.format(line))
-        elif line in get_keys(
-                schema, ['properties', 'geometry', 'properties', 'info_print', 'items', 'enum'], raise_error=True):
+        elif line in get_keys(schema, ['properties', 'geometry', 'properties', 'info_print', 'items', 'enum'],
+                              raise_error=True):
             _append_key(output_dict, 'geometry.info_print', line)
-        elif line in get_keys(
-                schema, ['properties', 'geometry', 'properties', 'info_external', 'items', 'enum'], raise_error=True):
+        elif line in get_keys(schema, ['properties', 'geometry', 'properties', 'info_external', 'items', 'enum'],
+                              raise_error=True):
             _append_key(output_dict, 'geometry.info_external', line)

@@ -3,8 +3,7 @@ from textwrap import dedent
 import six
 
 from aiida_crystal17.gulp.potentials.common import filter_by_species
-from aiida_crystal17.gulp.potentials.raw_reaxff import (
-    read_lammps_format, write_lammps_format, write_gulp_format)
+from aiida_crystal17.gulp.potentials.raw_reaxff import (read_lammps_format, write_lammps_format, write_gulp_format)
 
 lammps_file = dedent("""\
         Reactive MD-force field: Cr/O/Fe/S/C/H force field 2014
@@ -321,7 +320,7 @@ def test_write_gulp_format(file_regression):
 
 def test_write_gulp_format_with_filter(data_regression, file_regression):
     data = read_lammps_format(lammps_file.splitlines())
-    data = filter_by_species(data, ["Fe core", "S core"])
+    data = filter_by_species(data, ['Fe core', 'S core'])
     data_regression.check(data)
     output, nflags, nfit = write_gulp_format(data)
     file_regression.check(six.ensure_text(output))
@@ -329,21 +328,21 @@ def test_write_gulp_format_with_filter(data_regression, file_regression):
 
 def test_write_gulp_format_with_fitting(data_regression, file_regression):
     data = read_lammps_format(lammps_file.splitlines())
-    data = filter_by_species(data, ["Fe core", "S core"])
+    data = filter_by_species(data, ['Fe core', 'S core'])
     fitting_data = {
-        "species": ["Fe core", "S core"],
-        "global": ["reaxff0_val7"],
-        "1body": {
-            "0": ["reaxff1_valence3"]
+        'species': ['Fe core', 'S core'],
+        'global': ['reaxff0_val7'],
+        '1body': {
+            '0': ['reaxff1_valence3']
         },
-        "2body": {
-            "0-1": ["reaxff2_bond3"]
+        '2body': {
+            '0-1': ['reaxff2_bond3']
         },
-        "3body": {
-            "0-1-1": ["reaxff3_penalty"]
+        '3body': {
+            '0-1-1': ['reaxff3_penalty']
         },
-        "4body": {
-            "1-1-1-1": ["reaxff4_torsion4"]
+        '4body': {
+            '1-1-1-1': ['reaxff4_torsion4']
         }
     }
     output, nflags, nfit = write_gulp_format(data, fitting_data)

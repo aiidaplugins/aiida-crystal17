@@ -7,13 +7,13 @@ from aiida_crystal17.parsers.raw.parse_fort34 import (parse_fort34, gui_file_wri
                                                       get_crystal_type_code, structure_to_symmetry)
 
 
-@pytest.mark.parametrize(
-    'gui_filename,num_symops,space_group',
-    (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
-     ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129), ('marcasite.crystal.gui', 8, 58),
-     ('pyrite.crystal.gui', 24, 205), ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15),
-     ('troilite-hex-p63mc.crystal.gui', 12, 186), ('troilite-hex-p63mmc.crystal.gui', 24, 194),
-     ('troilite-hexagonal.crystal.gui', 12, 190), ('troilite-mnp.crystal.gui', 8, 62)))
+@pytest.mark.parametrize('gui_filename,num_symops,space_group',
+                         (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
+                          ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129),
+                          ('marcasite.crystal.gui', 8, 58), ('pyrite.crystal.gui', 24, 205),
+                          ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15), ('troilite-hex-p63mc.crystal.gui', 12, 186),
+                          ('troilite-hex-p63mmc.crystal.gui', 24, 194), ('troilite-hexagonal.crystal.gui', 12, 190),
+                          ('troilite-mnp.crystal.gui', 8, 62)))
 def test_gui_file_read(gui_filename, num_symops, space_group):
     path = os.path.join(TEST_FILES, 'gui', 'out', gui_filename)
     with open(path) as handle:
@@ -38,13 +38,13 @@ def test_symmetry_codes(hall_number, centering_code, crystal_code):
     assert get_centering_code(hall_number) == centering_code
 
 
-@pytest.mark.parametrize(
-    'gui_filename,num_symops,space_group',
-    (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
-     ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129), ('marcasite.crystal.gui', 8, 58),
-     ('pyrite.crystal.gui', 24, 205), ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15),
-     ('troilite-hex-p63mc.crystal.gui', 12, 186), ('troilite-hex-p63mmc.crystal.gui', 24, 194),
-     ('troilite-hexagonal.crystal.gui', 12, 190), ('troilite-mnp.crystal.gui', 8, 62)))
+@pytest.mark.parametrize('gui_filename,num_symops,space_group',
+                         (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
+                          ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129),
+                          ('marcasite.crystal.gui', 8, 58), ('pyrite.crystal.gui', 24, 205),
+                          ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15), ('troilite-hex-p63mc.crystal.gui', 12, 186),
+                          ('troilite-hex-p63mmc.crystal.gui', 24, 194), ('troilite-hexagonal.crystal.gui', 12, 190),
+                          ('troilite-mnp.crystal.gui', 8, 62)))
 def test_structure_to_symmetry(db_test_app, gui_filename, num_symops, space_group):
     """ we test that we can go round trip,
     reading a gui file and comparing the parsed symmetry to the computed one
@@ -61,13 +61,13 @@ def test_structure_to_symmetry(db_test_app, gui_filename, num_symops, space_grou
     assert symmdata['centring_code'] == symmdata2['centring_code']
 
 
-@pytest.mark.parametrize(
-    'gui_filename,num_symops,space_group',
-    (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
-     ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129), ('marcasite.crystal.gui', 8, 58),
-     ('pyrite.crystal.gui', 24, 205), ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15),
-     ('troilite-hex-p63mc.crystal.gui', 12, 186), ('troilite-hex-p63mmc.crystal.gui', 24, 194),
-     ('troilite-hexagonal.crystal.gui', 12, 190), ('troilite-mnp.crystal.gui', 8, 62)))
+@pytest.mark.parametrize('gui_filename,num_symops,space_group',
+                         (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
+                          ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129),
+                          ('marcasite.crystal.gui', 8, 58), ('pyrite.crystal.gui', 24, 205),
+                          ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15), ('troilite-hex-p63mc.crystal.gui', 12, 186),
+                          ('troilite-hex-p63mmc.crystal.gui', 24, 194), ('troilite-hexagonal.crystal.gui', 12, 190),
+                          ('troilite-mnp.crystal.gui', 8, 62)))
 def test_structure_to_symmetry_operations(db_test_app, gui_filename, num_symops, space_group):
     """ we test that we can go round trip,
     reading a gui file and comparing the parsed symmetry to the computed one

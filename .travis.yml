@@ -16,9 +16,7 @@ addons:
 matrix:
   include:
     - python: 3.6
-      env: TEST_TYPE="code-style"
-    - python: 3.6
-      env: TEST_TYPE="version"
+      env: TEST_TYPE="pre-commit"
     - python: 3.6
       env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
     - python: 2.7
@@ -27,30 +25,27 @@ matrix:
       env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
     - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
+    - python: 3.6
+      env: TEST_TYPE="conda"
 
   # allow_failures:
   #   - env: TEST_TYPE="docs" READTHEDOCS="True"
 
 install:
 # Upgrade pip setuptools and wheel
-- pip install -U "pip<19" wheel setuptools "reentry>=1.3"
+- pip install --upgrade pip wheel setuptools "reentry>=1.3"
+- pip install numpy==1.16.4 # otherwise numpy 1.17 is installed, which is not compatible with aiida-core==1.0.0b5
 - |
-    if [[ "$TEST_TYPE" == "version" ]]; then
-      pip install click
-    fi
-- |
-    if [[ "$TEST_TYPE" == "code-style" ]]; then
-      pip install "flake8<3.8.0,>=3.7.0"
+    if [[ "$TEST_TYPE" == "pre-commit" ]]; then
+      pip install -e .[code_style]
     fi
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
-      pip uninstall -y numpy
       pip install -e .[testing]
       pip install coveralls
     fi
 - |
     if [[ "$TEST_TYPE" == "docs" ]]; then
-      pip uninstall -y numpy
       pip install -e .[docs]
       url="https://github.com/jgm/pandoc/releases/tag/2.6"
       path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
@@ -58,6 +53,19 @@ install:
       file=${path##*/}
       wget $downloadUrl && sudo dpkg -i $file
     fi
+- |
+    if [[ "$TEST_TYPE" == "conda" ]]; then
+      # See https://conda.io/docs/user-guide/tasks/use-conda-with-travis-ci.html#the-travis-yml-file
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+      bash miniconda.sh -b -p $HOME/miniconda
+      export PATH="$HOME/miniconda/bin:$PATH"
+      hash -r
+      conda config --set always_yes yes --set changeps1 no
+      conda update -q conda
+      # Useful for debugging any issues with conda
+      conda info -a
+    fi
+
 # - |
 #   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
 #     cur_path="$(pwd)"
@@ -80,8 +88,8 @@ script:
       pytest -v --cov=aiida_crystal17 --cov=examples --cov-config .coveragerc --cov-report= aiida_crystal17
   fi
 - |
-  if [[ "$TEST_TYPE" == "code-style" ]]; then
-    flake8 .
+  if [[ "$TEST_TYPE" == "pre-commit" ]]; then
+    pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
   fi
 - |
   if [[ "$TEST_TYPE" == "docs" ]]; then
@@ -89,12 +97,20 @@ script:
     make
   fi
 - |
-  if [[ "$TEST_TYPE" == "version" ]]; then
-    python ./.travis-data/check_version.py version
+  if [[ "$TEST_TYPE" == "conda" ]]; then
+    conda env create -f conda_dev_env.yml -n test-environment python=$TRAVIS_PYTHON_VERSION
+    conda list -n test-environment
+    source activate test-environment
+    pip install --no-deps -e .
+    reentry scan
+    verdi data crystal17.parse --help
   fi
 
 after_success:
-- coveralls
+- |
+  if [[ "$TEST_TYPE" == "pytest" ]]; then
+      coveralls
+  fi
 
 deploy:
   - provider: pypi

@@ -114,11 +114,13 @@ class PotentialWriterLJ(PotentialWriterAbstract):
                     lj_n = int(meta_values[2])
                 except ValueError:
                     raise IOError('expected `lennard` option to have only (integer) m & n variables: {}'.format(line))
-                lineno, sset, results = self.read_atom_section(
-                    lines, lineno + 1, number_atoms=2, global_args={
-                        'lj_m': lj_m,
-                        'lj_n': lj_n
-                    })
+                lineno, sset, results = self.read_atom_section(lines,
+                                                               lineno + 1,
+                                                               number_atoms=2,
+                                                               global_args={
+                                                                   'lj_m': lj_m,
+                                                                   'lj_n': lj_n
+                                                               })
                 symbol_set.update(sset)
                 terms.update(results)
             lineno += 1

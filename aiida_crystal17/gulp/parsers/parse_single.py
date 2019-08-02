@@ -48,8 +48,9 @@ class GulpSingleParser(Parser):
         self.logger.info('parsing main out file')
         with output_folder.open(mainout_file) as handle:
             try:
-                result_dict, exit_code = parse_file(
-                    handle, parser_class=self.__class__.__name__, single_point_only=True)
+                result_dict, exit_code = parse_file(handle,
+                                                    parser_class=self.__class__.__name__,
+                                                    single_point_only=True)
             except Exception:
                 traceback.print_exc()
                 return self.exit_codes.ERROR_PARSING_STDOUT

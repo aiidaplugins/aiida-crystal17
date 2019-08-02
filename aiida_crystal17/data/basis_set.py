@@ -244,8 +244,11 @@ class BasisSetData(Data):
             with io.open(f.name, 'w', encoding='utf8') as fobj:
                 fobj.writelines(content)
 
-            super(BasisSetData, self).put_object_from_file(
-                path=f.name, key=filename, mode='w', encoding='utf8', force=False)
+            super(BasisSetData, self).put_object_from_file(path=f.name,
+                                                           key=filename,
+                                                           mode='w',
+                                                           encoding='utf8',
+                                                           force=False)
 
         self.set_attribute('filename', filename)
 
@@ -654,8 +657,9 @@ class BasisSetData(Data):
         nfiles = len(files)
 
         automatic_user = User.objects.get_default()
-        group, group_created = Group.objects.get_or_create(
-            label=group_name, type_string=BASISGROUP_TYPE, user=automatic_user)
+        group, group_created = Group.objects.get_or_create(label=group_name,
+                                                           type_string=BASISGROUP_TYPE,
+                                                           user=automatic_user)
 
         if group.user.email != automatic_user.email:
             raise UniquenessError('There is already a BasisFamily group with name {}'

@@ -3,6 +3,7 @@
 [![Docs status](https://readthedocs.org/projects/aiida-crystal17/badge)](http://aiida-crystal17.readthedocs.io/)
 [![PyPI](https://img.shields.io/pypi/v/aiida-crystal17.svg)](https://pypi.python.org/pypi/aiida-crystal17/)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/aiida-crystal17/badges/version.svg)](https://anaconda.org/conda-forge/aiida-crystal17)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3357615.svg)](https://doi.org/10.5281/zenodo.3357615)
 
 # aiida-crystal17
 

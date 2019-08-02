@@ -547,10 +547,9 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 raise IOError('was expecting A B C ALPHA BETA GAMMA on line:'
                               ' {0}, got: {1}'.format(initial_lineno + 1, lines[initial_lineno + 1]))
             data[field] = edict.merge([
-                data.get(field, {}),
-                {
+                data.get(field, {}), {
                     'cell_parameters':
-                    dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], split_numbers(lines[initial_lineno + 2])))
+                        dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], split_numbers(lines[initial_lineno + 2])))
                 }
             ])
         elif fnmatch(line, pattern2):
@@ -563,8 +562,8 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                     periodic = [True, False, False]
                 elif fnmatch(lines[initial_lineno + 1].strip(), 'ATOM*X(ANGSTROM)*Y(ANGSTROM)*Z(ANGSTROM)*'):
                     periodic = [False, False, False]
-                    cell_params = dict(
-                        zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], [500., 500., 500., 90., 90., 90.]))
+                    cell_params = dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'],
+                                           [500., 500., 500., 90., 90., 90.]))
                     data[field] = edict.merge([data.get(field, {}), {'cell_parameters': cell_params}])
                 else:
                     raise IOError('was expecting ATOM X Y Z (in units of ANGSTROM or fractional) on line:'
@@ -851,9 +850,9 @@ def parse_optimisation(lines, initial_lineno):
         if 'CRYSTAL - SCF - TYPE OF CALCULATION :' in line:
             if scf_start_no is not None:
                 return ParsedSection(
-                    curr_lineno,
-                    opt_cycles, "found two lines starting scf ('CRYSTAL - SCF - ') in opt step {0}:".format(
-                        len(opt_cycles)) + ' {0} and {1}'.format(scf_start_no, curr_lineno))
+                    curr_lineno, opt_cycles,
+                    "found two lines starting scf ('CRYSTAL - SCF - ') in opt step {0}:".format(len(opt_cycles)) +
+                    ' {0} and {1}'.format(scf_start_no, curr_lineno))
             scf_start_no = curr_lineno
         elif 'SCF ENDED' in line:
             if 'CONVERGE' not in line:
@@ -953,8 +952,8 @@ def parse_band_gaps(lines, initial_lineno):
                                      'found a band gap of unknown format at line {0}: {1}'.format(curr_lineno, line))
             if bgtype in band_gaps:
                 return ParsedSection(
-                    initial_lineno, band_gaps, 'band gap data already contains {0} value before line {1}: {2}'.format(
-                        bgtype, curr_lineno, line))
+                    initial_lineno, band_gaps,
+                    'band gap data already contains {0} value before line {1}: {2}'.format(bgtype, curr_lineno, line))
             band_gaps[bgtype] = bgvalue
 
     return ParsedSection(initial_lineno, band_gaps)
