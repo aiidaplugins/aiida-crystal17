@@ -31,21 +31,19 @@ matrix:
 
 install:
 # Upgrade pip setuptools and wheel
-- pip install -U "pip<19" wheel setuptools "reentry>=1.3"
+- pip install --upgrade pip wheel setuptools "reentry>=1.3"
+- pip uninstall -y numpy
 - |
     if [[ "$TEST_TYPE" == "pre-commit" ]]; then
-      pip uninstall -y numpy
       pip install -e .[code_style]
     fi
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
-      pip uninstall -y numpy
       pip install -e .[testing]
       pip install coveralls
     fi
 - |
     if [[ "$TEST_TYPE" == "docs" ]]; then
-      pip uninstall -y numpy
       pip install -e .[docs]
       url="https://github.com/jgm/pandoc/releases/tag/2.6"
       path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
@@ -85,7 +83,10 @@ script:
   fi
 
 after_success:
-- coveralls
+- |
+  if [[ "$TEST_TYPE" == "pytest" ]]; then
+      coveralls
+  fi
 
 deploy:
   - provider: pypi
