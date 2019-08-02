@@ -46,60 +46,56 @@ class GulpAbstractCalculation(CalcJob):
         spec.input('metadata.options.output_main_file_name', valid_type=six.string_types, default='main.gout')
         spec.input('metadata.options.output_stderr_file_name', valid_type=six.string_types, default='main_stderr.txt')
 
-        spec.input(
-            'structure',
-            valid_type=DataFactory('structure'),
-            required=True,
-            help=('atomic structure used to create the '
-                  'geometry section of .gin file content.'))
-        spec.input(
-            'potential',
-            valid_type=DataFactory('gulp.potential'),
-            required=True,
-            validator=potential_validator,
-            help=('parameters to create the '
-                  'potential section of the .gin file content.'))
-        spec.input(
-            'parameters',
-            valid_type=DataFactory('dict'),
-            required=False,
-            help=('additional input parameters '
-                  'to create the .gin file content.'))
+        spec.input('structure',
+                   valid_type=DataFactory('structure'),
+                   required=True,
+                   help=('atomic structure used to create the '
+                         'geometry section of .gin file content.'))
+        spec.input('potential',
+                   valid_type=DataFactory('gulp.potential'),
+                   required=True,
+                   validator=potential_validator,
+                   help=('parameters to create the '
+                         'potential section of the .gin file content.'))
+        spec.input('parameters',
+                   valid_type=DataFactory('dict'),
+                   required=False,
+                   help=('additional input parameters '
+                         'to create the .gin file content.'))
 
         # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
 
         # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
-        spec.exit_code(
-            200, 'ERROR_NO_RETRIEVED_FOLDER', message='The retrieved folder data node could not be accessed.')
+        spec.exit_code(200,
+                       'ERROR_NO_RETRIEVED_FOLDER',
+                       message='The retrieved folder data node could not be accessed.')
         spec.exit_code(210, 'ERROR_OUTPUT_FILE_MISSING', message='the main output file was not found')
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
-        spec.exit_code(
-            300, 'ERROR_PARSING_STDOUT', message=('An error was flagged trying to parse the '
-                                                  'main gulp output file'))
+        spec.exit_code(300,
+                       'ERROR_PARSING_STDOUT',
+                       message=('An error was flagged trying to parse the '
+                                'main gulp output file'))
         spec.exit_code(301, 'ERROR_STDOUT_EMPTY', message=('The stdout file is empty'))
 
         # Significant errors but calculation can be used to restart
-        spec.exit_code(
-            400, 'ERROR_GULP_UNHANDLED', message='The main gulp output file flagged an error not handled elsewhere')
-        spec.exit_code(
-            410,
-            'ERROR_OPTIMISE_UNSUCCESFUL',
-            message='The main gulp output file did not signal that an expected optimisation completed')
-        spec.exit_code(
-            411,
-            'ERROR_OPTIMISE_MAX_ATTEMPTS',
-            message='The main gulp output file did not signal that an expected optimisation completed')
-        spec.exit_code(
-            412,
-            'ERROR_OPTIMISE_MAX_CALLS',
-            message='The main gulp output file did not signal that an expected optimisation completed')
+        spec.exit_code(400,
+                       'ERROR_GULP_UNHANDLED',
+                       message='The main gulp output file flagged an error not handled elsewhere')
+        spec.exit_code(410,
+                       'ERROR_OPTIMISE_UNSUCCESFUL',
+                       message='The main gulp output file did not signal that an expected optimisation completed')
+        spec.exit_code(411,
+                       'ERROR_OPTIMISE_MAX_ATTEMPTS',
+                       message='The main gulp output file did not signal that an expected optimisation completed')
+        spec.exit_code(412,
+                       'ERROR_OPTIMISE_MAX_CALLS',
+                       message='The main gulp output file did not signal that an expected optimisation completed')
 
-        spec.output(
-            cls.link_output_results,
-            valid_type=DataFactory('dict'),
-            required=True,
-            help='the data extracted from the main output file')
+        spec.output(cls.link_output_results,
+                    valid_type=DataFactory('dict'),
+                    required=True,
+                    help='the data extracted from the main output file')
         spec.default_output_node = cls.link_output_results
 
     def prepare_for_submission(self, tempfolder):

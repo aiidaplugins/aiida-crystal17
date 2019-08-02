@@ -53,8 +53,8 @@ def test_create_group(db_test_app):
     basisset_data_cls = DataFactory('crystal17.basisset')
     upload_basisset_family = basisset_data_cls.upload_basisset_family
 
-    nfiles, nuploaded = upload_basisset_family(
-        os.path.join(TEST_FILES, 'basis_sets', 'sto3g'), 'sto3g', 'group of sto3g basis sets')
+    nfiles, nuploaded = upload_basisset_family(os.path.join(TEST_FILES, 'basis_sets', 'sto3g'), 'sto3g',
+                                               'group of sto3g basis sets')
 
     assert (nfiles, nuploaded) == (3, 3)
 
@@ -68,17 +68,15 @@ def test_create_group(db_test_app):
 
     # try uploading the files to a second group
     with pytest.raises(ValueError):
-        upload_basisset_family(
-            os.path.join(TEST_FILES, 'basis_sets', 'sto3g'),
-            'another_sto3g',
-            'another group of sto3g basis sets',
-            stop_if_existing=True)
+        upload_basisset_family(os.path.join(TEST_FILES, 'basis_sets', 'sto3g'),
+                               'another_sto3g',
+                               'another group of sto3g basis sets',
+                               stop_if_existing=True)
 
-    nfiles, nuploaded = upload_basisset_family(
-        os.path.join(TEST_FILES, 'basis_sets', 'sto3g'),
-        'another_sto3g',
-        'another group of sto3g basis sets',
-        stop_if_existing=False)
+    nfiles, nuploaded = upload_basisset_family(os.path.join(TEST_FILES, 'basis_sets', 'sto3g'),
+                                               'another_sto3g',
+                                               'another group of sto3g basis sets',
+                                               stop_if_existing=False)
     assert (nfiles, nuploaded) == (3, 0)
 
 
@@ -87,15 +85,16 @@ def test_bases_from_struct(db_test_app):
     basisset_data_cls = DataFactory('crystal17.basisset')
     upload_basisset_family = basisset_data_cls.upload_basisset_family
 
-    nfiles, nuploaded = upload_basisset_family(
-        os.path.join(TEST_FILES, 'basis_sets', 'sto3g'), 'sto3g', 'group of sto3g basis sets')
+    nfiles, nuploaded = upload_basisset_family(os.path.join(TEST_FILES, 'basis_sets', 'sto3g'), 'sto3g',
+                                               'group of sto3g basis sets')
 
     # MgO
     import ase  # noqa: F401
     from ase.spacegroup import crystal
-    atoms = crystal(
-        symbols=[12, 8], basis=[[0, 0, 0], [0.5, 0.5, 0.5]], spacegroup=225, cellpar=[4.21, 4.21, 4.21, 90, 90,
-                                                                                      90])  # type: ase.Atoms
+    atoms = crystal(symbols=[12, 8],
+                    basis=[[0, 0, 0], [0.5, 0.5, 0.5]],
+                    spacegroup=225,
+                    cellpar=[4.21, 4.21, 4.21, 90, 90, 90])  # type: ase.Atoms
 
     # atoms[0].tag = 1
     # atoms[1].tag = 1

@@ -42,15 +42,14 @@ def test_init_steps(db_test_app, get_structure_and_symm, upload_basis_set_family
 
     # set up calculation
     process_class = code.get_builder().process_class
-    calc_builder = process_class.create_builder(
-        params,
-        instruct,
-        'sto3g',
-        symmetry=symmetry,
-        kinds=kind_data,
-        code=code,
-        metadata=db_test_app.get_default_metadata(),
-        unflatten=True)
+    calc_builder = process_class.create_builder(params,
+                                                instruct,
+                                                'sto3g',
+                                                symmetry=symmetry,
+                                                kinds=kind_data,
+                                                code=code,
+                                                metadata=db_test_app.get_default_metadata(),
+                                                unflatten=True)
 
     wc_builder = CryMainBaseWorkChain.get_builder()
     wc_builder.cry = dict(calc_builder)
@@ -100,15 +99,14 @@ def test_base_nio_afm_scf_maxcyc(db_test_app, get_structure_and_symm, upload_bas
 
     # set up calculation
     process_class = code.get_builder().process_class
-    calc_builder = process_class.create_builder(
-        params,
-        instruct,
-        'sto3g',
-        symmetry=symmetry,
-        kinds=kind_data,
-        code=code,
-        metadata=db_test_app.get_default_metadata(),
-        unflatten=True)
+    calc_builder = process_class.create_builder(params,
+                                                instruct,
+                                                'sto3g',
+                                                symmetry=symmetry,
+                                                kinds=kind_data,
+                                                code=code,
+                                                metadata=db_test_app.get_default_metadata(),
+                                                unflatten=True)
 
     wc_builder = CryMainBaseWorkChain.get_builder()
     wc_builder.cry = dict(calc_builder)

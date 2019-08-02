@@ -41,57 +41,50 @@ class CryMainCalculation(CryAbstractCalculation):
 
         super(CryMainCalculation, cls).define(spec)
 
-        spec.input(
-            'parameters',
-            valid_type=DataFactory('crystal17.parameters'),
-            required=True,
-            serializer=lambda x: DataFactory('crystal17.parameters')(data=x),
-            help='the input parameters to create the .d12 file content.')
-        spec.input(
-            'structure',
-            valid_type=StructureData,
-            required=True,
-            help='structure used to construct the input fort.34 (gui) file')
-        spec.input(
-            'symmetry',
-            valid_type=DataFactory('crystal17.symmetry'),
-            required=False,
-            help=('the symmetry of the structure, '
-                  'used to construct the input .gui file (fort.34)'))
-        spec.input(
-            'kinds',
-            valid_type=DataFactory('crystal17.kinds'),
-            required=False,
-            help=('additional structure kind specific data '
-                  '(e.g. initial spin)'))
-        spec.input_namespace(
-            'basissets',
-            valid_type=DataFactory('crystal17.basisset'),
-            dynamic=True,
-            help=('Use a node for the basis set of one of '
-                  'the elements in the structure. You have to pass '
-                  "an additional parameter ('element') specifying the "
-                  'atomic element symbol for which you want to use this '
-                  'basis set.'))
+        spec.input('parameters',
+                   valid_type=DataFactory('crystal17.parameters'),
+                   required=True,
+                   serializer=lambda x: DataFactory('crystal17.parameters')(data=x),
+                   help='the input parameters to create the .d12 file content.')
+        spec.input('structure',
+                   valid_type=StructureData,
+                   required=True,
+                   help='structure used to construct the input fort.34 (gui) file')
+        spec.input('symmetry',
+                   valid_type=DataFactory('crystal17.symmetry'),
+                   required=False,
+                   help=('the symmetry of the structure, '
+                         'used to construct the input .gui file (fort.34)'))
+        spec.input('kinds',
+                   valid_type=DataFactory('crystal17.kinds'),
+                   required=False,
+                   help=('additional structure kind specific data '
+                         '(e.g. initial spin)'))
+        spec.input_namespace('basissets',
+                             valid_type=DataFactory('crystal17.basisset'),
+                             dynamic=True,
+                             help=('Use a node for the basis set of one of '
+                                   'the elements in the structure. You have to pass '
+                                   "an additional parameter ('element') specifying the "
+                                   'atomic element symbol for which you want to use this '
+                                   'basis set.'))
 
-        spec.input(
-            'wf_folder',
-            valid_type=RemoteData,
-            required=False,
-            help=('An optional working directory, '
-                  'of a previously completed calculation, '
-                  'containing a fort.9 wavefunction file to restart from'))
+        spec.input('wf_folder',
+                   valid_type=RemoteData,
+                   required=False,
+                   help=('An optional working directory, '
+                         'of a previously completed calculation, '
+                         'containing a fort.9 wavefunction file to restart from'))
 
         # TODO allow for input of HESSOPT.DAT file
 
         # Note: OPTINFO.DAT is also meant for geometry restarts (with RESTART),
         #       but on both crystal and Pcrystal, a read file error is encountered trying to use it.
 
-        spec.output(
-            'optimisation',
-            valid_type=TrajectoryData,
-            required=False,
-            help='atomic configurations, for each optimisation step')
+        spec.output('optimisation',
+                    valid_type=TrajectoryData,
+                    required=False,
+                    help='atomic configurations, for each optimisation step')
 
     # pylint: disable=too-many-arguments
     @classmethod
@@ -195,8 +188,9 @@ class CryMainCalculation(CryAbstractCalculation):
             # (fort.9 is present but empty if crystal is killed by SIGTERM (e.g. when walltime reached))
             # but this would involve connecting to the remote computer, which could fail
             # Ideally would want to use the process exponential backoff & pause functionality
-            remote_copy_list.append((self.inputs.wf_folder.computer.uuid,
-                                     os.path.join(self.inputs.wf_folder.get_remote_path(), 'fort.9'), 'fort.20'))
+            remote_copy_list.append(
+                (self.inputs.wf_folder.computer.uuid, os.path.join(self.inputs.wf_folder.get_remote_path(),
+                                                                   'fort.9'), 'fort.20'))
             restart_fnames.append('fort.20')
 
         # modify parameters to use restart files
@@ -210,8 +204,9 @@ class CryMainCalculation(CryAbstractCalculation):
         # create .d12 input file and place it in tempfolder
         atom_props = create_atom_properties(self.inputs.structure, self.inputs.get('kinds', None))
         try:
-            d12_filecontent = write_input(
-                parameters, [self.inputs.basissets[k] for k in sorted(self.inputs.basissets.keys())], atom_props)
+            d12_filecontent = write_input(parameters,
+                                          [self.inputs.basissets[k] for k in sorted(self.inputs.basissets.keys())],
+                                          atom_props)
         except (ValueError, NotImplementedError) as err:
             raise InputValidationError('an input file could not be created from the parameters: {}'.format(err))
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:

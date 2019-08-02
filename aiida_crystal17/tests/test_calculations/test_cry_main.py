@@ -28,22 +28,23 @@ def test_create_builder(db_test_app, get_structure):
     mg_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_Mg.basis'))
     o_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=DataFactory('dict')(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=DataFactory('dict')(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
     calc_cls = CalculationFactory('crystal17.main')
-    builder = calc_cls.create_builder(
-        inparams, instruct, {
-            'O': o_basis,
-            'Mg': mg_basis
-        }, symmetry=symmetry, unflatten=True)
+    builder = calc_cls.create_builder(inparams,
+                                      instruct, {
+                                          'O': o_basis,
+                                          'Mg': mg_basis
+                                      },
+                                      symmetry=symmetry,
+                                      unflatten=True)
 
     assert isinstance(builder.structure, orm.StructureData)
     builder.parameters
@@ -60,13 +61,12 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_reg
 
     instruct = get_structure('MgO')
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=orm.Dict(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=orm.Dict(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
@@ -121,13 +121,12 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_fam
         'spin_beta': [False, True, False]
     })
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=orm.Dict(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=orm.Dict(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
@@ -135,15 +134,14 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_fam
 
     # set up calculation
     process_class = code.get_builder().process_class
-    builder = process_class.create_builder(
-        params,
-        instruct,
-        'sto3g',
-        symmetry=symmetry,
-        kinds=kind_data,
-        code=code,
-        metadata=db_test_app.get_default_metadata(dry_run=True),
-        unflatten=True)
+    builder = process_class.create_builder(params,
+                                           instruct,
+                                           'sto3g',
+                                           symmetry=symmetry,
+                                           kinds=kind_data,
+                                           code=code,
+                                           metadata=db_test_app.get_default_metadata(dry_run=True),
+                                           unflatten=True)
 
     process_options = builder.process_class(inputs=builder).metadata.options
 
@@ -182,13 +180,12 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
         'spin_beta': [False, True, False]
     })
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=DataFactory('dict')(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=DataFactory('dict')(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
@@ -196,18 +193,17 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
 
     # set up calculation
     process_class = code.get_builder().process_class
-    builder = process_class.create_builder(
-        params,
-        instruct,
-        'sto3g',
-        symmetry=symmetry,
-        kinds=kind_data,
-        code=code,
-        metadata=db_test_app.get_default_metadata(with_mpi=True),
-        unflatten=True)
+    builder = process_class.create_builder(params,
+                                           instruct,
+                                           'sto3g',
+                                           symmetry=symmetry,
+                                           kinds=kind_data,
+                                           code=code,
+                                           metadata=db_test_app.get_default_metadata(with_mpi=True),
+                                           unflatten=True)
 
-    remote = orm.RemoteData(
-        computer=code.computer, remote_path=os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf_maxcyc'))
+    remote = orm.RemoteData(computer=code.computer,
+                            remote_path=os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf_maxcyc'))
     builder.wf_folder = remote
 
     process_options = builder.process_class(inputs=builder).metadata.options
@@ -247,13 +243,12 @@ def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, da
         'spin_beta': [False, True, False]
     })
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=orm.Dict(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=orm.Dict(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
@@ -271,8 +266,14 @@ def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, da
             'max_wallclock_seconds': 30,
         }
     }
-    builder = process_class.create_builder(
-        params, instruct, 'sto3g', symmetry=symmetry, kinds=kind_data, code=code, metadata=metadata, unflatten=True)
+    builder = process_class.create_builder(params,
+                                           instruct,
+                                           'sto3g',
+                                           symmetry=symmetry,
+                                           kinds=kind_data,
+                                           code=code,
+                                           metadata=metadata,
+                                           unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node
@@ -287,8 +288,8 @@ def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, da
 
 
 @pytest.mark.process_execution
-@pytest.mark.skipif(
-    os.environ.get('MOCK_CRY17_EXECUTABLES', True) != 'true', reason='the calculation takes about 50 minutes to run')
+@pytest.mark.skipif(os.environ.get('MOCK_CRY17_EXECUTABLES', True) != 'true',
+                    reason='the calculation takes about 50 minutes to run')
 def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation"""
@@ -314,13 +315,12 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family
         'spin_beta': [False, True, False]
     })
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=DataFactory('dict')(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=DataFactory('dict')(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
@@ -328,15 +328,14 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family
 
     # set up calculation
     process_class = code.get_builder().process_class
-    builder = process_class.create_builder(
-        params,
-        instruct,
-        'sto3g',
-        symmetry=symmetry,
-        kinds=kind_data,
-        code=code,
-        metadata=db_test_app.get_default_metadata(),
-        unflatten=True)
+    builder = process_class.create_builder(params,
+                                           instruct,
+                                           'sto3g',
+                                           symmetry=symmetry,
+                                           kinds=kind_data,
+                                           code=code,
+                                           metadata=db_test_app.get_default_metadata(),
+                                           unflatten=True)
 
     output = run_get_node(builder)
     calc_node = output.node
@@ -380,13 +379,12 @@ def test_run_nio_afm_failed_opt(db_test_app, get_structure, upload_basis_set_fam
         'spin_beta': [False, True, False]
     })
 
-    sym_calc = run_get_node(
-        WorkflowFactory('crystal17.sym3d'),
-        structure=instruct,
-        settings=DataFactory('dict')(dict={
-            'symprec': 0.01,
-            'compute_primitive': True
-        })).node
+    sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
+                            structure=instruct,
+                            settings=DataFactory('dict')(dict={
+                                'symprec': 0.01,
+                                'compute_primitive': True
+                            })).node
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
@@ -394,15 +392,14 @@ def test_run_nio_afm_failed_opt(db_test_app, get_structure, upload_basis_set_fam
 
     # set up calculation
     process_class = code.get_builder().process_class
-    builder = process_class.create_builder(
-        params,
-        instruct,
-        'sto3g',
-        symmetry=symmetry,
-        kinds=kind_data,
-        code=code,
-        metadata=db_test_app.get_default_metadata(),
-        unflatten=True)
+    builder = process_class.create_builder(params,
+                                           instruct,
+                                           'sto3g',
+                                           symmetry=symmetry,
+                                           kinds=kind_data,
+                                           code=code,
+                                           metadata=db_test_app.get_default_metadata(),
+                                           unflatten=True)
 
     outputs, calc_node = run_get_node(builder)
     # print(get_calcjob_report(calc_node))

@@ -235,8 +235,9 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
     """
     cell, int2kind_map = prepare_for_spglib(structure)
 
-    dataset = spglib.get_symmetry_dataset(
-        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    dataset = spglib.get_symmetry_dataset(cell,
+                                          symprec=symprec,
+                                          angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
 
     return dataset
 
@@ -266,8 +267,9 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
     """
     cell, int2kind_map = prepare_for_spglib(structure)
 
-    dataset = spglib.get_symmetry_dataset(
-        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    dataset = spglib.get_symmetry_dataset(cell,
+                                          symprec=symprec,
+                                          angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
 
     operations = []
     for rotation, trans in zip(dataset['rotations'], dataset['translations']):
@@ -340,8 +342,9 @@ def find_primitive(structure, symprec, angle_tolerance):
 
     cell, int2kind_map = prepare_for_spglib(structure)
 
-    new_cell = spglib.find_primitive(
-        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    new_cell = spglib.find_primitive(cell,
+                                     symprec=symprec,
+                                     angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
     if new_cell is None:
         raise ValueError('standardization of cell failed')
 
@@ -386,12 +389,11 @@ def standardize_cell(structure, symprec, angle_tolerance, to_primitive=False, no
 
     cell, int2kind_map = prepare_for_spglib(structure)
 
-    new_cell = spglib.standardize_cell(
-        cell,
-        to_primitive=to_primitive,
-        no_idealize=no_idealize,
-        symprec=symprec,
-        angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    new_cell = spglib.standardize_cell(cell,
+                                       to_primitive=to_primitive,
+                                       no_idealize=no_idealize,
+                                       symprec=symprec,
+                                       angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
     if new_cell is None:
         raise ValueError('standardization of cell failed')
 
@@ -667,12 +669,11 @@ def convert_structure(structure, out_type):
         if isinstance(structure, structure_data_cls):
             return structure.get_ase()
         if isinstance(structure, dict):
-            return Atoms(
-                numbers=structure['atomic_numbers'],
-                cell=structure['lattice'],
-                positions=structure['ccoords'],
-                pbc=structure['pbc'],
-                tags=structure.get('equivalent', None))
+            return Atoms(numbers=structure['atomic_numbers'],
+                         cell=structure['lattice'],
+                         positions=structure['ccoords'],
+                         pbc=structure['pbc'],
+                         tags=structure.get('equivalent', None))
         raise TypeError('structure: {}'.format(structure))
     elif out_type == 'aiida':
         if isinstance(structure, structure_data_cls):
@@ -691,12 +692,11 @@ def convert_structure(structure, out_type):
                     struct.append_site(Site(position=ccoord, kind_name=kind.name))
                 return struct
             else:
-                atoms = Atoms(
-                    numbers=structure['atomic_numbers'],
-                    cell=structure['lattice'],
-                    positions=structure['ccoords'],
-                    pbc=structure['pbc'],
-                    tags=structure.get('equivalent', None))
+                atoms = Atoms(numbers=structure['atomic_numbers'],
+                              cell=structure['lattice'],
+                              positions=structure['ccoords'],
+                              pbc=structure['pbc'],
+                              tags=structure.get('equivalent', None))
                 return structure_data_cls(ase=atoms)
     raise ValueError('out_type: {}'.format(out_type))
 

@@ -6,7 +6,7 @@ from aiida_crystal17.tests import TEST_FILES
 
 
 @pytest.mark.parametrize('plugin_name', [
-    "crystal17.fermi",
+    'crystal17.fermi',
 ])
 def test_missing_output(db_test_app, plugin_name):
 
@@ -21,7 +21,7 @@ def test_missing_output(db_test_app, plugin_name):
 
 
 @pytest.mark.parametrize('plugin_name', [
-    "crystal17.fermi",
+    'crystal17.fermi',
 ])
 def test_empty_output(db_test_app, plugin_name):
 
@@ -38,23 +38,19 @@ def test_empty_output(db_test_app, plugin_name):
 
 
 @pytest.mark.parametrize('plugin_name', [
-    "crystal17.fermi",
+    'crystal17.fermi',
 ])
 def test_success(db_test_app, plugin_name, data_regression):
 
     retrieved = FolderData()
-    retrieved.put_object_from_file(os.path.join(
-        TEST_FILES, "doss", "cubic_rocksalt_orbitals",
-        "cubic-rocksalt_2x1_pdos.doss.out"), "main.out")
+    retrieved.put_object_from_file(
+        os.path.join(TEST_FILES, 'doss', 'cubic_rocksalt_orbitals', 'cubic-rocksalt_2x1_pdos.doss.out'), 'main.out')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
 
     assert calcfunction.is_finished_ok, calcfunction.exception
-    assert "results" in results
-    assert "fermi_energy" in results
-    results_attr = {k: round(i, 7) if isinstance(i, float) else i
-                    for k, i in results["results"].attributes.items()}
-    data_regression.check({
-        "results": results_attr,
-        "fermi": round(results["fermi_energy"].value, 7)})
+    assert 'results' in results
+    assert 'fermi_energy' in results
+    results_attr = {k: round(i, 7) if isinstance(i, float) else i for k, i in results['results'].attributes.items()}
+    data_regression.check({'results': results_attr, 'fermi': round(results['fermi_energy'].value, 7)})

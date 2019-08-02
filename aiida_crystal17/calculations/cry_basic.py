@@ -37,14 +37,15 @@ class CryBasicCalculation(CryAbstractCalculation):
         # TODO this has to be fort.34 for crystal exec (but not for parser),
         # so maybe should be fixed
 
-        spec.input(
-            'input_file', valid_type=DataFactory('singlefile'), required=True, help='the input .d12 file content.')
-        spec.input(
-            'input_external',
-            valid_type=DataFactory('singlefile'),
-            required=False,
-            help=('optional input fort.34 (gui) file content '
-                  '(for use with EXTERNAL keyword).'))
+        spec.input('input_file',
+                   valid_type=DataFactory('singlefile'),
+                   required=True,
+                   help='the input .d12 file content.')
+        spec.input('input_external',
+                   valid_type=DataFactory('singlefile'),
+                   required=False,
+                   help=('optional input fort.34 (gui) file content '
+                         '(for use with EXTERNAL keyword).'))
 
     def prepare_for_submission(self, tempfolder):
         """

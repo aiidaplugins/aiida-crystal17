@@ -44,11 +44,10 @@ class CryFermiCalculation(CryAbstractCalculation):
 
         spec.input('shrink_is', valid_type=Int, required=True, validator=_validate_shrink)
         spec.input('shrink_isp', valid_type=Int, required=True, validator=_validate_shrink)
-        spec.input(
-            'wf_folder',
-            valid_type=RemoteData,
-            required=True,
-            help='the folder containing the wavefunction fort.9 file')
+        spec.input('wf_folder',
+                   valid_type=RemoteData,
+                   required=True,
+                   help='the folder containing the wavefunction fort.9 file')
 
         spec.output('fermi_energy', valid_type=Float, required=True, help='The fermi energy (in eV)')
         spec.output('results', valid_type=Dict, required=True, help='result from the parser')
@@ -69,11 +68,10 @@ class CryFermiCalculation(CryAbstractCalculation):
             f.write(six.ensure_text('\n'.join(input_lines)))
 
         remote_files = [(self.inputs.wf_folder.computer.uuid,
-                         os.path.join(self.inputs.wf_folder.get_remote_path(), self.metadata.options.input_wf_name),
-                         'fort.9')]
+                         os.path.join(self.inputs.wf_folder.get_remote_path(),
+                                      self.metadata.options.input_wf_name), 'fort.9')]
 
-        return self.create_calc_info(
-            tempfolder,
-            remote_copy_list=remote_files if not self.metadata.options.symlink_wf else None,
-            remote_symlink_list=remote_files if self.metadata.options.symlink_wf else None,
-            retrieve_list=[self.metadata.options.output_main_file_name])
+        return self.create_calc_info(tempfolder,
+                                     remote_copy_list=remote_files if not self.metadata.options.symlink_wf else None,
+                                     remote_symlink_list=remote_files if self.metadata.options.symlink_wf else None,
+                                     retrieve_list=[self.metadata.options.output_main_file_name])

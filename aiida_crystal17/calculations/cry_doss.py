@@ -43,20 +43,19 @@ class CryDossCalculation(CryAbstractCalculation):
 
         spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.doss')
 
-        spec.input(
-            'parameters',
-            valid_type=DataFactory('dict'),
-            required=True,
-            validator=_validate_inputs,
-            help='the input parameters to create the DOSS input file.')
-        spec.input(
-            'wf_folder',
-            valid_type=DataFactory('remote'),
-            required=True,
-            help='the folder containing the wavefunction fort.9 file')
+        spec.input('parameters',
+                   valid_type=DataFactory('dict'),
+                   required=True,
+                   validator=_validate_inputs,
+                   help='the input parameters to create the DOSS input file.')
+        spec.input('wf_folder',
+                   valid_type=DataFactory('remote'),
+                   required=True,
+                   help='the folder containing the wavefunction fort.9 file')
 
-        spec.exit_code(
-            352, 'ERROR_ISOVALUE_FILE_MISSING', message='parser could not find the output isovalue (fort.25) file')
+        spec.exit_code(352,
+                       'ERROR_ISOVALUE_FILE_MISSING',
+                       message='parser could not find the output isovalue (fort.25) file')
 
         spec.output('results', valid_type=DataFactory('dict'), required=True, help='summary of the parsed data')
         spec.default_output_node = 'results'
@@ -79,8 +78,8 @@ class CryDossCalculation(CryAbstractCalculation):
             f.write(six.ensure_text('\n'.join(input_lines)))
 
         remote_files = [(self.inputs.wf_folder.computer.uuid,
-                         os.path.join(self.inputs.wf_folder.get_remote_path(), self.metadata.options.input_wf_name),
-                         'fort.9')]
+                         os.path.join(self.inputs.wf_folder.get_remote_path(),
+                                      self.metadata.options.input_wf_name), 'fort.9')]
 
         return self.create_calc_info(
             tempfolder,

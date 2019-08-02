@@ -91,8 +91,10 @@ class CryMainParser(Parser):
         if 'symmetry' in self.node.inputs:
             init_settings = self.node.inputs.symmetry
         with self.retrieved.open(file_name) as fileobj:
-            parser_result = parse_main_out(
-                fileobj, parser_class=self.__class__.__name__, init_struct=init_struct, init_settings=init_settings)
+            parser_result = parse_main_out(fileobj,
+                                           parser_class=self.__class__.__name__,
+                                           init_struct=init_struct,
+                                           init_settings=init_settings)
 
         for etype in ['errors', 'parser_errors', 'parser_exceptions']:
             errors = parser_result.nodes.results.get_attribute(etype)

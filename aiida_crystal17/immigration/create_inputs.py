@@ -130,8 +130,13 @@ def populate_builder(remote_data, code=None, metadata=None):
 
         bases[bdata.element] = bdata
 
-    builder = calc_cls.create_builder(
-        param_dict, structure, bases, symmetry=symmetry, kinds=kinds, code=code, metadata=metadata)
+    builder = calc_cls.create_builder(param_dict,
+                                      structure,
+                                      bases,
+                                      symmetry=symmetry,
+                                      kinds=kinds,
+                                      code=code,
+                                      metadata=metadata)
 
     return builder
 

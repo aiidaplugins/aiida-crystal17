@@ -217,13 +217,14 @@ def _extract_structure(final_data, init_struct, results_data, parser_result, exi
         kinds = None
     else:
         kinds = [init_struct.get_kind(n) for n in init_struct.get_site_kindnames()]
-    structure = convert_structure({
-        'lattice': cell_vectors,
-        'pbc': cell_data['pbc'],
-        'symbols': cell_data['symbols'],
-        'ccoords': cell_data['ccoords'],
-        'kinds': kinds
-    }, 'aiida')
+    structure = convert_structure(
+        {
+            'lattice': cell_vectors,
+            'pbc': cell_data['pbc'],
+            'symbols': cell_data['symbols'],
+            'ccoords': cell_data['ccoords'],
+            'kinds': kinds
+        }, 'aiida')
     results_data['volume'] = structure.get_cell_volume()
     return structure
 

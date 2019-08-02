@@ -275,7 +275,7 @@ outofplane:
   - signature: 'outofplane <inter/intra> <bond> <only3> <kcal/kjmol> atom1 atom2 atom3 atom4 k <k4> <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(1-4)> rmax(1-4)'
     flags: 1
   - signature: 'outofplane <inter/intra> <bond> <only3> <kcal/kjmol> atom1 atom2 atom3 atom4 k <k4> <rmin(1-2)> rmax(1-2) <rmin(1-3)> rmax(1-3) <rmin(1-4)> rmax(1-4)'
-    flags: 2  
+    flags: 2
 pcell:
   - signature: 'a '
     flags: 1
@@ -476,7 +476,7 @@ sw2jb:
 sw3:
   - signature: 'atom1 atom2 atom3 K theta0 rho1 rho2 <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
     flags: 4
-  # sw3 modified 
+  # sw3 modified
   - signature: 'atom1 atom2 atom3 K theta0 rho1 rho2 C <rmin12> rmax12 <rmin13> rmax13 <rmin23> rmax23 '
     flags: 5
   # sw3 garofalini
