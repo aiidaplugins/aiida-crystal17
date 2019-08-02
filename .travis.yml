@@ -25,6 +25,8 @@ matrix:
       env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
     - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
+    - python: 3.6
+      env: TEST_TYPE="conda"
 
   # allow_failures:
   #   - env: TEST_TYPE="docs" READTHEDOCS="True"
@@ -51,6 +53,19 @@ install:
       file=${path##*/}
       wget $downloadUrl && sudo dpkg -i $file
     fi
+- |
+    if [[ "$TEST_TYPE" == "conda" ]]; then
+      # See https://conda.io/docs/user-guide/tasks/use-conda-with-travis-ci.html#the-travis-yml-file
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+      bash miniconda.sh -b -p $HOME/miniconda
+      export PATH="$HOME/miniconda/bin:$PATH"
+      hash -r
+      conda config --set always_yes yes --set changeps1 no
+      conda update -q conda
+      # Useful for debugging any issues with conda
+      conda info -a
+    fi
+
 # - |
 #   if [[ ! -z "${AIIDA_BRANCH}" ]]; then
 #     cur_path="$(pwd)"
@@ -80,6 +95,11 @@ script:
   if [[ "$TEST_TYPE" == "docs" ]]; then
     cd docs
     make
+  fi
+- |
+  if [[ "$TEST_TYPE" == "conda" ]]; then
+    conda env create -f conda_dev_env.yml -n test-environment python=$TRAVIS_PYTHON_VERSION
+    conda activate test-environment
   fi
 
 after_success:
