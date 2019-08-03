@@ -1,9 +1,8 @@
-import os
 import pytest
 
-from aiida_crystal17.tests import TEST_FILES
 from aiida_crystal17.common import recursive_round
 from aiida_crystal17.parsers.raw.crystal_stdout import read_crystal_stdout
+from aiida_crystal17.tests import read_resource_text
 
 
 @pytest.mark.parametrize(
@@ -23,10 +22,8 @@ from aiida_crystal17.parsers.raw.crystal_stdout import read_crystal_stdout
      ('s2_molecule_opt', ('crystal', 's2_molecule_opt', 'main.out')), ('slab_testgeom',
                                                                        ('crystal', 'slab_testgeom', 'main.out'))))
 def test_crystal_stdout_files(name, filepath, data_regression):
-
-    path = os.path.join(TEST_FILES, *filepath)
-    with open(path) as handle:
-        content = handle.read()
+    """Test reading stdout file from crystal17."""
+    content = read_resource_text(*filepath)
     output = read_crystal_stdout(content)
     output = recursive_round(output, 12)
     data_regression.check(output)

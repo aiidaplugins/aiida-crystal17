@@ -14,19 +14,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 import click
-import tabulate
 from click_spinner import spinner as cli_spinner
 from jsonextended import edict
+import tabulate
+
 from aiida.cmdline.commands.cmd_verdi import verdi
 from aiida.cmdline.params import types
 from aiida.cmdline.utils import decorators
-from aiida.plugins import DataFactory
+
 from aiida_crystal17.cmndline import options
 
 
 @verdi.group('crystal17.basis')
 def basisset():
-    """Commandline interface for working with Crystal Basis Set Data"""
+    """Commandline interface for working with Crystal Basis Set Data."""
 
 
 @basisset.command()
@@ -34,7 +35,7 @@ def basisset():
 @click.option('--content', '-c', is_flag=True, help='include full basis content')
 @decorators.with_dbenv()
 def show(node, content):
-    """show the contents of a basis set node"""
+    """Show the contents of a basis set node."""
     edict.pprint(node.metadata, depth=None, print_func=click.echo)
     if content:
         click.echo('---')
@@ -47,13 +48,13 @@ def try_grab_description(ctx, param, value):
 
     This is a click parameter callback.
     """
-    basis_data_cls = DataFactory('crystal17.basisset')
+    from aiida_crystal17.data.basis_set import BasisSetData
     group_name = ctx.params['name']
-    existing_groups = basis_data_cls.get_basis_groups()
+    existing_groups = BasisSetData.get_basis_groups()
     existing_group_names = [group.name for group in existing_groups]
     if not value:
         if group_name in existing_group_names:
-            return basis_data_cls.get_basis_group(group_name).description
+            return BasisSetData.get_basis_group(group_name).description
         else:
             raise click.MissingParameter('A new group must be given a description.', param=param)
     return value
@@ -70,15 +71,14 @@ def try_grab_description(ctx, param, value):
 @decorators.with_dbenv()
 def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
     """Upload a family of CRYSTAL Basis Set files."""
-
-    basis_data_cls = DataFactory('crystal17.basisset')
+    from aiida_crystal17.data.basis_set import BasisSetData
     with cli_spinner():
-        nfiles, num_uploaded = basis_data_cls.upload_basisset_family(path,
-                                                                     name,
-                                                                     description,
-                                                                     stop_if_existing=stop_if_existing,
-                                                                     extension='.{}'.format(ext),
-                                                                     dry_run=dry_run)
+        nfiles, num_uploaded = BasisSetData.upload_basisset_family(path,
+                                                                   name,
+                                                                   description,
+                                                                   stop_if_existing=stop_if_existing,
+                                                                   extension='.{}'.format(ext),
+                                                                   dry_run=dry_run)
 
     click.echo('Basis Set files found and added to family: {}, of those {} '
                'were newly uploaded'.format(nfiles, num_uploaded))
@@ -96,9 +96,8 @@ def uploadfamily(path, ext, name, description, stop_if_existing, dry_run):
 @decorators.with_dbenv()
 def listfamilies(element, with_description, list_pks):
     """List available families of CRYSTAL Basis Set files."""
-
-    basis_data_cls = DataFactory('crystal17.basisset')
-    groups = basis_data_cls.get_basis_groups(filter_elements=None if not element else element)
+    from aiida_crystal17.data.basis_set import BasisSetData
+    groups = BasisSetData.get_basis_groups(filter_elements=None if not element else element)
 
     table = [['Family', 'Num Basis Sets']]
     if with_description:

@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-import os  # noqa: F401
-
 from aiida.engine import run_get_node
 
 from aiida_crystal17.common import recursive_round
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
-from aiida_crystal17.tests import TEST_FILES  # noqa: F401
 from aiida_crystal17.gulp.parsers.raw.write_input import (  # noqa: F401
     InputCreationSingle, InputCreationOpt)
 

@@ -1,9 +1,8 @@
-import os
-
-from aiida_crystal17.tests import TEST_FILES
-import pytest
-from aiida_crystal17.parsers.raw.inputd12_read import extract_data
 from jsonextended import edict
+import pytest
+
+from aiida_crystal17.parsers.raw.inputd12_read import extract_data
+from aiida_crystal17.tests import read_resource_text
 
 
 @pytest.fixture('function')
@@ -218,11 +217,8 @@ def test_full_read(input_str):
 
 
 def test_mgo_sto3g_scf():
-    path = os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_scf', 'INPUT')
-    with open(path) as f:
-        input_str = f.read()
-
-    output_dict, basis_sets, atom_props = extract_data(input_str)
+    content = read_resource_text('crystal', 'mgo_sto3g_scf', 'INPUT')
+    output_dict, basis_sets, atom_props = extract_data(content)
 
     assert len(basis_sets) == 2
 
@@ -232,11 +228,8 @@ def test_mgo_sto3g_scf():
 
 
 def test_mgo_sto3g_opt():
-    path = os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_opt', 'INPUT')
-    with open(path) as f:
-        input_str = f.read()
-
-    output_dict, basis_sets, atom_props = extract_data(input_str)
+    content = read_resource_text('crystal', 'mgo_sto3g_opt', 'INPUT')
+    output_dict, basis_sets, atom_props = extract_data(content)
 
     assert len(basis_sets) == 2
 
@@ -256,11 +249,8 @@ def test_mgo_sto3g_opt():
 
 
 def test_nio_sto3g_afm():
-    path = os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf', 'INPUT')
-    with open(path) as f:
-        input_str = f.read()
-
-    output_dict, basis_sets, atom_props = extract_data(input_str)
+    content = read_resource_text('crystal', 'nio_sto3g_afm_scf', 'INPUT')
+    output_dict, basis_sets, atom_props = extract_data(content)
 
     assert len(basis_sets) == 2
 

@@ -1,19 +1,16 @@
-import os
-
 from aiida.engine import run_get_node
 from aiida.orm import Dict
 from aiida.plugins import DataFactory
 
-from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.tests.utils import sanitize_calc_info
-
 from aiida_crystal17.common import recursive_round
 from aiida_crystal17.gulp.potentials.common import filter_by_species
 from aiida_crystal17.gulp.potentials.raw_reaxff import read_lammps_format
+from aiida_crystal17.tests import read_resource_text
+from aiida_crystal17.tests.utils import sanitize_calc_info
 
 
 def test_calcjob_submit_lj_fes(db_test_app, get_structure, data_regression, file_regression):
-    """Test submitting a calculation"""
+    """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('gulp.fitting')
     builder = code.get_builder()
     builder.metadata = db_test_app.get_default_metadata(dry_run=True)
@@ -80,14 +77,12 @@ def test_calcjob_submit_lj_fes(db_test_app, get_structure, data_regression, file
 
 
 def test_calcjob_submit_reaxff_fes(db_test_app, get_structure, data_regression, file_regression):
-    """Test submitting a calculation"""
+    """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('gulp.fitting')
     builder = code.get_builder()
     builder.metadata = db_test_app.get_default_metadata(dry_run=True)
     potential_cls = DataFactory('gulp.potential')
-    with open(os.path.join(TEST_FILES, 'gulp', 'potentials', 'FeCrOSCH.reaxff')) as handle:
-        content = handle.read()
-    pot_data = read_lammps_format(content.splitlines())
+    pot_data = read_lammps_format(read_resource_text('gulp', 'potentials', 'FeCrOSCH.reaxff').splitlines())
     pot_data = filter_by_species(pot_data, ['Fe core', 'S core'])
     builder.settings = {'observables': {'energy': {}}}
     builder.potential = potential_cls('reaxff',
@@ -129,7 +124,7 @@ def test_calcjob_submit_reaxff_fes(db_test_app, get_structure, data_regression, 
 
 
 def test_run_lj_fes(db_test_app, get_structure, data_regression):
-    """Test running a calculation"""
+    """Test running a calculation."""
     code = db_test_app.get_or_create_code('gulp.fitting')
     builder = code.get_builder()
     builder.metadata = db_test_app.get_default_metadata()
@@ -194,14 +189,12 @@ def test_run_lj_fes(db_test_app, get_structure, data_regression):
 
 
 def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
-    """Test submitting a calculation"""
+    """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('gulp.fitting')
     builder = code.get_builder()
     builder.metadata = db_test_app.get_default_metadata()
     potential_cls = DataFactory('gulp.potential')
-    with open(os.path.join(TEST_FILES, 'gulp', 'potentials', 'FeCrOSCH.reaxff')) as handle:
-        content = handle.read()
-    pot_data = read_lammps_format(content.splitlines())
+    pot_data = read_lammps_format(read_resource_text('gulp', 'potentials', 'FeCrOSCH.reaxff').splitlines())
     pot_data = filter_by_species(pot_data, ['Fe core', 'S core'])
     builder.settings = {'observables': {'energy': {}}}
     builder.potential = potential_cls('reaxff',

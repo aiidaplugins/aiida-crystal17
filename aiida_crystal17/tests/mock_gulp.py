@@ -16,13 +16,13 @@ to create a hashkey:
 
 """
 import hashlib
+import io
 import os
 import sys
-from shutil import copyfile
 
 import six
 
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import read_resource_binary, read_resource_text
 
 # map of input file hashes to output files
 hash_map = {
@@ -63,15 +63,13 @@ hash_map = {
 
 
 def main(sys_args=None):
-
+    """Run mock version of gulp binary executable."""
     if sys_args is None:
         sys_args = sys.argv[1:]
 
     if sys_args and sys_args[0] == '--test':
         # this used in the conda recipe, to test the executable is present
         return
-
-    test_path = os.path.join(tests.TEST_FILES, 'gulp')
 
     content = six.ensure_text(sys.stdin.read())
     hashkey = hashlib.md5(content.encode()).hexdigest()
@@ -82,19 +80,15 @@ def main(sys_args=None):
     outfiles = hash_map[hashkey]
 
     for inpath, outpath in outfiles.get('output', []):
-        src = os.path.join(test_path, *inpath)
-        dst = os.path.join('.', *outpath)
-        copyfile(src, dst)
+        src = read_resource_binary('gulp', *inpath)
+        with io.open(os.path.join('.', *outpath), 'wb') as handle:
+            handle.write(src)
 
     if outfiles.get('stdout', None) is not None:
-        outpath = os.path.join(test_path, *outfiles['stdout'])
-        with open(outpath) as f:
-            sys.stdout.write(f.read())
+        sys.stdout.write(read_resource_text('gulp', *outfiles['stdout']))
 
     if outfiles.get('stderr', None) is not None:
-        outpath = os.path.join(test_path, *outfiles['stderr'])
-        with open(outpath) as f:
-            sys.stderr.write(f.read())
+        sys.stderr.write(read_resource_text('gulp', *outfiles['stderr']))
 
 
 if __name__ == '__main__':

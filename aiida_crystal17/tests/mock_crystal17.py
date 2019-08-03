@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""
-this is a mock version of runcry17,
-which compares an input file to a hash,
+"""This is a mock version of runcry17.
+
+It compares an input file to a hash,
 and writes an appropriate outputfile to stdoout
 
 to create a hashkey:
@@ -16,13 +16,13 @@ to create a hashkey:
 
 """
 import hashlib
+import io
 import os
 import sys
-from shutil import copyfile
 
 import six
 
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import read_resource_binary, read_resource_text
 
 # map of input file hashes (and optional fort.34 hashes) to output files
 hash_map = {
@@ -98,15 +98,13 @@ hash_map = {
 
 
 def main(sys_args=None):
-
+    """Run mock version of crystal17 binary executable."""
     if sys_args is None:
         sys_args = sys.argv[1:]
 
     if sys_args and sys_args[0] == '--test':
         # this used in the conda recipe, to test the executable is present
         return
-
-    test_path = os.path.join(tests.TEST_FILES, 'crystal')
 
     content = six.ensure_text(sys.stdin.read())
     hashkey = hashlib.md5(content.encode()).hexdigest()
@@ -126,14 +124,12 @@ def main(sys_args=None):
         outfiles = hash_map[hashkey][gui_hashkey]
 
     for inpath, outpath in outfiles.get('output', []):
-        src = os.path.join(test_path, *inpath)
-        dst = os.path.join('.', *outpath)
-        copyfile(src, dst)
+        src = read_resource_binary('crystal', *inpath)
+        with io.open(os.path.join('.', *outpath), 'wb') as handle:
+            handle.write(src)
 
     if outfiles.get('stdout', None) is not None:
-        outpath = os.path.join(test_path, *outfiles['stdout'])
-        with open(outpath) as f:
-            sys.stdout.write(f.read())
+        sys.stdout.write(read_resource_text('crystal', *outfiles['stdout']))
 
 
 if __name__ == '__main__':

@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 
@@ -34,11 +32,10 @@ def pyrite_potential_lj():
 @pytest.fixture(scope='function')
 def pyrite_potential_reaxff():
     from aiida.plugins import DataFactory
-    from aiida_crystal17.tests import TEST_FILES
+    from aiida_crystal17.tests import read_resource_text
     from aiida_crystal17.gulp.potentials.common import filter_by_species
     from aiida_crystal17.gulp.potentials.raw_reaxff import read_lammps_format
-    with open(os.path.join(TEST_FILES, 'gulp', 'potentials', 'FeCrOSCH.reaxff')) as handle:
-        data = read_lammps_format(handle.readlines())
+    data = read_lammps_format(read_resource_text('gulp', 'potentials', 'FeCrOSCH.reaxff').splitlines())
     data = filter_by_species(data, ['Fe core', 'S core'])
     return DataFactory('gulp.potential')('reaxff', data)
 
@@ -46,11 +43,10 @@ def pyrite_potential_reaxff():
 @pytest.fixture(scope='function')
 def pyrite_potential_reaxff_lowtol():
     from aiida.plugins import DataFactory
-    from aiida_crystal17.tests import TEST_FILES
+    from aiida_crystal17.tests import read_resource_text
     from aiida_crystal17.gulp.potentials.common import filter_by_species
     from aiida_crystal17.gulp.potentials.raw_reaxff import read_lammps_format
-    with open(os.path.join(TEST_FILES, 'gulp', 'potentials', 'FeCrOSCH.reaxff')) as handle:
-        data = read_lammps_format(handle.readlines())
+    data = read_lammps_format(read_resource_text('gulp', 'potentials', 'FeCrOSCH.reaxff').splitlines())
     data = filter_by_species(data, ['Fe core', 'S core'])
     data['global']['torsionprod'] = 0.001
     return DataFactory('gulp.potential')('reaxff', data)

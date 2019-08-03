@@ -1,4 +1,3 @@
-import os
 from jsonextended import edict
 
 from aiida.common.folders import SandboxFolder
@@ -6,18 +5,17 @@ from aiida.orm import RemoteData
 
 from aiida_crystal17.immigration.create_inputs import populate_builder
 from aiida_crystal17.immigration.create_calcjob import immigrate_existing
-from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.tests import open_resource_binary
 from aiida_crystal17.tests.utils import get_default_metadata
 
 
 def test_create_builder(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf', 'INPUT')
-    outpath = os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf', 'main.out')
-
     with SandboxFolder() as folder:
-        folder.insert_path(inpath, 'INPUT')
-        folder.insert_path(outpath, 'main.out')
+        with open_resource_binary('crystal', 'nio_sto3g_afm_scf', 'INPUT') as handle:
+            folder.create_file_from_filelike(handle, 'INPUT', mode='wb')
+        with open_resource_binary('crystal', 'nio_sto3g_afm_scf', 'main.out') as handle:
+            folder.create_file_from_filelike(handle, 'main.out', mode='wb')
 
         remote = RemoteData(remote_path=folder.abspath, computer=db_test_app.get_or_create_computer())
 
@@ -58,16 +56,16 @@ def test_create_builder(db_test_app, data_regression):
 
 def test_full_nio_afm(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf', 'INPUT')
-    outpath = os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf', 'main.out')
     code = db_test_app.get_or_create_code('crystal17.main')
 
     metadata = get_default_metadata()
     metadata['options'].update({'input_file_name': 'other.d12', 'output_main_file_name': 'other2.out'})
 
     with SandboxFolder() as folder:
-        folder.insert_path(inpath, 'other.d12')
-        folder.insert_path(outpath, 'other2.out')
+        with open_resource_binary('crystal', 'nio_sto3g_afm_scf', 'INPUT') as handle:
+            folder.create_file_from_filelike(handle, 'other.d12', mode='wb')
+        with open_resource_binary('crystal', 'nio_sto3g_afm_scf', 'main.out') as handle:
+            folder.create_file_from_filelike(handle, 'other2.out', mode='wb')
 
         remote = RemoteData(remote_path=folder.abspath, computer=db_test_app.get_or_create_computer())
 
@@ -89,14 +87,13 @@ def test_full_nio_afm(db_test_app, data_regression):
 
 def test_full_mgo_opt(db_test_app, data_regression):
 
-    inpath = os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_opt', 'INPUT')
-    outpath = os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_opt', 'main.out')
-
     code = db_test_app.get_or_create_code('crystal17.main')
 
     with SandboxFolder() as folder:
-        folder.insert_path(inpath, 'INPUT')
-        folder.insert_path(outpath, 'main.out')
+        with open_resource_binary('crystal', 'mgo_sto3g_opt', 'INPUT') as handle:
+            folder.create_file_from_filelike(handle, 'INPUT', mode='wb')
+        with open_resource_binary('crystal', 'mgo_sto3g_opt', 'main.out') as handle:
+            folder.create_file_from_filelike(handle, 'main.out', mode='wb')
 
         remote = RemoteData(remote_path=folder.abspath, computer=db_test_app.get_or_create_computer())
 

@@ -6,27 +6,29 @@ import os
 import pytest
 
 from aiida import orm
-from aiida.engine import run_get_node
 from aiida.cmdline.utils.common import get_calcjob_report  # noqa: F401
+from aiida.engine import run_get_node
 from aiida.plugins import CalculationFactory, DataFactory, WorkflowFactory
 
-from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 from aiida_crystal17.common import recursive_round
-from aiida_crystal17.data.kinds import KindData
 from aiida_crystal17.data.basis_set import BasisSetData
 from aiida_crystal17.data.input_params import CryInputParamsData
+from aiida_crystal17.data.kinds import KindData
+from aiida_crystal17.tests import get_resource_path, open_resource_text
+from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 
 def test_create_builder(db_test_app, get_structure):
-    """test preparation of inputs"""
+    """Test preparation of inputs."""
     db_test_app.get_or_create_code('crystal17.main')
 
     inparams = {'scf.k_points': (8, 8)}
 
     instruct = get_structure('MgO')
-    mg_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_Mg.basis'))
-    o_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_Mg.basis') as handle:
+        mg_basis, _ = BasisSetData.get_or_create(handle)
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_O.basis') as handle:
+        o_basis, _ = BasisSetData.get_or_create(handle)
 
     sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
                             structure=instruct,
@@ -70,8 +72,10 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_reg
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
-    mg_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_Mg.basis'))
-    o_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_Mg.basis') as handle:
+        mg_basis, _ = BasisSetData.get_or_create(handle)
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_O.basis') as handle:
+        o_basis, _ = BasisSetData.get_or_create(handle)
 
     # set up calculation
     builder = code.get_builder()
@@ -98,8 +102,7 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_reg
 
 
 def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_family, data_regression, file_regression):
-    """Test submitting a calculation"""
-
+    """Test submitting a calculation."""
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -159,7 +162,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_fam
 
 
 def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, file_regression, data_regression):
-    """ test restarting from a previous fort.9 file"""
+    """test restarting from a previous fort.9 file."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
@@ -203,7 +206,7 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
                                            unflatten=True)
 
     remote = orm.RemoteData(computer=code.computer,
-                            remote_path=os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf_maxcyc'))
+                            remote_path=get_resource_path('crystal', 'nio_sto3g_afm_scf_maxcyc'))
     builder.wf_folder = remote
 
     process_options = builder.process_class(inputs=builder).metadata.options

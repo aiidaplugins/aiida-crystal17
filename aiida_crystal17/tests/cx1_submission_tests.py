@@ -6,7 +6,6 @@ can use: `verdi run aiida_crystal17/tests/cx1_submission_tests.py`
 for info on parallel calculations see:
 http://tutorials.crystalsolutions.eu/tutorial.html?td=tuto_HPC&tf=tuto_hpc
 """
-import os
 import time
 
 from aiida.common import NotExistent
@@ -18,7 +17,7 @@ from aiida.orm.utils.builders.code import CodeBuilder
 from aiida.plugins import DataFactory, WorkflowFactory
 from aiida.plugins.entry_point import get_entry_point
 
-from aiida_crystal17.tests import TEST_FILES, get_test_structure
+from aiida_crystal17.tests import get_resource_path, get_test_structure
 
 _COMPUTER_NAME = 'icl_cx1_test'
 _CODE_LABEL = 'cry17-main-cx1_test'
@@ -85,8 +84,7 @@ def submit_nio_afm_fullopt():
                                 key_filename='/Users/cjs14/.ssh/id_rsa')
 
     kind_data_cls = DataFactory('crystal17.kinds')
-    basis_data_cls = DataFactory('crystal17.basisset')
-    upload_basisset_family = basis_data_cls.upload_basisset_family
+    from aiida_crystal17.data.basis_set import BasisSetData
 
     # Prepare input parameters
     params = {
@@ -115,11 +113,11 @@ def submit_nio_afm_fullopt():
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
-    upload_basisset_family(os.path.join(TEST_FILES, 'basis_sets', 'sto3g'),
-                           'sto3g',
-                           'minimal basis sets',
-                           stop_if_existing=False,
-                           extension='.basis')
+    BasisSetData.upload_basisset_family(get_resource_path('basis_sets', 'sto3g'),
+                                        'sto3g',
+                                        'minimal basis sets',
+                                        stop_if_existing=False,
+                                        extension='.basis')
 
     # set up calculation
     process_class = code.get_builder().process_class

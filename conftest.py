@@ -1,20 +1,20 @@
-"""
-initialise a text database and profile
-"""
+"""Initialise a text database and profile."""
 import os
 import shutil
 import tempfile
 
-from aiida.manage.fixtures import fixture_manager
 import pytest
 
+from aiida.manage.fixtures import fixture_manager
+
+from aiida_crystal17.tests import (get_resource_path, get_test_structure, get_test_structure_and_symm,
+                                   open_resource_binary)
 from aiida_crystal17.tests.utils import AiidaTestApp
-from aiida_crystal17.tests import TEST_FILES, get_test_structure, get_test_structure_and_symm
 
 
 @pytest.fixture(scope='session')
 def aiida_environment():
-    """setup a test profile for the duration of the tests"""
+    """Set up a test profile for the duration of the tests."""
     # TODO this is required locally for click
     # (see https://click.palletsprojects.com/en/7.x/python3/)
     os.environ['LC_ALL'] = 'en_US.UTF-8'
@@ -24,7 +24,7 @@ def aiida_environment():
 
 @pytest.fixture(scope='function')
 def db_test_app(aiida_environment):
-    """clear the database after each test"""
+    """Clear the database after each test."""
     if os.environ.get('MOCK_CRY17_EXECUTABLES', True) != 'false':
         print('NB: using mock executable')
         executables = {
@@ -73,10 +73,10 @@ def get_structure_and_symm():
 def get_cif():
 
     def _get_cif(name):
-        from aiida.plugins import DataFactory
-        cif_data_cls = DataFactory('cif')
+        from aiida.orm import CifData
         if name == 'pyrite':
-            return cif_data_cls(file=os.path.join(TEST_FILES, 'cif', 'pyrite.cif'))
+            with open_resource_binary('cif', 'pyrite.cif') as handle:
+                return CifData(file=handle)
         raise ValueError(name)
 
     return _get_cif
@@ -84,11 +84,11 @@ def get_cif():
 
 @pytest.fixture(scope='function')
 def upload_basis_set_family():
-    """ upload the a basis set family"""
+    """Upload a basis set family."""
     from aiida_crystal17.data.basis_set import BasisSetData
 
     def _upload(folder_name='sto3g', group_name='sto3g', stop_if_existing=True):
-        BasisSetData.upload_basisset_family(os.path.join(TEST_FILES, 'basis_sets', folder_name),
+        BasisSetData.upload_basisset_family(get_resource_path('basis_sets', folder_name),
                                             group_name,
                                             'minimal basis sets',
                                             stop_if_existing=stop_if_existing,

@@ -25,6 +25,7 @@ from aiida.orm import Code, RemoteData, StructureData, TrajectoryData
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
+from aiida_crystal17.data.basis_set import BasisSetData
 from aiida_crystal17.parsers.raw.parse_fort34 import gui_file_write
 from aiida_crystal17.parsers.raw.inputd12_write import (write_input, create_atom_properties)
 
@@ -61,7 +62,7 @@ class CryMainCalculation(CryAbstractCalculation):
                    help=('additional structure kind specific data '
                          '(e.g. initial spin)'))
         spec.input_namespace('basissets',
-                             valid_type=DataFactory('crystal17.basisset'),
+                             valid_type=BasisSetData,
                              dynamic=True,
                              help=('Use a node for the basis set of one of '
                                    'the elements in the structure. You have to pass '
@@ -144,9 +145,8 @@ class CryMainCalculation(CryAbstractCalculation):
         write_input(parameters.get_dict(), ['test_basis'], atom_props)
 
         # validate basis sets
-        basis_cls = DataFactory('crystal17.basisset')
         if isinstance(bases, six.string_types):
-            symbol_to_basis_map = basis_cls.get_basissets_from_structure(structure, bases, by_kind=False)
+            symbol_to_basis_map = BasisSetData.get_basissets_from_structure(structure, bases, by_kind=False)
         else:
             elements_required = set([kind.symbol for kind in structure.kinds])
             if set(bases.keys()) != elements_required:
