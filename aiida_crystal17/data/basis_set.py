@@ -17,7 +17,6 @@
 from __future__ import absolute_import
 
 import hashlib
-import io
 import os
 
 from ruamel.yaml import YAML
@@ -109,17 +108,19 @@ def parse_basis(basis_file):
     parsing_data = False
     content = []
 
-    try:
+    if isinstance(basis_file, six.string_types):
+        basis_file = pathlib.Path(basis_file)
+
+    if isinstance(basis_file, pathlib.Path):
+        contentlines = basis_file.read_text().splitlines()
+        basis_file_name = basis_file.name
+    else:
         basis_file.seek(0)
         contentlines = basis_file.read().splitlines()
-        if hasattr(basis_file, 'name'):
+        try:
             basis_file_name = basis_file.name
-        else:
+        except AttributeError:
             basis_file_name = 'StringIO'
-    except AttributeError:
-        with io.open(basis_file, encoding='utf8') as handle:
-            contentlines = handle.read().splitlines()
-        basis_file_name = basis_file
 
     for line in contentlines:
         # ignore commented and blank lines
