@@ -386,7 +386,7 @@ def parse_calculation_header(lines, initial_lineno):
             data['crystal_version'] = int(re.findall(r'\s\s\s\s\sCRYSTAL(\d{2})', line)[0])
         if re.findall('public\\s\\:\\s(.+)\\s\\-', line):
             data['crystal_subversion'] = re.findall('public\\s\\:\\s(.+)\\s\\-', line)[0]
-    return ParsedSection(initial_lineno + i, data, "couldn't find end of program header")
+    return ParsedSection(initial_lineno, data, "couldn't find end of program header")
 
 
 def parse_geometry_input(lines, initial_lineno):
@@ -408,7 +408,7 @@ def parse_geometry_input(lines, initial_lineno):
         if line.strip().startswith('* GEOMETRY EDITING'):
             return ParsedSection(lineno + i, data, None)
         # TODO parse relevant data
-    return ParsedSection(lineno + i, data, "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
+    return ParsedSection(lineno, data, "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
 
 
 def parse_calculation_setup(lines, initial_lineno):
