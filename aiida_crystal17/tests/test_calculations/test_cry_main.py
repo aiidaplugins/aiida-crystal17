@@ -54,7 +54,7 @@ def test_create_builder(db_test_app, get_structure):
 
 @pytest.mark.parametrize('input_symmetry', (False, True))
 def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_regression, file_regression):
-    """Test submitting a calculation"""
+    """Test submitting a calculation."""
 
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -162,7 +162,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_fam
 
 
 def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, file_regression, data_regression):
-    """test restarting from a previous fort.9 file."""
+    """Test restarting from a previous fort.9 file."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
@@ -223,7 +223,7 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
 @pytest.mark.process_execution
 def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test running a calculation"""
+    """Test running a calculation."""
 
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')

@@ -38,15 +38,15 @@ hash_map = {
         'stdout': ('optimize_lj_pyrite_symm', 'main.gout'),
         'output': [(('optimize_lj_pyrite_symm', 'output.cif'), ('output.cif',))]
     },
-    'f104b6cc996c97be76b3ee31761b7898': {
+    '83f4e528d0824eea430572fdda0b4f58': {
         'stdout': ('single_reaxff_pyrite', 'main.gout'),
         'output': ()
     },
-    '5dc8cb9621091a1a029b8149b0e02e33': {
+    '16f5c23e5c4072a25b7ed33a68744227': {
         'stdout': ('optimize_reaxff_pyrite', 'main.gout'),
         'output': [(('optimize_reaxff_pyrite', 'output.cif'), ('output.cif',))]
     },
-    '99595ec1cba6fb909a1de2377e21d82a': {
+    '59ea35116463a60fb1ffe055d95f1542': {
         'stdout': ('optimize_reaxff_pyrite_symm', 'main.gout'),
         'output': [(('optimize_reaxff_pyrite_symm', 'output.cif'), ('output.cif',))],
         'stderr': ('optimize_reaxff_pyrite_symm', 'main_stderr.txt')

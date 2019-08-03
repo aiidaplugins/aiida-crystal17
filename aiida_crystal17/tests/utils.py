@@ -451,7 +451,7 @@ class AiidaTestApp(object):
     def check_calculation(calc_node,
                           expected_outgoing_labels,
                           error_include=(('results', 'errors'), ('results', 'parser_errors'))):
-        """ check a calculation has completed successfully """
+        """Check a calculation has completed successfully."""
         from aiida.cmdline.utils.common import get_calcjob_report
         exit_status = calc_node.get_attribute('exit_status')
         proc_state = calc_node.get_attribute('process_state')

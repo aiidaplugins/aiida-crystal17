@@ -10,12 +10,13 @@ def get_resource_path(*args):
     return os.path.join(TEST_FILES, *args)
 
 
-def read_resource_text(*args, encoding=None):
+def read_resource_text(*args, **kwargs):
     """Return the decoded string of the resource.
 
     The decoding-related arguments have the same semantics as those of
     bytes.decode().
     """
+    encoding = kwargs.pop('encoding', None)
     with io.open(os.path.join(TEST_FILES, *args), encoding=encoding) as handle:
         return handle.read()
 
@@ -26,12 +27,13 @@ def read_resource_binary(*args):
         return handle.read()
 
 
-def open_resource_text(*args, encoding=None):
+def open_resource_text(*args, **kwargs):
     """Return a file-like object opened for text reading of the resource."""
+    encoding = kwargs.pop('encoding', None)
     return io.open(os.path.join(TEST_FILES, *args), encoding=encoding)
 
 
-def open_resource_binary(*args, encoding=None):
+def open_resource_binary(*args):
     """Return a file-like object opened for binary reading of the resource."""
     return io.open(os.path.join(TEST_FILES, *args), 'rb')
 

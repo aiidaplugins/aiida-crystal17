@@ -28,7 +28,7 @@ from aiida_crystal17.tests import read_resource_binary, read_resource_text
 hash_map = {
     'a3744c045b5572e93157a16decd1dd24': {
         'stdout': ('doss', 'mgo_sto3g_scf', 'main.out'),
-        'output': [[('doss', 'mgo_sto3g_scf', 'fort.25'), 'fort.25']]
+        'output': [[('doss', 'mgo_sto3g_scf', 'fort.25'), ('fort.25',)]]
     },
     'c1c5a85d0d799459f2e20fcb25bec0af': {
         'stdout': ('fermi', 'mgo_sto3g_scf', 'main.out'),

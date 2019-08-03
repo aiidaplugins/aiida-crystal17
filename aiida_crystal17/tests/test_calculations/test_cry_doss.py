@@ -13,7 +13,7 @@ from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 def test_calcjob_submit_mgo(db_test_app):
     # type: (AiidaTestApp, bool) -> None
-    """Test submitting a calculation"""
+    """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('crystal17.doss')
     remote = RemoteData(remote_path=get_resource_path('doss', 'mgo_sto3g_scf'),
                         computer=db_test_app.get_or_create_computer())
