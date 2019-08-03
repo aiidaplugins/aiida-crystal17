@@ -13,8 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-""" a data type to store CRYSTAL17 basis sets
-"""
+"""A data type to store CRYSTAL17 basis sets."""
 from __future__ import absolute_import
 
 import hashlib
@@ -31,11 +30,16 @@ from aiida_crystal17.common import flatten_dict, unflatten_dict
 from aiida_crystal17.common.atoms import SYMBOLS_R
 from aiida_crystal17.parsers.raw.parse_bases import parse_bsets_stdin
 
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
+
 BASISGROUP_TYPE = 'crystal17.basisset'
 
 
-def _retrieve_basis_sets(files, stop_if_existing):
-    """ get existing basis sets or create if not
+def retrieve_basis_sets(files, stop_if_existing):
+    """Retrieve existing basis sets or create if them, if they do not exist.
 
     :param files: list of basis set file paths
     :param stop_if_existing: if True, check for the md5 of the files and,
@@ -46,8 +50,8 @@ def _retrieve_basis_sets(files, stop_if_existing):
     from aiida.orm.querybuilder import QueryBuilder
 
     basis_and_created = []
-    for f in files:
-        _, content = parse_basis(f)
+    for basis_file in files:
+        _, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
         qb = QueryBuilder()
         qb.append(BasisSetData, filters={'attributes.md5': {'==': md5sum}})
@@ -55,7 +59,7 @@ def _retrieve_basis_sets(files, stop_if_existing):
 
         if existing_basis is None:
             # return the basis set data instances, not stored
-            basisset, created = BasisSetData.get_or_create(f, use_first=True, store_basis=False)
+            basisset, created = BasisSetData.get_or_create(basis_file, use_first=True, store_basis=False)
             # to check whether only one basis set per element exists
             # NOTE: actually, created has the meaning of "to_be_created"
             basis_and_created.append((basisset, created))
@@ -63,7 +67,7 @@ def _retrieve_basis_sets(files, stop_if_existing):
             if stop_if_existing:
                 raise ValueError('A Basis Set with identical MD5 to '
                                  ' {} cannot be added with stop_if_existing'
-                                 ''.format(f))
+                                 ''.format(basis_file))
             existing_basis = existing_basis[0]
             basis_and_created.append((existing_basis, False))
 
@@ -438,25 +442,21 @@ class BasisSetData(Data):
         return BASISGROUP_TYPE
 
     def get_basis_family_names(self):
-        """
-        Get the list of all basiset family names to which the basis belongs
-        """
+        """Get the list of all basiset family names to which the basis belongs."""
         from aiida.orm import Group
 
         return [_.name for _ in Group.query(nodes=self, type_string=self.basisfamily_type_string)]
 
     @classmethod
     def get_basis_group(cls, group_name):
-        """
-        Return the BasisFamily group with the given name.
-        """
+        """Return the BasisFamily group with the given name."""
         from aiida.orm import Group
 
         return Group.objects.get(label=group_name, type_string=cls.basisfamily_type_string)
 
     @classmethod
     def get_basis_group_map(cls, group_name):
-        """get a mapping of elements to basissets in a basis set family
+        """Get a mapping of elements to basissets in a basis set family.
 
         Parameters
         ----------
@@ -487,9 +487,7 @@ class BasisSetData(Data):
 
     @classmethod
     def get_basis_groups(cls, filter_elements=None, user=None):
-        """
-        Return all names of groups of type BasisFamily,
-        possibly with some filters.
+        """Return all names of groups of type BasisFamily, possibly with some filters.
 
         :param filter_elements: A string or a list of strings.
                If present, returns only the groups that contains one Basis for
@@ -634,8 +632,8 @@ class BasisSetData(Data):
         """
         Upload a set of Basis Set files in a given group.
 
-        :param folder: a path containing all Basis Set files to be added.
-            Only files ending in set extension (case-insensitive) considered
+        :param folder: a path (str or pathlib.Path) containing all Basis Set files to be added.
+            Only files ending in set extension (case-sensitive) considered
         :param group_name: the name of the group to create. If it exists and is
             non-empty, a UniquenessError is raised.
         :param group_description: a string to be set as the group description.
@@ -649,20 +647,13 @@ class BasisSetData(Data):
         from aiida.orm import Group, User
         from aiida.common.exceptions import UniquenessError
 
-        if not os.path.isdir(folder):
+        if isinstance(folder, six.string_types):
+            folder = pathlib.Path(folder)
+
+        if not folder.is_dir():
             raise ValueError('folder must be a directory')
 
-        # only files, and only those ending with specified exension;
-        # go to the real file if it is a symlink
-        files = []
-        for i in os.listdir(folder):
-            if not os.path.isfile(os.path.join(folder, i)):
-                continue
-            if not i.lower().endswith(extension):
-                continue
-            files.append(os.path.realpath(os.path.join(folder, i)))
-
-        nfiles = len(files)
+        paths = [p.resolve() for p in folder.glob('*{}'.format(extension)) if p.is_file()]
 
         automatic_user = User.objects.get_default()
         group, group_created = Group.objects.get_or_create(label=group_name,
@@ -679,7 +670,7 @@ class BasisSetData(Data):
 
         # NOTE: GROUP SAVED ONLY AFTER CHECKS OF UNICITY
 
-        basis_and_created = _retrieve_basis_sets(files, stop_if_existing)
+        basis_and_created = retrieve_basis_sets(paths, stop_if_existing)
         # check whether basisset are unique per element
         elements = [(i[0].element, i[0].md5sum) for i in basis_and_created]
         # If group already exists, check also that I am not inserting more than
@@ -706,19 +697,8 @@ class BasisSetData(Data):
 
         # save the basis set in the database, and add them to group
         for basisset, created in basis_and_created:
-            if created:
-                if not dry_run:
-                    basisset.store()
-                # TODO what happened to aiidalogger?
-                # pylint: disable=logging-format-interpolation
-                # aiidalogger.debug(
-                # "New node {0} created for file {1}".format(
-                #     basisset.uuid, basisset.filename))
-            else:
-                pass
-                # pylint: disable=logging-format-interpolation
-                # aiidalogger.debug("Reusing node {0} for file {1}".format(
-                #     basisset.uuid, basisset.filename))
+            if created and not dry_run:
+                basisset.store()
 
         # Add elements to the group all together
         if not dry_run:
@@ -726,4 +706,4 @@ class BasisSetData(Data):
 
         nuploaded = len([_ for _, created in basis_and_created if created])
 
-        return nfiles, nuploaded
+        return len(paths), nuploaded
