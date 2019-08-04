@@ -1,41 +1,23 @@
 import sys
 
-from aiida.engine import run_get_node
 from aiida.cmdline.utils.common import get_workchain_report  # noqa: F401
+from aiida.engine import run_get_node
 from aiida.orm import Dict, RemoteData
 
-from aiida_crystal17.tests import get_resource_abspath
-from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
-
-from aiida_crystal17.workflows.crystal_props.cry_doss import CryPropertiesWorkChain
 from aiida_crystal17.data.input_params import CryInputParamsData
+from aiida_crystal17.tests import resource_context
+from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
+from aiida_crystal17.workflows.crystal_props.cry_doss import CryPropertiesWorkChain
 
 
 def test_init_prop_steps(db_test_app, data_regression):
-    """ test the workchains initial setup and validation steps """
+    """Test the workchains initial setup and validation steps."""
     if hasattr(CryPropertiesWorkChain, '_spec'):
         # TODO this is required while awaiting fix for aiidateam/aiida-core#3143
         del CryPropertiesWorkChain._spec
 
-    cry_calc = db_test_app.generate_calcjob_node(
-        'crystal17.main',
-        mark_completed=True,
-        remote_path=get_resource_abspath('crystal', 'mgo_sto3g_scf'),
-        input_nodes={
-            'parameters': CryInputParamsData(data={
-                'title': 'MgO Bulk',
-                'scf': {
-                    'k_points': (8, 8),
-                    'GUESSP': True
-                }
-            })
-        })
-
-    wc_builder = CryPropertiesWorkChain.get_builder()
-    wc_builder.test_run = True
-    wc_builder.wf_folder = cry_calc.outputs.remote_folder
-    wc_builder.doss.code = db_test_app.get_or_create_code('crystal17.doss')
-    wc_builder.doss.parameters = Dict(dict={
+    cry_parameters = CryInputParamsData(data={'title': 'MgO Bulk', 'scf': {'k_points': (8, 8), 'GUESSP': True}})
+    doss_parameters = Dict(dict={
         'shrink_is': 18,
         'shrink_isp': 36,
         'npoints': 100,
@@ -43,11 +25,24 @@ def test_init_prop_steps(db_test_app, data_regression):
         'band_maximum': 10,
         'band_units': 'eV'
     })
-    wc_builder.doss.metadata = db_test_app.get_default_metadata()
 
-    wkchain, step_outcomes, context = db_test_app.generate_context(
-        CryPropertiesWorkChain, wc_builder,
-        ['check_remote_folder', 'submit_scf_calculation', 'submit_doss_calculation'])
+    with resource_context('crystal', 'mgo_sto3g_scf') as path:
+
+        cry_calc = db_test_app.generate_calcjob_node('crystal17.main',
+                                                     mark_completed=True,
+                                                     remote_path=str(path),
+                                                     input_nodes={'parameters': cry_parameters})
+
+        wc_builder = CryPropertiesWorkChain.get_builder()
+        wc_builder.test_run = True
+        wc_builder.wf_folder = cry_calc.outputs.remote_folder
+        wc_builder.doss.code = db_test_app.get_or_create_code('crystal17.doss')
+        wc_builder.doss.parameters = doss_parameters
+        wc_builder.doss.metadata = db_test_app.get_default_metadata()
+
+        wkchain, step_outcomes, context = db_test_app.generate_context(
+            CryPropertiesWorkChain, wc_builder,
+            ['check_remote_folder', 'submit_scf_calculation', 'submit_doss_calculation'])
 
     data_regression.check(context)
 
@@ -61,18 +56,12 @@ def test_init_prop_steps(db_test_app, data_regression):
 
 
 def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression):
-    """ test the workchains when a remote folder is supplied that contains the wavefunction file """
+    """Test the workchains when a remote folder is supplied that contains the wavefunction file."""
     if hasattr(CryPropertiesWorkChain, '_spec'):
         # TODO this is required while awaiting fix for aiidateam/aiida-core#3143
         del CryPropertiesWorkChain._spec
 
-    remote_folder = RemoteData(remote_path=get_resource_abspath('doss', 'mgo_sto3g_scf'),
-                               computer=db_test_app.get_or_create_computer())
-
-    wc_builder = CryPropertiesWorkChain.get_builder()
-    wc_builder.wf_folder = remote_folder
-    wc_builder.doss.code = db_test_app.get_or_create_code('crystal17.doss')
-    wc_builder.doss.parameters = Dict(dict={
+    doss_parameters = Dict(dict={
         'shrink_is': 18,
         'shrink_isp': 36,
         'npoints': 100,
@@ -80,10 +69,17 @@ def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_s
         'band_maximum': 10,
         'band_units': 'eV'
     })
-    wc_builder.doss.metadata = db_test_app.get_default_metadata()
 
-    outputs, wc_node = run_get_node(wc_builder)
-    sys.stderr.write(get_workchain_report(wc_node, 'REPORT'))
+    with resource_context('doss', 'mgo_sto3g_scf') as path:
+
+        wc_builder = CryPropertiesWorkChain.get_builder()
+        wc_builder.wf_folder = RemoteData(remote_path=str(path), computer=db_test_app.get_or_create_computer())
+        wc_builder.doss.code = db_test_app.get_or_create_code('crystal17.doss')
+        wc_builder.doss.parameters = doss_parameters
+        wc_builder.doss.metadata = db_test_app.get_default_metadata()
+
+        outputs, wc_node = run_get_node(wc_builder)
+        sys.stderr.write(get_workchain_report(wc_node, 'REPORT'))
 
     wk_attributes = wc_node.attributes
     for key in ['job_id', 'last_jobinfo', 'scheduler_lastchecktime', 'version']:
@@ -98,40 +94,14 @@ def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_s
 
 
 def test_run_prop_mgo_with_scf(db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression):
-    """ test the workchains when a remote folder is supplied that does not contain the wavefunction file """
+    """Test the workchains when a remote folder is supplied that does not contain the wavefunction file."""
     if hasattr(CryPropertiesWorkChain, '_spec'):
         # TODO this is required while awaiting fix for aiidateam/aiida-core#3143
         del CryPropertiesWorkChain._spec
 
-    structure, symmetry = get_structure_and_symm('MgO')
+    cry_parameters = CryInputParamsData(data={'title': 'MgO Bulk', 'scf': {'k_points': (8, 8), 'post_scf': ['PPAN']}})
 
-    cry_calc = db_test_app.generate_calcjob_node(
-        'crystal17.main',
-        mark_completed=True,
-        remote_path=get_resource_abspath('crystal', 'mgo_sto3g_scf'),
-        input_nodes={
-            'parameters':
-                CryInputParamsData(data={
-                    'title': 'MgO Bulk',
-                    'scf': {
-                        'k_points': (8, 8),
-                        'post_scf': ['PPAN']
-                    }
-                }),
-            'code':
-                db_test_app.get_or_create_code('crystal17.main'),
-            'structure':
-                structure,
-            'symmetry':
-                symmetry,
-            'basissets': {k: v for k, v in upload_basis_set_family().items() if k in ['Mg', 'O']}
-        },
-        options=db_test_app.get_default_metadata()['options'])
-
-    wc_builder = CryPropertiesWorkChain.get_builder()
-    wc_builder.wf_folder = cry_calc.outputs.remote_folder
-    wc_builder.doss.code = db_test_app.get_or_create_code('crystal17.doss')
-    wc_builder.doss.parameters = Dict(dict={
+    doss_parameters = Dict(dict={
         'shrink_is': 18,
         'shrink_isp': 36,
         'npoints': 100,
@@ -139,11 +109,33 @@ def test_run_prop_mgo_with_scf(db_test_app, get_structure_and_symm, upload_basis
         'band_maximum': 10,
         'band_units': 'eV'
     })
-    wc_builder.doss.metadata = db_test_app.get_default_metadata()
-    wc_builder.clean_workdir = True
 
-    outputs, wc_node = run_get_node(wc_builder)
-    sys.stderr.write(get_workchain_report(wc_node, 'REPORT'))
+    structure, symmetry = get_structure_and_symm('MgO')
+
+    with resource_context('crystal', 'mgo_sto3g_scf') as path:
+
+        cry_calc = db_test_app.generate_calcjob_node(
+            'crystal17.main',
+            mark_completed=True,
+            remote_path=str(path),
+            input_nodes={
+                'parameters': cry_parameters,
+                'code': db_test_app.get_or_create_code('crystal17.main'),
+                'structure': structure,
+                'symmetry': symmetry,
+                'basissets': {k: v for k, v in upload_basis_set_family().items() if k in ['Mg', 'O']}
+            },
+            options=db_test_app.get_default_metadata()['options'])
+
+        wc_builder = CryPropertiesWorkChain.get_builder()
+        wc_builder.wf_folder = cry_calc.outputs.remote_folder
+        wc_builder.doss.code = db_test_app.get_or_create_code('crystal17.doss')
+        wc_builder.doss.parameters = doss_parameters
+        wc_builder.doss.metadata = db_test_app.get_default_metadata()
+        wc_builder.clean_workdir = True
+
+        outputs, wc_node = run_get_node(wc_builder)
+        sys.stderr.write(get_workchain_report(wc_node, 'REPORT'))
 
     wk_attributes = wc_node.attributes
     for key in ['job_id', 'last_jobinfo', 'scheduler_lastchecktime', 'version']:

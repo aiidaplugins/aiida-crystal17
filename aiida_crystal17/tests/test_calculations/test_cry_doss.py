@@ -1,26 +1,27 @@
-""" Tests for main CRYSTAL17 calculation
-
-"""
+"""Tests for CRYSTAL17 properties calculation."""
 from textwrap import dedent
+
+import pytest
 
 from aiida.engine import run_get_node
 from aiida.orm import Dict, RemoteData
-import pytest
 
-from aiida_crystal17.tests import get_resource_abspath
+from aiida_crystal17.tests import resource_context
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
 def test_calcjob_submit_mgo(db_test_app):
     # type: (AiidaTestApp, bool) -> None
     """Test submitting a calculation."""
-    code = db_test_app.get_or_create_code('crystal17.doss')
-    remote = RemoteData(remote_path=get_resource_abspath('doss', 'mgo_sto3g_scf'),
-                        computer=db_test_app.get_or_create_computer())
-
-    # set up calculation
-    builder = code.get_builder()
-    builder.metadata = {
+    parameters = Dict(dict={
+        'shrink_is': 18,
+        'shrink_isp': 36,
+        'npoints': 100,
+        'band_minimum': -10,
+        'band_maximum': 10,
+        'band_units': 'eV'
+    })
+    metadata = {
         'options': {
             'withmpi': False,
             'resources': {
@@ -32,31 +33,31 @@ def test_calcjob_submit_mgo(db_test_app):
         },
         'dry_run': True
     }
-    builder.parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
-        'npoints': 100,
-        'band_minimum': -10,
-        'band_maximum': 10,
-        'band_units': 'eV'
-    })
-    builder.wf_folder = remote
 
-    process_options = builder.process_class(inputs=builder).metadata.options
+    # set up calculation
+    builder = db_test_app.get_or_create_code('crystal17.doss').get_builder()
+    builder.metadata = metadata
+    builder.parameters = parameters
 
-    with db_test_app.sandbox_folder() as folder:
-        calc_info = db_test_app.generate_calcinfo('crystal17.doss', folder, builder)
+    with resource_context('doss', 'mgo_sto3g_scf') as path:
 
-        # Check the attributes of the returned `CalcInfo`
-        assert calc_info.codes_info[0].cmdline_params == []
-        assert sorted(calc_info.local_copy_list) == sorted([])
-        assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.25'])
-        assert sorted(calc_info.retrieve_temporary_list) == sorted([])
+        builder.wf_folder = RemoteData(remote_path=str(path), computer=db_test_app.get_or_create_computer())
 
-        assert sorted(folder.get_content_list()) == sorted([process_options.input_file_name])
+        process_options = builder.process_class(inputs=builder).metadata.options
 
-        with folder.open(process_options.input_file_name) as f:
-            input_content = f.read()
+        with db_test_app.sandbox_folder() as folder:
+            calc_info = db_test_app.generate_calcinfo('crystal17.doss', folder, builder)
+
+            # Check the attributes of the returned `CalcInfo`
+            assert calc_info.codes_info[0].cmdline_params == []
+            assert sorted(calc_info.local_copy_list) == sorted([])
+            assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'fort.25'])
+            assert sorted(calc_info.retrieve_temporary_list) == sorted([])
+
+            assert sorted(folder.get_content_list()) == sorted([process_options.input_file_name])
+
+            with folder.open(process_options.input_file_name) as f:
+                input_content = f.read()
 
     expected_input = dedent("""\
         NEWK
@@ -74,13 +75,15 @@ def test_calcjob_submit_mgo(db_test_app):
 def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
-    code = db_test_app.get_or_create_code('crystal17.doss')
-    remote = RemoteData(remote_path=get_resource_abspath('doss', 'mgo_sto3g_scf'),
-                        computer=db_test_app.get_or_create_computer())
-
-    # set up calculation
-    builder = code.get_builder()
-    builder.metadata = {
+    parameters = Dict(dict={
+        'shrink_is': 18,
+        'shrink_isp': 36,
+        'npoints': 100,
+        'band_minimum': -10,
+        'band_maximum': 10,
+        'band_units': 'eV'
+    })
+    metadata = {
         'options': {
             'withmpi': False,
             'resources': {
@@ -91,18 +94,16 @@ def test_run_mgo_scf(db_test_app, data_regression):
             'input_wf_name': 'fort.9'
         }
     }
-    builder.parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
-        'npoints': 100,
-        'band_minimum': -10,
-        'band_maximum': 10,
-        'band_units': 'eV'
-    })
-    builder.wf_folder = remote
 
-    output = run_get_node(builder)
-    calc_node = output.node
+    # set up calculation
+    builder = db_test_app.get_or_create_code('crystal17.doss').get_builder()
+    builder.metadata = metadata
+    builder.parameters = parameters
+
+    with resource_context('doss', 'mgo_sto3g_scf') as path:
+        builder.wf_folder = RemoteData(remote_path=str(path), computer=db_test_app.get_or_create_computer())
+        output = run_get_node(builder)
+        calc_node = output.node
 
     db_test_app.check_calculation(calc_node, ['results', 'arrays'])
 

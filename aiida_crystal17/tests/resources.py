@@ -11,11 +11,6 @@ except ImportError:
 TEST_FILES = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
 
 
-def get_resource_abspath(*args):
-    """Return an absolute path to the resource."""
-    return os.path.abspath(os.path.join(TEST_FILES, *args))
-
-
 @contextmanager
 def resource_context(*args):
     """Provide a context manager that yields a pathlib.Path object to a resource directory.
@@ -32,7 +27,7 @@ def resource_context(*args):
     yield path.absolute()
 
 
-def read_resource_text(*args, **kwargs):
+def read_resource_text(*args, **kwargs):  # Note: can't use encoding=None in python 2.7
     """Return the decoded string of the resource.
 
     The decoding-related arguments have the same semantics as those of
@@ -49,14 +44,28 @@ def read_resource_binary(*args):
         return handle.read()
 
 
-def open_resource_text(*args, **kwargs):
-    """Return a file-like object opened for text reading of the resource."""
+def open_resource_text(*args, **kwargs):  # Note: can't use encoding=None in python 2.7
+    """Return a file-like object opened for text reading of the resource.
+
+    If the resource does not already exist on its own on the file system,
+    a temporary file will be created. If the file was created, it
+    will be deleted upon exiting the context manager (no exception is
+    raised if the directory was deleted prior to the context manager
+    exiting).
+    """
     encoding = kwargs.pop('encoding', None)
     return io.open(os.path.join(TEST_FILES, *args), encoding=encoding)
 
 
 def open_resource_binary(*args):
-    """Return a file-like object opened for binary reading of the resource."""
+    """Return a file-like object opened for binary reading of the resource.
+
+    If the resource does not already exist on its own on the file system,
+    a temporary file will be created. If the file was created, it
+    will be deleted upon exiting the context manager (no exception is
+    raised if the directory was deleted prior to the context manager
+    exiting).
+    """
     return io.open(os.path.join(TEST_FILES, *args), 'rb')
 
 

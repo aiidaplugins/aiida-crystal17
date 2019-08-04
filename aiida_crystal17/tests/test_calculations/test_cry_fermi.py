@@ -4,7 +4,7 @@ import pytest
 from aiida.engine import run_get_node
 from aiida.orm import Int, RemoteData
 
-from aiida_crystal17.tests import get_resource_abspath
+from aiida_crystal17.tests import resource_context
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
@@ -12,13 +12,7 @@ from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
-    code = db_test_app.get_or_create_code('crystal17.fermi')
-    remote = RemoteData(remote_path=get_resource_abspath('fermi', 'mgo_sto3g_scf'),
-                        computer=db_test_app.get_or_create_computer())
-
-    # set up calculation
-    builder = code.get_builder()
-    builder.metadata = {
+    metadata = {
         'options': {
             'withmpi': False,
             'resources': {
@@ -29,12 +23,18 @@ def test_run_mgo_scf(db_test_app, data_regression):
             'input_wf_name': 'fort.9'
         }
     }
+
+    # set up calculation
+    builder = db_test_app.get_or_create_code('crystal17.fermi').get_builder()
+    builder.metadata = metadata
     builder.shrink_is = Int(18)
     builder.shrink_isp = Int(36)
-    builder.wf_folder = remote
 
-    output = run_get_node(builder)
-    calc_node = output.node
+    with resource_context('fermi', 'mgo_sto3g_scf') as path:
+        builder.wf_folder = RemoteData(remote_path=str(path), computer=db_test_app.get_or_create_computer())
+
+        output = run_get_node(builder)
+        calc_node = output.node
 
     db_test_app.check_calculation(calc_node, ['results', 'fermi_energy'])
 

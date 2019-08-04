@@ -12,7 +12,7 @@ from aiida_crystal17.common import recursive_round
 from aiida_crystal17.data.basis_set import BasisSetData
 from aiida_crystal17.data.input_params import CryInputParamsData
 from aiida_crystal17.data.kinds import KindData
-from aiida_crystal17.tests import get_resource_abspath, open_resource_text
+from aiida_crystal17.tests import open_resource_text, resource_context
 from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 
@@ -202,16 +202,15 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
                                            metadata=db_test_app.get_default_metadata(with_mpi=True),
                                            unflatten=True)
 
-    remote = orm.RemoteData(computer=code.computer,
-                            remote_path=get_resource_abspath('crystal', 'nio_sto3g_afm_scf_maxcyc'))
-    builder.wf_folder = remote
+    with resource_context('crystal', 'nio_sto3g_afm_scf_maxcyc') as path:
+        builder.wf_folder = orm.RemoteData(computer=code.computer, remote_path=str(path))
 
-    process_options = builder.process_class(inputs=builder).metadata.options
+        process_options = builder.process_class(inputs=builder).metadata.options
 
-    with db_test_app.sandbox_folder() as folder:
-        calc_info = db_test_app.generate_calcinfo('crystal17.main', folder, builder)
-        with folder.open(process_options.input_file_name) as f:
-            input_content = f.read()
+        with db_test_app.sandbox_folder() as folder:
+            calc_info = db_test_app.generate_calcinfo('crystal17.main', folder, builder)
+            with folder.open(process_options.input_file_name) as f:
+                input_content = f.read()
 
     file_regression.check(input_content)
     data_regression.check(sanitize_calc_info(calc_info))
