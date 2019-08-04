@@ -12,9 +12,8 @@ try:
 except ImportError:
     import pathlib2 as pathlib  # noqa: F401
 
-# Note: RESOURCE_PATH would not be available in a zipped package
-# RESOURCE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
-RESOURCE_MODULE = resource_module.__package__
+# __package__ returns None in python 2.7
+RESOURCE_MODULE = resource_module.__package__ or 'aiida_crystal17.tests.raw_files'
 
 
 @contextmanager
