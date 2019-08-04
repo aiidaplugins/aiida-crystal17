@@ -17,7 +17,7 @@ from aiida.orm.utils.builders.code import CodeBuilder
 from aiida.plugins import DataFactory, WorkflowFactory
 from aiida.plugins.entry_point import get_entry_point
 
-from aiida_crystal17.tests import get_resource_path, get_test_structure
+from aiida_crystal17.tests import get_test_structure, resource_context
 
 _COMPUTER_NAME = 'icl_cx1_test'
 _CODE_LABEL = 'cry17-main-cx1_test'
@@ -113,11 +113,12 @@ def submit_nio_afm_fullopt():
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
-    BasisSetData.upload_basisset_family(get_resource_path('basis_sets', 'sto3g'),
-                                        'sto3g',
-                                        'minimal basis sets',
-                                        stop_if_existing=False,
-                                        extension='.basis')
+    with resource_context('basis_sets', 'sto3g') as path:
+        BasisSetData.upload_basisset_family(path,
+                                            'sto3g',
+                                            'minimal basis sets',
+                                            stop_if_existing=False,
+                                            extension='.basis')
 
     # set up calculation
     process_class = code.get_builder().process_class

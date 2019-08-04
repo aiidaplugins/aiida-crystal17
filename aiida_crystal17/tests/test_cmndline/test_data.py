@@ -5,7 +5,7 @@ from click.testing import CliRunner
 from aiida_crystal17.cmndline.symmetry import symmetry
 from aiida_crystal17.cmndline.basis_set import basisset
 from aiida_crystal17.data.basis_set import BasisSetData
-from aiida_crystal17.tests import get_resource_path, open_resource_text
+from aiida_crystal17.tests import open_resource_text, resource_context
 
 
 def test_symmetry_show(db_test_app):
@@ -69,9 +69,11 @@ def test_basis_show(db_test_app):
 
 def test_basis_upload(db_test_app):
 
-    path = get_resource_path('basis_sets', 'sto3g')
     runner = CliRunner()
-    result = runner.invoke(basisset, ['uploadfamily', '--path', path, '--name', 'sto3g', '--description', 'STO3G'])
+    with resource_context('basis_sets', 'sto3g') as path:
+        result = runner.invoke(
+            basisset,
+            ['uploadfamily', '--path', str(path), '--name', 'sto3g', '--description', 'STO3G'])
 
     print(result.output)
 

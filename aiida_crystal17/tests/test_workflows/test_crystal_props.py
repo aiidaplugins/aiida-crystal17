@@ -4,7 +4,7 @@ from aiida.engine import run_get_node
 from aiida.cmdline.utils.common import get_workchain_report  # noqa: F401
 from aiida.orm import Dict, RemoteData
 
-from aiida_crystal17.tests import get_resource_path
+from aiida_crystal17.tests import get_resource_abspath
 from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 from aiida_crystal17.workflows.crystal_props.cry_doss import CryPropertiesWorkChain
@@ -20,7 +20,7 @@ def test_init_prop_steps(db_test_app, data_regression):
     cry_calc = db_test_app.generate_calcjob_node(
         'crystal17.main',
         mark_completed=True,
-        remote_path=get_resource_path('crystal', 'mgo_sto3g_scf'),
+        remote_path=get_resource_abspath('crystal', 'mgo_sto3g_scf'),
         input_nodes={
             'parameters': CryInputParamsData(data={
                 'title': 'MgO Bulk',
@@ -66,7 +66,7 @@ def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_s
         # TODO this is required while awaiting fix for aiidateam/aiida-core#3143
         del CryPropertiesWorkChain._spec
 
-    remote_folder = RemoteData(remote_path=get_resource_path('doss', 'mgo_sto3g_scf'),
+    remote_folder = RemoteData(remote_path=get_resource_abspath('doss', 'mgo_sto3g_scf'),
                                computer=db_test_app.get_or_create_computer())
 
     wc_builder = CryPropertiesWorkChain.get_builder()
@@ -108,7 +108,7 @@ def test_run_prop_mgo_with_scf(db_test_app, get_structure_and_symm, upload_basis
     cry_calc = db_test_app.generate_calcjob_node(
         'crystal17.main',
         mark_completed=True,
-        remote_path=get_resource_path('crystal', 'mgo_sto3g_scf'),
+        remote_path=get_resource_abspath('crystal', 'mgo_sto3g_scf'),
         input_nodes={
             'parameters':
                 CryInputParamsData(data={

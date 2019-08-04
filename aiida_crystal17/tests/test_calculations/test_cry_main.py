@@ -1,6 +1,4 @@
-""" Tests for main CRYSTAL17 calculation
-
-"""
+"""Tests for main CRYSTAL17 calculation."""
 import os
 
 import pytest
@@ -14,7 +12,7 @@ from aiida_crystal17.common import recursive_round
 from aiida_crystal17.data.basis_set import BasisSetData
 from aiida_crystal17.data.input_params import CryInputParamsData
 from aiida_crystal17.data.kinds import KindData
-from aiida_crystal17.tests import get_resource_path, open_resource_text
+from aiida_crystal17.tests import get_resource_abspath, open_resource_text
 from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 
@@ -55,7 +53,6 @@ def test_create_builder(db_test_app, get_structure):
 @pytest.mark.parametrize('input_symmetry', (False, True))
 def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_regression, file_regression):
     """Test submitting a calculation."""
-
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
@@ -206,7 +203,7 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
                                            unflatten=True)
 
     remote = orm.RemoteData(computer=code.computer,
-                            remote_path=get_resource_path('crystal', 'nio_sto3g_afm_scf_maxcyc'))
+                            remote_path=get_resource_abspath('crystal', 'nio_sto3g_afm_scf_maxcyc'))
     builder.wf_folder = remote
 
     process_options = builder.process_class(inputs=builder).metadata.options
@@ -224,7 +221,6 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
 def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
-
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -295,8 +291,7 @@ def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, da
                     reason='the calculation takes about 50 minutes to run')
 def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test running a calculation"""
-
+    """Test running a calculation."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters

@@ -7,8 +7,8 @@ import pytest
 
 from aiida.manage.fixtures import fixture_manager
 
-from aiida_crystal17.tests import (get_resource_path, get_test_structure, get_test_structure_and_symm,
-                                   open_resource_binary)
+from aiida_crystal17.tests import (get_test_structure, get_test_structure_and_symm, open_resource_binary,
+                                   resource_context)
 from aiida_crystal17.tests.utils import AiidaTestApp
 
 
@@ -88,11 +88,12 @@ def upload_basis_set_family():
     from aiida_crystal17.data.basis_set import BasisSetData
 
     def _upload(folder_name='sto3g', group_name='sto3g', stop_if_existing=True):
-        BasisSetData.upload_basisset_family(get_resource_path('basis_sets', folder_name),
-                                            group_name,
-                                            'minimal basis sets',
-                                            stop_if_existing=stop_if_existing,
-                                            extension='.basis')
+        with resource_context('basis_sets', folder_name) as path:
+            BasisSetData.upload_basisset_family(path,
+                                                group_name,
+                                                'minimal basis sets',
+                                                stop_if_existing=stop_if_existing,
+                                                extension='.basis')
         return BasisSetData.get_basis_group_map(group_name)
 
     return _upload

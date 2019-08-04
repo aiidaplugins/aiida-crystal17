@@ -1,13 +1,11 @@
-"""
-tests BasisSetData
-"""
+"""Tests for BasisSetData."""
 import pytest
 from six import StringIO
 
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.data.basis_set import BasisSetData
-from aiida_crystal17.tests import get_resource_path, open_resource_text, read_resource_text
+from aiida_crystal17.tests import open_resource_text, read_resource_text, resource_context
 
 
 def test_create_single_from_file(db_test_app):
@@ -88,8 +86,8 @@ def test_create_single_from_stringio(db_test_app):
 def test_create_group(db_test_app):
     db_test_app.get_or_create_computer()
 
-    nfiles, nuploaded = BasisSetData.upload_basisset_family(get_resource_path('basis_sets', 'sto3g'), 'sto3g',
-                                                            'group of sto3g basis sets')
+    with resource_context('basis_sets', 'sto3g') as path:
+        nfiles, nuploaded = BasisSetData.upload_basisset_family(path, 'sto3g', 'group of sto3g basis sets')
 
     assert (nfiles, nuploaded) == (3, 3)
 
@@ -103,23 +101,25 @@ def test_create_group(db_test_app):
 
     # try uploading the files to a second group
     with pytest.raises(ValueError):
-        BasisSetData.upload_basisset_family(get_resource_path('basis_sets', 'sto3g'),
-                                            'another_sto3g',
-                                            'another group of sto3g basis sets',
-                                            stop_if_existing=True)
+        with resource_context('basis_sets', 'sto3g') as path:
+            BasisSetData.upload_basisset_family(path,
+                                                'another_sto3g',
+                                                'another group of sto3g basis sets',
+                                                stop_if_existing=True)
 
-    nfiles, nuploaded = BasisSetData.upload_basisset_family(get_resource_path('basis_sets', 'sto3g'),
-                                                            'another_sto3g',
-                                                            'another group of sto3g basis sets',
-                                                            stop_if_existing=False)
+    with resource_context('basis_sets', 'sto3g') as path:
+        nfiles, nuploaded = BasisSetData.upload_basisset_family(path,
+                                                                'another_sto3g',
+                                                                'another group of sto3g basis sets',
+                                                                stop_if_existing=False)
     assert (nfiles, nuploaded) == (3, 0)
 
 
 def test_bases_from_struct(db_test_app):
     db_test_app.get_or_create_computer()
 
-    nfiles, nuploaded = BasisSetData.upload_basisset_family(get_resource_path('basis_sets', 'sto3g'), 'sto3g',
-                                                            'group of sto3g basis sets')
+    with resource_context('basis_sets', 'sto3g') as path:
+        nfiles, nuploaded = BasisSetData.upload_basisset_family(path, 'sto3g', 'group of sto3g basis sets')
 
     # MgO
     import ase  # noqa: F401

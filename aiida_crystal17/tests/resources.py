@@ -1,13 +1,35 @@
 """Retrieval of test resources."""
+from contextlib import contextmanager
 import io
 import os
+
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib  # noqa: F401
 
 TEST_FILES = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
 
 
-def get_resource_path(*args):
+def get_resource_abspath(*args):
     """Return an absolute path to the resource."""
-    return os.path.join(TEST_FILES, *args)
+    return os.path.abspath(os.path.join(TEST_FILES, *args))
+
+
+@contextmanager
+def resource_context(*args):
+    """Provide a context manager that yields a pathlib.Path object to a resource directory.
+
+    If the resource does not already exist on its own on the file system,
+    a temporary directory/file will be created. If the directory/file was created, it
+    will be deleted upon exiting the context manager (no exception is
+    raised if the directory was deleted prior to the context manager
+    exiting).
+    """
+    path = pathlib.Path(os.path.join(TEST_FILES, *args))
+    if not (path.is_dir() or path.is_file()):
+        raise IOError('{} is not an existing directory or file'.format(path))
+    yield path.absolute()
 
 
 def read_resource_text(*args, **kwargs):

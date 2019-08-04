@@ -7,7 +7,7 @@ from aiida.engine import run_get_node
 from aiida.orm import Dict, RemoteData
 import pytest
 
-from aiida_crystal17.tests import get_resource_path
+from aiida_crystal17.tests import get_resource_abspath
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
@@ -15,7 +15,7 @@ def test_calcjob_submit_mgo(db_test_app):
     # type: (AiidaTestApp, bool) -> None
     """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('crystal17.doss')
-    remote = RemoteData(remote_path=get_resource_path('doss', 'mgo_sto3g_scf'),
+    remote = RemoteData(remote_path=get_resource_abspath('doss', 'mgo_sto3g_scf'),
                         computer=db_test_app.get_or_create_computer())
 
     # set up calculation
@@ -75,7 +75,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
     code = db_test_app.get_or_create_code('crystal17.doss')
-    remote = RemoteData(remote_path=get_resource_path('doss', 'mgo_sto3g_scf'),
+    remote = RemoteData(remote_path=get_resource_abspath('doss', 'mgo_sto3g_scf'),
                         computer=db_test_app.get_or_create_computer())
 
     # set up calculation

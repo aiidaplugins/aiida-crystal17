@@ -3,7 +3,7 @@ import six
 
 from aiida.orm import FolderData
 from aiida.cmdline.utils.common import get_calcjob_report  # noqa: F401
-from aiida_crystal17.tests import get_resource_path, open_resource_binary
+from aiida_crystal17.tests import open_resource_binary, resource_context
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -103,8 +103,11 @@ def test_failed_optimisation(db_test_app, plugin_name, data_regression):
         retrieved.put_object_from_filelike(handle, '_scheduler-stderr.txt', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node,
-                                                        get_resource_path('crystal', 'nio_sto3g_afm_opt_walltime'))
+
+    with resource_context('crystal', 'nio_sto3g_afm_opt_walltime') as path:
+        results, calcfunction = db_test_app.parse_from_node(plugin_name,
+                                                            calc_node,
+                                                            retrieved_temporary_folder=str(path))
 
     # print(get_calcjob_report(calc_node))
 
