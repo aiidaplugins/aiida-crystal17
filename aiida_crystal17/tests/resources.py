@@ -1,7 +1,8 @@
 """Retrieval of test resources."""
 from contextlib import contextmanager
-import io
 import os
+
+import importlib_resources
 
 try:
     import pathlib
@@ -9,11 +10,12 @@ except ImportError:
     import pathlib2 as pathlib  # noqa: F401
 
 TEST_FILES = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
+TEST_MODULE = 'aiida_crystal17.tests.raw_files'
 
 
 @contextmanager
 def resource_context(*args):
-    """Provide a context manager that yields a pathlib.Path object to a resource directory.
+    """Provide a context manager that yields a pathlib.Path object to a resource file or directory.
 
     If the resource does not already exist on its own on the file system,
     a temporary directory/file will be created. If the directory/file was created, it
@@ -21,6 +23,8 @@ def resource_context(*args):
     raised if the directory was deleted prior to the context manager
     exiting).
     """
+    if len(args) == 0:
+        raise TypeError('must provide a path')
     path = pathlib.Path(os.path.join(TEST_FILES, *args))
     if not (path.is_dir() or path.is_file()):
         raise IOError('{} is not an existing directory or file'.format(path))
@@ -33,15 +37,21 @@ def read_resource_text(*args, **kwargs):  # Note: can't use encoding=None in pyt
     The decoding-related arguments have the same semantics as those of
     bytes.decode().
     """
-    encoding = kwargs.pop('encoding', None)
-    with io.open(os.path.join(TEST_FILES, *args), encoding=encoding) as handle:
-        return handle.read()
+    if len(args) == 0:
+        raise TypeError('must provide a path')
+    file_name = args[-1]
+    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    encoding = kwargs.pop('encoding', 'utf-8')
+    return importlib_resources.read_text(package, file_name, encoding)
 
 
 def read_resource_binary(*args):
     """Return the binary contents of the resource."""
-    with io.open(os.path.join(TEST_FILES, *args), mode='rb') as handle:
-        return handle.read()
+    if len(args) == 0:
+        raise TypeError('must provide a path')
+    file_name = args[-1]
+    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    return importlib_resources.read_binary(package, file_name)
 
 
 def open_resource_text(*args, **kwargs):  # Note: can't use encoding=None in python 2.7
@@ -53,8 +63,12 @@ def open_resource_text(*args, **kwargs):  # Note: can't use encoding=None in pyt
     raised if the directory was deleted prior to the context manager
     exiting).
     """
-    encoding = kwargs.pop('encoding', None)
-    return io.open(os.path.join(TEST_FILES, *args), encoding=encoding)
+    if len(args) == 0:
+        raise TypeError('must provide a path')
+    file_name = args[-1]
+    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    encoding = kwargs.pop('encoding', 'utf-8')
+    return importlib_resources.open_text(package, file_name, encoding)
 
 
 def open_resource_binary(*args):
@@ -66,7 +80,11 @@ def open_resource_binary(*args):
     raised if the directory was deleted prior to the context manager
     exiting).
     """
-    return io.open(os.path.join(TEST_FILES, *args), 'rb')
+    if len(args) == 0:
+        raise TypeError('must provide a path')
+    file_name = args[-1]
+    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    return importlib_resources.open_binary(package, file_name)
 
 
 def get_test_structure(name):

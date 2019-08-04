@@ -73,7 +73,8 @@
     "ase>=3.12.0,<4.0.0; python_version >= '3'",
     "PyCifRW==4.2.1; python_version < '3'",
     "PyCifRW==4.4; python_version >= '3'",
-    "pathlib2; python_version < '3.4'"
+    "pathlib2; python_version < '3.4'",
+    "importlib_resources"
   ],
   "extras_require": {
     "testing": [

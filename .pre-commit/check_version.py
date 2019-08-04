@@ -18,7 +18,7 @@ FILEPATH_SETUP_JSON = os.path.join(ROOT_DIR, FILENAME_SETUP_JSON)
 
 
 def get_setup_json():
-    """Return the `setup.json` as a python dictionary """
+    """Return the `setup.json` as a python dictionary."""
     with open(FILEPATH_SETUP_JSON, 'r') as handle:
         setup_json = json.load(handle)  # , object_pairs_hook=OrderedDict)
 
@@ -27,6 +27,7 @@ def get_setup_json():
 
 @click.group()
 def cli():
+    """Command line interface for pre-commit checks."""
     pass
 
 
@@ -59,9 +60,7 @@ def validate_version():
 
 @cli.command('conda')
 def update_environment_yml():
-    """
-    Updates conda_dev_env.yml file for conda.
-    """
+    """Update conda_dev_env.yml file for conda."""
     import re
     from ruamel.yaml.comments import CommentedMap, CommentedSeq
     from ruamel.yaml import YAML
