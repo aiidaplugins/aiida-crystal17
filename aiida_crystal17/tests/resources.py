@@ -1,6 +1,7 @@
 """Retrieval of test resources."""
 from contextlib import contextmanager
-import os
+import shutil
+import tempfile
 
 import importlib_resources
 
@@ -9,12 +10,13 @@ try:
 except ImportError:
     import pathlib2 as pathlib  # noqa: F401
 
-TEST_FILES = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
-TEST_MODULE = 'aiida_crystal17.tests.raw_files'
+# Note: RESOURCE_PATH would not be available in a zipped package
+# RESOURCE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
+RESOURCE_MODULE = 'aiida_crystal17.tests.raw_files'
 
 
 @contextmanager
-def resource_context(*args):
+def resource_context(*args, **kwargs):
     """Provide a context manager that yields a pathlib.Path object to a resource file or directory.
 
     If the resource does not already exist on its own on the file system,
@@ -25,10 +27,32 @@ def resource_context(*args):
     """
     if len(args) == 0:
         raise TypeError('must provide a path')
-    path = pathlib.Path(os.path.join(TEST_FILES, *args))
-    if not (path.is_dir() or path.is_file()):
-        raise IOError('{} is not an existing directory or file'.format(path))
-    yield path.absolute()
+    final_name = args[-1]
+    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
+    ignore = kwargs.pop('ignore', ('.DS_Store', '__init__.py'))
+
+    if importlib_resources.is_resource(package, final_name):
+        # the resource is a file
+        with importlib_resources.path(package, final_name) as path:
+            yield path.absolute()
+    else:
+        # the resource is a directory
+        package = package + '.' + final_name
+        # TODO if the package folder exists on the file system it would be ideal to just return that
+        # but importlib_resources doesn't provide a public API for that
+        resources = [
+            c for c in importlib_resources.contents(package)
+            if importlib_resources.is_resource(package, c) and c not in ignore
+        ]
+        folder_path = pathlib.Path(tempfile.mkdtemp())
+        try:
+            for resource in resources:
+                with (folder_path / resource).open('wb') as handle:
+                    handle.write(importlib_resources.read_binary(package, resource))
+            yield folder_path
+        finally:
+            if folder_path.exists():
+                shutil.rmtree(str(folder_path))
 
 
 def read_resource_text(*args, **kwargs):  # Note: can't use encoding=None in python 2.7
@@ -40,7 +64,7 @@ def read_resource_text(*args, **kwargs):  # Note: can't use encoding=None in pyt
     if len(args) == 0:
         raise TypeError('must provide a path')
     file_name = args[-1]
-    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
     encoding = kwargs.pop('encoding', 'utf-8')
     return importlib_resources.read_text(package, file_name, encoding)
 
@@ -50,7 +74,7 @@ def read_resource_binary(*args):
     if len(args) == 0:
         raise TypeError('must provide a path')
     file_name = args[-1]
-    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
     return importlib_resources.read_binary(package, file_name)
 
 
@@ -66,7 +90,7 @@ def open_resource_text(*args, **kwargs):  # Note: can't use encoding=None in pyt
     if len(args) == 0:
         raise TypeError('must provide a path')
     file_name = args[-1]
-    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
     encoding = kwargs.pop('encoding', 'utf-8')
     return importlib_resources.open_text(package, file_name, encoding)
 
@@ -83,7 +107,7 @@ def open_resource_binary(*args):
     if len(args) == 0:
         raise TypeError('must provide a path')
     file_name = args[-1]
-    package = '.'.join([TEST_MODULE] + list(args[:-1]))
+    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
     return importlib_resources.open_binary(package, file_name)
 
 
