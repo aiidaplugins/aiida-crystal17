@@ -5,6 +5,8 @@ import tempfile
 
 import importlib_resources
 
+from aiida_crystal17.tests import raw_files as resource_module
+
 try:
     import pathlib
 except ImportError:
@@ -12,11 +14,11 @@ except ImportError:
 
 # Note: RESOURCE_PATH would not be available in a zipped package
 # RESOURCE_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_files')
-RESOURCE_MODULE = 'aiida_crystal17.tests.raw_files'
+RESOURCE_MODULE = resource_module.__package__
 
 
 @contextmanager
-def resource_context(*args, **kwargs):
+def resource_context(*path, **kwargs):
     """Provide a context manager that yields a pathlib.Path object to a resource file or directory.
 
     If the resource does not already exist on its own on the file system,
@@ -25,10 +27,10 @@ def resource_context(*args, **kwargs):
     raised if the directory was deleted prior to the context manager
     exiting).
     """
-    if len(args) == 0:
+    if len(path) == 0:
         raise TypeError('must provide a path')
-    final_name = args[-1]
-    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
+    final_name = path[-1]
+    package = '.'.join([RESOURCE_MODULE] + list(path[:-1]))
     ignore = kwargs.pop('ignore', ('.DS_Store', '__init__.py'))
 
     if importlib_resources.is_resource(package, final_name):
@@ -55,30 +57,30 @@ def resource_context(*args, **kwargs):
                 shutil.rmtree(str(folder_path))
 
 
-def read_resource_text(*args, **kwargs):  # Note: can't use encoding=None in python 2.7
+def read_resource_text(*path, **kwargs):  # Note: can't use encoding=None in python 2.7
     """Return the decoded string of the resource.
 
     The decoding-related arguments have the same semantics as those of
     bytes.decode().
     """
-    if len(args) == 0:
+    if len(path) == 0:
         raise TypeError('must provide a path')
-    file_name = args[-1]
-    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
+    file_name = path[-1]
+    package = '.'.join([RESOURCE_MODULE] + list(path[:-1]))
     encoding = kwargs.pop('encoding', 'utf-8')
     return importlib_resources.read_text(package, file_name, encoding)
 
 
-def read_resource_binary(*args):
+def read_resource_binary(*path):
     """Return the binary contents of the resource."""
-    if len(args) == 0:
+    if len(path) == 0:
         raise TypeError('must provide a path')
-    file_name = args[-1]
-    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
+    file_name = path[-1]
+    package = '.'.join([RESOURCE_MODULE] + list(path[:-1]))
     return importlib_resources.read_binary(package, file_name)
 
 
-def open_resource_text(*args, **kwargs):  # Note: can't use encoding=None in python 2.7
+def open_resource_text(*path, **kwargs):  # Note: can't use encoding=None in python 2.7
     """Return a file-like object opened for text reading of the resource.
 
     If the resource does not already exist on its own on the file system,
@@ -87,15 +89,15 @@ def open_resource_text(*args, **kwargs):  # Note: can't use encoding=None in pyt
     raised if the directory was deleted prior to the context manager
     exiting).
     """
-    if len(args) == 0:
+    if len(path) == 0:
         raise TypeError('must provide a path')
-    file_name = args[-1]
-    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
+    file_name = path[-1]
+    package = '.'.join([RESOURCE_MODULE] + list(path[:-1]))
     encoding = kwargs.pop('encoding', 'utf-8')
     return importlib_resources.open_text(package, file_name, encoding)
 
 
-def open_resource_binary(*args):
+def open_resource_binary(*path):
     """Return a file-like object opened for binary reading of the resource.
 
     If the resource does not already exist on its own on the file system,
@@ -104,10 +106,10 @@ def open_resource_binary(*args):
     raised if the directory was deleted prior to the context manager
     exiting).
     """
-    if len(args) == 0:
+    if len(path) == 0:
         raise TypeError('must provide a path')
-    file_name = args[-1]
-    package = '.'.join([RESOURCE_MODULE] + list(args[:-1]))
+    file_name = path[-1]
+    package = '.'.join([RESOURCE_MODULE] + list(path[:-1]))
     return importlib_resources.open_binary(package, file_name)
 
 
