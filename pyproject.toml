@@ -1,3 +1,28 @@
 [build-system]
 # Minimum requirements for the build system to execute.
 requires = ["setuptools", "wheel", "reentry>=1.3.0"]
+[tool.check-manifest]
+ignore = [
+    ".DS_Store", "*.pyc", "__pycache__",
+    "aiida_crystal17/tests/test_*/*",
+    "cry17_scripts",
+    "cry17_scripts/*",
+    "docs",
+    "docs/*",
+    ".vscode",
+    ".vscode/*",
+    ".condarc",
+    ".coveragerc",
+    ".flake8",
+    ".gitchangelog.rc",
+    ".pre-commit",
+    ".pre-commit-config.yaml",
+    ".pre-commit/check_version.py",
+    ".readthedocs.yml",
+    ".style.yapf",
+    "clean.sh",
+    "conda_dev_env.yml",
+    "conftest.py",
+    "doc8.ini",
+    "pytest.ini"
+]

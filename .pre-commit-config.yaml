@@ -66,3 +66,5 @@ repos:
       language: system
       types: [rst]
       name: doc8 - Lint the documentation.
+
+    # TODO could also add check-manifest
