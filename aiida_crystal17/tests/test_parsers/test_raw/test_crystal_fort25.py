@@ -1,9 +1,8 @@
-import os
 from textwrap import dedent
 
 import six
 
-from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.tests import open_resource_text
 from aiida_crystal17.common import recursive_round
 from aiida_crystal17.parsers.raw.doss_input import (read_doss_contents, create_doss_content)
 from aiida_crystal17.parsers.raw.crystal_fort25 import parse_crystal_fort25_aiida
@@ -62,8 +61,7 @@ def test_create_doss_content(file_regression):
 
 
 def test_read_crystal_fort25(data_regression):
-    with open(os.path.join(TEST_FILES, 'doss', 'cubic_rocksalt_orbitals',
-                           'cubic-rocksalt_2x1_pdos.doss.f25')) as handle:
+    with open_resource_text('doss', 'cubic_rocksalt_orbitals', 'cubic-rocksalt_2x1_pdos.doss.f25') as handle:
         data, arrays = parse_crystal_fort25_aiida(handle, 'dummy_parser_class')
 
     data_regression.check({'results': recursive_round(data, 9), 'arrays': recursive_round(arrays, 9)})

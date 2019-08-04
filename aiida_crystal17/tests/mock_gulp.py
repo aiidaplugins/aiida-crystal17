@@ -16,13 +16,13 @@ to create a hashkey:
 
 """
 import hashlib
+import io
 import os
 import sys
-from shutil import copyfile
 
 import six
 
-import aiida_crystal17.tests as tests
+from aiida_crystal17.tests import read_resource_binary, read_resource_text
 
 # map of input file hashes to output files
 hash_map = {
@@ -38,15 +38,15 @@ hash_map = {
         'stdout': ('optimize_lj_pyrite_symm', 'main.gout'),
         'output': [(('optimize_lj_pyrite_symm', 'output.cif'), ('output.cif',))]
     },
-    'f104b6cc996c97be76b3ee31761b7898': {
+    '83f4e528d0824eea430572fdda0b4f58': {
         'stdout': ('single_reaxff_pyrite', 'main.gout'),
         'output': ()
     },
-    '5dc8cb9621091a1a029b8149b0e02e33': {
+    '16f5c23e5c4072a25b7ed33a68744227': {
         'stdout': ('optimize_reaxff_pyrite', 'main.gout'),
         'output': [(('optimize_reaxff_pyrite', 'output.cif'), ('output.cif',))]
     },
-    '99595ec1cba6fb909a1de2377e21d82a': {
+    '59ea35116463a60fb1ffe055d95f1542': {
         'stdout': ('optimize_reaxff_pyrite_symm', 'main.gout'),
         'output': [(('optimize_reaxff_pyrite_symm', 'output.cif'), ('output.cif',))],
         'stderr': ('optimize_reaxff_pyrite_symm', 'main_stderr.txt')
@@ -63,15 +63,13 @@ hash_map = {
 
 
 def main(sys_args=None):
-
+    """Run mock version of gulp binary executable."""
     if sys_args is None:
         sys_args = sys.argv[1:]
 
     if sys_args and sys_args[0] == '--test':
         # this used in the conda recipe, to test the executable is present
         return
-
-    test_path = os.path.join(tests.TEST_FILES, 'gulp')
 
     content = six.ensure_text(sys.stdin.read())
     hashkey = hashlib.md5(content.encode()).hexdigest()
@@ -82,19 +80,15 @@ def main(sys_args=None):
     outfiles = hash_map[hashkey]
 
     for inpath, outpath in outfiles.get('output', []):
-        src = os.path.join(test_path, *inpath)
-        dst = os.path.join('.', *outpath)
-        copyfile(src, dst)
+        src = read_resource_binary('gulp', *inpath)
+        with io.open(os.path.join('.', *outpath), 'wb') as handle:
+            handle.write(src)
 
     if outfiles.get('stdout', None) is not None:
-        outpath = os.path.join(test_path, *outfiles['stdout'])
-        with open(outpath) as f:
-            sys.stdout.write(f.read())
+        sys.stdout.write(read_resource_text('gulp', *outfiles['stdout']))
 
     if outfiles.get('stderr', None) is not None:
-        outpath = os.path.join(test_path, *outfiles['stderr'])
-        with open(outpath) as f:
-            sys.stderr.write(f.read())
+        sys.stderr.write(read_resource_text('gulp', *outfiles['stderr']))
 
 
 if __name__ == '__main__':

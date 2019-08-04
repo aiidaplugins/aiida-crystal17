@@ -1,10 +1,11 @@
-import os
 from textwrap import dedent
 
 from click.testing import CliRunner
+
 from aiida_crystal17.cmndline.symmetry import symmetry
 from aiida_crystal17.cmndline.basis_set import basisset
-from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.data.basis_set import BasisSetData
+from aiida_crystal17.tests import open_resource_text, resource_context
 
 
 def test_symmetry_show(db_test_app):
@@ -38,9 +39,8 @@ def test_symmetry_show(db_test_app):
 
 def test_basis_show(db_test_app):
 
-    from aiida.plugins import DataFactory
-    basis_cls = DataFactory('crystal17.basisset')
-    node, created = basis_cls.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_O.basis') as handle:
+        node, created = BasisSetData.get_or_create(handle)
 
     runner = CliRunner()
     result = runner.invoke(basisset, ['show', str(node.pk)])
@@ -69,9 +69,11 @@ def test_basis_show(db_test_app):
 
 def test_basis_upload(db_test_app):
 
-    path = os.path.join(TEST_FILES, 'basis_sets', 'sto3g')
     runner = CliRunner()
-    result = runner.invoke(basisset, ['uploadfamily', '--path', path, '--name', 'sto3g', '--description', 'STO3G'])
+    with resource_context('basis_sets', 'sto3g') as path:
+        result = runner.invoke(
+            basisset,
+            ['uploadfamily', '--path', str(path), '--name', 'sto3g', '--description', 'STO3G'])
 
     print(result.output)
 

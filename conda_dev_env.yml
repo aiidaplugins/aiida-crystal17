@@ -11,6 +11,7 @@ dependencies:
 # install_requires
 - aiida-core==1.0.0b5
 - ase>=3.12.0,<4.0.0
+- importlib_resources
 - jsonextended>=0.7.10
 - jsonschema
 - pycifrw==4.4

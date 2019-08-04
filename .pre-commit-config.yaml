@@ -31,25 +31,25 @@ repos:
 
     - id: version-number
       name: Check version numbers
-      entry: python ./.travis-data/check_version.py version
+      entry: python ./.pre-commit/check_version.py version
       language: system
       files: >-
         (?x)^(
           setup.json|
-          .travis-data/check_version.py|
+          .pre-commit/check_version.py|
           aiida_crystal17/__init__.py
         )$
       pass_filenames: false
 
     - id: conda
       name: Create environment.yml
-      entry: python ./.travis-data/check_version.py conda
+      entry: python ./.pre-commit/check_version.py conda
       language: system
       files: >-
         (?x)^(
           setup.json|
           setup.py|
-          .travis-data/check_version.py|
+          .pre-commit/check_version.py|
           conda_dev_env.yml|
         )$
       pass_filenames: false
@@ -66,3 +66,5 @@ repos:
       language: system
       types: [rst]
       name: doc8 - Lint the documentation.
+
+    # TODO could also add check-manifest

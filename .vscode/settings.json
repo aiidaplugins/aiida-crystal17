@@ -29,7 +29,8 @@
     "restructuredtext.confPath": "${workspaceFolder}/docs/source",
     "restructuredtext.linter.extraArgs": ["--max-line-length", "120"],
     "cSpell.words": [
-        "aiida"
+        "aiida",
+        "pytest"
     ],
     "todo-tree.tags": [
         "TODO",

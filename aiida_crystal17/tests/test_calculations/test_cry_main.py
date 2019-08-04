@@ -1,32 +1,32 @@
-""" Tests for main CRYSTAL17 calculation
-
-"""
+"""Tests for main CRYSTAL17 calculation."""
 import os
 
 import pytest
 
 from aiida import orm
-from aiida.engine import run_get_node
 from aiida.cmdline.utils.common import get_calcjob_report  # noqa: F401
+from aiida.engine import run_get_node
 from aiida.plugins import CalculationFactory, DataFactory, WorkflowFactory
 
-from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 from aiida_crystal17.common import recursive_round
-from aiida_crystal17.data.kinds import KindData
 from aiida_crystal17.data.basis_set import BasisSetData
 from aiida_crystal17.data.input_params import CryInputParamsData
+from aiida_crystal17.data.kinds import KindData
+from aiida_crystal17.tests import open_resource_text, resource_context
+from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 
 def test_create_builder(db_test_app, get_structure):
-    """test preparation of inputs"""
+    """Test preparation of inputs."""
     db_test_app.get_or_create_code('crystal17.main')
 
     inparams = {'scf.k_points': (8, 8)}
 
     instruct = get_structure('MgO')
-    mg_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_Mg.basis'))
-    o_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_Mg.basis') as handle:
+        mg_basis, _ = BasisSetData.get_or_create(handle)
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_O.basis') as handle:
+        o_basis, _ = BasisSetData.get_or_create(handle)
 
     sym_calc = run_get_node(WorkflowFactory('crystal17.sym3d'),
                             structure=instruct,
@@ -52,8 +52,7 @@ def test_create_builder(db_test_app, get_structure):
 
 @pytest.mark.parametrize('input_symmetry', (False, True))
 def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_regression, file_regression):
-    """Test submitting a calculation"""
-
+    """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
@@ -70,8 +69,10 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_reg
     instruct = sym_calc.get_outgoing().get_node_by_label('structure')
     symmetry = sym_calc.get_outgoing().get_node_by_label('symmetry')
 
-    mg_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_Mg.basis'))
-    o_basis, _ = BasisSetData.get_or_create(os.path.join(TEST_FILES, 'basis_sets', 'sto3g', 'sto3g_O.basis'))
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_Mg.basis') as handle:
+        mg_basis, _ = BasisSetData.get_or_create(handle)
+    with open_resource_text('basis_sets', 'sto3g', 'sto3g_O.basis') as handle:
+        o_basis, _ = BasisSetData.get_or_create(handle)
 
     # set up calculation
     builder = code.get_builder()
@@ -98,8 +99,7 @@ def test_calcjob_submit_mgo(db_test_app, input_symmetry, get_structure, data_reg
 
 
 def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_family, data_regression, file_regression):
-    """Test submitting a calculation"""
-
+    """Test submitting a calculation."""
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -159,7 +159,7 @@ def test_calcjob_submit_nio_afm(db_test_app, get_structure, upload_basis_set_fam
 
 
 def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, file_regression, data_regression):
-    """ test restarting from a previous fort.9 file"""
+    """Test restarting from a previous fort.9 file."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters
@@ -202,16 +202,15 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
                                            metadata=db_test_app.get_default_metadata(with_mpi=True),
                                            unflatten=True)
 
-    remote = orm.RemoteData(computer=code.computer,
-                            remote_path=os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_scf_maxcyc'))
-    builder.wf_folder = remote
+    with resource_context('crystal', 'nio_sto3g_afm_scf_maxcyc') as path:
+        builder.wf_folder = orm.RemoteData(computer=code.computer, remote_path=str(path))
 
-    process_options = builder.process_class(inputs=builder).metadata.options
+        process_options = builder.process_class(inputs=builder).metadata.options
 
-    with db_test_app.sandbox_folder() as folder:
-        calc_info = db_test_app.generate_calcinfo('crystal17.main', folder, builder)
-        with folder.open(process_options.input_file_name) as f:
-            input_content = f.read()
+        with db_test_app.sandbox_folder() as folder:
+            calc_info = db_test_app.generate_calcinfo('crystal17.main', folder, builder)
+            with folder.open(process_options.input_file_name) as f:
+                input_content = f.read()
 
     file_regression.check(input_content)
     data_regression.check(sanitize_calc_info(calc_info))
@@ -220,8 +219,7 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
 @pytest.mark.process_execution
 def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test running a calculation"""
-
+    """Test running a calculation."""
     # get code
     code = db_test_app.get_or_create_code('crystal17.main')
 
@@ -292,8 +290,7 @@ def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, da
                     reason='the calculation takes about 50 minutes to run')
 def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test running a calculation"""
-
+    """Test running a calculation."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters

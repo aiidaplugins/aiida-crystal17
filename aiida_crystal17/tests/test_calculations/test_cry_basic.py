@@ -1,24 +1,20 @@
-""" Tests for basic CRYSTAL17 calculation
-
-"""
-import os
-
+"""Tests for basic CRYSTAL17 calculation."""
 import pytest
 
-from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 from aiida_crystal17.common import recursive_round
+from aiida_crystal17.tests import open_resource_binary
+from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
 
 
 def test_calcjob_submission(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test submitting a calculation"""
-    from aiida.plugins import DataFactory
-    singlefile_data_cls = DataFactory('singlefile')
+    """Test submitting a calculation."""
+    from aiida.orm import SinglefileData
 
     # Prepare input parameters
     code = db_test_app.get_or_create_code('crystal17.basic')
-    infile = singlefile_data_cls(file=os.path.join(TEST_FILES, 'crystal', 'mgo_sto3g_scf', 'INPUT'))
+    with open_resource_binary('crystal', 'mgo_sto3g_scf', 'INPUT') as handle:
+        infile = SinglefileData(file=handle)
     infile.store()
 
     # set up calculation
@@ -38,10 +34,9 @@ def test_calcjob_submission(db_test_app, data_regression):
 @pytest.mark.process_execution
 def test_calcjob_run(db_test_app, infolder, external_geom, data_regression):
     # type: (AiidaTestApp, str, str) -> None
-    """Test running an optimisation calculation"""
+    """Test running an optimisation calculation."""
     from aiida.engine import run_get_node
-    from aiida.plugins import DataFactory
-    singlefile_data_cls = DataFactory('singlefile')
+    from aiida.orm import SinglefileData
 
     code = db_test_app.get_or_create_code('crystal17.basic')
 
@@ -59,10 +54,12 @@ def test_calcjob_run(db_test_app, infolder, external_geom, data_regression):
     }
     # .crystal.ingui # .crystal.d12
     # Prepare input parameters
-    infile = singlefile_data_cls(file=os.path.join(TEST_FILES, 'crystal', infolder, 'INPUT'))
+    with open_resource_binary('crystal', infolder, 'INPUT') as handle:
+        infile = SinglefileData(file=handle)
     builder.input_file = infile
     if external_geom:
-        ingui = singlefile_data_cls(file=os.path.join(TEST_FILES, 'crystal', infolder, 'fort.34'))
+        with open_resource_binary('crystal', infolder, 'fort.34') as handle:
+            ingui = SinglefileData(file=handle)
         builder.input_external = ingui
 
     outcome = run_get_node(builder)

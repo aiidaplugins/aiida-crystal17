@@ -1,10 +1,9 @@
-import os
 import pytest
 import six
 
 from aiida.orm import FolderData
 from aiida.cmdline.utils.common import get_calcjob_report  # noqa: F401
-from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.tests import open_resource_binary, resource_context
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -64,7 +63,8 @@ def test_failed_pbs(db_test_app, plugin_name, fcontent, error_msg):
 def test_failed_scf_convergence(db_test_app, plugin_name):
 
     retrieved = FolderData()
-    retrieved.put_object_from_file(os.path.join(TEST_FILES, 'crystal', 'failed', 'FAILED_SCF_bcc_iron.out'), 'main.out')
+    with open_resource_binary('crystal', 'failed', 'FAILED_SCF_bcc_iron.out') as handle:
+        retrieved.put_object_from_filelike(handle, 'main.out', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
@@ -80,8 +80,8 @@ def test_failed_scf_convergence(db_test_app, plugin_name):
 def test_failed_geom_convergence(db_test_app, plugin_name):
 
     retrieved = FolderData()
-    retrieved.put_object_from_file(os.path.join(TEST_FILES, 'crystal', 'failed', 'FAILED_GEOM_mackinawite_opt.out'),
-                                   'main.out')
+    with open_resource_binary('crystal', 'failed', 'FAILED_GEOM_mackinawite_opt.out') as handle:
+        retrieved.put_object_from_filelike(handle, 'main.out', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
@@ -95,18 +95,19 @@ def test_failed_geom_convergence(db_test_app, plugin_name):
     'crystal17.main',
 ])
 def test_failed_optimisation(db_test_app, plugin_name, data_regression):
-    """ if the optimisation is killed before completion,
-    the trajectory data should still be available """
+    """Test that if the optimisation is killed before completion, the trajectory data is still available."""
     retrieved = FolderData()
-    retrieved.put_object_from_file(os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_opt_walltime', 'main.out'),
-                                   'main.out')
-    retrieved.put_object_from_file(
-        os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_opt_walltime', '_scheduler-stderr.txt'),
-        '_scheduler-stderr.txt')
+    with open_resource_binary('crystal', 'nio_sto3g_afm_opt_walltime', 'main.out') as handle:
+        retrieved.put_object_from_filelike(handle, 'main.out', mode='wb')
+    with open_resource_binary('crystal', 'nio_sto3g_afm_opt_walltime', '_scheduler-stderr.txt') as handle:
+        retrieved.put_object_from_filelike(handle, '_scheduler-stderr.txt', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    results, calcfunction = db_test_app.parse_from_node(
-        plugin_name, calc_node, os.path.join(TEST_FILES, 'crystal', 'nio_sto3g_afm_opt_walltime'))
+
+    with resource_context('crystal', 'nio_sto3g_afm_opt_walltime') as path:
+        results, calcfunction = db_test_app.parse_from_node(plugin_name,
+                                                            calc_node,
+                                                            retrieved_temporary_folder=str(path))
 
     # print(get_calcjob_report(calc_node))
 

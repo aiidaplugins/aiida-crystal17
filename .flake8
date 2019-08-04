@@ -1,2 +1,5 @@
 [flake8]
 max-line-length = 121
+import-order-style = appnexus
+application-import-names = aiida_crystal17
+application-package-names = aiida

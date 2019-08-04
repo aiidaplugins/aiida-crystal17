@@ -1,8 +1,7 @@
-import os
 import pytest
 from aiida.orm import FolderData
 # from aiida.cmdline.utils.common import get_calcjob_report
-from aiida_crystal17.tests import TEST_FILES
+from aiida_crystal17.tests import open_resource_binary
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -43,8 +42,8 @@ def test_empty_output(db_test_app, plugin_name):
 def test_success(db_test_app, plugin_name, data_regression):
 
     retrieved = FolderData()
-    retrieved.put_object_from_file(
-        os.path.join(TEST_FILES, 'doss', 'cubic_rocksalt_orbitals', 'cubic-rocksalt_2x1_pdos.doss.f25'), 'fort.25')
+    with open_resource_binary('doss', 'cubic_rocksalt_orbitals', 'cubic-rocksalt_2x1_pdos.doss.f25') as handle:
+        retrieved.put_object_from_filelike(handle, 'fort.25', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
