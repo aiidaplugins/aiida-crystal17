@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from aiida.engine import run_get_node
@@ -65,7 +63,7 @@ def test_init_steps(db_test_app, get_structure_and_symm, upload_basis_set_family
     assert all([o is None for o in step_outcomes])
 
 
-@pytest.mark.process_execution
+@pytest.mark.cry17_calls_executable
 def test_base_nio_afm_scf_maxcyc(db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the scf convergence fails, on the 1st iteration,
@@ -127,12 +125,10 @@ def test_base_nio_afm_scf_maxcyc(db_test_app, get_structure_and_symm, upload_bas
     })
 
 
-@pytest.mark.process_execution
-@pytest.mark.skipif(os.environ.get('MOCK_CRY17_EXECUTABLES', True) != 'true', reason='the calculation was run on a HPC')
+@pytest.mark.cry17_calls_executable(skip_non_mock=True, reason='the calculation was run on a HPC')
 def test_base_nio_afm_opt_walltime(db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test running a calculation where the optimisation fails, on the 1st iteration,
-    due to reaching walltime """
+    """Test running a calculation where the optimisation fails, on the 1st iteration, due to reaching walltime."""
     if hasattr(CryMainBaseWorkChain, '_spec'):
         # TODO this is required while awaiting fix for aiidateam/aiida-core#3143
         del CryMainBaseWorkChain._spec

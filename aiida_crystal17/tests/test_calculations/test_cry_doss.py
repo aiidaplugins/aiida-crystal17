@@ -71,7 +71,7 @@ def test_calcjob_submit_mgo(db_test_app):
     assert input_content == expected_input
 
 
-@pytest.mark.process_execution
+@pytest.mark.cry17_calls_executable
 def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""

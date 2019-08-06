@@ -18,11 +18,11 @@ matrix:
     - python: 3.6
       env: TEST_TYPE="pre-commit"
     - python: 3.6
-      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" PYPI_DEPLOY=true
     - python: 2.7
-      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django"
     - python: 3.6
-      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy"
     - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
     - python: 3.6

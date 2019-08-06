@@ -9,7 +9,7 @@ import six
 
 
 def get_path_to_executable(executable):
-    """ Get path to local executable.
+    """Get path to local executable.
 
     :param executable: Name of executable in the $PATH variable
     :type executable: str

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import pytest
+
 from aiida.engine import run_get_node
 
 from aiida_crystal17.common import recursive_round
-from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 from aiida_crystal17.gulp.parsers.raw.write_input import (  # noqa: F401
-    InputCreationSingle, InputCreationOpt)
+    InputCreationOpt, InputCreationSingle)
+from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
 def write_input_file(icreate, file_like, structure, potential, parameters=None, symmetry=None):
@@ -13,6 +15,7 @@ def write_input_file(icreate, file_like, structure, potential, parameters=None, 
     return icreate.get_content_hash()
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_single_lj(db_test_app, get_structure, pyrite_potential_lj, data_regression):
     # type: (AiidaTestApp) -> None
 
@@ -43,6 +46,7 @@ def test_run_single_lj(db_test_app, get_structure, pyrite_potential_lj, data_reg
     data_regression.check(result)
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_single_reaxff(db_test_app, get_structure, pyrite_potential_reaxff_lowtol, data_regression):
     # type: (AiidaTestApp) -> None
 

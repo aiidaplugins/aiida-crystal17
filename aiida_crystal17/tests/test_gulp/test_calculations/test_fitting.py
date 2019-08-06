@@ -1,3 +1,5 @@
+import pytest
+
 from aiida.engine import run_get_node
 from aiida.orm import Dict
 from aiida.plugins import DataFactory
@@ -123,6 +125,7 @@ def test_calcjob_submit_reaxff_fes(db_test_app, get_structure, data_regression, 
     data_regression.check(sanitize_calc_info(calc_info))
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_lj_fes(db_test_app, get_structure, data_regression):
     """Test running a calculation."""
     code = db_test_app.get_or_create_code('gulp.fitting')
@@ -188,6 +191,7 @@ def test_run_lj_fes(db_test_app, get_structure, data_regression):
     data_regression.check({'results': result, 'potential': calc_node.outputs.potential.attributes})
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_reaxff_fes(db_test_app, get_structure, data_regression):
     """Test submitting a calculation."""
     code = db_test_app.get_or_create_code('gulp.fitting')
