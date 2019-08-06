@@ -24,10 +24,14 @@ from aiida_crystal17.tests import (get_test_structure, get_test_structure_and_sy
 from aiida_crystal17.tests.utils import AiidaTestApp
 
 CRY17_CALL_EXEC_MARKER = 'cry17_calls_executable'
+CRY17_NOTEBOOK_MARKER = 'cry17_doc_notebooks'
+
 CRY17_NO_MOCK_HELP = 'Do not use mock executables for tests.'
 CRY17_WORKDIR_HELP = ('Specify a work directory path for aiida calcjob execution. '
                       'If not specified, a temporary directory is used and deleted after tests execution.')
-CRY17_SKIP_EXEC_HELP = ('skip tests marked with: @pytest.mark.{}'.format(CRY17_CALL_EXEC_MARKER))
+CRY17_SKIP_EXEC_HELP = ('skip tests marked with @pytest.mark.{}'.format(CRY17_CALL_EXEC_MARKER))
+CRY17_NOTEBOOKS_HELP = ('Only run tests marked {} (otherwise skipped)'.format(CRY17_NOTEBOOK_MARKER))
+CRY17_NB_REGEN_HELP = ('If --cry17-test-nbs selected, then also overwrite the notebooks')
 
 
 def pytest_addoption(parser):
@@ -59,6 +63,16 @@ def pytest_addoption(parser):
                     dest='cry17_skip_exec',
                     default=False,
                     help=CRY17_SKIP_EXEC_HELP)
+    group.addoption('--cry17-test-nbs',
+                    action='store_true',
+                    dest='cry17_test_nbs',
+                    default=False,
+                    help=CRY17_NOTEBOOKS_HELP)
+    group.addoption('--cry17-regen-nbs',
+                    action='store_true',
+                    dest='cry17_regen_nbs',
+                    default=False,
+                    help=CRY17_NB_REGEN_HELP)
 
     parser.addini('cry17_no_mock', CRY17_NO_MOCK_HELP, type='bool', default=False)
     parser.addini('cry17_workdir', CRY17_WORKDIR_HELP, default=None)
@@ -88,6 +102,7 @@ def pytest_configure(config):
     """
     config.addinivalue_line('markers',
                             '{}: mark tests that will call external executables'.format(CRY17_CALL_EXEC_MARKER))
+    config.addinivalue_line('markers', '{}: mark tests that will test document notebooks'.format(CRY17_NOTEBOOK_MARKER))
 
 
 def pytest_collection_modifyitems(config, items):
@@ -97,8 +112,20 @@ def pytest_collection_modifyitems(config, items):
     - if ``cry17_calls_executable`` and ``cry17_skip_exec = True``
     - if ``cry17_calls_executable(skip_non_mock=True)`` and not running with mock executables.
 
+    - if not ``cry17_test_nbs``, skip tests with ``cry17_doc_notebooks`` marker
+    - if ``cry17_test_nbs``, only run tests with ``cry17_doc_notebooks`` marker
+
     """
     for item in items:  # type: Item
+
+        if config.getoption('cry17_test_nbs', False):
+            if CRY17_NOTEBOOK_MARKER not in item.keywords:
+                item.add_marker(pytest.mark.skip(reason='cry17_test_nbs specified'))
+                continue
+        elif CRY17_NOTEBOOK_MARKER in item.keywords:
+            item.add_marker(pytest.mark.skip(reason='cry17_test_nbs not specified'))
+            continue
+
         if CRY17_CALL_EXEC_MARKER not in item.keywords:
             continue
         marker = item.get_closest_marker(CRY17_CALL_EXEC_MARKER)
