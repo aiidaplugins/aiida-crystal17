@@ -45,6 +45,7 @@ install:
     fi
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
+      pip install "pyzmq>=17"  # required by pytest-notebook
       pip install -e .[testing]
       pip install coveralls
     fi
