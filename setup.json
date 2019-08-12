@@ -86,7 +86,8 @@
       "coverage",
       "pytest-cov",
       "pytest-timeout",
-      "pytest-regressions"
+      "pytest-regressions",
+      "pytest-notebook; python_version >= '3.5'"
     ],
     "code_style": [
       "flake8<3.8.0,>=3.7.0",
