@@ -66,9 +66,9 @@ def pytest_addoption(parser):
                     dest='cry17_skip_exec',
                     default=False,
                     help=CRY17_SKIP_EXEC_HELP)
-    group.addoption('--cry17-nbs-test',
+    group.addoption('--cry17-nb-tests',
                     action='store_true',
-                    dest='cry17_nbs_test',
+                    dest='cry17_nb_tests',
                     default=False,
                     help=CRY17_NB_TEST_HELP)
 
@@ -116,9 +116,10 @@ def pytest_collection_modifyitems(config, items):
     - if ``cry17_test_nbs``, only run tests with ``cry17_doc_notebooks`` marker
 
     """
+    # TODO rather than skipping, don't gather them in the first place.
     for item in items:  # type: Item
 
-        if config.getoption('cry17_nbs_test', False):
+        if config.getoption('cry17_nb_tests', False):
             if CRY17_NOTEBOOK_MARKER not in item.keywords:
                 item.add_marker(pytest.mark.skip(reason='Running tests marked {} only'.format(CRY17_NOTEBOOK_MARKER)))
                 continue
