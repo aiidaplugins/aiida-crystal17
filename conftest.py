@@ -71,6 +71,11 @@ def pytest_addoption(parser):
                     dest='cry17_nb_tests',
                     default=False,
                     help=CRY17_NB_TEST_HELP)
+    group.addoption('--cry17-nb-tests-only',
+                    action='store_true',
+                    dest='cry17_nb_tests_only',
+                    default=False,
+                    help=CRY17_NB_TEST_HELP)
 
     parser.addini('cry17_no_mock', CRY17_NO_MOCK_HELP, type='bool', default=NotSet())
     parser.addini('cry17_workdir', CRY17_WORKDIR_HELP, default=NotSet())
@@ -107,36 +112,39 @@ def pytest_configure(config):
 
 def pytest_collection_modifyitems(config, items):
     # type: (Config, list) -> None
-    """Add skip marker to tests based on markers.
+    """Modify collected test items (may filter or re-order the items in-place).
 
-    - if ``cry17_calls_executable`` and ``cry17_skip_exec = True``
-    - if ``cry17_calls_executable(skip_non_mock=True)`` and not running with mock executables.
+    If ``cry17_nb_tests_only == True``, deselect all tests not marked ``cry17_doc_notebooks``.
 
-    - if not ``cry17_test_nbs``, skip tests with ``cry17_doc_notebooks`` marker
-    - if ``cry17_test_nbs``, only run tests with ``cry17_doc_notebooks`` marker
+    Add skip marker to tests marked:
+
+    - ``cry17_calls_executable`` if ``cry17_skip_exec == True``
+    - ``cry17_calls_executable(skip_non_mock=True)`` if ``cry17_no_mock == True``.
+    - ``cry17_doc_notebooks`` if ``cry17_nb_tests != True``
 
     """
-    # TODO rather than skipping, don't gather them in the first place.
+    if config.getoption('cry17_nb_tests_only', False):
+        # only run tests marked with CRY17_NOTEBOOK_MARKER
+        items[:] = [item for item in items if CRY17_NOTEBOOK_MARKER in item.keywords]
+
+    test_nbs = config.getoption('cry17_nb_tests', False) or config.getoption('cry17_nb_tests_only', False)
+
     for item in items:  # type: Item
 
-        if config.getoption('cry17_nb_tests', False):
-            if CRY17_NOTEBOOK_MARKER not in item.keywords:
-                item.add_marker(pytest.mark.skip(reason='Running tests marked {} only'.format(CRY17_NOTEBOOK_MARKER)))
-                continue
-        elif CRY17_NOTEBOOK_MARKER in item.keywords:
-            item.add_marker(pytest.mark.skip(reason='Not running tests marked {}'.format(CRY17_NOTEBOOK_MARKER)))
+        if (not test_nbs) and (CRY17_NOTEBOOK_MARKER in item.keywords):
+            item.add_marker(pytest.mark.skip(reason='cry17_nb_tests not specified'))
             continue
 
-        if CRY17_CALL_EXEC_MARKER not in item.keywords:
-            continue
-        marker = item.get_closest_marker(CRY17_CALL_EXEC_MARKER)
+        if CRY17_CALL_EXEC_MARKER in item.keywords:
 
-        if config.getoption('cry17_skip_exec', False):
-            item.add_marker(pytest.mark.skip(reason='cry17_skip_exec specified'))
-        elif marker.kwargs.get('skip_non_mock', False) and not use_mock_exec(config):
-            item.add_marker(
-                pytest.mark.skip(reason='running with mock executables and skip_non_mock specified: {}'.format(
-                    marker.kwargs.get('reason', ''))))
+            marker = item.get_closest_marker(CRY17_CALL_EXEC_MARKER)
+
+            if config.getoption('cry17_skip_exec', False):
+                item.add_marker(pytest.mark.skip(reason='cry17_skip_exec specified'))
+            elif marker.kwargs.get('skip_non_mock', False) and not use_mock_exec(config):
+                reason = marker.kwargs.get('reason', '')
+                item.add_marker(
+                    pytest.mark.skip(reason='cry17_no_mock specified and skip_non_mock=True: {}'.format(reason)))
 
 
 def pytest_report_header(config):
