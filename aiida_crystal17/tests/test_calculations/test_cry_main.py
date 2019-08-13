@@ -1,6 +1,4 @@
 """Tests for main CRYSTAL17 calculation."""
-import os
-
 import pytest
 
 from aiida import orm
@@ -216,7 +214,7 @@ def test_restart_wf_submit(db_test_app, get_structure, upload_basis_set_family, 
     data_regression.check(sanitize_calc_info(calc_info))
 
 
-@pytest.mark.process_execution
+@pytest.mark.cry17_calls_executable
 def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
@@ -285,9 +283,7 @@ def test_run_nio_afm_scf(db_test_app, get_structure, upload_basis_set_family, da
     data_regression.check(results_attributes)
 
 
-@pytest.mark.process_execution
-@pytest.mark.skipif(os.environ.get('MOCK_CRY17_EXECUTABLES', True) != 'true',
-                    reason='the calculation takes about 50 minutes to run')
+@pytest.mark.cry17_calls_executable(skip_non_mock=True, reason='the calculation takes about 50 minutes to run')
 def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
@@ -349,12 +345,10 @@ def test_run_nio_afm_fullopt(db_test_app, get_structure, upload_basis_set_family
     data_regression.check(recursive_round(calc_node.outputs.structure.attributes, 9), 'test_run_nio_afm_fullopt_struct')
 
 
-@pytest.mark.skipif(os.environ.get('MOCK_CRY17_EXECUTABLES', True) != 'true', reason='the calculation was run on a HPC')
+@pytest.mark.cry17_calls_executable(skip_non_mock=True, reason='the calculation was run on a HPC')
 def test_run_nio_afm_failed_opt(db_test_app, get_structure, upload_basis_set_family, data_regression):
     # type: (AiidaTestApp) -> None
-    """Test running a calculation where the optimisation fails,
-    due to reaching walltime"""
-
+    """Test running a calculation where the optimisation fails, due to reaching walltime."""
     code = db_test_app.get_or_create_code('crystal17.main')
 
     # Prepare input parameters

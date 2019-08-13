@@ -1,5 +1,7 @@
 import sys
 
+import pytest
+
 from aiida.cmdline.utils.common import get_workchain_report  # noqa: F401
 from aiida.engine import run_get_node
 from aiida.orm import Dict, RemoteData
@@ -55,6 +57,7 @@ def test_init_prop_steps(db_test_app, data_regression):
         raise
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression):
     """Test the workchains when a remote folder is supplied that contains the wavefunction file."""
     if hasattr(CryPropertiesWorkChain, '_spec'):
@@ -93,6 +96,7 @@ def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_s
     })
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_prop_mgo_with_scf(db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression):
     """Test the workchains when a remote folder is supplied that does not contain the wavefunction file."""
     if hasattr(CryPropertiesWorkChain, '_spec'):

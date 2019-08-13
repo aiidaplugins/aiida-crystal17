@@ -40,6 +40,14 @@ To install the development version:
 
 ## Development
 
+### Testing against mock CRYSTAL17 executables
+
+Because CRYSTAL17 is a licensed software, it is not possible to source a copy of the executable on Travis CI.
+Therefore, a mock executable (`mock_runcry17`) has been created for testing purposes (which also speeds up test runs).
+
+This executable computes the md5 hash of the supplied input file and tries to match it against a dictionary of
+precomputed hashes. If found, the executable will write the matching output (from `test/output_files`) to stdout.
+
 The following will discover and run all unit test:
 
 ```shell
@@ -48,17 +56,22 @@ The following will discover and run all unit test:
 >> pytest -v
 ```
 
-To omit tests which call `crystal` executable:
+To omit tests which call external executables (like `crystal17`):
 
 ```shell
->> pytest -v -m "not process_execution"
+>> pytest --cry17-skip-exec
 ```
 
-or alternatively to call the `mock_crystal17` executable,
-first set the global environmental variable:
+To call the actual executables (e.g. `crystal17` instead of `mock_crystal17`):
 
 ```shell
->> export MOCK_CRY17_EXECUTABLES=true
+>> pytest --cry17-no-mock
+```
+
+To output the results of calcjob executions to a specific directory:
+
+```shell
+>> pytest --cry17-workdir "test_workdir"
 ```
 
 ### Coding Style Requirements
@@ -85,16 +98,6 @@ Optionally you can run `yapf` and `flake8` separately:
 
 Editors like VS Code also have automatic code reformat utilities, which can adhere to this standard.
 
-### Testing against mock CRYSTAL17 executables
-
-Because CRYSTAL17 is a licensed software, it is not possible to source a copy of the executable on Travis CI.
-Therefore, a mock executable (`mock_runcry17`) has been created for testing purposes (which also speeds up test runs).
-
-This executable computes the md5 hash of the supplied input file and tries to match it against a dictionary of
-precomputed hashes. If found, the executable will write the matching output (from `test/output_files`) to stdout.
-
-To use this mock executable when running tests, set the global variable `MOCK_CRY17_EXECUTABLES=true`.
-
 ### Setting up CRYSTAL17 locally
 
 To set up local version of CRYSTAL17 on a mac (after downloading a copy from the distributor), I had to:
@@ -119,7 +122,7 @@ To set up local version of CRYSTAL17 on a mac (after downloading a copy from the
 
 ## License
 
-MIT
+See ``LICENSE`` file
 
 ## Contact
 

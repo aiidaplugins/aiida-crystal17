@@ -18,11 +18,11 @@ matrix:
     - python: 3.6
       env: TEST_TYPE="pre-commit"
     - python: 3.6
-      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true PYPI_DEPLOY=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" PYPI_DEPLOY=true
     - python: 2.7
-      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django" MOCK_CRY17_EXECUTABLES=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="django"
     - python: 3.6
-      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy" MOCK_CRY17_EXECUTABLES=true
+      env: TEST_TYPE="pytest" TEST_AIIDA_BACKEND="sqlalchemy"
     - python: 3.6
       env: TEST_TYPE="docs" READTHEDOCS="True"
     - python: 3.6
@@ -45,6 +45,7 @@ install:
     fi
 - |
     if [[ "$TEST_TYPE" == "pytest" ]]; then
+      pip install "notebook<5.5"  # required by aiida-core->circus->pyzmq<17
       pip install -e .[testing]
       pip install coveralls
     fi
@@ -102,7 +103,7 @@ script:
   fi
 - |
   if [[ "$TEST_TYPE" == "conda" ]]; then
-    conda env create -f conda_dev_env.yml -n test-environment python=$TRAVIS_PYTHON_VERSION
+    travis_retry conda env create -f conda_dev_env.yml -n test-environment python=$TRAVIS_PYTHON_VERSION
     conda list -n test-environment
     source activate test-environment
     pip install --no-deps -e .

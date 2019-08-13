@@ -17,6 +17,7 @@ import sys
 import time
 
 import six
+
 import aiida_crystal17
 
 # -- AiiDA-related setup --------------------------------------------------
@@ -231,7 +232,8 @@ autoclass_content = 'both'
 
 
 def run_apidoc(_):
-    """Runs sphinx-apidoc when building the documentation.
+    """Run sphinx-apidoc when building the documentation.
+
     Needs to be done in conf.py in order to include the APIdoc in the
     build on readthedocs.
     See also https://github.com/rtfd/readthedocs.org/issues/1139
@@ -267,7 +269,10 @@ def run_apidoc(_):
 
 
 def add_intersphinx_aliases_to_inv(app):
-    """see https://github.com/sphinx-doc/sphinx/issues/5603"""
+    """Add type aliases for intersphinx.
+
+    see https://github.com/sphinx-doc/sphinx/issues/5603
+    """
     from sphinx.ext.intersphinx import InventoryAdapter
     inventories = InventoryAdapter(app.builder.env)
 
@@ -285,6 +290,7 @@ def add_intersphinx_aliases_to_inv(app):
 
 
 def setup(app):
+    """Add functions to the Sphinx setup."""
     app.connect('builder-inited', run_apidoc)
     app.add_config_value('intersphinx_aliases', {}, 'env')
     app.connect('builder-inited', add_intersphinx_aliases_to_inv)

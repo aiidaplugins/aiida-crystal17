@@ -8,7 +8,7 @@ from aiida_crystal17.tests import resource_context
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
-@pytest.mark.process_execution
+@pytest.mark.cry17_calls_executable
 def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""

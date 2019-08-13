@@ -6,7 +6,8 @@ from aiida_crystal17.tests import read_resource_text
 
 
 @pytest.fixture('function')
-def input_str():
+def cry_stdin_str():
+    """Return a test STDIN file content for CRYSTAL17."""
     return """a title
 EXTERNAL
 ATOMSYMM
@@ -130,14 +131,14 @@ END
 """
 
 
-def test_read_fail(input_str):
-    input_str = input_str.replace('PPAN', 'WRONG')
+def test_read_fail(cry_stdin_str):
+    cry_stdin_str = cry_stdin_str.replace('PPAN', 'WRONG')
     with pytest.raises(NotImplementedError):
-        extract_data(input_str)
+        extract_data(cry_stdin_str)
 
 
-def test_full_read(input_str):
-    output_dict, basis_sets, atom_props = extract_data(input_str)
+def test_full_read(cry_stdin_str):
+    output_dict, basis_sets, atom_props = extract_data(cry_stdin_str)
 
     assert len(basis_sets) == 2
 

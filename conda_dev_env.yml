@@ -23,6 +23,7 @@ dependencies:
 - mock==2.0.0
 - pgtest==1.2.0
 - pytest-cov
+- pytest-notebook
 - pytest-regressions
 - pytest-timeout
 - pytest==3.6.3

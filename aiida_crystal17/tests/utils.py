@@ -9,7 +9,7 @@ import six
 
 
 def get_path_to_executable(executable):
-    """ Get path to local executable.
+    """Get path to local executable.
 
     :param executable: Name of executable in the $PATH variable
     :type executable: str
@@ -34,7 +34,7 @@ def get_path_to_executable(executable):
 
 
 def get_or_create_local_computer(work_directory, name='localhost'):
-    """Retrieve or setup a local computer
+    """Retrieve or setup a local computer.
 
     Parameters
     ----------
@@ -68,7 +68,7 @@ def get_or_create_local_computer(work_directory, name='localhost'):
 
 
 def get_or_create_code(entry_point, computer, executable, exec_path=None):
-    """Setup code on localhost computer"""
+    """Setup code on localhost computer."""
     from aiida.orm import Code, Computer
     from aiida.common import NotExistent
 

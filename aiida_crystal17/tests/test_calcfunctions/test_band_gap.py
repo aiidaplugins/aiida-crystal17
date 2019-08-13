@@ -81,6 +81,7 @@ def test_band_gap(dtype):
     assert result.right_edge == pytest.approx(data.right_edge, nan_ok=True)
 
 
+@pytest.mark.cry17_calls_executable
 def test_calcfunction_band_gap(db_test_app, data_regression):
     data = get_test_data('edge_at_fermi')
     array = ArrayData()
@@ -99,6 +100,7 @@ def test_calcfunction_band_gap(db_test_app, data_regression):
     data_regression.check(recursive_round(node.outputs.results.attributes, 4))
 
 
+@pytest.mark.cry17_calls_executable
 def test_calcfunction_band_gap_with_spin(db_test_app, data_regression):
     data = get_test_data('edge_at_fermi')
     array = ArrayData()

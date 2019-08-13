@@ -76,11 +76,10 @@ features of the ``Code`` node should be utilised.
     AiiDA documentation: :ref:`aiida:setup_code`
 
 For test purposes, ``mock_crystal17`` and ``mock_properties17`` executables
-are installed with ``aiida-crystal17``,
-that will return pre-computed output files,
-if parsed specific test input files. When running the test suite,
-this executable will be used in place of ``crystal``,
-if the global variable ``export MOCK_CRY17_EXECUTABLES=true`` is set.
+are installed with ``aiida-crystal17``, that will return pre-computed output files,
+if parsed specific test input files (based on the contents hash).
+When running the test suite, these executable will be used in place of ``crystal``,
+unless ``pytest --cry17-no-mock`` is used.
 
 Development
 +++++++++++
@@ -97,18 +96,23 @@ The following will discover and run all unit test:
    >> cd aiida-crystal17
    >> pytest -v
 
-To omit tests which call the ``crystal`` executable:
+To omit tests which call external executables (like ``crystal17``):
 
 .. code:: shell
 
-   >> pytest -v -m "not process_execution"
+   >> pytest --cry17-skip-exec
 
-or alternatively to call the ``mock_crystal17`` executable, first set the
-global environmental variable:
+To call the actual executables (e.g. ``crystal17`` instead of ``mock_crystal17``):
 
 .. code:: shell
 
-   >> export MOCK_CRY17_EXECUTABLES=true
+   >> pytest --cry17-no-mock
+
+To output the results of calcjob executions to a specific directory:
+
+.. code:: shell
+
+   >> pytest --cry17-workdir "test_workdir"
 
 Coding Style Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~

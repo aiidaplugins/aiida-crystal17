@@ -31,7 +31,7 @@ def test_calcjob_submission(db_test_app, data_regression):
 
 @pytest.mark.parametrize('infolder,external_geom',
                          (('mgo_sto3g_scf', False), ('mgo_sto3g_opt', False), ('mgo_sto3g_scf_external', True)))
-@pytest.mark.process_execution
+@pytest.mark.cry17_calls_executable
 def test_calcjob_run(db_test_app, infolder, external_geom, data_regression):
     # type: (AiidaTestApp, str, str) -> None
     """Test running an optimisation calculation."""

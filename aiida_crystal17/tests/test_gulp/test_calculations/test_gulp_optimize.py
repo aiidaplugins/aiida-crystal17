@@ -1,3 +1,5 @@
+import pytest
+
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.common import recursive_round
@@ -13,6 +15,7 @@ def write_input_file(icreate, file_like, structure, potential, parameters=None, 
     return icreate.get_content_hash()
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_optimize_lj(db_test_app, get_structure, pyrite_potential_lj, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
@@ -56,6 +59,7 @@ def test_run_optimize_lj(db_test_app, get_structure, pyrite_potential_lj, data_r
     data_regression.check(result)
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_optimize_lj_with_symm(db_test_app, get_structure, pyrite_potential_lj, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
@@ -109,6 +113,7 @@ def test_run_optimize_lj_with_symm(db_test_app, get_structure, pyrite_potential_
     #     calc_node.outputs.retrieved.get_object_content('output.cif'), basename="optimize_lj_pyrite_symm.cif")
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_optimize_reaxff(db_test_app, get_structure, pyrite_potential_reaxff, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
@@ -152,6 +157,7 @@ def test_run_optimize_reaxff(db_test_app, get_structure, pyrite_potential_reaxff
     data_regression.check(result)
 
 
+@pytest.mark.cry17_calls_executable
 def test_run_optimize_reaxff_symm(db_test_app, get_structure, pyrite_potential_reaxff, data_regression):
     # type: (AiidaTestApp) -> None
     from aiida.engine import run_get_node
