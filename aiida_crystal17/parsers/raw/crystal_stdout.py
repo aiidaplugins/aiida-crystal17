@@ -87,11 +87,16 @@ def read_crystal_stdout(content):
         'parser_exceptions': []
     }
 
-    # remove MPI statuses,
-    # which can get mixed with the start of the program stdout and corrupt the output
+    # remove MPI statuses, and floating point exceptions
+    # which can get mixed with the program stdout/stderr and corrupt the output
     # TODO: removing these will affect the reporting of line numbers in errors
-    regex = re.compile('(\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING\\s*\n)+')
-    content = re.sub(regex, '\n', content)
+    regex = re.compile('^\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING[^\\S\n\r]*(\r\n|\r|\n)', re.MULTILINE)
+    content = re.sub(regex, '', content)
+    regex = re.compile(
+        '^(\\s*Note\\:\\sThe\\sfollowing\\sfloating\\-point\\sexceptions\\sare\\ssignalling.+)(\r\n|\r|\n)',
+        re.MULTILINE)
+    output['warnings'] += [l.strip() for l, n in re.findall(regex, content)]
+    content = re.sub(regex, '', content)
     lines = content.splitlines()
 
     if not lines:
@@ -120,13 +125,13 @@ def read_crystal_stdout(content):
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    # parse the initial geometry input
+    # parse the initial geometry input (before any editing)
     outcome = parse_section(parse_geometry_input, lines, lineno, output, 'geometry_input')
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    # parse the calculation setup and initial geometry
+    # parse the calculation setup and initial geometry (after any editing)
     outcome = parse_section(parse_calculation_setup, lines, lineno, output, None)
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
@@ -250,7 +255,7 @@ def assign_exit_code(output):
 
 
 def initial_parse(lines):
-    """ scan the file for errors, and find the final elapsed time value """
+    """Scan the file for errors, and find the final elapsed time value."""
     errors = []
     warnings = []
     parser_errors = []
@@ -272,7 +277,9 @@ def initial_parse(lines):
         if 'WARNING' in line.upper():
             warnings.append(line.strip())
         elif 'ERROR' in line:
-            errors.append(line.strip())
+            # TODO ignore errors before program execution (e.g. in mpiexec setup)?
+            if 'open_hca: getaddr_netdev ERROR' not in line:
+                errors.append(line.strip())
         elif 'SCF abnormal end' in line:  # only present when run using runcry
             errors.append(line.strip())
         elif 'MPI_Abort' in line:
@@ -282,8 +289,6 @@ def initial_parse(lines):
                 mpi_abort = True
         elif 'CONVERGENCE TESTS UNSATISFIED' in line.upper():
             errors.append(line.strip())
-        elif 'Note: The following floating-point exceptions are signalling:' in line:
-            warnings.append(line.strip())
         elif 'TELAPSE' in line:
             telapse_line = lineno
 
@@ -328,7 +333,7 @@ def initial_parse(lines):
 
 
 def parse_pre_header(lines, initial_lineno=0):
-    """ parse any data before the program header
+    """Parse any data before the program header
 
     note this is only for runs using runcry (not straight from the binary)
 
@@ -366,7 +371,7 @@ def parse_pre_header(lines, initial_lineno=0):
 
 
 def parse_calculation_header(lines, initial_lineno):
-    """ parse calculation header
+    """Parse calculation header
 
     Parameters
     ----------
@@ -390,7 +395,7 @@ def parse_calculation_header(lines, initial_lineno):
 
 
 def parse_geometry_input(lines, initial_lineno):
-    """ parse geometry input data
+    """Parse geometry input data.
 
     Parameters
     ----------
@@ -412,7 +417,7 @@ def parse_geometry_input(lines, initial_lineno):
 
 
 def parse_calculation_setup(lines, initial_lineno):
-    """ parse initial setup data (starting after intital geometry input)
+    """Parse initial setup data (starting after initial geometry input).
 
     Parameters
     ----------
@@ -474,7 +479,7 @@ def parse_calculation_setup(lines, initial_lineno):
 
 
 def parse_geometry_section(data, initial_lineno, line, lines):
-    """ parse a section of geometry related variables
+    """Parse a section of geometry related variables.
 
     Parameters
     ----------
@@ -577,7 +582,7 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 a, b, c, alpha, beta, gamma = [cell[p] for p in ['a', 'b', 'c', 'alpha', 'beta', 'gamma']]
 
             curr_lineno = initial_lineno + 3
-            atom_data = {'ids': [], 'assymetric': [], 'atomic_numbers': [], 'symbols': [], 'fcoords': []}
+            atom_data = {'ids': [], 'assymetric': [], 'atomic_numbers': [], 'symbols': []}
             atom_data['pbc'] = periodic
             while lines[curr_lineno].strip() and not lines[curr_lineno].strip()[0].isalpha():
                 fields = lines[curr_lineno].strip().split()
@@ -586,14 +591,18 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 atom_data['atomic_numbers'].append(int(fields[2]))
                 atom_data['symbols'].append(fields[3].lower().capitalize())
                 if all(periodic):
-                    atom_data['fcoords'].append([float(fields[4]), float(fields[5]), float(fields[6])])
+                    atom_data.setdefault('fcoords', []).append([float(fields[4]), float(fields[5]), float(fields[6])])
                 elif periodic == [True, True, False] and alpha == 90 and beta == 90:
-                    atom_data['fcoords'].append([float(fields[4]), float(fields[5]), float(fields[6]) / c])
-                # TODO other periodic types (1D, 0D)
+                    atom_data.setdefault('fcoords',
+                                         []).append([float(fields[4]),
+                                                     float(fields[5]),
+                                                     float(fields[6]) / c])
+                elif periodic == [False, False, False]:
+                    atom_data.setdefault('ccoords', []).append([float(fields[4]), float(fields[5]), float(fields[6])])
+
+                # TODO other periodic types (1D)
                 curr_lineno += 1
 
-            if not atom_data['fcoords']:
-                atom_data.pop('fcoords')
             data[field] = edict.merge([data.get(field, {}), atom_data])
 
     # TODO These coordinates are present in initial and final optimized sections,
@@ -607,6 +616,9 @@ def parse_geometry_section(data, initial_lineno, line, lines):
         atom_data = {'ids': [], 'atomic_numbers': [], 'symbols': [], 'ccoords': []}
         while lines[curr_lineno].strip() and not lines[curr_lineno].strip()[0].isalpha():
             fields = lines[curr_lineno].strip().split()
+            if len(fields) < 6:
+                raise IOError('was expecting ID ANUM SYMBOL X Y Z on line:'
+                              ' {0}, got: {1}'.format(curr_lineno, lines[curr_lineno]))
             atom_data['ids'].append(fields[0])
             atom_data['atomic_numbers'].append(int(fields[1]))
             atom_data['symbols'].append(fields[2].lower().capitalize())

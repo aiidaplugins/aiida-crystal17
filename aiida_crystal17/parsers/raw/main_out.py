@@ -26,9 +26,7 @@ from aiida_crystal17.parsers.raw import crystal_stdout
 
 
 class OutputNodes(Mapping):
-    """
-    a mapping of output nodes, with attribute access
-    """
+    """A mapping of output nodes, with attribute access."""
 
     def __init__(self):
         self._dict = {'results': None, 'structure': None, 'symmetry': None}
@@ -195,7 +193,7 @@ def _extract_symmetry(final_data, init_settings, param_data, parser_result, exit
 
 
 def _extract_structure(final_data, init_struct, results_data, parser_result, exit_codes):
-    """create a StructureData object of the final configuration"""
+    """Create a StructureData object of the final configuration."""
     if 'primitive_cell' not in final_data:
         results_data['parser_errors'].append('final primitive cell was not found in the output file')
         parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
@@ -206,9 +204,19 @@ def _extract_structure(final_data, init_struct, results_data, parser_result, exi
     results_data['number_of_atoms'] = len(cell_data['atomic_numbers'])
     results_data['number_of_assymetric'] = sum(cell_data['assymetric'])
 
-    cell_vectors = []
-    for n in 'a b c'.split():
-        cell_vectors.append(cell_data['cell_vectors'][n])
+    if 'cell_vectors' in cell_data:
+        cell_vectors = []
+        for n in 'a b c'.split():
+            cell_vectors.append(cell_data['cell_vectors'][n])
+    elif cell_data['pbc'] == [False, False, False]:
+        # 0D structure outputs do contain cell_vectors, only cell_parameters
+        # but obviously this should not matter, and CRYSTAL should set defaults
+        # TODO check consistency with 'cell_parameters'
+        cell_vectors = [[500., 0., 0.], [0., 500., 0.], [0., 0., 500.]]
+    else:
+        # TODO check 1D/2D geometry contain cell_vectors key
+        results_data['parser_warnings'].append('final structure does not contain "cell_vectors" key')
+        return None
 
     # we want to reuse the kinds from the input structure, if available
     if not init_struct:
@@ -229,7 +237,7 @@ def _extract_structure(final_data, init_struct, results_data, parser_result, exi
 
 
 def _extract_mulliken(data, param_data):
-    """extract mulliken electronic charge partition data"""
+    """Extract mulliken electronic charge partition data."""
     if 'alpha+beta_electrons' in data:
         electrons = data['alpha+beta_electrons']['charges']
         anum = data['alpha+beta_electrons']['atomic_numbers']
