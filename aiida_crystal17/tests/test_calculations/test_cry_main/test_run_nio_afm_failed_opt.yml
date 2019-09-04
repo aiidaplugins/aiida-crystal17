@@ -71,7 +71,7 @@ results:
   opt_iterations: 20
   parser_class: CryMainParser
   parser_errors:
-  - did not find 'OPT END', after optimisation start at line 804
+  - did not find 'OPT END', after optimisation start at line 806
   - final primitive cell was not found in the output file
   - primitive symmops were not found in the output file
   parser_exceptions: []

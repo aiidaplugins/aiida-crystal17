@@ -171,7 +171,7 @@ def parse_crystal_fort25(content):
 
 
 def parse_crystal_fort25_aiida(fileobj, parser_class):
-    """ takes the result from `parse_crystal_fort25` and prepares it for AiiDA output"""
+    """Take the result from `parse_crystal_fort25` and prepares it for AiiDA output."""
     results_data = {
         'parser_version': str(__version__),
         'parser_class': str(parser_class),

@@ -13,9 +13,8 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-Plugin to create a CRYSTAL17 output file,
-from input files created via data nodes
+"""Plugin to create a CRYSTAL17 output file,
+from input files created via data nodes.
 """
 import os
 import six
@@ -246,7 +245,7 @@ class CryMainCalculation(CryAbstractCalculation):
 
     @staticmethod
     def _check_remote(remote_folder, file_names):
-        """tests if files are present and note empty on a remote folder
+        """Test if files are present and note empty on a remote folder.
 
         Parameters
         ----------

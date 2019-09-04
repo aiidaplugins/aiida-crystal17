@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-This module deals with reading/creating .gui files
-for use with the EXTERNAL keyword
+"""This module deals with reading/creating .gui files for use with the EXTERNAL keyword.
 
 File Format
 
@@ -149,7 +147,7 @@ def parse_fort34(lines, check_final_line=False):
 
 
 def gui_file_write(structure_data, symmetry_data=None):
-    """create string of gui file content (for CRYSTAL17)
+    """Create string of gui file content (for CRYSTAL17).
 
     Parameters
     ----------
@@ -173,6 +171,7 @@ def gui_file_write(structure_data, symmetry_data=None):
 
     Symmetry operations and atomic positions are assumed to be cartesian
     (rather than fractional)
+
     """
     structure_dict = convert_structure(structure_data, 'dict')
 
