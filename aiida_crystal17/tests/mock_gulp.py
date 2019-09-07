@@ -38,15 +38,18 @@ hash_map = {
         'stdout': ('optimize_lj_pyrite_symm', 'main.gout'),
         'output': [(('optimize_lj_pyrite_symm', 'output.cif'), ('output.cif',))]
     },
-    '83f4e528d0824eea430572fdda0b4f58': {
+    # '83f4e528d0824eea430572fdda0b4f58': {  # angleprod 0.001 -> 0.00001
+    'e7d3542e07249b47722baa39e4f9cd83': {
         'stdout': ('single_reaxff_pyrite', 'main.gout'),
         'output': ()
     },
-    '16f5c23e5c4072a25b7ed33a68744227': {
+    # '16f5c23e5c4072a25b7ed33a68744227': {  # angleprod 0.001 -> 0.00001
+    '4889d8c7fb16c64e5cd33df557323194': {
         'stdout': ('optimize_reaxff_pyrite', 'main.gout'),
         'output': [(('optimize_reaxff_pyrite', 'output.cif'), ('output.cif',))]
     },
-    '59ea35116463a60fb1ffe055d95f1542': {
+    # '59ea35116463a60fb1ffe055d95f1542': {  # angleprod 0.001 -> 0.00001
+    '55fab27ab4cbfece6a7e8ca61c8005fe': {
         'stdout': ('optimize_reaxff_pyrite_symm', 'main.gout'),
         'output': [(('optimize_reaxff_pyrite_symm', 'output.cif'), ('output.cif',))],
         'stderr': ('optimize_reaxff_pyrite_symm', 'main_stderr.txt')
@@ -55,7 +58,8 @@ hash_map = {
         'stdout': ('fit_lj_fes', 'main.gout'),
         'output': [(('fit_lj_fes', 'fitting.grs'), ('fitting.grs',))]
     },
-    'bbfcc242e70205e5d418001dea5e3d63': {
+    # 'bbfcc242e70205e5d418001dea5e3d63': {  # angleprod 0.001 -> 0.00001
+    'ca3b8d79a5ccb44cb74f646ae2018899': {
         'stdout': ('fit_reaxff_fes', 'main.gout'),
         'output': [(('fit_reaxff_fes', 'fitting.grs'), ('fitting.grs',))]
     }

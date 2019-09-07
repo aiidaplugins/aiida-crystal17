@@ -13,3 +13,4 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
+from .parse_output_common import REAXFF_ENAME_MAP  # noqa: F401
