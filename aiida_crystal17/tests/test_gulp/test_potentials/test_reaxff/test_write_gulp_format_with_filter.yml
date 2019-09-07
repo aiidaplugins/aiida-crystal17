@@ -191,7 +191,11 @@ global:
   Triple bond stabilisation 2: 6.8702
   Triple bond stabilization energy: -70.5044
   Upper Taper-radius: 10.0
+  anglemin: 0.001
+  angleprod: 1.0e-05
   bond order cutoff: 0.1
+  hbonddist: 7.5
+  hbondmin: 0.01
   reaxff0_boc1: 50.0
   reaxff0_boc2: 9.5469
   reaxff0_cot2: 2.1645
@@ -217,6 +221,7 @@ global:
   reaxff3_coa2: 26.5405
   reaxff3_coa3: 2.6962
   reaxff3_coa4: 2.1365
+  torsionprod: 1.0e-05
 species:
 - Fe core
 - S core
