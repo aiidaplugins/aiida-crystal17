@@ -32,7 +32,10 @@ NEWK_WF_REGEXES = (
 
 
 def read_properties_stdout(content):
-    """Parse the stdout content from a CRYSTAL Properties computation to a dict."""
+    """Parse the stdout content from a CRYSTAL Properties computation to a dict.
+
+    NOTE: this function expects that NEWK is the initial part of the computation
+    """
     output = {
         'units': {
             'conversion': 'CODATA2014',

@@ -1,4 +1,9 @@
 calculation:
+  gilat_net: 8
+  k_points:
+  - 8
+  - 8
+  - 8
   n_ao: 14
   n_atoms: 2
   n_core_el: 12
@@ -12,6 +17,14 @@ exit_code: 0
 header:
   crystal_subversion: 1.0.1
   crystal_version: 17
+newk:
+  gilat_net: 36
+  k_points:
+  - 18
+  - 18
+  - 18
+  n_kpoints_gilat: 1240
+  n_kpoints_ibz: 195
 parser_errors: []
 parser_exceptions: []
 units:
