@@ -13,7 +13,8 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
+"""Parse the stdout content from a CRYSTAL SCF/optimization computation.
+
 Basic outline of parsing sections:
 
 ::
@@ -71,9 +72,20 @@ KNOWN_ERRORS = (
     ('SCF abnormal end', 'ERROR_SCF_ABNORMAL_END'),  # catch all error
     ('MPI_Abort', 'ERROR_MPI_ABORT'))
 
+SYSTEM_INFO_REGEXES = (
+    ('n_atoms', re.compile(r'\sN. OF ATOMS PER CELL\s*(\d*)', re.DOTALL)),
+    ('n_shells', re.compile(r'\sNUMBER OF SHELLS\s*(\d*)', re.DOTALL)),
+    ('n_ao', re.compile(r'\sNUMBER OF AO\s*(\d*)', re.DOTALL)),
+    ('n_electrons', re.compile(r'\sN. OF ELECTRONS PER CELL\s*(\d*)', re.DOTALL)),
+    ('n_core_el', re.compile(r'\sCORE ELECTRONS PER CELL\s*(\d*)', re.DOTALL)),
+    ('n_symops', re.compile(r'\sN. OF SYMMETRY OPERATORS\s*(\d*)', re.DOTALL)),
+    ('n_kpoints_ibz', re.compile(r'\sNUMBER OF K POINTS IN THE IBZ\s*(\d*)', re.DOTALL)),
+    ('n_kpoints_gilat', re.compile(r'\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d*)', re.DOTALL)),
+)
+
 
 def read_crystal_stdout(content):
-
+    """Parse the stdout content from a CRYSTAL SCF/optimization computation to a dict."""
     output = {
         'units': {
             'conversion': 'CODATA2014',
@@ -87,16 +99,9 @@ def read_crystal_stdout(content):
         'parser_exceptions': []
     }
 
-    # remove MPI statuses, and floating point exceptions
-    # which can get mixed with the program stdout/stderr and corrupt the output
-    # TODO: removing these will affect the reporting of line numbers in errors
-    regex = re.compile('^\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING[^\\S\n\r]*(\r\n|\r|\n)', re.MULTILINE)
-    content = re.sub(regex, '', content)
-    regex = re.compile(
-        '^(\\s*Note\\:\\sThe\\sfollowing\\sfloating\\-point\\sexceptions\\sare\\ssignalling.+)(\r\n|\r|\n)',
-        re.MULTILINE)
-    output['warnings'] += [l.strip() for l, n in re.findall(regex, content)]
-    content = re.sub(regex, '', content)
+    # strip non program output
+    content, warnings = strip_non_program_output(content)
+    output['warnings'] += warnings
     lines = content.splitlines()
 
     if not lines:
@@ -182,6 +187,32 @@ def read_crystal_stdout(content):
             lineno = outcome.next_lineno
 
     return assign_exit_code(output)
+
+
+def strip_non_program_output(content):
+    """Remove MPI statuses, and floating point exceptions.
+
+    These can get mixed with the program stdout/stderr and corrupt the output
+
+    Parameters
+    ----------
+    content: str
+
+    Returns
+    -------
+    str: content
+    list[str]: warnings
+
+    """
+    # TODO: removing these will affect the reporting of line numbers in errors
+    regex = re.compile('^\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING[^\\S\n\r]*(\r\n|\r|\n)', re.MULTILINE)
+    content = re.sub(regex, '', content)
+    regex = re.compile(
+        '^(\\s*Note\\:\\sThe\\sfollowing\\sfloating\\-point\\sexceptions\\sare\\ssignalling.+)(\r\n|\r|\n)',
+        re.MULTILINE)
+    warnings = [l.strip() for l, n in re.findall(regex, content)]
+    content = re.sub(regex, '', content)
+    return content, warnings
 
 
 def parse_section(func, lines, initial_lineno, output, key_name):
@@ -459,21 +490,11 @@ def parse_calculation_setup(lines, initial_lineno):
     if end_lineno is None:
         return ParsedSection(curr_lineno, data, "couldn't find start of initial scf calculation")
 
-    regexes = {
-        'n_atoms': re.compile(r'\sN. OF ATOMS PER CELL\s*(\d*)', re.DOTALL),
-        'n_shells': re.compile(r'\sNUMBER OF SHELLS\s*(\d*)', re.DOTALL),
-        'n_ao': re.compile(r'\sNUMBER OF AO\s*(\d*)', re.DOTALL),
-        'n_electrons': re.compile(r'\sN. OF ELECTRONS PER CELL\s*(\d*)', re.DOTALL),
-        'n_core_el': re.compile(r'\sCORE ELECTRONS PER CELL\s*(\d*)', re.DOTALL),
-        'n_symops': re.compile(r'\sN. OF SYMMETRY OPERATORS\s*(\d*)', re.DOTALL),
-        'n_kpoints_ibz': re.compile(r'\sNUMBER OF K POINTS IN THE IBZ\s*(\d*)', re.DOTALL),
-        'n_kpoints_gilat': re.compile(r'\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d*)', re.DOTALL),
-    }
     content = '\n'.join(lines[initial_lineno:end_lineno])
-    for name, regex in regexes.items():
-        num = regex.search(content)
-        if num is not None:
-            data['calculation'][name] = int(num.groups()[0])
+    for name, regex in SYSTEM_INFO_REGEXES:
+        match = regex.search(content)
+        if match is not None:
+            data['calculation'][name] = int(match.groups()[0])
 
     return ParsedSection(curr_lineno, data, None)
 

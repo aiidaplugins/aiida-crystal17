@@ -1,0 +1,22 @@
+calculation:
+  n_ao: 14
+  n_atoms: 2
+  n_core_el: 12
+  n_electrons: 20
+  n_kpoints_ibz: 29
+  n_shells: 5
+  n_symops: 48
+errors: []
+execution_time_seconds: 0
+exit_code: 0
+header:
+  crystal_subversion: 1.0.1
+  crystal_version: 17
+parser_errors: []
+parser_exceptions: []
+units:
+  angle: degrees
+  conversion: CODATA2014
+  energy: eV
+  length: angstrom
+warnings: []

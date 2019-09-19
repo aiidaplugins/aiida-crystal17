@@ -1,0 +1,31 @@
+atoms_atomic_number:
+- 12
+- 8
+atoms_nuclear_charge:
+- 12.0
+- 8.0
+atoms_positions:
+- - 0.0
+  - 0.0
+  - 0.0
+- - 2.11
+  - 2.11
+  - 2.11
+cell:
+- - 0.0
+  - 2.22
+  - 2.22
+- - 2.22
+  - 0.0
+  - 2.22
+- - 2.22
+  - 2.22
+  - 0.0
+distance_units: angstrom
+header:
+- Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk
+- 5.62556267     5.62556267     5.62556267    60.000000  60.000000  60.000000
+voxel_grid:
+- 20
+- 20
+- 20

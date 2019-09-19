@@ -32,11 +32,11 @@
         "aiida",
         "pytest"
     ],
-    "todo-tree.tags": [
+    "todo-tree.general.tags": [
         "TODO",
         "todo::",
         "FIXME",
         "NOTE"
-      ],
-    "todo-tree.regex": "((//|#-?|<!--|\\.\\.|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])"
+    ],
+    "todo-tree.regex.regex": "((//|#-?|<!--|\\.\\.|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])"
 }
