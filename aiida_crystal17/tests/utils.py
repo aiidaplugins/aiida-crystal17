@@ -244,16 +244,12 @@ class AiidaTestApp(object):
 
     @staticmethod
     def parse_from_node(entry_point_name, node, retrieved_temporary_folder=None):
-        """load a parser class
+        """Parse the outputs directly from the `CalcJobNode`.
 
         Parameters
         ----------
         entry_point_name : str
             entry point name of the parser class
-
-        Returns
-        -------
-        aiida.parsers.parser.Parser
 
         """
         from aiida.plugins import ParserFactory
