@@ -7,7 +7,7 @@ Properties Calculations
 
     More information to come...
 
-The :py:class:`~.aiida_crystal17.workflows.crystal_props.cry_doss.CryPropertiesWorkChain` can be used to run properties
+The :py:class:`~.aiida_crystal17.workflows.crystal_props.base.CryPropertiesWorkChain` can be used to run properties
 calculations from an existing :py:class:`~aiida_crystal17.calculations.cry_main.CryMainCalculation`.
 
 .. code:: shell

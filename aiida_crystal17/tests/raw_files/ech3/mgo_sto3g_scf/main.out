@@ -43,7 +43,7 @@
  *(18) CAMBRIDGE UNIVERSITY - CAMBRIDGE (UK)                                   *
  *                                                                             *
  *******************************************************************************
- EEEEEEEEEE STARTING  DATE 19 09 2019 TIME 17:19:37.0
+ EEEEEEEEEE STARTING  DATE 20 09 2019 TIME 16:10:13.8
 
  *******************************************************************************
  MgO Bulk                                                                        
@@ -83,7 +83,7 @@
 
  GCALCO - MAX INDICES DIRECT LATTICE VECTOR    14    14    14
  NO.OF VECTORS CREATED 6999 STARS  105 RMAX    59.53536 BOHR
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        0.01 TCPU        0.01
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        0.01 TCPU        0.00
 
  MATRIX SIZE: P(G)   13898, F(G)    2820, P(G) IRR     666, F(G) IRR     346
  MAX G-VECTOR INDEX FOR 1- AND 2-ELECTRON INTEGRALS 319
@@ -92,81 +92,10 @@
  CAPPA:IS1  8;IS2  8;IS3  8; K PTS MONK NET  29; SYMMOPS:K SPACE  48;G SPACE  48
 
 
- CAPPA:IS1 18;IS2 18;IS3 18; K PTS MONK NET 195; SYMMOPS:K SPACE  48;G SPACE  48
-
- *******************************************************************************
- RESTART WITH NEW K POINTS NET
- *******************************************************************************
- POINTS IN THE IBZ                 195 POINTS(GILAT NET)              1240
- SHRINK FACTORS(MONK.)        18 18 18 SHRINK FACTOR(GILAT)             36
- *******************************************************************************
- *** K POINTS COORDINATES (OBLIQUE COORDINATES IN UNITS OF IS = 18)
-   1-R(  0  0  0)   2-C(  1  0  0)   3-C(  2  0  0)   4-C(  3  0  0)
-   5-C(  4  0  0)   6-C(  5  0  0)   7-C(  6  0  0)   8-C(  7  0  0)
-   9-C(  8  0  0)  10-R(  9  0  0)  11-C(  1  1  0)  12-C(  2  1  0)
-  13-C(  3  1  0)  14-C(  4  1  0)  15-C(  5  1  0)  16-C(  6  1  0)
-  17-C(  7  1  0)  18-C(  8  1  0)  19-C(  9  1  0)  20-C( 10  1  0)
-  21-C( 11  1  0)  22-C( 12  1  0)  23-C( 13  1  0)  24-C( 14  1  0)
-  25-C( 15  1  0)  26-C( 16  1  0)  27-C( 17  1  0)  28-C(  2  2  0)
-  29-C(  3  2  0)  30-C(  4  2  0)  31-C(  5  2  0)  32-C(  6  2  0)
-  33-C(  7  2  0)  34-C(  8  2  0)  35-C(  9  2  0)  36-C( 10  2  0)
-  37-C( 11  2  0)  38-C( 12  2  0)  39-C( 13  2  0)  40-C( 14  2  0)
-  41-C( 15  2  0)  42-C( 16  2  0)  43-C(  3  3  0)  44-C(  4  3  0)
-  45-C(  5  3  0)  46-C(  6  3  0)  47-C(  7  3  0)  48-C(  8  3  0)
-  49-C(  9  3  0)  50-C( 10  3  0)  51-C( 11  3  0)  52-C( 12  3  0)
-  53-C( 13  3  0)  54-C( 14  3  0)  55-C( 15  3  0)  56-C(  4  4  0)
-  57-C(  5  4  0)  58-C(  6  4  0)  59-C(  7  4  0)  60-C(  8  4  0)
-  61-C(  9  4  0)  62-C( 10  4  0)  63-C( 11  4  0)  64-C( 12  4  0)
-  65-C( 13  4  0)  66-C( 14  4  0)  67-C(  5  5  0)  68-C(  6  5  0)
-  69-C(  7  5  0)  70-C(  8  5  0)  71-C(  9  5  0)  72-C( 10  5  0)
-  73-C( 11  5  0)  74-C( 12  5  0)  75-C( 13  5  0)  76-C(  6  6  0)
-  77-C(  7  6  0)  78-C(  8  6  0)  79-C(  9  6  0)  80-C( 10  6  0)
-  81-C( 11  6  0)  82-C( 12  6  0)  83-C(  7  7  0)  84-C(  8  7  0)
-  85-C(  9  7  0)  86-C( 10  7  0)  87-C( 11  7  0)  88-C(  8  8  0)
-  89-C(  9  8  0)  90-C( 10  8  0)  91-R(  9  9  0)  92-C(  3  2  1)
-  93-C(  4  2  1)  94-C(  5  2  1)  95-C(  6  2  1)  96-C(  7  2  1)
-  97-C(  8  2  1)  98-C(  9  2  1)  99-C( 10  2  1) 100-C(  4  3  1)
- 101-C(  5  3  1) 102-C(  6  3  1) 103-C(  7  3  1) 104-C(  8  3  1)
- 105-C(  9  3  1) 106-C( 10  3  1) 107-C( 11  3  1) 108-C( 12  3  1)
- 109-C( 13  3  1) 110-C( 14  3  1) 111-C( 15  3  1) 112-C( 16  3  1)
- 113-C(  5  4  1) 114-C(  6  4  1) 115-C(  7  4  1) 116-C(  8  4  1)
- 117-C(  9  4  1) 118-C( 10  4  1) 119-C( 11  4  1) 120-C( 12  4  1)
- 121-C( 13  4  1) 122-C( 14  4  1) 123-C( 15  4  1) 124-C(  6  5  1)
- 125-C(  7  5  1) 126-C(  8  5  1) 127-C(  9  5  1) 128-C( 10  5  1)
- 129-C( 11  5  1) 130-C( 12  5  1) 131-C( 13  5  1) 132-C( 14  5  1)
- 133-C(  7  6  1) 134-C(  8  6  1) 135-C(  9  6  1) 136-C( 10  6  1)
- 137-C( 11  6  1) 138-C( 12  6  1) 139-C( 13  6  1) 140-C(  8  7  1)
- 141-C(  9  7  1) 142-C( 10  7  1) 143-C( 11  7  1) 144-C( 12  7  1)
- 145-C(  9  8  1) 146-C( 10  8  1) 147-C( 11  8  1) 148-C( 10  9  1)
- 149-C(  6  4  2) 150-C(  7  4  2) 151-C(  8  4  2) 152-C(  9  4  2)
- 153-C( 10  4  2) 154-C( 11  4  2) 155-C(  7  5  2) 156-C(  8  5  2)
- 157-C(  9  5  2) 158-C( 10  5  2) 159-C( 11  5  2) 160-C( 12  5  2)
- 161-C( 13  5  2) 162-C( 14  5  2) 163-C( 15  5  2) 164-C(  8  6  2)
- 165-C(  9  6  2) 166-C( 10  6  2) 167-C( 11  6  2) 168-C( 12  6  2)
- 169-C( 13  6  2) 170-C( 14  6  2) 171-C(  9  7  2) 172-C( 10  7  2)
- 173-C( 11  7  2) 174-C( 12  7  2) 175-C( 13  7  2) 176-C( 10  8  2)
- 177-C( 11  8  2) 178-C( 12  8  2) 179-C( 11  9  2) 180-C(  9  6  3)
- 181-C( 10  6  3) 182-C( 11  6  3) 183-C( 12  6  3) 184-C( 10  7  3)
- 185-C( 11  7  3) 186-C( 12  7  3) 187-C( 13  7  3) 188-C( 14  7  3)
- 189-C( 11  8  3) 190-C( 12  8  3) 191-C( 13  8  3) 192-C( 12  9  3)
- 193-C( 12  8  4) 194-C( 13  8  4) 195-C( 13  9  4)
-
- FERMI ENERGY AND DENSITY MATRIX CALCULATION ON COMPUTED EIGENVECTORS
- DENSITY MATRIX AT SCF CYCLE (  7+1)
-
- INSULATING STATE
- TOP OF VALENCE BANDS -    BAND     10; K   55; EIG -1.4650129E-01 AU
- TOP OF VALENCE BANDS -    BAND     10; K    1; EIG -1.6059682E-01 AU
- BOTTOM OF VIRTUAL BANDS - BAND     11; K    1; EIG  3.1898294E-01 AU
- INDIRECT ENERGY BAND GAP:  12.6665 eV
-
- CORE DENSITY MATRIX CALCULATION
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT NEWK        TELAPSE        0.06 TCPU        0.05
-
  3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D3D
  3D DENSITY, GRID IS  20* 20* 20
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT CHARGE      TELAPSE        0.11 TCPU        0.09
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT ECH3        TELAPSE        0.11 TCPU        0.09
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT CHARGE      TELAPSE        0.07 TCPU        0.05
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT ECH3        TELAPSE        0.07 TCPU        0.05
  ENDPROP   
- TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE        0.11 TCPU        0.09
- EEEEEEEEEE TERMINATION  DATE 19 09 2019 TIME 17:19:37.1
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE        0.07 TCPU        0.05
+ EEEEEEEEEE TERMINATION  DATE 20 09 2019 TIME 16:10:13.9

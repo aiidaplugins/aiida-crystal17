@@ -26,15 +26,15 @@ from aiida_crystal17.tests import read_resource_binary, read_resource_text
 
 # map of input file hashes to output files
 hash_map = {
+    'c1c5a85d0d799459f2e20fcb25bec0af': {
+        'stdout': ('newk', 'mgo_sto3g_scf', 'main.out'),
+        'output': ()
+    },
     'a3744c045b5572e93157a16decd1dd24': {
         'stdout': ('doss', 'mgo_sto3g_scf', 'main.out'),
         'output': [[('doss', 'mgo_sto3g_scf', 'fort.25'), ('fort.25',)]]
     },
-    'c1c5a85d0d799459f2e20fcb25bec0af': {
-        'stdout': ('fermi', 'mgo_sto3g_scf', 'main.out'),
-        'output': ()
-    },
-    '26b61264b4c8670a5e25f5d3d9817969': {
+    '9b8e9a41b49014c1c91fc9142210c611': {
         'stdout': ('ech3', 'mgo_sto3g_scf', 'main.out'),
         'output': [[('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT'), ('DENS_CUBE.DAT',)]]
     }

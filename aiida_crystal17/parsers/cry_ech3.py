@@ -50,7 +50,7 @@ class CryEch3Parser(Parser):
         # parse stdout file
         stdout_error = None
         stdout_data = {}
-        stdout_fname = self.node.get_option('output_main_file_name')
+        stdout_fname = self.node.get_option('stdout_file_name')
         if stdout_fname not in self.retrieved.list_object_names():
             stdout_error = self.exit_codes.ERROR_OUTPUT_FILE_MISSING
         else:
@@ -100,25 +100,29 @@ class CryEch3Parser(Parser):
 
     def merge_output_dicts(self, stdout_data, charge_data):
         """Merge the data returned from the stdout file and charge_data file."""
-        charge_data.pop('atoms_positions', None)
-        charge_data.pop('atoms_nuclear_charge', None)
+        # charge_data.pop('atoms_positions', None)
+        # charge_data.pop('atoms_nuclear_charge', None)
         atoms_atomic_number = charge_data.pop('atoms_atomic_number', [])
+        if atoms_atomic_number:
+            charge_data['elements'] = [SYMBOLS.get(n, n) for n in set(atoms_atomic_number)]
 
-        final_data = {'elements': [SYMBOLS.get(n, n) for n in set(atoms_atomic_number)]}
-        for key in set(list(stdout_data.keys()) + list(charge_data.keys())):
-            if key in ['errors', 'warnings', 'parser_errors', 'parser_exceptions']:
-                final_data[key] = stdout_data.get(key, []) + charge_data.get(key, [])
-            elif key == 'units':
-                units = stdout_data.get(key, {})
-                units.update(charge_data.get(key, {}))
-                final_data[key] = units
-            elif key in stdout_data and key in charge_data:
-                self.logger.warning('key in stdout_data and charge_data: {}'.format(key))
-                final_data[key] = charge_data[key]
-            elif key in charge_data:
-                final_data[key] = charge_data[key]
-            else:
-                final_data[key] = stdout_data[key]
+        final_data = {
+            k: v
+            for k, v in stdout_data.items()
+            if k not in ['errors', 'warnings', 'parser_errors', 'parser_exceptions', 'units']
+        }
 
-        final_data.update({'parser_version': str(__version__), 'parser_class': str(self.__class__.__name__)})
+        final_data.update({
+            'parser_version': str(__version__),
+            'parser_class': str(self.__class__.__name__),
+            'cube': {k: v for k, v in charge_data.items() if k in ['elements', 'cell', 'header', 'voxel_grid']}
+        })
+
+        for key in ['errors', 'warnings', 'parser_errors', 'parser_exceptions']:
+            final_data[key] = stdout_data.get(key, []) + charge_data.get(key, [])
+
+        units = stdout_data.get('units', {})
+        units.update(charge_data.get('units', {}))
+        final_data['units'] = units
+
         return final_data

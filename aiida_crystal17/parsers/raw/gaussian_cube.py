@@ -78,7 +78,7 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
         ccoords.append(ccoord.tolist())
 
     data = {
-        'cube_header': header,
+        'header': header,
         'cell': [avec.tolist(), bvec.tolist(), cvec.tolist()],
         'voxel_grid': [int(an), int(bn), int(cn)],
         'atoms_positions': ccoords,

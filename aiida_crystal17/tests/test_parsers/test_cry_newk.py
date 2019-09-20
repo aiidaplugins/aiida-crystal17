@@ -7,7 +7,7 @@ from aiida_crystal17.tests import open_resource_binary
 
 
 @pytest.mark.parametrize('plugin_name', [
-    'crystal17.fermi',
+    'crystal17.newk',
 ])
 def test_missing_output(db_test_app, plugin_name):
 
@@ -22,7 +22,7 @@ def test_missing_output(db_test_app, plugin_name):
 
 
 @pytest.mark.parametrize('plugin_name', [
-    'crystal17.fermi',
+    'crystal17.newk',
 ])
 def test_empty_output(db_test_app, plugin_name):
 
@@ -39,7 +39,7 @@ def test_empty_output(db_test_app, plugin_name):
 
 
 @pytest.mark.parametrize('plugin_name', [
-    'crystal17.fermi',
+    'crystal17.newk',
 ])
 def test_success(db_test_app, plugin_name, data_regression):
 
@@ -52,6 +52,5 @@ def test_success(db_test_app, plugin_name, data_regression):
 
     assert calcfunction.is_finished_ok, calcfunction.exception
     assert 'results' in results
-    assert 'fermi_energy' in results
     results_attr = {k: round(i, 7) if isinstance(i, float) else i for k, i in results['results'].attributes.items()}
-    data_regression.check({'results': results_attr, 'fermi': round(results['fermi_energy'].value, 7)})
+    data_regression.check({'results': results_attr})
