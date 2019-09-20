@@ -21,10 +21,12 @@ cell:
 - - 2.22
   - 2.22
   - 0.0
-distance_units: angstrom
-header:
+cube_header:
 - Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk
 - 5.62556267     5.62556267     5.62556267    60.000000  60.000000  60.000000
+units:
+  conversion: CODATA2014
+  length: angstrom
 voxel_grid:
 - 20
 - 20

@@ -16,21 +16,20 @@
 """A parser to read output from a CRYSTAL17 DOSS run."""
 import traceback
 
-import numpy as np
-
 from aiida.common import exceptions
 from aiida.engine import ExitCode
-from aiida.orm import Dict, ArrayData
+from aiida.orm import Dict
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17 import __version__
+from aiida_crystal17.common import SYMBOLS
 from aiida_crystal17.parsers.raw.properties_stdout import read_properties_stdout
-from aiida_crystal17.parsers.raw.crystal_fort25 import parse_crystal_fort25_aiida
+from aiida_crystal17.parsers.raw.gaussian_cube import read_gaussian_cube
 from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
-class CryDossParser(Parser):
-    """Parser class for parsing outputs from CRYSTAL17 ``properties`` DOSS computation."""
+class CryEch3Parser(Parser):
+    """Parser class for parsing outputs from CRYSTAL17 ``properties`` ECH3 computation."""
 
     def parse(self, **kwargs):
         """Parse outputs, store results in database."""
@@ -61,22 +60,21 @@ class CryDossParser(Parser):
             if stdout_exit_code:
                 stdout_error = self.exit_codes[stdout_exit_code]
 
-        # parse iso file
-        iso_error = None
-        iso_data = {}
-        iso_arrays = None
-        output_isovalue_fname = self.node.get_option('output_isovalue_fname')
-        if output_isovalue_fname not in output_folder.list_object_names():
-            iso_error = self.exit_codes.ERROR_ISOVALUE_FILE_MISSING
+        # parse density file
+        charge_error = None
+        charge_data = {}
+        output_density_fname = self.node.get_option('output_charge_fname')
+        if output_density_fname not in output_folder.list_object_names():
+            charge_error = self.exit_codes.ERROR_DENSITY_FILE_MISSING
         else:
             try:
-                with output_folder.open(output_isovalue_fname) as handle:
-                    iso_data, iso_arrays = parse_crystal_fort25_aiida(handle)
+                with output_folder.open(output_density_fname) as handle:
+                    charge_data = read_gaussian_cube(handle, return_density=False)
             except Exception:
                 traceback.print_exc()
-                iso_error = self.exit_codes.ERROR_PARSING_ISOVALUE_FILE
+                charge_error = self.exit_codes.ERROR_PARSING_DENSITY_FILE
 
-        final_data = self.merge_output_dicts(stdout_data, iso_data)
+        final_data = self.merge_output_dicts(stdout_data, charge_data)
 
         # log errors
         errors = final_data.get('errors', [])
@@ -88,11 +86,6 @@ class CryDossParser(Parser):
 
         # make output nodes
         self.out('results', Dict(dict=final_data))
-        if iso_arrays is not None:
-            array_data = ArrayData()
-            for name, array in iso_arrays.items():
-                array_data.set_array(name, np.array(array))
-            self.out('arrays', array_data)
 
         if pbs_error is not None:
             return pbs_error
@@ -100,26 +93,30 @@ class CryDossParser(Parser):
         if stdout_error is not None:
             return stdout_error
 
-        if iso_error is not None:
-            return iso_error
+        if charge_error is not None:
+            return charge_error
 
         return ExitCode()
 
-    def merge_output_dicts(self, stdout_data, iso_data):
-        """Merge the data returned from the stdout file and iso_data file."""
-        final_data = {}
-        for key in set(list(stdout_data.keys()) + list(iso_data.keys())):
+    def merge_output_dicts(self, stdout_data, charge_data):
+        """Merge the data returned from the stdout file and charge_data file."""
+        charge_data.pop('atoms_positions', None)
+        charge_data.pop('atoms_nuclear_charge', None)
+        atoms_atomic_number = charge_data.pop('atoms_atomic_number', [])
+
+        final_data = {'elements': [SYMBOLS.get(n, n) for n in set(atoms_atomic_number)]}
+        for key in set(list(stdout_data.keys()) + list(charge_data.keys())):
             if key in ['errors', 'warnings', 'parser_errors', 'parser_exceptions']:
-                final_data[key] = stdout_data.get(key, []) + iso_data.get(key, [])
+                final_data[key] = stdout_data.get(key, []) + charge_data.get(key, [])
             elif key == 'units':
                 units = stdout_data.get(key, {})
-                units.update(iso_data.get(key, {}))
+                units.update(charge_data.get(key, {}))
                 final_data[key] = units
-            elif key in stdout_data and key in iso_data:
-                self.logger.warning('key in stdout_data and iso_data: {}'.format(key))
-                final_data[key] = iso_data[key]
-            elif key in iso_data:
-                final_data[key] = iso_data[key]
+            elif key in stdout_data and key in charge_data:
+                self.logger.warning('key in stdout_data and charge_data: {}'.format(key))
+                final_data[key] = charge_data[key]
+            elif key in charge_data:
+                final_data[key] = charge_data[key]
             else:
                 final_data[key] = stdout_data[key]
 
