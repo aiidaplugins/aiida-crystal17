@@ -34,6 +34,10 @@ hash_map = {
         'stdout': ('fermi', 'mgo_sto3g_scf', 'main.out'),
         'output': ()
     },
+    '26b61264b4c8670a5e25f5d3d9817969': {
+        'stdout': ('ech3', 'mgo_sto3g_scf', 'main.out'),
+        'output': [[('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT'), ('DENS_CUBE.DAT',)]]
+    }
 }
 
 

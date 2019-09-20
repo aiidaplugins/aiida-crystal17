@@ -78,13 +78,16 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
         ccoords.append(ccoord.tolist())
 
     data = {
-        'header': header,
+        'cube_header': header,
         'cell': [avec.tolist(), bvec.tolist(), cvec.tolist()],
         'voxel_grid': [int(an), int(bn), int(cn)],
         'atoms_positions': ccoords,
         'atoms_nuclear_charge': nuclear_charges,
         'atoms_atomic_number': atomic_numbers,
-        'distance_units': dist_units
+        'units': {
+            'conversion': 'CODATA2014',
+            'length': dist_units,
+        }
     }
 
     if return_density:
