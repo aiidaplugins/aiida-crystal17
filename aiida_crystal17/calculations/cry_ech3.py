@@ -68,7 +68,7 @@ class CryEch3Calculation(CryAbstractCalculation):
 
         spec.output('results', valid_type=DataFactory('dict'), required=True, help='summary of the parsed data')
         spec.default_output_node = 'results'
-        # TODO save gaussian file(s) in separate output node (compressed)
+        # TODO save gaussian file(s) in separate output node (compressed)?
 
     def prepare_for_submission(self, tempfolder):
         """This is the routine to be called when you want to create
