@@ -38,18 +38,43 @@ calc:
     plugin: 0.10.0b5
   withmpi: false
 results:
+  calculation:
+    gilat_net: 8
+    k_points:
+    - 8
+    - 8
+    - 8
+    n_ao: 14
+    n_atoms: 2
+    n_core_el: 12
+    n_electrons: 20
+    n_kpoints_ibz: 29
+    n_shells: 5
+    n_symops: 48
   energy_max: 10.4040617
   energy_min: -10.2020112
-  energy_units: eV
   errors: []
   fermi_energy: -3.9864953
+  header:
+    crystal_subversion: 1.0.1
+    crystal_version: 17
+  newk:
+    gilat_net: 36
+    k_points:
+    - 18
+    - 18
+    - 18
+    n_kpoints_gilat: 1240
+    n_kpoints_ibz: 195
   norbitals_total: 14
   npts: 102
   parser_class: CryDossParser
   parser_errors: []
+  parser_exceptions: []
   parser_version: 0.10.0b5
-  parser_warnings: []
   spin: false
   system_type: closed shell, insulating system
-  units_conversion: CODATA2014
+  units:
+    conversion: CODATA2014
+    energy: eV
   warnings: []

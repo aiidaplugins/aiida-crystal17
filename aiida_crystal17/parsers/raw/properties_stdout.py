@@ -39,9 +39,6 @@ def read_properties_stdout(content):
     output = {
         'units': {
             'conversion': 'CODATA2014',
-            'energy': 'eV',
-            'length': 'angstrom',
-            'angle': 'degrees'
         },
         'errors': [],
         'warnings': [],

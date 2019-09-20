@@ -56,6 +56,7 @@ class CryDossCalculation(CryAbstractCalculation):
         spec.exit_code(352,
                        'ERROR_ISOVALUE_FILE_MISSING',
                        message='parser could not find the output isovalue (fort.25) file')
+        spec.exit_code(353, 'ERROR_PARSING_ISOVALUE_FILE', message='error parsing output isovalue (fort.25) file')
 
         spec.output('results', valid_type=DataFactory('dict'), required=True, help='summary of the parsed data')
         spec.default_output_node = 'results'

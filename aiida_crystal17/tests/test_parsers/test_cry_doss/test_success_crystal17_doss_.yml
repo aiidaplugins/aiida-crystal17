@@ -10,11 +10,37 @@ arrays:
   array|total_beta:
   - 1002
 results:
+  calculation:
+    gilat_net: 16
+    k_points:
+    - 8
+    - 8
+    - 8
+    n_ao: 124
+    n_atoms: 4
+    n_core_el: 56
+    n_electrons: 84
+    n_kpoints_ibz: 65
+    n_shells: 48
+    n_symops: 12
   energy_max: 13.7420025
   energy_min: -21.0529868
-  energy_units: eV
   errors: []
+  execution_time_seconds: 20
   fermi_energy: -3.3956544
+  header:
+    crystal_subversion: 1.0.1
+    crystal_version: 17
+  newk:
+    gilat_net: 36
+    k_points:
+    - 18
+    - 18
+    - 18
+    n_kpoints_gilat: 4237
+    n_kpoints_ibz: 580
+  non_program:
+    date: Fri  6 Apr 10:00:17 BST 2018
   norbitals_projections:
   - 12
   - 24
@@ -27,9 +53,11 @@ results:
   npts: 1002
   parser_class: CryDossParser
   parser_errors: []
+  parser_exceptions: []
   parser_version: 0.10.0b5
-  parser_warnings: []
   spin: true
   system_type: open shell, conducting system
-  units_conversion: CODATA2014
+  units:
+    conversion: CODATA2014
+    energy: eV
   warnings: []
