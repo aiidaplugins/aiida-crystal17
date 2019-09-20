@@ -28,8 +28,5 @@ newk:
 parser_errors: []
 parser_exceptions: []
 units:
-  angle: degrees
   conversion: CODATA2014
-  energy: eV
-  length: angstrom
 warnings: []
