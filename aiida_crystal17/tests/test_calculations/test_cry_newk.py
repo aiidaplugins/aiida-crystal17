@@ -2,17 +2,14 @@
 import pytest
 
 from aiida.engine import run_get_node
-from aiida.orm import Dict, FolderData
+from aiida.orm import Dict, FolderData, RemoteData, SinglefileData
 
-from aiida_crystal17.tests import open_resource_binary
+from aiida_crystal17.tests import open_resource_binary, resource_context
 from aiida_crystal17.tests.utils import AiidaTestApp  # noqa: F401
 
 
-@pytest.mark.cry17_calls_executable
-def test_run_mgo_scf(db_test_app, data_regression):
-    # type: (AiidaTestApp) -> None
-    """Test running a calculation."""
-    metadata = {
+def get_metadata(dry_run=False):
+    return {
         'options': {
             'withmpi': False,
             'resources': {
@@ -21,12 +18,53 @@ def test_run_mgo_scf(db_test_app, data_regression):
             },
             'max_wallclock_seconds': 30,
             'input_wf_name': 'fort.9'
-        }
+        },
+        'dry_run': dry_run
     }
 
+
+def test_calcjob_submit_mgo_remote(db_test_app):
+    # type: (AiidaTestApp, bool) -> None
+    """Test submitting a calculation, using a remote folder input for wf_input."""
+    builder = db_test_app.get_or_create_code('crystal17.newk').get_builder()
+    builder.metadata = get_metadata()
+    builder.parameters = Dict(dict={'k_points': [18, 36]})
+
+    with resource_context('newk', 'mgo_sto3g_scf', 'fort.9') as path:
+
+        builder.wf_folder = RemoteData(remote_path=str(path), computer=db_test_app.get_or_create_computer())
+
+        process_options = builder.process_class(inputs=builder).metadata.options
+
+        with db_test_app.sandbox_folder() as folder:
+            db_test_app.generate_calcinfo('crystal17.newk', folder, builder)
+            assert folder.get_content_list() == [process_options.input_file_name]
+
+
+def test_calcjob_submit_mgo_singlefile(db_test_app):
+    # type: (AiidaTestApp, bool) -> None
+    """Test submitting a calculation, using a singlefile input for wf_input."""
+    builder = db_test_app.get_or_create_code('crystal17.newk').get_builder()
+    builder.metadata = get_metadata()
+    builder.parameters = Dict(dict={'k_points': [18, 36]})
+
+    with open_resource_binary('newk', 'mgo_sto3g_scf', 'fort.9') as handle:
+        builder.wf_folder = SinglefileData(handle)
+
+    process_options = builder.process_class(inputs=builder).metadata.options
+
+    with db_test_app.sandbox_folder() as folder:
+        db_test_app.generate_calcinfo('crystal17.newk', folder, builder)
+        assert folder.get_content_list() == [process_options.input_file_name]
+
+
+@pytest.mark.cry17_calls_executable
+def test_run_mgo_scf_folder(db_test_app, data_regression):
+    # type: (AiidaTestApp) -> None
+    """Test running a calculation."""
     # set up calculation
     builder = db_test_app.get_or_create_code('crystal17.newk').get_builder()
-    builder.metadata = metadata
+    builder.metadata = get_metadata()
     builder.parameters = Dict(dict={'k_points': [18, 36]})
 
     wf_folder = FolderData()

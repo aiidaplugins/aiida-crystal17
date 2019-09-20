@@ -73,7 +73,7 @@ class PropAbstractCalculation(CalcJob):
         spec.input('metadata.options.stdout_file_name', valid_type=six.string_types, default='main.out')
 
         spec.input('wf_folder',
-                   valid_type=(DataFactory('remote'), DataFactory('folder')),
+                   valid_type=(DataFactory('remote'), DataFactory('folder'), DataFactory('singlefile')),
                    required=True,
                    help='the folder containing the wavefunction fort.9 file')
         spec.input('parameters',
@@ -140,15 +140,18 @@ class PropAbstractCalculation(CalcJob):
             f.write(six.ensure_text(input_content))
 
         remote_files = None
+        local_copy_list = None
         if isinstance(self.inputs.wf_folder, DataFactory('folder')):
-            with self.inputs.wf_folder.open(self.metadata.options.input_wf_name, 'rb') as f:
-                tempfolder.create_file_from_filelike(f, 'fort.9', mode='wb')
+            local_copy_list = [(self.inputs.wf_folder.uuid, self.metadata.options.input_wf_name, 'fort.9')]
+        elif isinstance(self.inputs.wf_folder, DataFactory('singlefile')):
+            local_copy_list = [(self.inputs.wf_folder.uuid, self.inputs.wf_folder.filename, 'fort.9')]
         else:
             remote_files = [(self.inputs.wf_folder.computer.uuid,
                              os.path.join(self.inputs.wf_folder.get_remote_path(),
                                           self.metadata.options.input_wf_name), 'fort.9')]
 
         return self.create_calc_info(tempfolder,
+                                     local_copy_list=local_copy_list,
                                      remote_copy_list=remote_files,
                                      retrieve_list=self.get_retrieve_list(),
                                      retrieve_temporary_list=self.get_retrieve_temp_list())

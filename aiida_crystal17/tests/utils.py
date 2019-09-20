@@ -120,7 +120,7 @@ def get_default_metadata(max_num_machines=1,
 
 
 def sanitize_calc_info(calc_info):
-    """ convert a CalcInfo object to a regular dict,
+    """Convert a CalcInfo object to a regular dict,
     with no run specific data (i.e. uuids or folder paths)"""
     calc_info_dict = dict(calc_info)
     calc_info_dict.pop('uuid', None)
@@ -381,7 +381,7 @@ class AiidaTestApp(object):
 
     @staticmethod
     def generate_calcinfo(entry_point_name, folder, inputs=None):
-        """generate a `CalcInfo` instance for testing calculation jobs.
+        """Generate a `CalcInfo` instance for testing calculation jobs.
 
         A new `CalcJob` process instance is instantiated,
         and `prepare_for_submission` is called to populate the supplied folder,
