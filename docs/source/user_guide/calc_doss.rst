@@ -7,7 +7,7 @@ DOSS Calculation
 
     More information to come...
 
-The :py:class:`~.aiida_crystal17.calculations.cry_doss.CryDossCalculation` can be used to run the `properties`
+The :py:class:`~.aiida_crystal17.calculations.cry_prop.CryDossCalculation` can be used to run the `properties`
 executable for DOSS calculations, from an existing ``fort.9``.
 
 .. nbinput:: ipython

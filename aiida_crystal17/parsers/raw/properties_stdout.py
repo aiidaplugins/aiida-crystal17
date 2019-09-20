@@ -16,12 +16,17 @@
 """Parse the stdout content from a CRYSTAL Properties computation."""
 import re
 
-from aiida_crystal17.common.parsing import split_numbers
+from aiida_crystal17.common.parsing import split_numbers, convert_units
 from .crystal_stdout import (strip_non_program_output, assign_exit_code, parse_section, parse_pre_header,
                              parse_calculation_header, SYSTEM_INFO_REGEXES, ParsedSection)
 
-INPUT_WF_REGEXES = (('k_points', re.compile(r'\sSHRINK. FACT.\(MONKH.\)\s*(\d*)\s*(\d*)\s*(\d*)', re.DOTALL)),
-                    ('gilat_net', re.compile(r'\sSHRINKING FACTOR\(GILAT NET\)\s*(\d*)', re.DOTALL)))
+INPUT_WF_REGEXES = (
+    ('k_points', re.compile(r'\sSHRINK. FACT.\(MONKH.\)\s*(\d+)\s*(\d+)\s*(\d+)', re.DOTALL)),
+    ('gilat_net', re.compile(r'\sSHRINKING FACTOR\(GILAT NET\)\s*(\d+)', re.DOTALL)),
+    ('energy_total', re.compile(r'TOTAL ENERGY\s*([\+\-\d\.E]+)', re.DOTALL)),
+    ('energy_kinetic', re.compile(r'KIN. ENERGY\s*([\+\-\d\.E]+)', re.DOTALL)),
+    ('energy_fermi', re.compile(r'FERMI ENERGY\s*([\+\-\d\.E]+)', re.DOTALL)),
+)
 
 NEWK_WF_REGEXES = (
     ('k_points', re.compile(r'\sSHRINK FACTORS\(MONK.\)\s*(\d*)\s*(\d*)\s*(\d*)', re.DOTALL)),
@@ -39,6 +44,7 @@ def read_properties_stdout(content):
     output = {
         'units': {
             'conversion': 'CODATA2014',
+            'energy': 'eV'
         },
         'errors': [],
         'warnings': [],
@@ -77,7 +83,14 @@ def read_properties_stdout(content):
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    outcome = parse_section(parse_calculation_inputs, lines, lineno, output, None)
+    # TODO parse geometry
+
+    outcome = parse_section(parse_calculation_inputs, lines, lineno, output, 'wf_input')
+    if outcome is None or outcome.parser_error is not None:
+        return assign_exit_code(output)
+    lineno = outcome.next_lineno
+
+    outcome = parse_section(parse_newk_params, lines, lineno, output, 'newk')
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
@@ -133,14 +146,14 @@ def initial_parse(lines):
 
 def parse_calculation_inputs(lines, initial_lineno):
     data = {}
-    found_newk = False
+    found_end = False
     for i, line in enumerate(lines[initial_lineno:]):
-        if line.strip().startswith('RESTART WITH NEW K POINTS NET'):
-            found_newk = True
+        if line.strip().startswith('NUMBER OF K POINTS IN THE IBZ'):
+            found_end = True
             break
-    final_lineno = initial_lineno + i
-    if not found_newk:
-        return ParsedSection(final_lineno, data, "couldn't find end of newk run")
+    final_lineno = initial_lineno + i + 1
+    if not found_end:
+        return ParsedSection(final_lineno, data, "couldn't find end of calculation setup")
 
     # parse input system information
     content = '\n'.join(lines[initial_lineno:final_lineno])
@@ -148,18 +161,39 @@ def parse_calculation_inputs(lines, initial_lineno):
         match = regex.search(content)
         if match is not None:
             if name == 'k_points':
-                data.setdefault('calculation', {})['k_points'] = [int(match.groups()[i]) for i in range(3)]
+                data['k_points'] = [int(match.groups()[i]) for i in range(3)]
+            elif name.startswith('energy'):
+                data[name] = convert_units(float(match.groups()[0]), 'hartree', 'eV')
             else:
-                data.setdefault('calculation', {})[name] = int(match.groups()[0])
+                data[name] = int(match.groups()[0])
+
+    return ParsedSection(final_lineno, data, None)
+
+
+def parse_newk_params(lines, initial_lineno):
+    """Parse NEWK calculation section.
+
+    Example::
+
+        *******************************************************************************
+        RESTART WITH NEW K POINTS NET
+        *******************************************************************************
+        POINTS IN THE IBZ                 195 POINTS(GILAT NET)              1240
+        SHRINK FACTORS(MONK.)        18 18 18 SHRINK FACTOR(GILAT)             36
+        *******************************************************************************
+        *** K POINTS COORDINATES (OBLIQUE COORDINATES IN UNITS OF IS = 18)
+    """
+    data = {}
 
     # parse newk information
-    content = '\n'.join(lines[final_lineno:final_lineno + 4])
+    content = '\n'.join(lines[initial_lineno:])
+
     for name, regex in NEWK_WF_REGEXES:
         match = regex.search(content)
         if match is not None:
             if name == 'k_points':
-                data.setdefault('newk', {})['k_points'] = [int(match.groups()[i]) for i in range(3)]
+                data['k_points'] = [int(match.groups()[i]) for i in range(3)]
             else:
-                data.setdefault('newk', {})[name] = int(match.groups()[0])
+                data[name] = int(match.groups()[0])
 
-    return ParsedSection(final_lineno + 4, data, None)
+    return ParsedSection(initial_lineno, data, None)

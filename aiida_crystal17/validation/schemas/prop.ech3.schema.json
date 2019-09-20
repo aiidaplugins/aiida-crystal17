@@ -3,19 +3,9 @@
     "description": "Electronic charge (spin) density on a 3D grid inputs",
     "type": "object",
     "required": [
-        "shrink_is",
-        "shrink_isp",
         "npoints"
     ],
     "properties": {
-        "shrink_is": {
-            "type": "integer",
-            "minimum": 1
-        },
-        "shrink_isp": {
-            "type": "integer",
-            "minimum": 1
-        },
         "npoints": {
             "description": "number of points along the first lattice vector",
             "type": "integer",

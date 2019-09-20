@@ -1,16 +1,3 @@
-calculation:
-  gilat_net: 8
-  k_points:
-  - 8
-  - 8
-  - 8
-  n_ao: 14
-  n_atoms: 2
-  n_core_el: 12
-  n_electrons: 20
-  n_kpoints_ibz: 29
-  n_shells: 5
-  n_symops: 48
 errors: []
 execution_time_seconds: 0
 exit_code: 0
@@ -29,4 +16,21 @@ parser_errors: []
 parser_exceptions: []
 units:
   conversion: CODATA2014
+  energy: eV
 warnings: []
+wf_input:
+  energy_fermi: -4.0
+  energy_kinetic: 7268.95
+  energy_total: -7380.22
+  gilat_net: 8
+  k_points:
+  - 8
+  - 8
+  - 8
+  n_ao: 14
+  n_atoms: 2
+  n_core_el: 12
+  n_electrons: 20
+  n_kpoints_ibz: 29
+  n_shells: 5
+  n_symops: 48

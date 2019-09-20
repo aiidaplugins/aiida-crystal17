@@ -1,20 +1,6 @@
-arrays:
-  array|energies:
-  - 1002
-  array|projections_alpha:
-  - 1002
-  array|projections_beta:
-  - 1002
-  array|total_alpha:
-  - 1002
-  array|total_beta:
-  - 1002
 results:
-  energy_max: 13.7420025
-  energy_min: -21.0529868
   errors: []
   execution_time_seconds: 20
-  fermi_energy: -3.3956544
   header:
     crystal_subversion: 1.0.1
     crystal_version: 17
@@ -28,22 +14,10 @@ results:
     n_kpoints_ibz: 580
   non_program:
     date: Fri  6 Apr 10:00:17 BST 2018
-  norbitals_projections:
-  - 12
-  - 24
-  - 30
-  - 14
-  - 10
-  - 24
-  - 10
-  norbitals_total: 124
-  npts: 1002
-  parser_class: CryDossParser
+  parser_class: CryNewkParser
   parser_errors: []
   parser_exceptions: []
   parser_version: 0.10.0b5
-  spin: true
-  system_type: open shell, conducting system
   units:
     conversion: CODATA2014
     energy: eV

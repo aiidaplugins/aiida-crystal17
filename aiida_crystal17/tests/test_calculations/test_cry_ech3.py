@@ -54,9 +54,6 @@ def test_calcjob_submit_mgo(db_test_app):
                 input_content = f.read()
 
     expected_input = dedent("""\
-        NEWK
-        18 36
-        1 0
         ECH3
         20
         END""")
@@ -69,8 +66,6 @@ def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
     parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
         'npoints': 20,
     })
     metadata = {

@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-Plugin to create a CRYSTAL17 output file from a supplied input file.
-"""
+"""Plugin for running CRYSTAL17 computations."""
 import six
 
 from aiida.plugins import DataFactory
@@ -23,8 +21,7 @@ from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 
 
 class CryBasicCalculation(CryAbstractCalculation):
-    """
-    AiiDA calculation plugin to run the runcry17 executable,
+    """AiiDA calculation plugin to run the crystal17 executable,
     by supplying a normal .d12 input file and (optional) .gui file
     """
 

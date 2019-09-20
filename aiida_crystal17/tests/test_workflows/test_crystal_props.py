@@ -9,7 +9,7 @@ from aiida.orm import Dict, RemoteData
 from aiida_crystal17.data.input_params import CryInputParamsData
 from aiida_crystal17.tests import resource_context
 from aiida_crystal17.tests.utils import AiidaTestApp, sanitize_calc_info  # noqa: F401
-from aiida_crystal17.workflows.crystal_props.cry_doss import CryPropertiesWorkChain
+from aiida_crystal17.workflows.crystal_props.base import CryPropertiesWorkChain
 
 
 def test_init_prop_steps(db_test_app, data_regression):
@@ -20,8 +20,7 @@ def test_init_prop_steps(db_test_app, data_regression):
 
     cry_parameters = CryInputParamsData(data={'title': 'MgO Bulk', 'scf': {'k_points': (8, 8), 'GUESSP': True}})
     doss_parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
+        'k_points': [18, 36],
         'npoints': 100,
         'band_minimum': -10,
         'band_maximum': 10,
@@ -65,8 +64,7 @@ def test_run_prop_mgo_no_scf(db_test_app, get_structure_and_symm, upload_basis_s
         del CryPropertiesWorkChain._spec
 
     doss_parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
+        'k_points': [18, 36],
         'npoints': 100,
         'band_minimum': -10,
         'band_maximum': 10,
@@ -106,8 +104,7 @@ def test_run_prop_mgo_with_scf(db_test_app, get_structure_and_symm, upload_basis
     cry_parameters = CryInputParamsData(data={'title': 'MgO Bulk', 'scf': {'k_points': (8, 8), 'post_scf': ['PPAN']}})
 
     doss_parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
+        'k_points': [18, 36],
         'npoints': 100,
         'band_minimum': -10,
         'band_maximum': 10,
