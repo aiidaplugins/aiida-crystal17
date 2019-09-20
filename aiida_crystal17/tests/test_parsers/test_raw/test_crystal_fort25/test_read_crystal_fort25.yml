@@ -5017,8 +5017,6 @@ arrays:
 results:
   energy_max: 13.742002462
   energy_min: -21.05298677
-  energy_units: eV
-  errors: []
   fermi_energy: -3.395654439
   norbitals_projections:
   - 12
@@ -5030,9 +5028,8 @@ results:
   - 10
   norbitals_total: 124
   npts: 1002
-  parser_errors: []
-  parser_warnings: []
   spin: true
   system_type: open shell, conducting system
-  units_conversion: CODATA2014
-  warnings: []
+  units:
+    conversion: CODATA2014
+    energy: eV
