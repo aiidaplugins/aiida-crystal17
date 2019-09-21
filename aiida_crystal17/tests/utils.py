@@ -415,6 +415,7 @@ class AiidaTestApp(object):
         then return a sanitized version of the workchain context for testing
         """
         import yaml
+        from aiida.engine import ProcessBuilder
         from aiida.engine.utils import instantiate_process
         from aiida.common.extendeddicts import AttributeDict
         from aiida.manage.manager import get_manager
@@ -435,7 +436,10 @@ class AiidaTestApp(object):
         manager = get_manager()
         runner = manager.get_runner()
 
-        wkchain = instantiate_process(runner, wkchain_cls, **inputs)
+        if isinstance(inputs, ProcessBuilder):
+            wkchain = instantiate_process(runner, inputs)
+        else:
+            wkchain = instantiate_process(runner, wkchain_cls, **inputs)
         step_outcomes = []
         for step in outline_steps:
             step_outcomes.append(getattr(wkchain, step)())
