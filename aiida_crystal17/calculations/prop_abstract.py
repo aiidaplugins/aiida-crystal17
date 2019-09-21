@@ -19,6 +19,7 @@ import six
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.engine import CalcJob
+from aiida.orm import FolderData, RemoteData, SinglefileData
 from aiida.plugins import DataFactory
 
 
@@ -73,7 +74,7 @@ class PropAbstractCalculation(CalcJob):
         spec.input('metadata.options.stdout_file_name', valid_type=six.string_types, default='main.out')
 
         spec.input('wf_folder',
-                   valid_type=(DataFactory('remote'), DataFactory('folder'), DataFactory('singlefile')),
+                   valid_type=(FolderData, RemoteData, SinglefileData),
                    required=True,
                    help='the folder containing the wavefunction fort.9 file')
         spec.input('parameters',
@@ -141,9 +142,9 @@ class PropAbstractCalculation(CalcJob):
 
         remote_files = None
         local_copy_list = None
-        if isinstance(self.inputs.wf_folder, DataFactory('folder')):
+        if isinstance(self.inputs.wf_folder, FolderData):
             local_copy_list = [(self.inputs.wf_folder.uuid, self.metadata.options.input_wf_name, 'fort.9')]
-        elif isinstance(self.inputs.wf_folder, DataFactory('singlefile')):
+        elif isinstance(self.inputs.wf_folder, SinglefileData):
             local_copy_list = [(self.inputs.wf_folder.uuid, self.inputs.wf_folder.filename, 'fort.9')]
         else:
             remote_files = [(self.inputs.wf_folder.computer.uuid,
