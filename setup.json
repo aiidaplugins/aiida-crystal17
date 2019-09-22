@@ -25,6 +25,7 @@
       "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData",
       "crystal17.symmetry = aiida_crystal17.data.symmetry:SymmetryData",
       "crystal17.kinds = aiida_crystal17.data.kinds:KindData",
+      "crystal17.gcube = aiida_crystal17.data.gcube:GaussianCube",
       "gulp.potential = aiida_crystal17.gulp.data.potential:EmpiricalPotential"
     ],
     "aiida.calculations": [

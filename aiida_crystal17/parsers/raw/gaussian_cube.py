@@ -18,13 +18,20 @@
 The specification can be found at:
 http://h5cube-spec.readthedocs.io/en/latest/cubeformat.html
 """
+from collections import namedtuple
+
 import numpy as np
 
 from aiida_crystal17.common.parsing import convert_units, split_numbers
 
+GcubeResult = namedtuple('GcubeResult', [
+    'header', 'cell', 'voxel_cell', 'voxel_grid', 'origin', 'atoms_positions', 'atoms_nuclear_charge',
+    'atoms_atomic_number', 'units', 'density'
+])
+
 
 def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
-    """Parse gaussian cube files to a dict.
+    """Parse gaussian cube files to a data structure.
 
     The specification can be found at:
     http://h5cube-spec.readthedocs.io/en/latest/cubeformat.html
@@ -42,7 +49,7 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
 
     Returns
     -------
-    dict
+    aiida_crystal17.parsers.raw.gaussian_cube.GcubeResult
 
     """
     in_dunits = 'bohr'
@@ -55,13 +62,15 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
         raise NotImplementedError('not yet implemented NVAL != 1')
 
     natoms = settings[0]
-    centre = convert_units(np.array(settings[1:4]), in_dunits, dist_units)
+    origin = convert_units(np.array(settings[1:4]), in_dunits, dist_units)
     if natoms < 0:
         # TODO implement DSET_IDS
         raise NotImplementedError('not yet implemented DSET_IDS')
     an, ax, ay, az = split_numbers(handle.readline().strip())
     bn, bx, by, bz = split_numbers(handle.readline().strip())
     cn, cx, cy, cz = split_numbers(handle.readline().strip())
+
+    voxel_cell = convert_units(np.array([[ax, ay, az], [bx, by, bz], [cx, cy, cz]]), in_dunits, dist_units)
 
     avec = convert_units(np.array([ax, ay, az]) * an, in_dunits, dist_units)
     bvec = convert_units(np.array([bx, by, bz]) * bn, in_dunits, dist_units)
@@ -74,26 +83,28 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
         anum, ncharge, x, y, z = split_numbers(handle.readline().strip())
         atomic_numbers.append(int(anum))
         nuclear_charges.append(ncharge)
-        ccoord = convert_units(np.asarray([x, y, z]), in_dunits, dist_units) - centre
+        ccoord = convert_units(np.asarray([x, y, z]), in_dunits, dist_units) - origin
         ccoords.append(ccoord.tolist())
 
-    data = {
-        'header': header,
-        'cell': [avec.tolist(), bvec.tolist(), cvec.tolist()],
-        'voxel_grid': [int(an), int(bn), int(cn)],
-        'atoms_positions': ccoords,
-        'atoms_nuclear_charge': nuclear_charges,
-        'atoms_atomic_number': atomic_numbers,
-        'units': {
-            'conversion': 'CODATA2014',
-            'length': dist_units,
-        }
-    }
-
+    density = None
     if return_density:
         values = []
         for line in handle:
             values += line.split()
-        data['density'] = np.array(values, dtype=float).reshape((int(an), int(bn), int(cn))).tolist()
+        density = np.array(values, dtype=float).reshape((int(an), int(bn), int(cn)))
 
-    return data
+    return GcubeResult(
+        header,
+        [avec.tolist(), bvec.tolist(), cvec.tolist()],
+        voxel_cell.tolist(),
+        [int(an), int(bn), int(cn)],
+        origin.tolist(),
+        ccoords,
+        nuclear_charges,
+        atomic_numbers,
+        {
+            'conversion': 'CODATA2014',
+            'length': dist_units,
+        },
+        density
+    )  # yapf: disable

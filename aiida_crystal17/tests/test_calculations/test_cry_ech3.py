@@ -45,8 +45,8 @@ def test_calcjob_submit_mgo(db_test_app):
             # Check the attributes of the returned `CalcInfo`
             assert calc_info.codes_info[0].cmdline_params == []
             assert sorted(calc_info.local_copy_list) == sorted([])
-            assert sorted(calc_info.retrieve_list) == sorted(['main.out', 'DENS_CUBE.DAT', 'SPIN_CUBE.DAT'])
-            assert sorted(calc_info.retrieve_temporary_list) == sorted([])
+            assert sorted(calc_info.retrieve_list) == sorted(['main.out'])
+            assert sorted(calc_info.retrieve_temporary_list) == sorted(['DENS_CUBE.DAT', 'SPIN_CUBE.DAT'])
 
             assert sorted(folder.get_content_list()) == sorted([process_options.input_file_name])
 
@@ -90,7 +90,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
         output = run_get_node(builder)
         calc_node = output.node
 
-    db_test_app.check_calculation(calc_node, ['results'])
+    db_test_app.check_calculation(calc_node, ['results', 'charge'])
 
     calc_attributes = calc_node.attributes
     calc_attributes.pop('job_id', None)
@@ -103,4 +103,8 @@ def test_run_mgo_scf(db_test_app, data_regression):
     results.pop('execution_time_seconds', None)
     results.pop('parser_version', None)
 
-    data_regression.check({'calc': calc_attributes, 'results': results})
+    data_regression.check({
+        'calc': calc_attributes,
+        'results': results,
+        'charge': recursive_round(calc_node.outputs.charge.attributes, 5)
+    })

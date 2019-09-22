@@ -17,6 +17,7 @@
 import six
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
+from aiida_crystal17.data.gcube import GaussianCube
 from aiida_crystal17.validation import validate_against_schema
 
 
@@ -41,7 +42,8 @@ class CryEch3Calculation(PropAbstractCalculation):
         spec.exit_code(352, 'ERROR_DENSITY_FILE_MISSING', message='parser could not find the output density file')
         spec.exit_code(353, 'ERROR_PARSING_DENSITY_FILE', message='error parsing output density file')
 
-        # TODO save gaussian file(s) in separate output node (zip compressed)?
+        spec.output('charge', required=True, valid_type=GaussianCube, help='The charge density cube')
+        spec.output('spin', required=False, valid_type=GaussianCube, help='The spin density cube')
 
     def create_input_content(self):
         params = self.inputs.parameters.get_dict()
@@ -50,10 +52,7 @@ class CryEch3Calculation(PropAbstractCalculation):
         return '\n'.join(lines)
 
     def get_retrieve_list(self):
-        return [
-            self.metadata.options.stdout_file_name, self.metadata.options.output_charge_fname,
-            self.metadata.options.output_spin_fname
-        ]
+        return [self.metadata.options.stdout_file_name]
 
     def get_retrieve_temp_list(self):
-        return []
+        return [self.metadata.options.output_charge_fname, self.metadata.options.output_spin_fname]

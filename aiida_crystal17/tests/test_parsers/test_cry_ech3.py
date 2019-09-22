@@ -2,7 +2,7 @@ import pytest
 from aiida.orm import FolderData
 # from aiida.cmdline.utils.common import get_calcjob_report
 from aiida_crystal17.common import recursive_round
-from aiida_crystal17.tests import open_resource_binary
+from aiida_crystal17.tests import open_resource_binary, resource_context
 
 
 @pytest.mark.parametrize('plugin_name', [
@@ -28,8 +28,6 @@ def test_empty_stdout(db_test_app, plugin_name):
     retrieved = FolderData()
     with retrieved.open('main.out', 'w'):
         pass
-    with retrieved.open('DENS_CUBE.DAT', 'w'):
-        pass
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
@@ -42,14 +40,15 @@ def test_empty_stdout(db_test_app, plugin_name):
 @pytest.mark.parametrize('plugin_name', [
     'crystal17.ech3',
 ])
-def test_missing_isofile(db_test_app, plugin_name):
+def test_missing_density(db_test_app, plugin_name):
 
     retrieved = FolderData()
     with open_resource_binary('ech3', 'mgo_sto3g_scf', 'main.out') as handle:
         retrieved.put_object_from_filelike(handle, 'main.out', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
+    with db_test_app.sandbox_folder() as temp_folder:
+        results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node, retrieved_temp=temp_folder.abspath)
 
     assert calcfunction.is_finished, calcfunction.exception
     assert calcfunction.is_failed, calcfunction.exit_status
@@ -59,16 +58,17 @@ def test_missing_isofile(db_test_app, plugin_name):
 @pytest.mark.parametrize('plugin_name', [
     'crystal17.ech3',
 ])
-def test_empty_isofile(db_test_app, plugin_name):
+def test_empty_density(db_test_app, plugin_name):
 
     retrieved = FolderData()
     with open_resource_binary('ech3', 'mgo_sto3g_scf', 'main.out') as handle:
         retrieved.put_object_from_filelike(handle, 'main.out', mode='wb')
-    with retrieved.open('DENS_CUBE.DAT', 'w'):
-        pass
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
+    with db_test_app.sandbox_folder() as temp_folder:
+        with temp_folder.open('DENS_CUBE.DAT', 'w'):
+            pass
+        results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node, retrieved_temp=temp_folder.abspath)
 
     assert calcfunction.is_finished, calcfunction.exception
     assert calcfunction.is_failed, calcfunction.exit_status
@@ -83,13 +83,15 @@ def test_success(db_test_app, plugin_name, data_regression):
     retrieved = FolderData()
     with open_resource_binary('ech3', 'mgo_sto3g_scf', 'main.out') as handle:
         retrieved.put_object_from_filelike(handle, 'main.out', mode='wb')
-    with open_resource_binary('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT') as handle:
-        retrieved.put_object_from_filelike(handle, 'DENS_CUBE.DAT', mode='wb')
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
-    results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
+    with resource_context('ech3', 'mgo_sto3g_scf') as path:
+        results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node, retrieved_temp=str(path))
 
     assert calcfunction.is_finished_ok, calcfunction.exception
     assert 'results' in results
-    results_attr = recursive_round(results['results'].attributes, 7)
-    data_regression.check({'results': results_attr})
+    assert 'charge' in results
+    data_regression.check({
+        'results': recursive_round(results['results'].attributes, 7),
+        'charge': recursive_round(results['charge'].attributes, 7)
+    })
