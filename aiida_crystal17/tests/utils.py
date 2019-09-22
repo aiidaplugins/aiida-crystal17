@@ -133,7 +133,7 @@ def sanitize_calc_info(calc_info):
 
 
 # TODO this can be removed once aiidateam/aiida-core#3061 is implemented
-def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder=None):
+def parse_from_node(cls, node, store_provenance=True, retrieved_temp=None):
     """Parse the outputs directly from the `CalcJobNode`.
 
     If `store_provenance` is set to False, a `CalcFunctionNode` will still be generated, but it will not be stored.
@@ -186,8 +186,8 @@ def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder
 
     inputs = {'metadata': {'store_provenance': store_provenance}}
     inputs.update(parser.get_outputs_for_parsing())
-    if retrieved_temporary_folder is not None:
-        inputs['retrieved_temporary_folder'] = Str(retrieved_temporary_folder)
+    if retrieved_temp is not None:
+        inputs['retrieved_temporary_folder'] = Str(retrieved_temp)
 
     return parse_calcfunction.run_get_node(**inputs)
 
@@ -243,7 +243,7 @@ class AiidaTestApp(object):
         return get_default_metadata(max_num_machines, max_wallclock_seconds, with_mpi, dry_run=dry_run)
 
     @staticmethod
-    def parse_from_node(entry_point_name, node, retrieved_temporary_folder=None):
+    def parse_from_node(entry_point_name, node, retrieved_temp=None):
         """Parse the outputs directly from the `CalcJobNode`.
 
         Parameters
@@ -253,9 +253,7 @@ class AiidaTestApp(object):
 
         """
         from aiida.plugins import ParserFactory
-        return parse_from_node(ParserFactory(entry_point_name),
-                               node,
-                               retrieved_temporary_folder=retrieved_temporary_folder)
+        return parse_from_node(ParserFactory(entry_point_name), node, retrieved_temp=retrieved_temp)
 
     @staticmethod
     def get_data_node(entry_point_name, **kwargs):

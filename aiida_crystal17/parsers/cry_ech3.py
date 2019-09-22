@@ -14,6 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """A parser to read output from a CRYSTAL17 DOSS run."""
+import os
 import traceback
 
 from aiida.common import exceptions
@@ -22,9 +23,8 @@ from aiida.orm import Dict
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17 import __version__
-from aiida_crystal17.common import SYMBOLS
+from aiida_crystal17.data.gcube import GaussianCube
 from aiida_crystal17.parsers.raw.properties_stdout import read_properties_stdout
-from aiida_crystal17.parsers.raw.gaussian_cube import read_gaussian_cube
 from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
 
 
@@ -60,32 +60,51 @@ class CryEch3Parser(Parser):
             if stdout_exit_code:
                 stdout_error = self.exit_codes[stdout_exit_code]
 
-        # parse density file
-        charge_error = None
-        charge_data = {}
-        output_density_fname = self.node.get_option('output_charge_fname')
-        if output_density_fname not in output_folder.list_object_names():
-            charge_error = self.exit_codes.ERROR_DENSITY_FILE_MISSING
-        else:
-            try:
-                with output_folder.open(output_density_fname) as handle:
-                    charge_data = read_gaussian_cube(handle, return_density=False)
-            except Exception:
-                traceback.print_exc()
-                charge_error = self.exit_codes.ERROR_PARSING_DENSITY_FILE
+        # parse density file(s)
+        density_error = None
+        charge_cube = None
+        spin_cube = None
 
-        final_data = self.merge_output_dicts(stdout_data, charge_data)
+        if 'retrieved_temporary_folder' not in kwargs:
+            density_error = self.exit_codes.ERROR_TEMP_FOLDER_MISSING
+        else:
+            temporary_folder = kwargs['retrieved_temporary_folder']
+            list_of_temp_files = os.listdir(temporary_folder)
+            output_charge_fname = self.node.get_option('output_charge_fname')
+            output_spin_fname = self.node.get_option('output_spin_fname')
+
+            if output_charge_fname not in list_of_temp_files:
+                density_error = self.exit_codes.ERROR_DENSITY_FILE_MISSING
+            else:
+                try:
+                    charge_cube = GaussianCube(os.path.join(temporary_folder, output_charge_fname))
+                except Exception:
+                    traceback.print_exc()
+                    density_error = self.exit_codes.ERROR_PARSING_DENSITY_FILE
+            if output_spin_fname in list_of_temp_files:
+                try:
+                    spin_cube = GaussianCube(os.path.join(temporary_folder, output_spin_fname))
+                except Exception:
+                    traceback.print_exc()
+                    density_error = self.exit_codes.ERROR_PARSING_DENSITY_FILE
+
+        stdout_data['parser_version'] = str(__version__)
+        stdout_data['parser_class'] = str(self.__class__.__name__)
 
         # log errors
-        errors = final_data.get('errors', [])
-        parser_errors = final_data.get('parser_errors', [])
+        errors = stdout_data.get('errors', [])
+        parser_errors = stdout_data.get('parser_errors', [])
         if parser_errors:
             self.logger.warning('the parser raised the following errors:\n{}'.format('\n\t'.join(parser_errors)))
         if errors:
             self.logger.warning('the calculation raised the following errors:\n{}'.format('\n\t'.join(errors)))
 
         # make output nodes
-        self.out('results', Dict(dict=final_data))
+        self.out('results', Dict(dict=stdout_data))
+        if charge_cube:
+            self.out('charge', charge_cube)
+        if spin_cube:
+            self.out('spin', spin_cube)
 
         if pbs_error is not None:
             return pbs_error
@@ -93,36 +112,7 @@ class CryEch3Parser(Parser):
         if stdout_error is not None:
             return stdout_error
 
-        if charge_error is not None:
-            return charge_error
+        if density_error is not None:
+            return density_error
 
         return ExitCode()
-
-    def merge_output_dicts(self, stdout_data, charge_data):
-        """Merge the data returned from the stdout file and charge_data file."""
-        # charge_data.pop('atoms_positions', None)
-        # charge_data.pop('atoms_nuclear_charge', None)
-        atoms_atomic_number = charge_data.pop('atoms_atomic_number', [])
-        if atoms_atomic_number:
-            charge_data['elements'] = [SYMBOLS.get(n, n) for n in set(atoms_atomic_number)]
-
-        final_data = {
-            k: v
-            for k, v in stdout_data.items()
-            if k not in ['errors', 'warnings', 'parser_errors', 'parser_exceptions', 'units']
-        }
-
-        final_data.update({
-            'parser_version': str(__version__),
-            'parser_class': str(self.__class__.__name__),
-            'cube': {k: v for k, v in charge_data.items() if k in ['elements', 'cell', 'header', 'voxel_grid']}
-        })
-
-        for key in ['errors', 'warnings', 'parser_errors', 'parser_exceptions']:
-            final_data[key] = stdout_data.get(key, []) + charge_data.get(key, [])
-
-        units = stdout_data.get('units', {})
-        units.update(charge_data.get('units', {}))
-        final_data['units'] = units
-
-        return final_data

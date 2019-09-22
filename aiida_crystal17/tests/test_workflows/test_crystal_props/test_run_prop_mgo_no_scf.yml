@@ -17,6 +17,7 @@ outgoing:
 - doss__remote_folder
 - doss__results
 - doss__retrieved
+- ech3__charge
 - ech3__remote_folder
 - ech3__results
 - ech3__retrieved

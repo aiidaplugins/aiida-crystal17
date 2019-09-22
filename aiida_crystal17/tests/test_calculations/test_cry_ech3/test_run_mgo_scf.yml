@@ -19,11 +19,11 @@ calc:
     num_mpiprocs_per_machine: 1
   retrieve_list:
   - main.out
-  - DENS_CUBE.DAT
-  - SPIN_CUBE.DAT
   - _scheduler-stdout.txt
   - _scheduler-stderr.txt
-  retrieve_temporary_list: []
+  retrieve_temporary_list:
+  - DENS_CUBE.DAT
+  - SPIN_CUBE.DAT
   scheduler_state: done
   scheduler_stderr: _scheduler-stderr.txt
   scheduler_stdout: _scheduler-stdout.txt
@@ -33,28 +33,34 @@ calc:
     core: 1.0.0b5
     plugin: 0.10.0b5
   withmpi: false
+charge:
+  cell:
+  - - 0.0
+    - 2.21579
+    - 2.21579
+  - - 2.21579
+    - 0.0
+    - 2.21579
+  - - 2.21579
+    - 2.21579
+    - 0.0
+  compression_method: 8
+  cube_filename: gaussian.cube
+  elements:
+  - Mg
+  - O
+  header:
+  - Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk
+  - 5.62556267     5.62556267     5.62556267    60.000000  60.000000  60.000000
+  units:
+    conversion: CODATA2014
+    length: angstrom
+  voxel_grid:
+  - 20
+  - 20
+  - 20
+  zip_filename: gcube.zip
 results:
-  cube:
-    cell:
-    - - 0.0
-      - 2.21579
-      - 2.21579
-    - - 2.21579
-      - 0.0
-      - 2.21579
-    - - 2.21579
-      - 2.21579
-      - 0.0
-    elements:
-    - O
-    - Mg
-    header:
-    - Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk
-    - 5.62556267     5.62556267     5.62556267    60.000000  60.000000  60.000000
-    voxel_grid:
-    - 20
-    - 20
-    - 20
   errors: []
   header:
     crystal_subversion: 1.0.1
@@ -65,7 +71,6 @@ results:
   units:
     conversion: CODATA2014
     energy: eV
-    length: angstrom
   warnings: []
   wf_input:
     energy_fermi: -4.00007

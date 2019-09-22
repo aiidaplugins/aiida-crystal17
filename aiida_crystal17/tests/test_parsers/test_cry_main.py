@@ -105,9 +105,7 @@ def test_failed_optimisation(db_test_app, plugin_name, data_regression):
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
 
     with resource_context('crystal', 'nio_sto3g_afm_opt_walltime') as path:
-        results, calcfunction = db_test_app.parse_from_node(plugin_name,
-                                                            calc_node,
-                                                            retrieved_temporary_folder=str(path))
+        results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node, retrieved_temp=str(path))
 
     # print(get_calcjob_report(calc_node))
 
