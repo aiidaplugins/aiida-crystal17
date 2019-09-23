@@ -152,6 +152,7 @@ class GaussianCube(Data):
         aiida_crystal17.parsers.raw.gaussian_cube.GcubeResult
 
         """
+        # TODO cache
         with self.open_cube_file() as handle:
             cube_data = read_gaussian_cube(handle, return_density=return_density, dist_units=dist_units)
         return cube_data
@@ -170,12 +171,13 @@ class GaussianCube(Data):
         voxel_volume = np.linalg.det(data.voxel_cell)
         return np.sum(data.density) * voxel_volume
 
-    def compute_integration_sphere(self, position, radius, pbc=(True, True, True)):
+    def compute_integration_sphere(self, positions, radius, pbc=(True, True, True)):
         """Integrate the density over a sphere.
 
         Parameters
         ----------
-        position : list[float]
+        positions : list
+            (x, y, z) or list of (x, y, z)
         radius : float
             must be less than the shortest periodic cell vector length
         pbc : list[bool]
@@ -186,9 +188,11 @@ class GaussianCube(Data):
         float
 
         """
-        position = np.array(position)
-        assert position.shape == (3,)
-        assert len(pbc) == 3
+        assert np.array(pbc).shape == (3,)
+        if np.array(positions).shape == (3,):
+            positions = [positions]
+        positions = np.array(positions)
+        assert len(positions.shape) == 2 and positions.shape[1] == 3
 
         data = self.get_cube_data(return_density=True)
 
@@ -202,10 +206,10 @@ class GaussianCube(Data):
 
         # TODO this could be made more efficient, e.g. by tessellating according to the quadrant the position is in
         density = np.tile(data.density, [3 if p else 1 for p in pbc])
-        offset_position = position
+        offset_positions = positions
         for i, is_periodic in enumerate(pbc):
             if is_periodic:
-                offset_position = offset_position + np.array(data.cell[i])
+                offset_positions = offset_positions + np.array(data.cell[i])
 
         # get values and coordinates for each voxel
         values = np.array([v for (x, y, z), v in np.ndenumerate(density)])
@@ -213,8 +217,33 @@ class GaussianCube(Data):
         coordinates = np.dot(indices, data.voxel_cell) - np.array(data.origin)
 
         # get distance squared to each voxel
-        dist_sq = ((coordinates - offset_position)**2).sum(1)
-        mask = dist_sq <= (radius**2)
+        final_values = []
+        for offset_position in offset_positions:
+            dist_sq = ((coordinates - offset_position)**2).sum(1)
+            # TODO integrating voxels that are partially within the sphere?
+            final_values.append(np.sum(values[dist_sq <= (radius**2)]) * voxel_volume)
 
-        # integrating voxels that are partially within the sphere?
-        return np.sum(values[mask]) * voxel_volume
+        return final_values
+
+    def compute_integration_atom(self, indices, radius, pbc=(True, True, True)):
+        """Integrate the density over a sphere.
+
+        Parameters
+        ----------
+        indices : int or list[int]
+        radius : float or list[float]
+            radius for all atoms or per cell
+            must be less than the shortest periodic cell vector length
+        pbc : list[bool]
+            periodic dimensions
+
+        Returns
+        -------
+        float
+
+        """
+        if isinstance(indices, int):
+            indices = [indices]
+        indices = np.array(indices)
+        data = self.get_cube_data(return_density=False)
+        return self.compute_integration_sphere(np.array(data.atoms_positions)[indices], radius=radius, pbc=pbc)

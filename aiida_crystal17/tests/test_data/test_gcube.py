@@ -55,6 +55,12 @@ def test_compute_integration_cell(db_test_app):
 def test_compute_integration_sphere(db_test_app):
     with open_resource_binary('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT') as handle:
         node = GaussianCube(handle)
-    assert round(node.compute_integration_sphere((0, 0, 0), 10, (False, False, False)), 1) == 18.6
-    assert round(node.compute_integration_sphere((0, 0, 0), 1, (False, False, False)), 1) == 2.0
-    assert round(node.compute_integration_sphere((0, 0, 0), 1, (True, True, True)), 1) == 17.2
+    assert round(node.compute_integration_sphere((0, 0, 0), 10, (False, False, False))[0], 1) == 18.6
+    assert round(node.compute_integration_sphere((0, 0, 0), 1, (False, False, False))[0], 1) == 2.0
+    assert round(node.compute_integration_sphere((0, 0, 0), 1, (True, True, True))[0], 1) == 17.2
+
+
+def test_compute_integration_atom(db_test_app):
+    with open_resource_binary('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT') as handle:
+        node = GaussianCube(handle)
+    assert [round(v, 1) for v in node.compute_integration_atom((0, 1), 2)] == [18.8, 3.8]
