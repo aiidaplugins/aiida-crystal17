@@ -325,6 +325,7 @@ def create_vesta_input(
             HKLPM
               255 255 255 255
               128.000
+
             """.format(compass=1 if show_compass else 0)).splitlines())
 
     return '\n'.join(lines)
