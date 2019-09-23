@@ -15,16 +15,45 @@
 # GNU Lesser General Public License for more details.
 """Parse gaussian cube file data to a VESTA input file."""
 from collections import namedtuple
+import io
+import os
+import shutil
 from textwrap import dedent
 
 import ase
 
+from aiida_crystal17.parsers.raw.gaussian_cube import read_gaussian_cube
+from aiida_crystal17.validation import validate_against_schema
+
 SymbolInfo = namedtuple('SymbolInfo', ['radius', 'r2', 'r3', 'r', 'g', 'b'])
 
 DEFAULT_ISO_SETTINGS = (
-    (0.1, 1, 255, 255, 0, 200, 200),
-    (0.05, 1, 18, 255, 55, 150, 150),
-    (0.025, 1, 13, 255, 246, 30, 30),
+    (0.1, 1, 1, 1, 0, 0.7845, 0.7845),
+    (0.05, 1, 0.071, 1, 0.216, 0.5883, 0.5883),
+    (0.025, 1, 0.0510, 1, 0.9648, 0.1178, 0.1178),
+)
+
+DEFAULT_2DDISPLAY = (
+    # Note: for some reason h, k, l (0, 0, 1) does not render
+    ('h', 1e-6),
+    ('k', 1e-6),
+    ('l', 1),
+    ('dist_from_o', 1e-4),  # not 0, because this creates render artefacts
+    ('fill_min', 0.0),
+    ('fill_max', 0.1),
+    ('contour_interval', 0.01),
+    ('contour_min', 0.0),
+    ('contour_max', 0.1),
+    ('contour_width1', 0.01),
+    ('contour_width2', 0.01),
+    ('bound_width', 1),
+    ('xmin', -0.5),
+    ('xmax', 1.5),
+    ('ymin', -0.5),
+    ('ymax', 1.5),
+    ('zmin', -0.5),
+    ('zmax', 1.5),
+    ('zscale', 1e5),
 )
 
 
@@ -35,6 +64,7 @@ def create_vesta_input(
         iso_settings=None,
         bonds=(),
         show_compass=True,
+        slice_settings=None,
 ):
     """Return the file content of a VESTA input file.
 
@@ -49,12 +79,32 @@ def create_vesta_input(
     bonds: list
         [(element1, element2, min_length, max_length), ...]
     show_compass: bool
+    slice_settings: None or dict
+        The information to setup the 2D data display,
+        will update the DEFAULT_2DDISPLAY dict
 
     Returns
     -------
     str
 
     """
+    display2d = dict(DEFAULT_2DDISPLAY)
+    if slice_settings:
+        display2d.update(slice_settings)
+
+    validate_against_schema(
+        {
+            'cube_filepath': str(cube_filepath),
+            'bounds': list(bounds),
+            'iso_settings': list(iso_settings or DEFAULT_ISO_SETTINGS),
+            'bonds': list(bonds),
+            'show_compass': show_compass,
+            'slice_settings': display2d,
+        }, 'vesta_input.schema.json')
+    for dim, imin, imax in (('x', 0, 1), ('y', 2, 3), ('z', 4, 5)):
+        if not bounds[imin] < bounds[imax]:
+            raise ValueError('bounds: {}min must be less than {}max'.format(dim))
+
     atoms = ase.Atoms(
         cell=cube_data.cell,
         positions=cube_data.atoms_positions,
@@ -90,6 +140,9 @@ def create_vesta_input(
     ])
 
     # position and orientation (hard-coded)
+    # LORIENT:
+    #    <this plane h, k, l> <global h, k, l>
+    #    <this plane u, v, w> <global u, v, w>
     lines.extend(
         dedent("""\
         TRANM 0
@@ -180,9 +233,33 @@ def create_vesta_input(
         ' -1',
         'DLPLY',
         ' -1',
-        'PLN2D',
-        '  0   0   0   0',
     ])
+
+    # 2D data display
+    lines.extend(
+        dedent("""\
+        PLN2D
+          1  {h:.6E} {k:.6E} {l:.6E} {dist_from_o:.6E} 1.0000 255 255 255 255
+         1 96 {birds_eye} {fill_min:.6E} {fill_max:.6E}
+         {contour_interval:.6E} {contour_min:.6E} {contour_max:.6E} 1 10 -1 2 5
+         {bound_width:.6f} {contour_width1:.6f} {contour_width2:.6f} {zscale:.6E}
+         {xmin:.6f} {xmax:.6f} {ymin:.6f} {ymax:.6f} {zmin:.6f} {zmax:.6f}
+         0.500000  0.500000  0.500000  1.000000
+        """).format(birds_eye='0', **display2d).splitlines())
+    # translation and zoom (hard-coded)
+    lines.append(' 0 0 0 1')
+    # line colors and orientation (hard-coded)
+    lines.extend(
+        dedent("""\
+            255 255 255
+             0   0   0
+             0   0   0
+             0   0   0
+            1.000000  0.000000  0.000000  0.000000
+            0.000000  1.000000  0.000000  0.000000
+            0.000000  0.000000  1.000000  0.000000
+            0.000000  0.000000  0.000000  1.000000
+            0   0   0   0""").splitlines())
 
     # element radii and colors
     lines.append('ATOMT')
@@ -242,11 +319,11 @@ def create_vesta_input(
                    '{r:3d} {g:3d} {b:3d} {a1:3d} {a2:3d}').format(idx=i + 1,
                                                                   val=val,
                                                                   pos_neg=pos_neg,
-                                                                  r=r,
-                                                                  g=g,
-                                                                  b=b,
-                                                                  a1=a1,
-                                                                  a2=a2)
+                                                                  r=int(r * 255),
+                                                                  g=int(g * 255),
+                                                                  b=int(b * 255),
+                                                                  a1=int(a1 * 255),
+                                                                  a2=int(a2 * 255))
                   for i, (val, pos_neg, r, g, b, a1, a2) in enumerate(iso_settings or DEFAULT_ISO_SETTINGS)])
     lines.append('  0   0   0   0')
 
@@ -329,6 +406,33 @@ def create_vesta_input(
             """.format(compass=1 if show_compass else 0)).splitlines())
 
     return '\n'.join(lines)
+
+
+def write_vesta_files(
+        aiida_gcube,
+        folder_path,
+        file_name,
+        bounds=(0, 1, 0, 1, 0, 1),
+        iso_settings=None,
+        bonds=(),
+        show_compass=True,
+):
+    """Use an ``crystal17.gcube`` data node to create the input files for VESTA."""
+    cube_filepath = os.path.join(folder_path, '{}.cube'.format(file_name))
+    vesta_filepath = os.path.join(folder_path, '{}.vesta'.format(file_name))
+    with aiida_gcube.open_cube_file() as handle:
+        cube_data = read_gaussian_cube(handle, return_density=False, dist_units='angstrom')
+        with io.open(vesta_filepath, 'w') as out_handle:
+            out_handle.write(
+                create_vesta_input(cube_data,
+                                   os.path.basename(cube_filepath),
+                                   bounds=bounds,
+                                   iso_settings=iso_settings,
+                                   bonds=bonds,
+                                   show_compass=show_compass))
+    with aiida_gcube.open_cube_file(binary=True) as handle:
+        with io.open(cube_filepath, 'wb') as out_handle:
+            shutil.copyfileobj(handle, out_handle)
 
 
 VESTA_ELEMENT_INFO = {

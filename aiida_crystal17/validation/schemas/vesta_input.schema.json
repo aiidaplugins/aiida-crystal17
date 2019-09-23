@@ -1,0 +1,239 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "Electronic charge (spin) density on a 3D grid inputs",
+    "type": "object",
+    "properties": {
+        "cube_filepath": {
+            "type": "string"
+        },
+        "bounds": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+                "type": [
+                    "integer",
+                    "number"
+                ]
+            }
+        },
+        "bonds": {
+            "type": "array",
+            "items": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "[A-Z][a-z]?"
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "[A-Z][a-z]?"
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0
+                    }
+                ]
+            }
+        },
+        "iso_settings": {
+            "type": "array",
+            "items": {
+                "type": "array",
+                "minItems": 7,
+                "maxItems": 7,
+                "items": [
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ]
+                    },
+                    {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 2
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    }
+                ]
+            }
+        },
+        "show_compass": {
+            "type": "boolean"
+        },
+        "slice_settings": {
+            "type": "object",
+            "properties": {
+                "h": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "k": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "l": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "dist_from_o": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "fill_min": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "fill_max": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_interval": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_min": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_max": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_width1": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ],
+                    "minimum": 0
+                },
+                "contour_width2": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ],
+                    "minimum": 0
+                },
+                "bound_width": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ],
+                    "minimum": 0
+                },
+                "xmin": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "xmax": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "ymin": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "ymax": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "zmin": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "zmax": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "zscale": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                }
+            }
+        }
+    }
+}
