@@ -24,10 +24,21 @@ import numpy as np
 
 from aiida_crystal17.common.parsing import convert_units, split_numbers
 
-GcubeResult = namedtuple('GcubeResult', [
-    'header', 'cell', 'voxel_cell', 'voxel_grid', 'origin', 'atoms_positions', 'atoms_nuclear_charge',
-    'atoms_atomic_number', 'units', 'density'
-])
+GcubeResult = namedtuple(
+    'GcubeResult',
+    [
+        'header',
+        'cell',
+        'voxel_cell',
+        'voxel_grid',
+        'origin',
+        'atoms_positions',
+        'atoms_nuclear_charge',
+        'atoms_atomic_number',
+        'units',
+        'density',
+    ],
+)
 
 
 def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
@@ -102,9 +113,6 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
         ccoords,
         nuclear_charges,
         atomic_numbers,
-        {
-            'conversion': 'CODATA2014',
-            'length': dist_units,
-        },
-        density
+        {'conversion': 'CODATA2014', 'length': dist_units},
+        density,
     )  # yapf: disable

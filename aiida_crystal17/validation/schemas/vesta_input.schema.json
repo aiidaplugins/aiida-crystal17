@@ -1,0 +1,300 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "Settings for creating a VESTA input file",
+    "type": "object",
+    "properties": {
+        "cube_filepath": {
+            "type": "string"
+        },
+        "bounds": {
+            "dexcription": "bounds for repeating cell",
+            "type": "object",
+            "patternProperties": {
+                "(x|y|z)(min|max)": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                }
+            }
+        },
+        "bonds": {
+            "type": "object",
+            "properties": {
+                "style": {
+                    "description": "0 = cylinder (unicolor), 1 = cylinder (bicolor), 2 = line (color), 3 = line (gradient), 4 = line (dotted), 5 = line (dashed)",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                },
+                "radius": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "width": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "slices": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "compute": {
+                    "description": "Bond computations",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "minItems": 8,
+                        "maxItems": 8,
+                        "items": [
+                            {
+                                "description": "first element",
+                                "type": "string",
+                                "pattern": "([A-Z][a-z]?[0-9]*|XX)"
+                            },
+                            {
+                                "description": "first element",
+                                "type": "string",
+                                "pattern": "([A-Z][a-z]?[0-9]*|XX)"
+                            },
+                            {
+                                "description": "min distance",
+                                "type": [
+                                    "integer",
+                                    "number"
+                                ],
+                                "minimum": 0
+                            },
+                            {
+                                "description": "max distance",
+                                "type": [
+                                    "integer",
+                                    "number"
+                                ],
+                                "minimum": 0
+                            },
+                            {
+                                "description": "search mode",
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 2
+                            },
+                            {
+                                "description": "boundary mode",
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 2
+                            },
+                            {
+                                "description": "show polyhedra",
+                                "type": "boolean"
+                            },
+                            {
+                                "description": "search by label",
+                                "type": "boolean"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "polyhedra": {
+            "type": "object",
+            "properties": {
+                "style": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                }
+            }
+        },
+        "iso_surfaces": {
+            "type": "array",
+            "items": {
+                "description": "3D iso-surfaces: (value, both(0)/pos(1)/neg(2), r, g, b, alpha1, alpha2)",
+                "type": "array",
+                "minItems": 7,
+                "maxItems": 7,
+                "items": [
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ]
+                    },
+                    {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 2
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    {
+                        "type": [
+                            "integer",
+                            "number"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                    }
+                ]
+            }
+        },
+        "show_compass": {
+            "type": "boolean"
+        },
+        "2d_display": {
+            "description": "Information to setup the 2D data display",
+            "type": "object",
+            "properties": {
+                "h": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "k": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "l": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "dist_from_o": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "fill_min": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "fill_max": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_interval": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_min": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_max": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "contour_width1": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ],
+                    "minimum": 0
+                },
+                "contour_width2": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ],
+                    "minimum": 0
+                },
+                "bound_width": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ],
+                    "minimum": 0
+                },
+                "xmin": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "xmax": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "ymin": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "ymax": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "zmin": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "zmax": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                },
+                "zscale": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                }
+            }
+        }
+    }
+}
