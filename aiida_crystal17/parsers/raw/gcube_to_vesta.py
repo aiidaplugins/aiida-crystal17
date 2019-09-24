@@ -210,10 +210,20 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
 
     # neighbour bonds
     lines.append('SBOND')
-    for i, (sym1, sym2, minr, maxr) in enumerate(settings['bonds']['compute']):
-        lines.append(
-            '  {idx:<2d} {sym1:<2s} {sym2:<2s} {minr:.6f} {maxr:.6f} 0  1  1  0  1 {rad:.3f} 1.000 180 180 180'.format(
-                idx=i + 1, sym1=sym1, sym2=sym2, minr=minr, maxr=maxr, rad=0.25))
+    for i, (sym1, sym2, minr, maxr, smode, bmode, poly, label) in enumerate(settings['bonds']['compute']):
+        lines.append(('  {idx:<2d} {sym1:<2s} {sym2:<2s} {minr:.6f} {maxr:.6f} '
+                      '{search_mode}  {bound_mode}  {show_polyhedra}  {search_by_label}  1 '
+                      '{radius:.6f} {width:.6f} 180 180 180').format(idx=i + 1,
+                                                                     sym1=sym1,
+                                                                     sym2=sym2,
+                                                                     minr=minr,
+                                                                     maxr=maxr,
+                                                                     search_mode=smode,
+                                                                     bound_mode=bmode,
+                                                                     show_polyhedra=1 if poly else 0,
+                                                                     search_by_label=1 if label else 0,
+                                                                     radius=settings['bonds']['radius'],
+                                                                     width=settings['bonds']['width']),)
     lines.append('  0 0 0 0')
 
     # site radii and colors
@@ -250,6 +260,10 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
         'DLPLY',
         ' -1',
     ])
+
+    # TODO lattice planes
+    # SPLAN
+    #  {idx:d} {h:.6E} {k:.6E} {l:.6E} {dist_from_o:.6E} {r:d} {g:d} {b:d} {alpha:d}
 
     # 2D data display
     lines.extend(

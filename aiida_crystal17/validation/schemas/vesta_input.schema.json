@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "description": "Electronic charge (spin) density on a 3D grid inputs",
+    "description": "Settings for creating a VESTA input file",
     "type": "object",
     "properties": {
         "cube_filepath": {
@@ -40,22 +40,25 @@
                     "minimum": 1
                 },
                 "compute": {
-                    "description": "Bond computations: (element1, element2, min_length, max_length)",
+                    "description": "Bond computations",
                     "type": "array",
                     "items": {
                         "type": "array",
-                        "minItems": 4,
-                        "maxItems": 4,
+                        "minItems": 8,
+                        "maxItems": 8,
                         "items": [
                             {
+                                "description": "first element",
                                 "type": "string",
-                                "pattern": "[A-Z][a-z]?"
+                                "pattern": "([A-Z][a-z]?[0-9]*|XX)"
                             },
                             {
+                                "description": "first element",
                                 "type": "string",
-                                "pattern": "[A-Z][a-z]?"
+                                "pattern": "([A-Z][a-z]?[0-9]*|XX)"
                             },
                             {
+                                "description": "min distance",
                                 "type": [
                                     "integer",
                                     "number"
@@ -63,11 +66,32 @@
                                 "minimum": 0
                             },
                             {
+                                "description": "max distance",
                                 "type": [
                                     "integer",
                                     "number"
                                 ],
                                 "minimum": 0
+                            },
+                            {
+                                "description": "search mode",
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 2
+                            },
+                            {
+                                "description": "boundary mode",
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 2
+                            },
+                            {
+                                "description": "show polyhedra",
+                                "type": "boolean"
+                            },
+                            {
+                                "description": "search by label",
+                                "type": "boolean"
                             }
                         ]
                     }
