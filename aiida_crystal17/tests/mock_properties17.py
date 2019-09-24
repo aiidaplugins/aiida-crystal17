@@ -34,6 +34,10 @@ hash_map = {
         'stdout': ('doss', 'mgo_sto3g_scf', 'main.out'),
         'output': [[('doss', 'mgo_sto3g_scf', 'fort.25'), ('fort.25',)]]
     },
+    '15d2b1b787f4b68a8873192186468aa1': {
+        'stdout': ('doss', 'nio_sto3g_afm', 'main.out'),
+        'output': [[('doss', 'nio_sto3g_afm', 'fort.25'), ('fort.25',)]]
+    },
     '9b8e9a41b49014c1c91fc9142210c611': {
         'stdout': ('ech3', 'mgo_sto3g_scf', 'main.out'),
         'output': [[('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT'), ('DENS_CUBE.DAT',)]]
