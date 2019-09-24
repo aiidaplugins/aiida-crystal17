@@ -1,0 +1,90 @@
+calc:
+  append_text: ''
+  custom_scheduler_commands: ''
+  environment_variables: {}
+  exit_status: 0
+  import_sys_environment: true
+  input_file_name: INPUT
+  input_wf_name: fort.9
+  max_wallclock_seconds: 30
+  mpirun_extra_params: []
+  output_charge_fname: DENS_CUBE.DAT
+  output_spin_fname: SPIN_CUBE.DAT
+  parser_name: crystal17.ech3
+  prepend_text: ''
+  process_label: CryEch3Calculation
+  process_state: finished
+  resources:
+    num_machines: 1
+    num_mpiprocs_per_machine: 1
+  retrieve_list:
+  - main.out
+  - _scheduler-stdout.txt
+  - _scheduler-stderr.txt
+  retrieve_temporary_list:
+  - DENS_CUBE.DAT
+  - SPIN_CUBE.DAT
+  scheduler_state: done
+  scheduler_stderr: _scheduler-stderr.txt
+  scheduler_stdout: _scheduler-stdout.txt
+  sealed: true
+  stdout_file_name: main.out
+  version:
+    core: 1.0.0b5
+    plugin: 0.10.0b5
+  withmpi: false
+charge:
+  cell:
+  - - 0.0
+    - 2.21579
+    - 2.21579
+  - - 2.21579
+    - 0.0
+    - 2.21579
+  - - 2.21579
+    - 2.21579
+    - 0.0
+  compression_method: 8
+  cube_filename: gaussian.cube
+  elements:
+  - Mg
+  - O
+  header:
+  - Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk
+  - 5.62556267     5.62556267     5.62556267    60.000000  60.000000  60.000000
+  units:
+    conversion: CODATA2014
+    length: angstrom
+  voxel_grid:
+  - 20
+  - 20
+  - 20
+  zip_filename: gcube.zip
+results:
+  errors: []
+  header:
+    crystal_subversion: 1.0.1
+    crystal_version: 17
+  parser_class: CryEch3Parser
+  parser_errors: []
+  parser_exceptions: []
+  units:
+    conversion: CODATA2014
+    energy: eV
+  warnings: []
+  wf_input:
+    energy_fermi: -4.00007
+    energy_kinetic: 7268.95235
+    energy_total: -7380.22161
+    gilat_net: 8
+    k_points:
+    - 8
+    - 8
+    - 8
+    n_ao: 14
+    n_atoms: 2
+    n_core_el: 12
+    n_electrons: 20
+    n_kpoints_ibz: 29
+    n_shells: 5
+    n_symops: 48

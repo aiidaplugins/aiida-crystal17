@@ -120,7 +120,7 @@ def get_default_metadata(max_num_machines=1,
 
 
 def sanitize_calc_info(calc_info):
-    """ convert a CalcInfo object to a regular dict,
+    """Convert a CalcInfo object to a regular dict,
     with no run specific data (i.e. uuids or folder paths)"""
     calc_info_dict = dict(calc_info)
     calc_info_dict.pop('uuid', None)
@@ -133,7 +133,7 @@ def sanitize_calc_info(calc_info):
 
 
 # TODO this can be removed once aiidateam/aiida-core#3061 is implemented
-def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder=None):
+def parse_from_node(cls, node, store_provenance=True, retrieved_temp=None):
     """Parse the outputs directly from the `CalcJobNode`.
 
     If `store_provenance` is set to False, a `CalcFunctionNode` will still be generated, but it will not be stored.
@@ -186,8 +186,8 @@ def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder
 
     inputs = {'metadata': {'store_provenance': store_provenance}}
     inputs.update(parser.get_outputs_for_parsing())
-    if retrieved_temporary_folder is not None:
-        inputs['retrieved_temporary_folder'] = Str(retrieved_temporary_folder)
+    if retrieved_temp is not None:
+        inputs['retrieved_temporary_folder'] = Str(retrieved_temp)
 
     return parse_calcfunction.run_get_node(**inputs)
 
@@ -243,7 +243,7 @@ class AiidaTestApp(object):
         return get_default_metadata(max_num_machines, max_wallclock_seconds, with_mpi, dry_run=dry_run)
 
     @staticmethod
-    def parse_from_node(entry_point_name, node, retrieved_temporary_folder=None):
+    def parse_from_node(entry_point_name, node, retrieved_temp=None):
         """Parse the outputs directly from the `CalcJobNode`.
 
         Parameters
@@ -253,9 +253,7 @@ class AiidaTestApp(object):
 
         """
         from aiida.plugins import ParserFactory
-        return parse_from_node(ParserFactory(entry_point_name),
-                               node,
-                               retrieved_temporary_folder=retrieved_temporary_folder)
+        return parse_from_node(ParserFactory(entry_point_name), node, retrieved_temp=retrieved_temp)
 
     @staticmethod
     def get_data_node(entry_point_name, **kwargs):
@@ -381,7 +379,7 @@ class AiidaTestApp(object):
 
     @staticmethod
     def generate_calcinfo(entry_point_name, folder, inputs=None):
-        """generate a `CalcInfo` instance for testing calculation jobs.
+        """Generate a `CalcInfo` instance for testing calculation jobs.
 
         A new `CalcJob` process instance is instantiated,
         and `prepare_for_submission` is called to populate the supplied folder,
@@ -415,6 +413,7 @@ class AiidaTestApp(object):
         then return a sanitized version of the workchain context for testing
         """
         import yaml
+        from aiida.engine import ProcessBuilder
         from aiida.engine.utils import instantiate_process
         from aiida.common.extendeddicts import AttributeDict
         from aiida.manage.manager import get_manager
@@ -435,7 +434,10 @@ class AiidaTestApp(object):
         manager = get_manager()
         runner = manager.get_runner()
 
-        wkchain = instantiate_process(runner, wkchain_cls, **inputs)
+        if isinstance(inputs, ProcessBuilder):
+            wkchain = instantiate_process(runner, inputs)
+        else:
+            wkchain = instantiate_process(runner, wkchain_cls, **inputs)
         step_outcomes = []
         for step in outline_steps:
             step_outcomes.append(getattr(wkchain, step)())

@@ -62,6 +62,6 @@ def test_create_doss_content(file_regression):
 
 def test_read_crystal_fort25(data_regression):
     with open_resource_text('doss', 'cubic_rocksalt_orbitals', 'cubic-rocksalt_2x1_pdos.doss.f25') as handle:
-        data, arrays = parse_crystal_fort25_aiida(handle, 'dummy_parser_class')
+        data, arrays = parse_crystal_fort25_aiida(handle)
 
     data_regression.check({'results': recursive_round(data, 9), 'arrays': recursive_round(arrays, 9)})

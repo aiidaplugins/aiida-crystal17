@@ -28,7 +28,7 @@ def flatten_dict(indict, delimiter='.'):
 
 
 def get_keys(dct, keys, default=None, raise_error=False):
-    """retrieve the leaf of a key path from a dictionary
+    """Retrieve the leaf of a key path from a dictionary.
 
     :param dct: the dict to search
     :param keys: key path
@@ -49,7 +49,7 @@ def get_keys(dct, keys, default=None, raise_error=False):
 
 
 def map_nested_dicts(ob, func, apply_lists=False):
-    """ map a function on to all values of a nested dictionary """
+    """Map a function on to all values of a nested dictionary."""
     if isinstance(ob, Mapping):
         return {k: map_nested_dicts(v, func, apply_lists) for k, v in ob.items()}
     elif apply_lists and isinstance(ob, (list, tuple)):
@@ -59,7 +59,7 @@ def map_nested_dicts(ob, func, apply_lists=False):
 
 
 def recursive_round(dct, dp):
-    """ recursively apply the `round` function to all floats in a dict"""
+    """Apply (recursively) the ``round`` function to all floats in a dict."""
 
     def _round(value):
         if isinstance(value, float):
@@ -80,6 +80,6 @@ class BuilderEncoder(json.JSONEncoder):
 
 
 def display_json(builder, indent=2):
-    """ pretty print a dictionary object in a Jupyter Notebook """
+    """Pretty print a dictionary object in a Jupyter Notebook."""
     from IPython.display import display_markdown
     return display_markdown('```json\n{}\n```'.format(json.dumps(builder, cls=BuilderEncoder, indent=indent)), raw=True)

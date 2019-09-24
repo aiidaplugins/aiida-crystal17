@@ -109,6 +109,7 @@ intersphinx_mapping = {
 }
 
 intersphinx_aliases = {
+    ('py:class', 'file-like'): ('py:class', 'io.TextIOWrapper'),
     ('py:class', 'json.encoder.JSONEncoder'): ('py:class', 'json.JSONEncoder'),
     ('py:class', 'aiida.StructureData'): ('py:class', 'aiida.orm.nodes.data.structure.StructureData'),
     ('py:class', 'aiida.orm.Dict'): ('py:class', 'aiida.orm.nodes.data.dict.Dict'),

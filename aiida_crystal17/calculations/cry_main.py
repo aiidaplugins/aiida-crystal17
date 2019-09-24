@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""Plugin to create a CRYSTAL17 output file,
-from input files created via data nodes.
-"""
+"""Plugin for running CRYSTAL17 computations."""
 import os
 import six
 
@@ -30,8 +28,7 @@ from aiida_crystal17.parsers.raw.inputd12_write import (write_input, create_atom
 
 
 class CryMainCalculation(CryAbstractCalculation):
-    """
-    AiiDA calculation plugin to run the runcry17 executable,
+    """AiiDA calculation plugin to run the crystal17 executable,
     by supplying aiida nodes, with data sufficient to create the
     .d12 input file and .gui file
     """

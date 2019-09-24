@@ -3,21 +3,11 @@
     "description": "density of states (DOSS) input",
     "type": "object",
     "required": [
-        "shrink_is",
-        "shrink_isp",
         "band_units",
         "band_minimum",
         "band_maximum"
     ],
     "properties": {
-        "shrink_is": {
-            "type": "integer",
-            "minimum": 1
-        },
-        "shrink_isp": {
-            "type": "integer",
-            "minimum": 1
-        },
         "npoints": {
             "description": "number of uniformly spaced energy values where DOSs are calculated",
             "type": "integer",

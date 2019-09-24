@@ -23,6 +23,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    user_guide/calc_main
    user_guide/calc_main_immigrant
    user_guide/calc_doss
+   user_guide/calc_ech3
    user_guide/calc_gulp
 
 .. toctree::

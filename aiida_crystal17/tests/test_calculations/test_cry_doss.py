@@ -14,8 +14,7 @@ def test_calcjob_submit_mgo(db_test_app):
     # type: (AiidaTestApp, bool) -> None
     """Test submitting a calculation."""
     parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
+        'k_points': [18, 36],
         'npoints': 100,
         'band_minimum': -10,
         'band_maximum': 10,
@@ -76,8 +75,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
     parameters = Dict(dict={
-        'shrink_is': 18,
-        'shrink_isp': 36,
+        'k_points': [18, 36],
         'npoints': 100,
         'band_minimum': -10,
         'band_maximum': 10,
@@ -114,6 +112,10 @@ def test_run_mgo_scf(db_test_app, data_regression):
     calc_attributes.pop('remote_workdir', None)
     calc_attributes.pop('retrieve_singlefile_list', None)
 
-    results = {k: round(i, 7) if isinstance(i, float) else i for k, i in calc_node.outputs.results.attributes.items()}
+    results = {
+        k: round(i, 7) if isinstance(i, float) else i
+        for k, i in calc_node.outputs.results.attributes.items()
+        if k not in ['execution_time_seconds']
+    }
 
     data_regression.check({'calc': calc_attributes, 'results': results, 'arrays': calc_node.outputs.arrays.attributes})
