@@ -21,89 +21,96 @@ import shutil
 from textwrap import dedent
 
 import ase
+import six
 
 from aiida_crystal17.parsers.raw.gaussian_cube import read_gaussian_cube
 from aiida_crystal17.validation import validate_against_schema
 
 SymbolInfo = namedtuple('SymbolInfo', ['radius', 'r2', 'r3', 'r', 'g', 'b'])
 
-DEFAULT_ISO_SETTINGS = (
-    (0.1, 1, 1, 1, 0, 0.7845, 0.7845),
-    (0.05, 1, 0.071, 1, 0.216, 0.5883, 0.5883),
-    (0.025, 1, 0.0510, 1, 0.9648, 0.1178, 0.1178),
-)
 
-DEFAULT_2DDISPLAY = (
-    # Note: for some reason h, k, l (0, 0, 1) does not render
-    ('h', 1e-6),
-    ('k', 1e-6),
-    ('l', 1),
-    ('dist_from_o', 1e-4),  # not 0, because this creates render artefacts
-    ('fill_min', 0.0),
-    ('fill_max', 0.1),
-    ('contour_interval', 0.01),
-    ('contour_min', 0.0),
-    ('contour_max', 0.1),
-    ('contour_width1', 0.01),
-    ('contour_width2', 0.01),
-    ('bound_width', 1),
-    ('xmin', -0.5),
-    ('xmax', 1.5),
-    ('ymin', -0.5),
-    ('ymax', 1.5),
-    ('zmin', -0.5),
-    ('zmax', 1.5),
-    ('zscale', 1e5),
-)
+def get_default_settings():
+    """Return dict of default settings."""
+    return {
+        'bounds': {
+            'xmin': 0,
+            'xmax': 1,
+            'ymin': 0,
+            'ymax': 1,
+            'zmin': 0,
+            'zmax': 1,
+        },
+        'iso_surfaces': [
+            [0.1, 1, 1, 1, 0, 0.7845, 0.7845],
+            [0.05, 1, 0.071, 1, 0.216, 0.5883, 0.5883],
+            [0.025, 1, 0.0510, 1, 0.9648, 0.1178, 0.1178],
+        ],
+        'bonds': [],
+        'show_compass': True,
+        '2d_display': {
+            'h': 1e-06,
+            'k': 1e-06,
+            'l': 1,
+            'dist_from_o': 0.0001,
+            'fill_min': 0.0,
+            'fill_max': 0.1,
+            'contour_interval': 0.01,
+            'contour_min': 0.0,
+            'contour_max': 0.1,
+            'contour_width1': 0.01,
+            'contour_width2': 0.01,
+            'bound_width': 1,
+            'xmin': -0.5,
+            'xmax': 1.5,
+            'ymin': -0.5,
+            'ymax': 1.5,
+            'zmin': -0.5,
+            'zmax': 1.5,
+            'zscale': 100000.0
+        },
+    }
 
 
-def create_vesta_input(
-        cube_data,
-        cube_filepath,
-        bounds=(0, 1, 0, 1, 0, 1),
-        iso_settings=None,
-        bonds=(),
-        show_compass=True,
-        slice_settings=None,
-):
+def get_complete_settings(settings):
+    """Merge any user defined settings with the default dict."""
+    defaults = get_default_settings()
+    if not settings:
+        return defaults
+    for key in settings:
+        if key in defaults and isinstance(defaults[key], dict):
+            if not isinstance(settings[key], dict):
+                raise ValueError("Settings key '{}' should be a dict".format(key))
+            defaults[key].update(settings[key])
+        elif key in defaults:
+            defaults[key] = settings[key]
+        else:
+            raise KeyError('settings contains an unrecognised key: {}'.format(key))
+    return defaults
+
+
+def create_vesta_input(cube_data, cube_filepath, settings=None):
     """Return the file content of a VESTA input file.
 
     Parameters
     ----------
     cube_data: aiida_crystal17.parsers.raw.gaussian_cube.GcubeResult
     cube_filepath: str
-    bounds: list[float]
-        (xmin, xmax, ymin, ymax, zmin, zmax)
-    iso_settings: None or list
-        [(value, both(0)/pos(1)/neg(2), r, g, b, alpha1, alpha2), ...]
-    bonds: list
-        [(element1, element2, min_length, max_length), ...]
-    show_compass: bool
-    slice_settings: None or dict
-        The information to setup the 2D data display,
-        will update the DEFAULT_2DDISPLAY dict
+    settings: dict
+        Settings that will be merged with the default settings,
+        and validated against 'vesta_input.schema.json'
 
     Returns
     -------
     str
 
     """
-    display2d = dict(DEFAULT_2DDISPLAY)
-    if slice_settings:
-        display2d.update(slice_settings)
-
-    validate_against_schema(
-        {
-            'cube_filepath': str(cube_filepath),
-            'bounds': list(bounds),
-            'iso_settings': list(iso_settings or DEFAULT_ISO_SETTINGS),
-            'bonds': list(bonds),
-            'show_compass': show_compass,
-            'slice_settings': display2d,
-        }, 'vesta_input.schema.json')
-    for dim, imin, imax in (('x', 0, 1), ('y', 2, 3), ('z', 4, 5)):
-        if not bounds[imin] < bounds[imax]:
+    settings = get_complete_settings(settings)
+    validate_against_schema(settings, 'vesta_input.schema.json')
+    for dim in ('x', 'y', 'z'):
+        if not settings['bounds'][dim + 'min'] < settings['bounds'][dim + 'max']:
             raise ValueError('bounds: {}min must be less than {}max'.format(dim))
+        if not settings['2d_display'][dim + 'min'] < settings['2d_display'][dim + 'max']:
+            raise ValueError('2d_display: {}min must be less than {}max'.format(dim))
 
     atoms = ase.Atoms(
         cell=cube_data.cell,
@@ -188,13 +195,13 @@ def create_vesta_input(
     # repeat unit cell
     lines.extend([
         'BOUND',
-        '  {0:.6f} {1:.6f} {2:.6f} {3:.6f} {4:.6f} {5:.6f}'.format(*bounds),
+        '  {xmin:.6f} {xmax:.6f} {ymin:.6f} {ymax:.6f} {zmin:.6f} {zmax:.6f}'.format(**settings['bounds']),
         '  0   0   0   0  0',
     ])
 
     # neighbour bonds
     lines.append('SBOND')
-    for i, (sym1, sym2, minr, maxr) in enumerate(bonds):
+    for i, (sym1, sym2, minr, maxr) in enumerate(settings['bonds']):
         lines.append(
             '  {idx:<2d} {sym1:<2s} {sym2:<2s} {minr:.6f} {maxr:.6f} 0  1  1  0  1 {rad:.3f} 1.000 180 180 180'.format(
                 idx=i + 1, sym1=sym1, sym2=sym2, minr=minr, maxr=maxr, rad=0.25))
@@ -245,7 +252,7 @@ def create_vesta_input(
          {bound_width:.6f} {contour_width1:.6f} {contour_width2:.6f} {zscale:.6E}
          {xmin:.6f} {xmax:.6f} {ymin:.6f} {ymax:.6f} {zmin:.6f} {zmax:.6f}
          0.500000  0.500000  0.500000  1.000000
-        """).format(birds_eye='0', **display2d).splitlines())
+        """).format(birds_eye='0', **settings['2d_display']).splitlines())
     # translation and zoom (hard-coded)
     lines.append(' 0 0 0 1')
     # line colors and orientation (hard-coded)
@@ -324,7 +331,7 @@ def create_vesta_input(
                                                                   b=int(b * 255),
                                                                   a1=int(a1 * 255),
                                                                   a2=int(a2 * 255))
-                  for i, (val, pos_neg, r, g, b, a1, a2) in enumerate(iso_settings or DEFAULT_ISO_SETTINGS)])
+                  for i, (val, pos_neg, r, g, b, a1, a2) in enumerate(settings['iso_surfaces'])])
     lines.append('  0   0   0   0')
 
     # final settings
@@ -403,7 +410,7 @@ def create_vesta_input(
               255 255 255 255
               128.000
 
-            """.format(compass=1 if show_compass else 0)).splitlines())
+            """.format(compass=1 if settings['show_compass'] else 0)).splitlines())
 
     return '\n'.join(lines)
 
@@ -412,24 +419,28 @@ def write_vesta_files(
         aiida_gcube,
         folder_path,
         file_name,
-        bounds=(0, 1, 0, 1, 0, 1),
-        iso_settings=None,
-        bonds=(),
-        show_compass=True,
+        settings=None,
 ):
-    """Use an ``crystal17.gcube`` data node to create the input files for VESTA."""
+    """Use an ``crystal17.gcube`` data node to create the input files for VESTA.
+
+    Parameters
+    ----------
+    aiida_gcube: aiida_crystal17.data.gcube.GaussianCube
+    folder_path: str
+    file_name: str
+        The name of the files (without extension) to write
+    settings: dict
+        Settings that will be merged with the default settings,
+        and validated against 'vesta_input.schema.json'
+
+    """
     cube_filepath = os.path.join(folder_path, '{}.cube'.format(file_name))
     vesta_filepath = os.path.join(folder_path, '{}.vesta'.format(file_name))
     with aiida_gcube.open_cube_file() as handle:
         cube_data = read_gaussian_cube(handle, return_density=False, dist_units='angstrom')
+        content = create_vesta_input(cube_data, os.path.basename(cube_filepath), settings=settings)
         with io.open(vesta_filepath, 'w') as out_handle:
-            out_handle.write(
-                create_vesta_input(cube_data,
-                                   os.path.basename(cube_filepath),
-                                   bounds=bounds,
-                                   iso_settings=iso_settings,
-                                   bonds=bonds,
-                                   show_compass=show_compass))
+            out_handle.write(six.ensure_text(content))
     with aiida_gcube.open_cube_file(binary=True) as handle:
         with io.open(cube_filepath, 'wb') as out_handle:
             shutil.copyfileobj(handle, out_handle)

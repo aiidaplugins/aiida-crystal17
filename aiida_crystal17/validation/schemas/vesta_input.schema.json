@@ -7,17 +7,19 @@
             "type": "string"
         },
         "bounds": {
-            "type": "array",
-            "minItems": 6,
-            "maxItems": 6,
-            "items": {
-                "type": [
-                    "integer",
-                    "number"
-                ]
+            "dexcription": "bounds for repeating cell",
+            "type": "object",
+            "patternProperties": {
+                "(x|y|z)(min|max)": {
+                    "type": [
+                        "integer",
+                        "number"
+                    ]
+                }
             }
         },
         "bonds": {
+            "description": "Bond computations: (element1, element2, min_length, max_length)",
             "type": "array",
             "items": {
                 "type": "array",
@@ -49,9 +51,10 @@
                 ]
             }
         },
-        "iso_settings": {
+        "iso_surfaces": {
             "type": "array",
             "items": {
+                "description": "3D iso-surfaces: (value, both(0)/pos(1)/neg(2), r, g, b, alpha1, alpha2)",
                 "type": "array",
                 "minItems": 7,
                 "maxItems": 7,
@@ -113,7 +116,8 @@
         "show_compass": {
             "type": "boolean"
         },
-        "slice_settings": {
+        "2d_display": {
+            "description": "Information to setup the 2D data display",
             "type": "object",
             "properties": {
                 "h": {
