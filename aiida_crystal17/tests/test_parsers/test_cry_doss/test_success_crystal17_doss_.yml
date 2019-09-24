@@ -2,8 +2,10 @@ arrays:
   array|energies:
   - 1002
   array|projections_alpha:
+  - 7
   - 1002
   array|projections_beta:
+  - 7
   - 1002
   array|total_alpha:
   - 1002

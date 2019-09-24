@@ -212,9 +212,9 @@ def parse_crystal_fort25_aiida(fileobj):
 
     if read_data['projections_alpha'] is not None:
         if read_data['projections_beta'] is not None:
-            array_data['projections_alpha'] = total_alpha
-            array_data['projections_beta'] = total_beta
+            array_data['projections_alpha'] = projected_alpha
+            array_data['projections_beta'] = projected_beta
         else:
-            array_data['projections'] = total_alpha
+            array_data['projections'] = projected_alpha
 
     return results_data, array_data
