@@ -45,7 +45,16 @@ def get_default_settings():
             [0.05, 1, 0.071, 1, 0.216, 0.5883, 0.5883],
             [0.025, 1, 0.0510, 1, 0.9648, 0.1178, 0.1178],
         ],
-        'bonds': [],
+        'bonds': {
+            'style': 1,
+            'radius': 0.250,
+            'width': 1.0,
+            'slices': 16,
+            'compute': []
+        },
+        'polyhedra': {
+            'style': 1
+        },
         'show_compass': True,
         '2d_display': {
             'h': 1e-06,
@@ -201,7 +210,7 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
 
     # neighbour bonds
     lines.append('SBOND')
-    for i, (sym1, sym2, minr, maxr) in enumerate(settings['bonds']):
+    for i, (sym1, sym2, minr, maxr) in enumerate(settings['bonds']['compute']):
         lines.append(
             '  {idx:<2d} {sym1:<2s} {sym2:<2s} {minr:.6f} {maxr:.6f} 0  1  1  0  1 {rad:.3f} 1.000 180 180 180'.format(
                 idx=i + 1, sym1=sym1, sym2=sym2, minr=minr, maxr=maxr, rad=0.25))
@@ -308,17 +317,21 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
             SECTS  96  0
             FORMS   0  1
             ATOMS   0  0  1
-            BONDS   1
-            POLYS   1
+            BONDS   {bond_style}
+            POLYS   {poly_style}
             VECTS 1.000000
             FORMP
               1  1.0   0   0   0
             ATOMP
               24  24   0  50  2.0   0
             BONDP
-              1  16  0.250  1.000 180 180 180
+              1  {bond_slices}  {bond_radius:.6f}  {bond_width:.6f} 180 180 180
             POLYP
-              100 1  1.000 180 180 180""").splitlines())
+              100 1  1.000 180 180 180""").format(bond_style=settings['bonds']['style'],
+                                                  bond_slices=settings['bonds']['slices'],
+                                                  bond_radius=settings['bonds']['radius'],
+                                                  bond_width=settings['bonds']['width'],
+                                                  poly_style=settings['polyhedra']['style']).splitlines())
 
     # isosurfaces
     lines.append('ISURF')

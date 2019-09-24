@@ -19,36 +19,69 @@
             }
         },
         "bonds": {
-            "description": "Bond computations: (element1, element2, min_length, max_length)",
-            "type": "array",
-            "items": {
-                "type": "array",
-                "minItems": 4,
-                "maxItems": 4,
-                "items": [
-                    {
-                        "type": "string",
-                        "pattern": "[A-Z][a-z]?"
-                    },
-                    {
-                        "type": "string",
-                        "pattern": "[A-Z][a-z]?"
-                    },
-                    {
-                        "type": [
-                            "integer",
-                            "number"
-                        ],
-                        "minimum": 0
-                    },
-                    {
-                        "type": [
-                            "integer",
-                            "number"
-                        ],
-                        "minimum": 0
+            "type": "object",
+            "properties": {
+                "style": {
+                    "description": "0 = cylinder (unicolor), 1 = cylinder (bicolor), 2 = line (color), 3 = line (gradient), 4 = line (dotted), 5 = line (dashed)",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                },
+                "radius": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "width": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "slices": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "compute": {
+                    "description": "Bond computations: (element1, element2, min_length, max_length)",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "items": [
+                            {
+                                "type": "string",
+                                "pattern": "[A-Z][a-z]?"
+                            },
+                            {
+                                "type": "string",
+                                "pattern": "[A-Z][a-z]?"
+                            },
+                            {
+                                "type": [
+                                    "integer",
+                                    "number"
+                                ],
+                                "minimum": 0
+                            },
+                            {
+                                "type": [
+                                    "integer",
+                                    "number"
+                                ],
+                                "minimum": 0
+                            }
+                        ]
                     }
-                ]
+                }
+            }
+        },
+        "polyhedra": {
+            "type": "object",
+            "properties": {
+                "style": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                }
             }
         },
         "iso_surfaces": {
