@@ -90,7 +90,9 @@ def test_calcfunction_band_gap(db_test_app, data_regression):
     outputs, node = calcfunction_band_gap.run_get_node(doss_array=array,
                                                        doss_results=Dict(dict={
                                                            'fermi_energy': data.fermi,
-                                                           'energy_units': 'eV'
+                                                           'units': {
+                                                               'energy': 'eV'
+                                                           }
                                                        }),
                                                        dtol=Float(1e-6),
                                                        try_fshifts=List(list=data.try_fshifts),
@@ -110,7 +112,9 @@ def test_calcfunction_band_gap_with_spin(db_test_app, data_regression):
     outputs, node = calcfunction_band_gap.run_get_node(doss_array=array,
                                                        doss_results=Dict(dict={
                                                            'fermi_energy': data.fermi,
-                                                           'energy_units': 'eV'
+                                                           'units': {
+                                                               'energy': 'eV'
+                                                           }
                                                        }),
                                                        dtol=Float(1e-6),
                                                        try_fshifts=List(list=data.try_fshifts),
