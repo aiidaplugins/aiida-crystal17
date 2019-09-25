@@ -1009,41 +1009,65 @@ def parse_mulliken_analysis(lines, mulliken_indices):
 
     for i, indx in enumerate(mulliken_indices):
         name = lines[indx - 1].strip().lower()
+        key_name = name.replace(' ', '_')
         if not (name == 'ALPHA+BETA ELECTRONS'.lower() or name == 'ALPHA-BETA ELECTRONS'.lower()):
             return ParsedSection(
                 mulliken_indices[0], mulliken, 'was expecting mulliken to be alpha+beta or alpha-beta on line:'
                 ' {0}, got: {1}'.format(indx - 1, lines[indx - 1]))
 
-        mulliken[name.replace(' ', '_')] = {'ids': [], 'symbols': [], 'atomic_numbers': [], 'charges': []}
-
         if len(mulliken_indices) > i + 1:
             searchlines = lines[indx + 1:mulliken_indices[i + 1]]
         else:
             searchlines = lines[indx + 1:]
-        charge_line = None
+
+        data_ao = {}
+        data_shell = {}
+
         for j, line in enumerate(searchlines):
-            if fnmatch(line.strip(), '*ATOM*Z*CHARGE*SHELL*POPULATION*'):
+            if fnmatch(line.strip(), '*ATOM*Z*CHARGE*A.O.*POPULATION*'):
                 charge_line = j + 2
-                break
-        if charge_line is None:
-            continue
 
-        while searchlines[charge_line].strip() and not searchlines[charge_line].strip()[0].isalpha():
-            fields = searchlines[charge_line].strip().split()
-            # shell population can wrap multiple lines, the one we want has the label in it
-            if len(fields) != len(split_numbers(searchlines[charge_line])):
-                mulliken[name.replace(' ', '_')]['ids'].append(int(fields[0]))
-                mulliken[name.replace(' ', '_')]['symbols'].append(fields[1].lower().capitalize())
-                mulliken[name.replace(' ', '_')]['atomic_numbers'].append(int(fields[2]))
-                mulliken[name.replace(' ', '_')]['charges'].append(float(fields[3]))
+                while searchlines[charge_line].strip() and not searchlines[charge_line].strip()[0].isalpha():
+                    fields = searchlines[charge_line].strip().split()
+                    # a.o. population can wrap multiple lines
+                    if len(fields) != len(split_numbers(searchlines[charge_line])):
+                        data_ao.setdefault('ids', []).append(int(fields[0]))
+                        data_ao.setdefault('symbols', []).append(fields[1].lower().capitalize())
+                        data_ao.setdefault('atomic_numbers', []).append(int(fields[2]))
+                        data_ao.setdefault('charges', []).append(float(fields[3]))
+                        data_ao.setdefault('aos', []).append([float(f) for f in fields[4:]])
+                    else:
+                        data_ao['aos'][-1].extend(split_numbers(searchlines[charge_line]))
 
-            charge_line += 1
+                    charge_line += 1
+
+            elif fnmatch(line.strip(), '*ATOM*Z*CHARGE*SHELL*POPULATION*'):
+                charge_line = j + 2
+
+                while searchlines[charge_line].strip() and not searchlines[charge_line].strip()[0].isalpha():
+                    fields = searchlines[charge_line].strip().split()
+                    # shell population can wrap multiple lines
+                    if len(fields) != len(split_numbers(searchlines[charge_line])):
+                        data_shell.setdefault('ids', []).append(int(fields[0]))
+                        data_shell.setdefault('symbols', []).append(fields[1].lower().capitalize())
+                        data_shell.setdefault('atomic_numbers', []).append(int(fields[2]))
+                        data_shell.setdefault('charges', []).append(float(fields[3]))
+                        data_shell.setdefault('shells', []).append([float(f) for f in fields[4:]])
+                    else:
+                        data_shell['shells'][-1].extend(split_numbers(searchlines[charge_line]))
+
+                    charge_line += 1
+
+        # TODO check consistency of ids, ...
+        data_ao.update(data_shell)
+
+        mulliken[key_name] = data_ao
 
     return ParsedSection(mulliken_indices[0], mulliken)
 
 
 def extract_final_info(parsed_data):
-    """extract the final energies and primitive geometry/symmetry
+    """Extract the final energies and primitive geometry/symmetry
     from the relevant sections of the parse data
     (depending if it was an optimisation or not)
     """
