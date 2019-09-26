@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-parse the main output file and create the required output nodes
-"""
+"""Parse the main output file and create the required output nodes."""
 from collections import Mapping
 import traceback
 from aiida_crystal17.symmetry import convert_structure
