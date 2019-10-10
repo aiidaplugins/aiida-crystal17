@@ -97,13 +97,13 @@ def get_complete_settings(settings):
     return defaults
 
 
-def create_vesta_input(cube_data, cube_filepath, settings=None):
+def create_vesta_input(atoms, cube_filepath=None, settings=None):
     """Return the file content of a VESTA input file.
 
     Parameters
     ----------
-    cube_data: aiida_crystal17.parsers.raw.gaussian_cube.GcubeResult
-    cube_filepath: str
+    atoms: ase.Atoms
+    cube_filepath: str or None
     settings: dict
         Settings that will be merged with the default settings,
         and validated against 'vesta_input.schema.json'
@@ -121,12 +121,6 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
         if not settings['2d_display'][dim + 'min'] < settings['2d_display'][dim + 'max']:
             raise ValueError('2d_display: {}min must be less than {}max'.format(dim))
 
-    atoms = ase.Atoms(
-        cell=cube_data.cell,
-        positions=cube_data.atoms_positions,
-        numbers=cube_data.atoms_atomic_number,
-        pbc=True,
-    )
     el_info = {s: SymbolInfo(*VESTA_ELEMENT_INFO[s]) for s in set(atoms.get_chemical_symbols())}
 
     # header
@@ -139,12 +133,13 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
         ''
         # NB: originally used cube_data.header[0],
         # but the file load can fail if a key word (like CRYSTAL) is in the title
-        'GAUSSIAN_CUBE_DATA',
+        'AIIDA_DATA',
         '',
     ]
 
     # density input
-    lines.extend(['IMPORT_DENSITY 1', '+1.000000 {}'.format(cube_filepath), ''])
+    if cube_filepath is not None:
+        lines.extend(['IMPORT_DENSITY 1', '+1.000000 {}'.format(cube_filepath), ''])
 
     # symmetry
     lines.extend([
@@ -442,7 +437,7 @@ def create_vesta_input(cube_data, cube_filepath, settings=None):
     return '\n'.join(lines)
 
 
-def write_vesta_files(
+def write_gcube_to_vesta(
         aiida_gcube,
         folder_path,
         file_name,
@@ -465,7 +460,13 @@ def write_vesta_files(
     vesta_filepath = os.path.join(folder_path, '{}.vesta'.format(file_name))
     with aiida_gcube.open_cube_file() as handle:
         cube_data = read_gaussian_cube(handle, return_density=False, dist_units='angstrom')
-        content = create_vesta_input(cube_data, os.path.basename(cube_filepath), settings=settings)
+        atoms = ase.Atoms(
+            cell=cube_data.cell,
+            positions=cube_data.atoms_positions,
+            numbers=cube_data.atoms_atomic_number,
+            pbc=True,
+        )
+        content = create_vesta_input(atoms, cube_filepath=os.path.basename(cube_filepath), settings=settings)
         with io.open(vesta_filepath, 'w') as out_handle:
             out_handle.write(six.ensure_text(content))
     with aiida_gcube.open_cube_file(binary=True) as handle:
