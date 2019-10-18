@@ -116,12 +116,13 @@ def calcfunction_band_gap(doss_results, doss_array, dtol=None, try_fshifts=None)
         return ExitCode(101, 'doss_results is not of type `aiida.orm.Dict`: {}'.format(doss_results))
     if 'fermi_energy' not in doss_results.get_dict():
         return ExitCode(102, '`fermi_energy` not in doss_results')
-    if 'energy_units' not in doss_results.get_dict():
-        return ExitCode(102, '`energy_units` not in doss_results')
+    if 'energy' not in doss_results.get_dict().get('units', {}):
+        return ExitCode(102, '`energy units` not in doss_results')
     if not isinstance(doss_array, ArrayData):
         return ExitCode(103, 'doss_array is not of type `aiida.orm.ArrayData`: {}'.format(doss_array))
 
-    kwargs = {'fermi': doss_results.get_dict()['fermi_energy']}
+    kwargs = {}
+    kwargs['fermi'] = doss_results.get_dict()['fermi_energy']
 
     if dtol is not None:
         if not isinstance(dtol, Float):
@@ -156,7 +157,7 @@ def calcfunction_band_gap(doss_results, doss_array, dtol=None, try_fshifts=None)
         total_density = np.abs(alpha_density) + np.abs(beta_density)
         calcs = {'alpha': alpha_density, 'beta': beta_density, 'total': total_density}
 
-    final_dict = {'energy_units': doss_results.get_dict()['energy_units']}
+    final_dict = {'energy_units': doss_results.get_dict()['units']['energy']}
 
     for name, density in calcs.items():
         try:

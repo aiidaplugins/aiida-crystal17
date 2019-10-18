@@ -4,7 +4,6 @@ import shutil
 import tempfile
 
 import importlib_resources
-import pytest
 
 from aiida_crystal17.tests import raw_files as resource_module
 
@@ -173,7 +172,6 @@ def get_test_structure(name):
     raise ValueError(name)
 
 
-@pytest.mark.cry17_calls_executable
 def get_test_structure_and_symm(name, symprec=0.01, primitive=True):
     """Return an aiida.StructureData and related aiida_crystal17.SymmetryData for testing.
 

@@ -114,7 +114,7 @@ class CryPropertiesWorkChain(WorkChain):
         and will fail validation if these empty namespaces are present.
 
         """
-        # TODO raise an issue on aiida-core
+        # TODO This may have been fixed in fff3cadcc9572bbad32144d7db27da41c2c89c14, raise an issue on aiida-core?
         if kwargs.get('inputs', None):
             kwargs['inputs'] = strip_empty_namespaces(kwargs['inputs'])
         super(CryPropertiesWorkChain, self).__init__(**kwargs)

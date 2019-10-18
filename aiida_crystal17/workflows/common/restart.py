@@ -16,7 +16,7 @@
 # pylint: disable=inconsistent-return-statements,no-member
 """Base implementation of `WorkChain` class that implements a simple automated restart mechanism for calculations.
 
-Note: this is an exact replication of aiida_quantumespresso.common.workchain.base.restart.BaseRestartWorkChain
+Note: this is an exact replication of ``aiida_quantumespresso.common.workchain.base.restart.BaseRestartWorkChain``
 """
 from collections import namedtuple
 from functools import wraps
@@ -34,7 +34,7 @@ class UnexpectedCalculationFailure(AiidaException):
 
 
 class BaseRestartWorkChain(WorkChain):
-    """Base restart work chain
+    """Base restart work chain.
 
     This work chain serves as the starting point for more complex work chains that will be designed to run a calculation
     that might need multiple restarts to come to a successful end. These restarts may be necessary because a single
@@ -43,7 +43,7 @@ class BaseRestartWorkChain(WorkChain):
 
     This work chain implements the most basic functionality to achieve this goal. It will launch calculations,
     restarting until it is completed successfully or the maximum number of iterations is reached. It can recover from
-    errors through error handlers that can be attached dynamically through the `register_error_handler` decorator.
+    errors through error handlers that can be attached dynamically through the ``register_error_handler`` decorator.
 
     The idea is to sub class this work chain and leverage the generic error handling that is implemented in the few
     outline methods. The minimally required outline would look something like the following::
@@ -55,10 +55,10 @@ class BaseRestartWorkChain(WorkChain):
         )
 
     Each of these methods can of course be overridden but they should be general enough to fit most calculation cycles.
-    The `run_calculation` method will take the inputs for the calculation process from the context under the key
-    `inputs`. The user should therefore make sure that before the `run_calculation` method is called, that the to be
-    used inputs are stored under `self.ctx.inputs`. One can update the inputs based on the results from a prior
-    calculation by calling an outline method just before the `run_calculation` step, for example::
+    The ``run_calculation`` method will take the inputs for the calculation process from the context under the key
+    ``inputs``. The user should therefore make sure that before the ``run_calculation`` method is called, that the to be
+    used inputs are stored under ``self.ctx.inputs``. One can update the inputs based on the results from a prior
+    calculation by calling an outline method just before the ``run_calculation`` step, for example::
 
         cls.setup
         while_(cls.should_run_calculation)(
@@ -67,11 +67,12 @@ class BaseRestartWorkChain(WorkChain):
             cls.inspect_calculation,
         )
 
-    Where in the `prepare_calculation` method, the inputs dictionary at `self.ctx.inputs` is updated before the next
+    Where in the ``prepare_calculation`` method, the inputs dictionary at ``self.ctx.inputs`` is updated before the next
     calculation will be run with those inputs.
 
-    The `_calculation_class` attribute should be set to the `CalcJob` class that should be run in the loop.
+    The ``_calculation_class`` attribute should be set to the ``CalcJob`` class that should be run in the loop.
     """
+
     _verbose = False
     _calculation_class = None
     _error_handler_entry_point = None
@@ -113,7 +114,7 @@ class BaseRestartWorkChain(WorkChain):
         spec.input(
             'clean_workdir', valid_type=orm.Bool, default=orm.Bool(False),
             serializer=to_aiida_type,
-            help='If `True`, work directories of all called calculation will be cleaned at the end of execution.')
+            help='If ``True``, work directories of all called calculation will be cleaned at the end of execution.')
         spec.exit_code(
             101, 'ERROR_MAXIMUM_ITERATIONS_EXCEEDED',
             message='The maximum number of iterations was exceeded.')
@@ -122,7 +123,7 @@ class BaseRestartWorkChain(WorkChain):
             message='The calculation failed for an unknown reason, twice in a row.')
 
     def setup(self):
-        """Initialize context variables that are used during the logical flow of the `BaseRestartWorkChain`."""
+        """Initialize context variables that are used during the logical flow of the ``BaseRestartWorkChain``."""
         self.ctx.calc_name = self._calculation_class.__name__
         self.ctx.unexpected_failure = False
         self.ctx.restart_calc = None
@@ -138,7 +139,7 @@ class BaseRestartWorkChain(WorkChain):
         return not self.ctx.is_finished and self.ctx.iteration < self.inputs.max_iterations.value
 
     def run_calculation(self):
-        """Run the next calculation, taking the input dictionary from the context at `self.ctx.inputs`."""
+        """Run the next calculation, taking the input dictionary from the context at ``self.ctx.inputs``."""
         from aiida_crystal17.common.mapping import prepare_process_inputs
 
         self.ctx.iteration += 1
@@ -249,7 +250,7 @@ class BaseRestartWorkChain(WorkChain):
                         node.__class__.__name__, node.pk, name))
 
     def on_terminated(self):
-        """Clean the working directories of all child calculations if `clean_workdir=True` in the inputs."""
+        """Clean the working directories of all child calculations if ``clean_workdir=True`` in the inputs."""
         super(BaseRestartWorkChain, self).on_terminated()
 
         if self.inputs.clean_workdir.value is False:
@@ -277,12 +278,12 @@ class BaseRestartWorkChain(WorkChain):
         but were not detected by the code and so were not highlighted as warnings or errors. The consistency of the
         outputs can be checked here. If an unrecoverable problem is found, the function should return the appropriate
         exit code to abort the work chain. If the probem can be fixed with a restart calculation, this function should
-        adapt the inputs as an error handler would and return `False`. This will signal to the work chain that a new
-        calculation should be started. If `None` is returned, the work chain assumes that the outputs produced by the
+        adapt the inputs as an error handler would and return ``False``. This will signal to the work chain that a new
+        calculation should be started. If ``None`` is returned, the work chain assumes that the outputs produced by the
         calculation are good and nothing will be done.
 
         :param calculation: the calculation whose outputs should be checked for consistency
-        :return: `ErrorHandlerReport` if a new calculation should be launched or abort if it includes an exit code
+        :return: ``ErrorHandlerReport`` if a new calculation should be launched or abort if it includes an exit code
         """
 
     def _handle_calculation_failure(self, calculation):
@@ -340,7 +341,7 @@ class BaseRestartWorkChain(WorkChain):
 
         :param calculation: the calculation that failed in an unexpected way
         :param exception: optional exception or error message to log to the report
-        :return: `ExitCode` if this is the second consecutive unexpected failure
+        :return: ``ExitCode`` if this is the second consecutive unexpected failure
         """
         if exception:
             self.report('{}'.format(exception))
@@ -375,12 +376,12 @@ A namedtuple to define an error handler report for a :class:`~aiida.engine.proce
 
 This namedtuple should be returned by an error handling method of a workchain instance if
 the condition of the error handling was met by the failure mode of the calculation.
-If the error was appropriately handled, the 'is_handled' field should be set to `True`,
-and `False` otherwise. If no further error handling should be performed after this method
-the 'do_break' field should be set to `True`
+If the error was appropriately handled, the 'is_handled' field should be set to ``True``,
+and ``False`` otherwise. If no further error handling should be performed after this method
+the 'do_break' field should be set to ``True``
 
-:param is_handled: boolean, set to `True` when an error was handled, default is `False`
-:param do_break: boolean, set to `True` if no further error handling should be performed, default is `False`
+:param is_handled: boolean, set to ``True`` when an error was handled, default is ``False``
+:param do_break: boolean, set to ``True`` if no further error handling should be performed, default is ``False``
 :param exit_code: an instance of the :class:`~aiida.engine.processes.exit_code.ExitCode` tuple
 """
 
@@ -390,11 +391,11 @@ def register_error_handler(cls, priority=None):
     Decorator that will turn any function in an error handler for workchain that inherits from
     the :class:`.BaseRestartWorkChain`. The function expects two arguments, a workchain class and a priority.
     The decorator will add the function as a class method to the workchain class and add an :class:`.ErrorHandler`
-    tuple to the `BaseRestartWorkChain._error_handlers` attribute of the workchain. During failed calculation
-    handling the :meth:`.inspect_calculation` outline method will call the `_handle_calculation_failure` which will loop
-    over all error handler in the `BaseRestartWorkChain._error_handlers`, sorted with respect to the priority in
-    reverse. If the workchain class defines a `BaseRestartWorkChain._verbose` attribute and is set to `True`, a
-    report message will be fired when the error handler is executed.
+    tuple to the ``BaseRestartWorkChain._error_handlers`` attribute of the workchain. During failed calculation
+    handling the :meth:`.inspect_calculation` outline method will call the ``_handle_calculation_failure`` which will
+    loop over all error handler in the `BaseRestartWorkChain._error_handlers`, sorted with respect to the priority in
+    reverse. If the workchain class defines a ``BaseRestartWorkChain._verbose`` attribute and is set to ``True``,
+    a report message will be fired when the error handler is executed.
 
     Requirements on the function signature of error handling functions. The function to which the
     decorator is applied needs to take two arguments:
@@ -403,20 +404,20 @@ def register_error_handler(cls, priority=None):
         * `calculation`: This is the calculation that failed and needs to be investigated
 
     The function body should usually consist of a single conditional that checks the calculation if
-    the error that it is designed to handle is applicable. Although not required, it is advised that
-    the function return an :class:`.ErrorHandlerReport` tuple when its conditional was met. If an error was handled
-    it should set `is_handled` to `True`. If no other error handlers should be considered set `do_break` to `True`.
+    the error that it is designed to handle is applicable. Although not required, it is advised that the
+    function return an :class:`.ErrorHandlerReport` tuple when its conditional was met. If an error was handled it
+    should set ``is_handled`` to ``True``. If no other error handlers should be considered set ``do_break`` to ``True``.
 
     :param cls: the workchain class to register the error handler with
     :param priority: optional integer that defines the order in which registered handlers will be called
         during the handling of a failed calculation. Higher priorities will be handled first. If the priority is `None`
         the handler will not be automatically called during calculation failure handling. This is useful to define
-        handlers that one only wants to call manually, for example in the `_handle_sanity_checks` and still profit
+        handlers that one only wants to call manually, for example in the ``_handle_sanity_checks`` and still profit
         from the other features of this decorator.
     """
 
     def error_handler_decorator(handler):
-        """Decorator to dynamically register an error handler to a `WorkChain` class."""
+        """Decorator to dynamically register an error handler to a ``WorkChain`` class."""
 
         @wraps(handler)
         def error_handler(self, calculation):

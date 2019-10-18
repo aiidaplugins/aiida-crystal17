@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-parse the main output file and create the required output nodes
-"""
+"""Parse the main output file and create the required output nodes."""
 from collections import Mapping
 import traceback
 from aiida_crystal17.symmetry import convert_structure
@@ -82,7 +80,7 @@ class ParserResult(object):
 
 # pylint: disable=too-many-locals,too-many-statements
 def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
-    """ parse the main output file and create the required output nodes
+    """Parse the main output file and create the required output nodes.
 
     :param fileobj: handle to main output file
     :param parser_class: a string denoting the parser class
@@ -118,7 +116,6 @@ def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
     # TODO could also read .gui file for definitive final (primitive) geometry,
     # with symmetries
     # TODO could also read .SCFLOG, to get scf output for each opt step
-    # TODO could also read files in .optstory folder,
     # to get (primitive) geometries (+ symmetries) for each opt step
     # Note the above files are only available for optimisation runs
 
@@ -157,6 +154,7 @@ def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
     _extract_symmetry(final_info, init_settings, results_data, parser_result, exit_codes)
 
     if mulliken_analysis is not None:
+        # TODO output Mulliken analysis as separate ArrayData node
         _extract_mulliken(mulliken_analysis, results_data)
 
     parser_result.nodes.results = DataFactory('dict')(dict=results_data)
@@ -168,8 +166,7 @@ def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
 
 
 def _extract_symmetry(final_data, init_settings, param_data, parser_result, exit_codes):
-    """extract symmetry operations"""
-
+    """Extract symmetry operations."""
     if 'primitive_symmops' not in final_data:
         param_data['parser_errors'].append('primitive symmops were not found in the output file')
         parser_result.exit_code = exit_codes.ERROR_SYMMETRY_NOT_FOUND
@@ -238,6 +235,10 @@ def _extract_structure(final_data, init_struct, results_data, parser_result, exi
 
 def _extract_mulliken(data, param_data):
     """Extract mulliken electronic charge partition data."""
+    for mtype in ['alpha+beta_electrons', 'alpha-beta_electrons']:
+        data.get(mtype, {}).pop('aos', None)
+        data.get(mtype, {}).pop('shells', None)
+
     if 'alpha+beta_electrons' in data:
         electrons = data['alpha+beta_electrons']['charges']
         anum = data['alpha+beta_electrons']['atomic_numbers']
