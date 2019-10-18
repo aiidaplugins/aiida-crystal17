@@ -84,27 +84,27 @@ class Symmetrise3DStructure(WorkChain):
         super(Symmetrise3DStructure, cls).define(spec)
         spec.input('structure', valid_type=StructureData, required=False)
         spec.input('cif', valid_type=DataFactory('cif'), required=False)
-        spec.input(
-            'settings',
-            valid_type=DataFactory('dict'),
-            serializer=to_aiida_type,
-            required=True,
-            validator=cls.validate_settings)
+        spec.input('settings',
+                   valid_type=DataFactory('dict'),
+                   serializer=to_aiida_type,
+                   required=True,
+                   validator=cls.validate_settings)
 
         spec.outline(cls.validate_inputs, cls.compute)
 
         spec.output('symmetry', valid_type=SymmetryData, required=True)
         spec.output('structure', valid_type=StructureData, required=False)
 
-        spec.exit_code(
-            300, 'ERROR_INVALID_INPUT_RESOURCES', message='one of either a structure or cif input must be supplied')
-        spec.exit_code(
-            301,
-            'ERROR_NON_3D_STRUCTURE',
-            message='the supplied structure must be 3D (i.e. have all dimensions pbc=True)"')
+        spec.exit_code(300,
+                       'ERROR_INVALID_INPUT_RESOURCES',
+                       message='one of either a structure or cif input must be supplied')
+        spec.exit_code(301,
+                       'ERROR_NON_3D_STRUCTURE',
+                       message='the supplied structure must be 3D (i.e. have all dimensions pbc=True)"')
         spec.exit_code(302, 'ERROR_COMPUTE_OPTIONS', message='idealize can only be used when standardize=True')
-        spec.exit_code(
-            303, 'ERROR_RESET_KIND_NAMES', message='the kind names supplied are not compatible with the structure')
+        spec.exit_code(303,
+                       'ERROR_RESET_KIND_NAMES',
+                       message='the kind names supplied are not compatible with the structure')
         spec.exit_code(304, 'ERROR_NEW_STRUCTURE', message='error creating new structure')
         spec.exit_code(305, 'ERROR_COMPUTING_SYMMETRY', message='error computing symmetry operations')
 
@@ -118,12 +118,9 @@ class Symmetrise3DStructure(WorkChain):
                 'symprec': {
                     'description': ('Length tolerance for symmetry finding: '
                                     '0.01 is fairly strict and works well for properly refined structures'),
-                    'default':
-                    0.01,
-                    'type':
-                    'number',
-                    'exclusiveMinimum':
-                    0
+                    'default': 0.01,
+                    'type': 'number',
+                    'exclusiveMinimum': 0
                 },
                 'angle_tolerance': {
                     'description': 'Angle tolerance for symmetry finding, in the unit of angle degrees',
@@ -146,20 +143,16 @@ class Symmetrise3DStructure(WorkChain):
                 },
                 'standardize_cell': {
                     'description':
-                    ('whether to standardize the structure, see '
-                     'https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell'),
-                    'type':
-                    'boolean',
-                    'default':
-                    False
+                        ('whether to standardize the structure, see '
+                         'https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell'),
+                    'type': 'boolean',
+                    'default': False
                 },
                 'idealize_cell': {
                     'description': ("whether to remove distortions of the unit cell's atomic positions, "
                                     'using obtained symmetry operations'),
-                    'type':
-                    'boolean',
-                    'default':
-                    False
+                    'type': 'boolean',
+                    'default': False
                 }
             }
         }

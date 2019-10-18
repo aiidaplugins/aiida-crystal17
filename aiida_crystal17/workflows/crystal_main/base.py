@@ -20,12 +20,12 @@ from aiida.engine import while_
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import CalculationFactory, DataFactory
 
-from aiida_crystal17.workflows.common.restart import BaseRestartWorkChain, ErrorHandlerReport, register_error_handler
 from aiida_crystal17.common.kpoints import create_kpoints_from_distance
+from aiida_crystal17.data.basis_set import BasisSetData
+from aiida_crystal17.workflows.common.restart import BaseRestartWorkChain, ErrorHandlerReport, register_error_handler
 
 CryCalculation = CalculationFactory('crystal17.main')
 CryInputParamsData = DataFactory('crystal17.parameters')
-BasisSetsData = DataFactory('crystal17.basisset')
 
 
 def _validate_kpoint_distance(float_data):
@@ -152,7 +152,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
         basis_family = self.inputs.get('basis_family', None)
 
         try:
-            self.ctx.inputs.basissets = BasisSetsData.prepare_and_validate_inputs(structure, basissets, basis_family)
+            self.ctx.inputs.basissets = BasisSetData.prepare_and_validate_inputs(structure, basissets, basis_family)
         except ValueError as exception:
             self.report('{}'.format(exception))
             return self.exit_codes.ERROR_INVALID_INPUT_BASIS_SETS

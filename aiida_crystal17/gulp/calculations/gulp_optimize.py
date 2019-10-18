@@ -32,45 +32,40 @@ class GulpOptCalculation(GulpAbstractCalculation):
 
         spec.input('metadata.options.parser_name', valid_type=six.string_types, default='gulp.optimize')
 
-        spec.input(
-            'metadata.options.out_cif_file_name',
-            valid_type=six.string_types,
-            default='output.cif',
-            help='name of the cif file to output with final geometry')
-        spec.input(
-            'metadata.options.use_input_kinds',
-            valid_type=bool,
-            default=True,
-            help=('if True, use the atoms kinds from the input structure, '
-                  'when creating the output structure'))
+        spec.input('metadata.options.out_cif_file_name',
+                   valid_type=six.string_types,
+                   default='output.cif',
+                   help='name of the cif file to output with final geometry')
+        spec.input('metadata.options.use_input_kinds',
+                   valid_type=bool,
+                   default=True,
+                   help=('if True, use the atoms kinds from the input structure, '
+                         'when creating the output structure'))
         # spec.input('metadata.options.out_str_file_name',
         #            valid_type=six.string_types, default='output.str',
         #            help="name of the str file (i.e. a CRYSTAL98 .gui file)")
 
-        spec.input(
-            'symmetry',
-            valid_type=DataFactory('crystal17.symmetry'),
-            required=False,
-            help=('parameters to create the symmetry section of the '
-                  '.gin file content (for constrained optimisation).'))
+        spec.input('symmetry',
+                   valid_type=DataFactory('crystal17.symmetry'),
+                   required=False,
+                   help=('parameters to create the symmetry section of the '
+                         '.gin file content (for constrained optimisation).'))
 
         spec.exit_code(250, 'ERROR_CIF_FILE_MISSING', message='the output cif file was not found')
-        spec.exit_code(
-            251,
-            'ERROR_MISSING_INPUT_STRUCTURE',
-            message='an input structure is required to create the output structure of an optimisation')
-        spec.exit_code(
-            252, 'ERROR_CIF_INCONSISTENT', message='the output cif file was not consistent with the input structure')
-        spec.exit_code(
-            253,
-            'ERROR_STRUCTURE_PARSING',
-            message='The final structure coordinates were not parsed from the output file')
+        spec.exit_code(251,
+                       'ERROR_MISSING_INPUT_STRUCTURE',
+                       message='an input structure is required to create the output structure of an optimisation')
+        spec.exit_code(252,
+                       'ERROR_CIF_INCONSISTENT',
+                       message='the output cif file was not consistent with the input structure')
+        spec.exit_code(253,
+                       'ERROR_STRUCTURE_PARSING',
+                       message='The final structure coordinates were not parsed from the output file')
 
-        spec.output(
-            cls.link_output_structure,
-            valid_type=DataFactory('structure'),
-            required=True,
-            help='the optimized structure output from the calculation')
+        spec.output(cls.link_output_structure,
+                    valid_type=DataFactory('structure'),
+                    required=True,
+                    help='the optimized structure output from the calculation')
 
     def create_input(self, structure, potential, parameters=None, symmetry=None):
         input_creation = InputCreationOpt(outputs={'cif': self.metadata.options.out_cif_file_name})

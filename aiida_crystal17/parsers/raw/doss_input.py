@@ -56,7 +56,7 @@ def read_doss_contents(content):
             params['atomic_projections'].append(values[1:])
     assert lines[proj_index + npro].rstrip() == 'END'
 
-    validate_against_schema(params, 'doss_input.schema.json')
+    validate_against_schema(params, 'prop.doss.schema.json')
 
     return params
 
@@ -86,14 +86,9 @@ def create_doss_content(params):
     Unit of measurement:  energy:  hartree; DOSS: state/hartree/cell.
 
     """
-    validate_against_schema(params, 'doss_input.schema.json')
+    validate_against_schema(params, 'prop.doss.schema.json')
 
-    lines = ['NEWK']
-    if not params['shrink_isp'] >= 2 * params['shrink_is']:
-        raise AssertionError('ISP<2*IS, low values of the ratio ISP/IS can lead to numerical instabilities.')
-    lines.append('{} {}'.format(params['shrink_is'], params['shrink_isp']))
-    lines.append('1 0')
-    lines.append('DOSS')
+    lines = ['DOSS']
 
     proj_atoms = []
     proj_orbitals = []

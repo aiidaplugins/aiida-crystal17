@@ -18,9 +18,17 @@ import re
 
 
 def convert_units(value, in_units, out_units, standard='codata2014'):
+    """Convert a value, from one unit to another."""
     # TODO use units.yaml
+    if in_units == out_units:
+        return value
+    if standard != 'codata2014':
+        raise NotImplementedError('{}'.format(standard))
     if in_units == 'hartree' and out_units == 'eV':
         return value * 27.21138602
+    elif in_units == 'bohr' and out_units == 'angstrom':
+        return value * 0.5291772105638411
+    raise NotImplementedError('{} -> {}'.format(in_units, out_units))
 
 
 def split_numbers(string, as_decimal=False):

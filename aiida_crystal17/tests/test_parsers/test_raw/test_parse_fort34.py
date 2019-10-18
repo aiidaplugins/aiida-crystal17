@@ -1,24 +1,21 @@
-import os
 import numpy as np
 import pytest
 
-from aiida_crystal17.tests import TEST_FILES
-from aiida_crystal17.parsers.raw.parse_fort34 import (parse_fort34, gui_file_write, get_centering_code,
-                                                      get_crystal_type_code, structure_to_symmetry)
+from aiida_crystal17.parsers.raw.parse_fort34 import (get_centering_code, get_crystal_type_code, gui_file_write,
+                                                      parse_fort34, structure_to_symmetry)
+from aiida_crystal17.tests import read_resource_text
 
 
-@pytest.mark.parametrize(
-    'gui_filename,num_symops,space_group',
-    (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
-     ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129), ('marcasite.crystal.gui', 8, 58),
-     ('pyrite.crystal.gui', 24, 205), ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15),
-     ('troilite-hex-p63mc.crystal.gui', 12, 186), ('troilite-hex-p63mmc.crystal.gui', 24, 194),
-     ('troilite-hexagonal.crystal.gui', 12, 190), ('troilite-mnp.crystal.gui', 8, 62)))
+@pytest.mark.parametrize('gui_filename,num_symops,space_group',
+                         (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
+                          ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129),
+                          ('marcasite.crystal.gui', 8, 58), ('pyrite.crystal.gui', 24, 205),
+                          ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15), ('troilite-hex-p63mc.crystal.gui', 12, 186),
+                          ('troilite-hex-p63mmc.crystal.gui', 24, 194), ('troilite-hexagonal.crystal.gui', 12, 190),
+                          ('troilite-mnp.crystal.gui', 8, 62)))
 def test_gui_file_read(gui_filename, num_symops, space_group):
-    path = os.path.join(TEST_FILES, 'gui', 'out', gui_filename)
-    with open(path) as handle:
-        lines = handle.read().splitlines()
-    structdata, symmdata = parse_fort34(lines)
+    content = read_resource_text('gui', 'out', gui_filename)
+    structdata, symmdata = parse_fort34(content.splitlines())
     assert len(symmdata['operations']) == num_symops
     assert symmdata['space_group'] == space_group
 
@@ -38,21 +35,19 @@ def test_symmetry_codes(hall_number, centering_code, crystal_code):
     assert get_centering_code(hall_number) == centering_code
 
 
-@pytest.mark.parametrize(
-    'gui_filename,num_symops,space_group',
-    (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
-     ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129), ('marcasite.crystal.gui', 8, 58),
-     ('pyrite.crystal.gui', 24, 205), ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15),
-     ('troilite-hex-p63mc.crystal.gui', 12, 186), ('troilite-hex-p63mmc.crystal.gui', 24, 194),
-     ('troilite-hexagonal.crystal.gui', 12, 190), ('troilite-mnp.crystal.gui', 8, 62)))
+@pytest.mark.parametrize('gui_filename,num_symops,space_group',
+                         (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
+                          ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129),
+                          ('marcasite.crystal.gui', 8, 58), ('pyrite.crystal.gui', 24, 205),
+                          ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15), ('troilite-hex-p63mc.crystal.gui', 12, 186),
+                          ('troilite-hex-p63mmc.crystal.gui', 24, 194), ('troilite-hexagonal.crystal.gui', 12, 190),
+                          ('troilite-mnp.crystal.gui', 8, 62)))
 def test_structure_to_symmetry(db_test_app, gui_filename, num_symops, space_group):
     """ we test that we can go round trip,
     reading a gui file and comparing the parsed symmetry to the computed one
     """
-    path = os.path.join(TEST_FILES, 'gui', 'out', gui_filename)
-    with open(path) as handle:
-        lines = handle.read().splitlines()
-    structdata, symmdata = parse_fort34(lines)
+    content = read_resource_text('gui', 'out', gui_filename)
+    structdata, symmdata = parse_fort34(content.splitlines())
 
     symmdata2 = structure_to_symmetry(structdata)
     assert len(symmdata['operations']) == len(symmdata2['operations'])
@@ -61,21 +56,19 @@ def test_structure_to_symmetry(db_test_app, gui_filename, num_symops, space_grou
     assert symmdata['centring_code'] == symmdata2['centring_code']
 
 
-@pytest.mark.parametrize(
-    'gui_filename,num_symops,space_group',
-    (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
-     ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129), ('marcasite.crystal.gui', 8, 58),
-     ('pyrite.crystal.gui', 24, 205), ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15),
-     ('troilite-hex-p63mc.crystal.gui', 12, 186), ('troilite-hex-p63mmc.crystal.gui', 24, 194),
-     ('troilite-hexagonal.crystal.gui', 12, 190), ('troilite-mnp.crystal.gui', 8, 62)))
+@pytest.mark.parametrize('gui_filename,num_symops,space_group',
+                         (('cubic-rocksalt.crystal.gui', 48, 225), ('cubic-zincblende.crystal.gui', 24, 216),
+                          ('greigite.crystal.gui', 48, 227), ('mackinawite.crystal.gui', 16, 129),
+                          ('marcasite.crystal.gui', 8, 58), ('pyrite.crystal.gui', 24, 205),
+                          ('pyrrhotite-4c-monoclinic.crystal.gui', 4, 15), ('troilite-hex-p63mc.crystal.gui', 12, 186),
+                          ('troilite-hex-p63mmc.crystal.gui', 24, 194), ('troilite-hexagonal.crystal.gui', 12, 190),
+                          ('troilite-mnp.crystal.gui', 8, 62)))
 def test_structure_to_symmetry_operations(db_test_app, gui_filename, num_symops, space_group):
     """ we test that we can go round trip,
     reading a gui file and comparing the parsed symmetry to the computed one
     """
-    path = os.path.join(TEST_FILES, 'gui', 'out', gui_filename)
-    with open(path) as handle:
-        lines = handle.read().splitlines()
-    structdata, symmdata = parse_fort34(lines)
+    content = read_resource_text('gui', 'out', gui_filename)
+    structdata, symmdata = parse_fort34(content.splitlines())
 
     symmdata2 = structure_to_symmetry(structdata, as_cartesian=True)
     assert len(symmdata['operations']) == len(symmdata2['operations'])

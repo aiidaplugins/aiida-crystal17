@@ -9,7 +9,7 @@ import six
 
 
 def get_path_to_executable(executable):
-    """ Get path to local executable.
+    """Get path to local executable.
 
     :param executable: Name of executable in the $PATH variable
     :type executable: str
@@ -28,14 +28,13 @@ def get_path_to_executable(executable):
     if path is None:
         path = distutils.spawn.find_executable(executable)
     if path is None:
-        raise ValueError(
-            "{} executable not found in PATH.".format(executable))
+        raise ValueError('{} executable not found in PATH.'.format(executable))
 
     return os.path.abspath(path)
 
 
 def get_or_create_local_computer(work_directory, name='localhost'):
-    """Retrieve or setup a local computer
+    """Retrieve or setup a local computer.
 
     Parameters
     ----------
@@ -55,14 +54,13 @@ def get_or_create_local_computer(work_directory, name='localhost'):
     try:
         computer = Computer.objects.get(name=name)
     except NotExistent:
-        computer = Computer(
-            name=name,
-            hostname='localhost',
-            description=('localhost computer, '
-                         'set up by aiida_crystal17 tests'),
-            transport_type='local',
-            scheduler_type='direct',
-            workdir=os.path.abspath(work_directory))
+        computer = Computer(name=name,
+                            hostname='localhost',
+                            description=('localhost computer, '
+                                         'set up by aiida_crystal17 tests'),
+                            transport_type='local',
+                            scheduler_type='direct',
+                            workdir=os.path.abspath(work_directory))
         computer.store()
         computer.configure()
 
@@ -70,7 +68,7 @@ def get_or_create_local_computer(work_directory, name='localhost'):
 
 
 def get_or_create_code(entry_point, computer, executable, exec_path=None):
-    """Setup code on localhost computer"""
+    """Setup code on localhost computer."""
     from aiida.orm import Code, Computer
     from aiida.common import NotExistent
 
@@ -78,8 +76,7 @@ def get_or_create_code(entry_point, computer, executable, exec_path=None):
         computer = Computer.objects.get(name=computer)
 
     try:
-        code = Code.objects.get(
-            label='{}-{}@{}'.format(entry_point, executable, computer.name))
+        code = Code.objects.get(label='{}-{}@{}'.format(entry_point, executable, computer.name))
     except NotExistent:
         if exec_path is None:
             exec_path = get_path_to_executable(executable)
@@ -87,15 +84,17 @@ def get_or_create_code(entry_point, computer, executable, exec_path=None):
             input_plugin_name=entry_point,
             remote_computer_exec=[computer, exec_path],
         )
-        code.label = '{}-{}@{}'.format(
-            entry_point, executable, computer.name)
+        code.label = '{}-{}@{}'.format(entry_point, executable, computer.name)
         code.store()
 
     return code
 
 
-def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mpi=False,
-                         num_mpiprocs_per_machine=1, dry_run=False):
+def get_default_metadata(max_num_machines=1,
+                         max_wallclock_seconds=1800,
+                         with_mpi=False,
+                         num_mpiprocs_per_machine=1,
+                         dry_run=False):
     """
     Return an instance of the metadata dictionary with the minimally required parameters
     for a CalcJob and set to default values unless overridden
@@ -116,27 +115,25 @@ def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mp
             'max_wallclock_seconds': int(max_wallclock_seconds),
             'withmpi': with_mpi
         },
-        'dry_run': dry_run}
-
-
-def sanitize_calc_info(calc_info):
-    """ convert a CalcInfo object to a regular dict,
-    with no run specific data (i.e. uuids or folder paths)"""
-    calc_info_dict = dict(calc_info)
-    calc_info_dict.pop("uuid", None)
-    code_info_dicts = [dict(c) for c in calc_info_dict.pop("codes_info")]
-    [c.pop("code_uuid", None) for c in code_info_dicts]
-    calc_info_dict = {
-        k: sorted([v[-1] if isinstance(v, (tuple, list)) else v for v in vs])
-        for k, vs in calc_info_dict.items()}
-    return {
-        "calc_info": calc_info_dict,
-        "code_infos": code_info_dicts
+        'dry_run': dry_run
     }
 
 
+def sanitize_calc_info(calc_info):
+    """Convert a CalcInfo object to a regular dict,
+    with no run specific data (i.e. uuids or folder paths)"""
+    calc_info_dict = dict(calc_info)
+    calc_info_dict.pop('uuid', None)
+    code_info_dicts = [dict(c) for c in calc_info_dict.pop('codes_info')]
+    [c.pop('code_uuid', None) for c in code_info_dicts]
+    calc_info_dict = {
+        k: sorted([v[-1] if isinstance(v, (tuple, list)) else v for v in vs]) for k, vs in calc_info_dict.items()
+    }
+    return {'calc_info': calc_info_dict, 'code_infos': code_info_dicts}
+
+
 # TODO this can be removed once aiidateam/aiida-core#3061 is implemented
-def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder=None):
+def parse_from_node(cls, node, store_provenance=True, retrieved_temp=None):
     """Parse the outputs directly from the `CalcJobNode`.
 
     If `store_provenance` is set to False, a `CalcFunctionNode` will still be generated, but it will not be stored.
@@ -169,9 +166,9 @@ def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder
 
         :param kwargs: keyword arguments that are passed to `Parser.parse` after it has been constructed
         """
-        if "retrieved_temporary_folder" in kwargs:
-            string = kwargs.pop("retrieved_temporary_folder").value
-            kwargs["retrieved_temporary_folder"] = string
+        if 'retrieved_temporary_folder' in kwargs:
+            string = kwargs.pop('retrieved_temporary_folder').value
+            kwargs['retrieved_temporary_folder'] = string
 
         exit_code = parser.parse(**kwargs)
         outputs = parser.outputs
@@ -189,13 +186,14 @@ def parse_from_node(cls, node, store_provenance=True, retrieved_temporary_folder
 
     inputs = {'metadata': {'store_provenance': store_provenance}}
     inputs.update(parser.get_outputs_for_parsing())
-    if retrieved_temporary_folder is not None:
-        inputs["retrieved_temporary_folder"] = Str(retrieved_temporary_folder)
+    if retrieved_temp is not None:
+        inputs['retrieved_temporary_folder'] = Str(retrieved_temp)
 
     return parse_calcfunction.run_get_node(**inputs)
 
 
 class AiidaTestApp(object):
+
     def __init__(self, work_directory, executable_map, environment=None):
         """a class providing methods for testing purposes
 
@@ -235,36 +233,27 @@ class AiidaTestApp(object):
         try:
             executable = self._executables[entry_point]
         except KeyError:
-            raise KeyError(
-                "Entry point {} not recognized. Allowed values: {}".format(
-                    entry_point, self._executables.keys()))
+            raise KeyError('Entry point {} not recognized. Allowed values: {}'.format(
+                entry_point, self._executables.keys()))
 
         return get_or_create_code(entry_point, computer, executable)
 
     @staticmethod
-    def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800,
-                             with_mpi=False, dry_run=False):
-        return get_default_metadata(max_num_machines, max_wallclock_seconds,
-                                    with_mpi, dry_run=dry_run)
+    def get_default_metadata(max_num_machines=1, max_wallclock_seconds=1800, with_mpi=False, dry_run=False):
+        return get_default_metadata(max_num_machines, max_wallclock_seconds, with_mpi, dry_run=dry_run)
 
     @staticmethod
-    def parse_from_node(entry_point_name, node, retrieved_temporary_folder=None):
-        """load a parser class
+    def parse_from_node(entry_point_name, node, retrieved_temp=None):
+        """Parse the outputs directly from the `CalcJobNode`.
 
         Parameters
         ----------
         entry_point_name : str
             entry point name of the parser class
 
-        Returns
-        -------
-        aiida.parsers.parser.Parser
-
         """
         from aiida.plugins import ParserFactory
-        return parse_from_node(
-            ParserFactory(entry_point_name), node,
-            retrieved_temporary_folder=retrieved_temporary_folder)
+        return parse_from_node(ParserFactory(entry_point_name), node, retrieved_temp=retrieved_temp)
 
     @staticmethod
     def get_data_node(entry_point_name, **kwargs):
@@ -296,10 +285,14 @@ class AiidaTestApp(object):
         from aiida.plugins import CalculationFactory
         return CalculationFactory(entry_point_name)
 
-    def generate_calcjob_node(self, entry_point_name, retrieved=None,
+    def generate_calcjob_node(self,
+                              entry_point_name,
+                              retrieved=None,
                               computer_name='localhost',
-                              options=None, mark_completed=False,
-                              remote_path=None, input_nodes=None):
+                              options=None,
+                              mark_completed=False,
+                              remote_path=None,
+                              input_nodes=None):
         """Fixture to generate a mock `CalcJobNode` for testing parsers.
 
         Parameters
@@ -332,16 +325,13 @@ class AiidaTestApp(object):
 
         process = self.get_calc_cls(entry_point_name)
         computer = self.get_or_create_computer(computer_name)
-        entry_point = format_entry_point_string(
-            'aiida.calculations', entry_point_name)
+        entry_point = format_entry_point_string('aiida.calculations', entry_point_name)
 
         calc_node = CalcJobNode(computer=computer, process_type=entry_point)
         spec_options = process.spec().inputs['metadata']['options']
         # TODO post v1.0.0b2, this can be replaced with process.spec_options
-        calc_node.set_options({
-            k: v.default for k, v in spec_options.items() if v.has_default()})
-        calc_node.set_option('resources', {'num_machines': 1,
-                                           'num_mpiprocs_per_machine': 1})
+        calc_node.set_options({k: v.default for k, v in spec_options.items() if v.has_default()})
+        calc_node.set_option('resources', {'num_machines': 1, 'num_mpiprocs_per_machine': 1})
         calc_node.set_option('max_wallclock_seconds', 1800)
 
         if options:
@@ -358,22 +348,18 @@ class AiidaTestApp(object):
                     in_node_map = {None: in_node_map}
                 for sublabel, in_node in in_node_map.items():
                     in_node.store()
-                    link_label = label if sublabel is None else "{}__{}".format(label, sublabel)
-                    calc_node.add_incoming(
-                        in_node, link_type=LinkType.INPUT_CALC, link_label=link_label)
+                    link_label = label if sublabel is None else '{}__{}'.format(label, sublabel)
+                    calc_node.add_incoming(in_node, link_type=LinkType.INPUT_CALC, link_label=link_label)
 
         calc_node.store()
 
         if retrieved is not None:
-            retrieved.add_incoming(
-                calc_node, link_type=LinkType.CREATE, link_label='retrieved')
+            retrieved.add_incoming(calc_node, link_type=LinkType.CREATE, link_label='retrieved')
             retrieved.store()
 
         if remote_path is not None:
-            remote = RemoteData(remote_path=remote_path,
-                                computer=computer)
-            remote.add_incoming(
-                calc_node, link_type=LinkType.CREATE, link_label="remote_folder")
+            remote = RemoteData(remote_path=remote_path, computer=computer)
+            remote.add_incoming(calc_node, link_type=LinkType.CREATE, link_label='remote_folder')
             remote.store()
 
         return calc_node
@@ -393,7 +379,7 @@ class AiidaTestApp(object):
 
     @staticmethod
     def generate_calcinfo(entry_point_name, folder, inputs=None):
-        """generate a `CalcInfo` instance for testing calculation jobs.
+        """Generate a `CalcInfo` instance for testing calculation jobs.
 
         A new `CalcJob` process instance is instantiated,
         and `prepare_for_submission` is called to populate the supplied folder,
@@ -427,6 +413,7 @@ class AiidaTestApp(object):
         then return a sanitized version of the workchain context for testing
         """
         import yaml
+        from aiida.engine import ProcessBuilder
         from aiida.engine.utils import instantiate_process
         from aiida.common.extendeddicts import AttributeDict
         from aiida.manage.manager import get_manager
@@ -447,7 +434,10 @@ class AiidaTestApp(object):
         manager = get_manager()
         runner = manager.get_runner()
 
-        wkchain = instantiate_process(runner, wkchain_cls, **inputs)
+        if isinstance(inputs, ProcessBuilder):
+            wkchain = instantiate_process(runner, inputs)
+        else:
+            wkchain = instantiate_process(runner, wkchain_cls, **inputs)
         step_outcomes = []
         for step in outline_steps:
             step_outcomes.append(getattr(wkchain, step)())
@@ -456,37 +446,32 @@ class AiidaTestApp(object):
         return wkchain, step_outcomes, yaml.load(context)
 
     @staticmethod
-    def check_calculation(
-            calc_node, expected_outgoing_labels,
-            error_include=(("results", "errors"),
-                           ("results", "parser_errors"))):
-        """ check a calculation has completed successfully """
+    def check_calculation(calc_node,
+                          expected_outgoing_labels,
+                          error_include=(('results', 'errors'), ('results', 'parser_errors'))):
+        """Check a calculation has completed successfully."""
         from aiida.cmdline.utils.common import get_calcjob_report
-        exit_status = calc_node.get_attribute("exit_status")
-        proc_state = calc_node.get_attribute("process_state")
-        if exit_status != 0 or proc_state != "finished":
+        exit_status = calc_node.get_attribute('exit_status')
+        proc_state = calc_node.get_attribute('process_state')
+        if exit_status != 0 or proc_state != 'finished':
             yaml = YAML()
             stream = StringIO()
             yaml.dump(calc_node.attributes, stream=stream)
-            message = (
-                "Process Failed:\n{}".format(stream.getvalue()))
+            message = ('Process Failed:\n{}'.format(stream.getvalue()))
             out_link_manager = calc_node.get_outgoing()
             out_links = out_link_manager.all_link_labels()
-            message += "\noutgoing_nodes: {}".format(out_links)
+            message += '\noutgoing_nodes: {}'.format(out_links)
             for name, attribute in error_include:
                 if name not in out_links:
                     continue
-                value = out_link_manager.get_node_by_label(
-                    name).get_attribute(attribute, None)
+                value = out_link_manager.get_node_by_label(name).get_attribute(attribute, None)
                 if value is None:
                     continue
-                message += "\n{}.{}: {}".format(name, attribute, value)
-            message += "\n\nReport:\n{}".format(get_calcjob_report(calc_node))
+                message += '\n{}.{}: {}'.format(name, attribute, value)
+            message += '\n\nReport:\n{}'.format(get_calcjob_report(calc_node))
             raise AssertionError(message)
 
         link_labels = calc_node.get_outgoing().all_link_labels()
         for outgoing in expected_outgoing_labels:
             if outgoing not in link_labels:
-                raise AssertionError(
-                    "missing outgoing node link '{}': {}".format(
-                        outgoing, link_labels))
+                raise AssertionError("missing outgoing node link '{}': {}".format(outgoing, link_labels))

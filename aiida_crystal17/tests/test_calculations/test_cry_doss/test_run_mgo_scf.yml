@@ -14,7 +14,6 @@ calc:
   max_wallclock_seconds: 30
   mpirun_extra_params: []
   output_isovalue_fname: fort.25
-  output_main_file_name: main.out
   parser_name: crystal17.doss
   prepend_text: ''
   process_label: CryDossCalculation
@@ -32,24 +31,52 @@ calc:
   scheduler_stderr: _scheduler-stderr.txt
   scheduler_stdout: _scheduler-stdout.txt
   sealed: true
-  symlink_wf: false
+  stdout_file_name: main.out
   version:
     core: 1.0.0b5
-    plugin: 0.9.2b5
+    plugin: 0.10.0b5
   withmpi: false
 results:
   energy_max: 10.4040617
   energy_min: -10.2020112
-  energy_units: eV
   errors: []
   fermi_energy: -3.9864953
+  header:
+    crystal_subversion: 1.0.1
+    crystal_version: 17
+  newk:
+    gilat_net: 36
+    k_points:
+    - 18
+    - 18
+    - 18
+    n_kpoints_gilat: 1240
+    n_kpoints_ibz: 195
   norbitals_total: 14
   npts: 102
   parser_class: CryDossParser
   parser_errors: []
-  parser_version: 0.9.2b5
-  parser_warnings: []
+  parser_exceptions: []
+  parser_version: 0.10.0b5
   spin: false
   system_type: closed shell, insulating system
-  units_conversion: CODATA2014
+  units:
+    conversion: CODATA2014
+    energy: eV
   warnings: []
+  wf_input:
+    energy_fermi: -4.00007374494
+    energy_kinetic: 7268.9523469192
+    energy_total: -7380.2216051903
+    gilat_net: 8
+    k_points:
+    - 8
+    - 8
+    - 8
+    n_ao: 14
+    n_atoms: 2
+    n_core_el: 12
+    n_electrons: 20
+    n_kpoints_ibz: 29
+    n_shells: 5
+    n_symops: 48

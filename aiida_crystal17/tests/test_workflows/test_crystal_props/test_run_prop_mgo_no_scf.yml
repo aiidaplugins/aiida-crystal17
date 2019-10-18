@@ -3,14 +3,21 @@ calc_node:
   process_label: CryPropertiesWorkChain
   process_state: finished
   sealed: true
-  stepper_state_info: 2:check_doss_calculation
+  stepper_state_info: 3:check_prop_calculations
 incoming:
 - doss__code
 - doss__parameters
+- ech3__code
+- ech3__parameters
 - wf_folder
 outgoing:
+- calc_doss
+- calc_ech3
 - doss__arrays
 - doss__remote_folder
 - doss__results
 - doss__retrieved
-- doss_calc
+- ech3__charge
+- ech3__remote_folder
+- ech3__results
+- ech3__retrieved

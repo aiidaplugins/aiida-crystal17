@@ -13,7 +13,8 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
+"""Parse the stdout content from a CRYSTAL SCF/optimization computation.
+
 Basic outline of parsing sections:
 
 ::
@@ -71,9 +72,20 @@ KNOWN_ERRORS = (
     ('SCF abnormal end', 'ERROR_SCF_ABNORMAL_END'),  # catch all error
     ('MPI_Abort', 'ERROR_MPI_ABORT'))
 
+SYSTEM_INFO_REGEXES = (
+    ('n_atoms', re.compile(r'\sN. OF ATOMS PER CELL\s*(\d+)', re.DOTALL)),
+    ('n_shells', re.compile(r'\sNUMBER OF SHELLS\s*(\d+)', re.DOTALL)),
+    ('n_ao', re.compile(r'\sNUMBER OF AO\s*(\d+)', re.DOTALL)),
+    ('n_electrons', re.compile(r'\sN. OF ELECTRONS PER CELL\s*(\d+)', re.DOTALL)),
+    ('n_core_el', re.compile(r'\sCORE ELECTRONS PER CELL\s*(\d+)', re.DOTALL)),
+    ('n_symops', re.compile(r'\sN. OF SYMMETRY OPERATORS\s*(\d+)', re.DOTALL)),
+    ('n_kpoints_ibz', re.compile(r'\sNUMBER OF K POINTS IN THE IBZ\s*(\d+)', re.DOTALL)),
+    ('n_kpoints_gilat', re.compile(r'\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d+)', re.DOTALL)),
+)
+
 
 def read_crystal_stdout(content):
-
+    """Parse the stdout content from a CRYSTAL SCF/optimization computation to a dict."""
     output = {
         'units': {
             'conversion': 'CODATA2014',
@@ -87,11 +99,9 @@ def read_crystal_stdout(content):
         'parser_exceptions': []
     }
 
-    # remove MPI statuses,
-    # which can get mixed with the start of the program stdout and corrupt the output
-    # TODO: removing these will affect the reporting of line numbers in errors
-    regex = re.compile('(\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING\\s*\n)+')
-    content = re.sub(regex, '\n', content)
+    # strip non program output
+    content, warnings = strip_non_program_output(content)
+    output['warnings'] += warnings
     lines = content.splitlines()
 
     if not lines:
@@ -120,13 +130,13 @@ def read_crystal_stdout(content):
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    # parse the initial geometry input
+    # parse the initial geometry input (before any editing)
     outcome = parse_section(parse_geometry_input, lines, lineno, output, 'geometry_input')
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    # parse the calculation setup and initial geometry
+    # parse the calculation setup and initial geometry (after any editing)
     outcome = parse_section(parse_calculation_setup, lines, lineno, output, None)
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
@@ -177,6 +187,32 @@ def read_crystal_stdout(content):
             lineno = outcome.next_lineno
 
     return assign_exit_code(output)
+
+
+def strip_non_program_output(content):
+    """Remove MPI statuses, and floating point exceptions.
+
+    These can get mixed with the program stdout/stderr and corrupt the output
+
+    Parameters
+    ----------
+    content: str
+
+    Returns
+    -------
+    str: content
+    list[str]: warnings
+
+    """
+    # TODO: removing these will affect the reporting of line numbers in errors
+    regex = re.compile('^\\s*PROCESS\\s*\\d+\\s*OF\\s*\\d+\\s*WORKING[^\\S\n\r]*(\r\n|\r|\n)', re.MULTILINE)
+    content = re.sub(regex, '', content)
+    regex = re.compile(
+        '^(\\s*Note\\:\\sThe\\sfollowing\\sfloating\\-point\\sexceptions\\sare\\ssignalling.+)(\r\n|\r|\n)',
+        re.MULTILINE)
+    warnings = [l.strip() for l, n in re.findall(regex, content)]
+    content = re.sub(regex, '', content)
+    return content, warnings
 
 
 def parse_section(func, lines, initial_lineno, output, key_name):
@@ -250,7 +286,7 @@ def assign_exit_code(output):
 
 
 def initial_parse(lines):
-    """ scan the file for errors, and find the final elapsed time value """
+    """Scan the file for errors, and find the final elapsed time value."""
     errors = []
     warnings = []
     parser_errors = []
@@ -272,7 +308,9 @@ def initial_parse(lines):
         if 'WARNING' in line.upper():
             warnings.append(line.strip())
         elif 'ERROR' in line:
-            errors.append(line.strip())
+            # TODO ignore errors before program execution (e.g. in mpiexec setup)?
+            if 'open_hca: getaddr_netdev ERROR' not in line:
+                errors.append(line.strip())
         elif 'SCF abnormal end' in line:  # only present when run using runcry
             errors.append(line.strip())
         elif 'MPI_Abort' in line:
@@ -282,8 +320,6 @@ def initial_parse(lines):
                 mpi_abort = True
         elif 'CONVERGENCE TESTS UNSATISFIED' in line.upper():
             errors.append(line.strip())
-        elif 'Note: The following floating-point exceptions are signalling:' in line:
-            warnings.append(line.strip())
         elif 'TELAPSE' in line:
             telapse_line = lineno
 
@@ -328,7 +364,7 @@ def initial_parse(lines):
 
 
 def parse_pre_header(lines, initial_lineno=0):
-    """ parse any data before the program header
+    """Parse any data before the program header
 
     note this is only for runs using runcry (not straight from the binary)
 
@@ -366,7 +402,7 @@ def parse_pre_header(lines, initial_lineno=0):
 
 
 def parse_calculation_header(lines, initial_lineno):
-    """ parse calculation header
+    """Parse calculation header
 
     Parameters
     ----------
@@ -386,11 +422,11 @@ def parse_calculation_header(lines, initial_lineno):
             data['crystal_version'] = int(re.findall(r'\s\s\s\s\sCRYSTAL(\d{2})', line)[0])
         if re.findall('public\\s\\:\\s(.+)\\s\\-', line):
             data['crystal_subversion'] = re.findall('public\\s\\:\\s(.+)\\s\\-', line)[0]
-    return ParsedSection(initial_lineno + i, data, "couldn't find end of program header")
+    return ParsedSection(initial_lineno, data, "couldn't find end of program header")
 
 
 def parse_geometry_input(lines, initial_lineno):
-    """ parse geometry input data
+    """Parse geometry input data.
 
     Parameters
     ----------
@@ -408,11 +444,11 @@ def parse_geometry_input(lines, initial_lineno):
         if line.strip().startswith('* GEOMETRY EDITING'):
             return ParsedSection(lineno + i, data, None)
         # TODO parse relevant data
-    return ParsedSection(lineno + i, data, "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
+    return ParsedSection(lineno, data, "couldn't find end of geometry input (denoted * GEOMETRY EDITING)")
 
 
 def parse_calculation_setup(lines, initial_lineno):
-    """ parse initial setup data (starting after intital geometry input)
+    """Parse initial setup data (starting after initial geometry input).
 
     Parameters
     ----------
@@ -454,27 +490,17 @@ def parse_calculation_setup(lines, initial_lineno):
     if end_lineno is None:
         return ParsedSection(curr_lineno, data, "couldn't find start of initial scf calculation")
 
-    regexes = {
-        'n_atoms': re.compile(r'\sN. OF ATOMS PER CELL\s*(\d*)', re.DOTALL),
-        'n_shells': re.compile(r'\sNUMBER OF SHELLS\s*(\d*)', re.DOTALL),
-        'n_ao': re.compile(r'\sNUMBER OF AO\s*(\d*)', re.DOTALL),
-        'n_electrons': re.compile(r'\sN. OF ELECTRONS PER CELL\s*(\d*)', re.DOTALL),
-        'n_core_el': re.compile(r'\sCORE ELECTRONS PER CELL\s*(\d*)', re.DOTALL),
-        'n_symops': re.compile(r'\sN. OF SYMMETRY OPERATORS\s*(\d*)', re.DOTALL),
-        'n_kpoints_ibz': re.compile(r'\sNUMBER OF K POINTS IN THE IBZ\s*(\d*)', re.DOTALL),
-        'n_kpoints_gilat': re.compile(r'\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d*)', re.DOTALL),
-    }
     content = '\n'.join(lines[initial_lineno:end_lineno])
-    for name, regex in regexes.items():
-        num = regex.search(content)
-        if num is not None:
-            data['calculation'][name] = int(num.groups()[0])
+    for name, regex in SYSTEM_INFO_REGEXES:
+        match = regex.search(content)
+        if match is not None:
+            data['calculation'][name] = int(match.groups()[0])
 
     return ParsedSection(curr_lineno, data, None)
 
 
 def parse_geometry_section(data, initial_lineno, line, lines):
-    """ parse a section of geometry related variables
+    """Parse a section of geometry related variables.
 
     Parameters
     ----------
@@ -547,10 +573,9 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 raise IOError('was expecting A B C ALPHA BETA GAMMA on line:'
                               ' {0}, got: {1}'.format(initial_lineno + 1, lines[initial_lineno + 1]))
             data[field] = edict.merge([
-                data.get(field, {}),
-                {
+                data.get(field, {}), {
                     'cell_parameters':
-                    dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], split_numbers(lines[initial_lineno + 2])))
+                        dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], split_numbers(lines[initial_lineno + 2])))
                 }
             ])
         elif fnmatch(line, pattern2):
@@ -563,8 +588,8 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                     periodic = [True, False, False]
                 elif fnmatch(lines[initial_lineno + 1].strip(), 'ATOM*X(ANGSTROM)*Y(ANGSTROM)*Z(ANGSTROM)*'):
                     periodic = [False, False, False]
-                    cell_params = dict(
-                        zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'], [500., 500., 500., 90., 90., 90.]))
+                    cell_params = dict(zip(['a', 'b', 'c', 'alpha', 'beta', 'gamma'],
+                                           [500., 500., 500., 90., 90., 90.]))
                     data[field] = edict.merge([data.get(field, {}), {'cell_parameters': cell_params}])
                 else:
                     raise IOError('was expecting ATOM X Y Z (in units of ANGSTROM or fractional) on line:'
@@ -578,7 +603,7 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 a, b, c, alpha, beta, gamma = [cell[p] for p in ['a', 'b', 'c', 'alpha', 'beta', 'gamma']]
 
             curr_lineno = initial_lineno + 3
-            atom_data = {'ids': [], 'assymetric': [], 'atomic_numbers': [], 'symbols': [], 'fcoords': []}
+            atom_data = {'ids': [], 'assymetric': [], 'atomic_numbers': [], 'symbols': []}
             atom_data['pbc'] = periodic
             while lines[curr_lineno].strip() and not lines[curr_lineno].strip()[0].isalpha():
                 fields = lines[curr_lineno].strip().split()
@@ -587,14 +612,18 @@ def parse_geometry_section(data, initial_lineno, line, lines):
                 atom_data['atomic_numbers'].append(int(fields[2]))
                 atom_data['symbols'].append(fields[3].lower().capitalize())
                 if all(periodic):
-                    atom_data['fcoords'].append([float(fields[4]), float(fields[5]), float(fields[6])])
+                    atom_data.setdefault('fcoords', []).append([float(fields[4]), float(fields[5]), float(fields[6])])
                 elif periodic == [True, True, False] and alpha == 90 and beta == 90:
-                    atom_data['fcoords'].append([float(fields[4]), float(fields[5]), float(fields[6]) / c])
-                # TODO other periodic types (1D, 0D)
+                    atom_data.setdefault('fcoords',
+                                         []).append([float(fields[4]),
+                                                     float(fields[5]),
+                                                     float(fields[6]) / c])
+                elif periodic == [False, False, False]:
+                    atom_data.setdefault('ccoords', []).append([float(fields[4]), float(fields[5]), float(fields[6])])
+
+                # TODO other periodic types (1D)
                 curr_lineno += 1
 
-            if not atom_data['fcoords']:
-                atom_data.pop('fcoords')
             data[field] = edict.merge([data.get(field, {}), atom_data])
 
     # TODO These coordinates are present in initial and final optimized sections,
@@ -608,6 +637,9 @@ def parse_geometry_section(data, initial_lineno, line, lines):
         atom_data = {'ids': [], 'atomic_numbers': [], 'symbols': [], 'ccoords': []}
         while lines[curr_lineno].strip() and not lines[curr_lineno].strip()[0].isalpha():
             fields = lines[curr_lineno].strip().split()
+            if len(fields) < 6:
+                raise IOError('was expecting ID ANUM SYMBOL X Y Z on line:'
+                              ' {0}, got: {1}'.format(curr_lineno, lines[curr_lineno]))
             atom_data['ids'].append(fields[0])
             atom_data['atomic_numbers'].append(int(fields[1]))
             atom_data['symbols'].append(fields[2].lower().capitalize())
@@ -817,7 +849,7 @@ def parse_optimisation(lines, initial_lineno):
 
                 if not fnmatch(line, '*E(AU)*'):
                     raise IOError('was expecting units in a.u. on line:' ' {0}, got: {1}'.format(curr_lineno, line))
-                data = [{'energy': {'total_corrected': convert_units(split_numbers(lines[-1])[0], 'hartree', 'eV')}}]
+                data = [{'energy': {'total_corrected': convert_units(split_numbers(line)[0], 'hartree', 'eV')}}]
 
                 return ParsedSection(curr_lineno, data)
 
@@ -851,9 +883,9 @@ def parse_optimisation(lines, initial_lineno):
         if 'CRYSTAL - SCF - TYPE OF CALCULATION :' in line:
             if scf_start_no is not None:
                 return ParsedSection(
-                    curr_lineno,
-                    opt_cycles, "found two lines starting scf ('CRYSTAL - SCF - ') in opt step {0}:".format(
-                        len(opt_cycles)) + ' {0} and {1}'.format(scf_start_no, curr_lineno))
+                    curr_lineno, opt_cycles,
+                    "found two lines starting scf ('CRYSTAL - SCF - ') in opt step {0}:".format(len(opt_cycles)) +
+                    ' {0} and {1}'.format(scf_start_no, curr_lineno))
             scf_start_no = curr_lineno
         elif 'SCF ENDED' in line:
             if 'CONVERGE' not in line:
@@ -953,8 +985,8 @@ def parse_band_gaps(lines, initial_lineno):
                                      'found a band gap of unknown format at line {0}: {1}'.format(curr_lineno, line))
             if bgtype in band_gaps:
                 return ParsedSection(
-                    initial_lineno, band_gaps, 'band gap data already contains {0} value before line {1}: {2}'.format(
-                        bgtype, curr_lineno, line))
+                    initial_lineno, band_gaps,
+                    'band gap data already contains {0} value before line {1}: {2}'.format(bgtype, curr_lineno, line))
             band_gaps[bgtype] = bgvalue
 
     return ParsedSection(initial_lineno, band_gaps)
@@ -977,41 +1009,65 @@ def parse_mulliken_analysis(lines, mulliken_indices):
 
     for i, indx in enumerate(mulliken_indices):
         name = lines[indx - 1].strip().lower()
+        key_name = name.replace(' ', '_')
         if not (name == 'ALPHA+BETA ELECTRONS'.lower() or name == 'ALPHA-BETA ELECTRONS'.lower()):
             return ParsedSection(
                 mulliken_indices[0], mulliken, 'was expecting mulliken to be alpha+beta or alpha-beta on line:'
                 ' {0}, got: {1}'.format(indx - 1, lines[indx - 1]))
 
-        mulliken[name.replace(' ', '_')] = {'ids': [], 'symbols': [], 'atomic_numbers': [], 'charges': []}
-
         if len(mulliken_indices) > i + 1:
             searchlines = lines[indx + 1:mulliken_indices[i + 1]]
         else:
             searchlines = lines[indx + 1:]
-        charge_line = None
+
+        data_ao = {}
+        data_shell = {}
+
         for j, line in enumerate(searchlines):
-            if fnmatch(line.strip(), '*ATOM*Z*CHARGE*SHELL*POPULATION*'):
+            if fnmatch(line.strip(), '*ATOM*Z*CHARGE*A.O.*POPULATION*'):
                 charge_line = j + 2
-                break
-        if charge_line is None:
-            continue
 
-        while searchlines[charge_line].strip() and not searchlines[charge_line].strip()[0].isalpha():
-            fields = searchlines[charge_line].strip().split()
-            # shell population can wrap multiple lines, the one we want has the label in it
-            if len(fields) != len(split_numbers(searchlines[charge_line])):
-                mulliken[name.replace(' ', '_')]['ids'].append(int(fields[0]))
-                mulliken[name.replace(' ', '_')]['symbols'].append(fields[1].lower().capitalize())
-                mulliken[name.replace(' ', '_')]['atomic_numbers'].append(int(fields[2]))
-                mulliken[name.replace(' ', '_')]['charges'].append(float(fields[3]))
+                while searchlines[charge_line].strip() and not searchlines[charge_line].strip()[0].isalpha():
+                    fields = searchlines[charge_line].strip().split()
+                    # a.o. population can wrap multiple lines
+                    if len(fields) != len(split_numbers(searchlines[charge_line])):
+                        data_ao.setdefault('ids', []).append(int(fields[0]))
+                        data_ao.setdefault('symbols', []).append(fields[1].lower().capitalize())
+                        data_ao.setdefault('atomic_numbers', []).append(int(fields[2]))
+                        data_ao.setdefault('charges', []).append(float(fields[3]))
+                        data_ao.setdefault('aos', []).append([float(f) for f in fields[4:]])
+                    else:
+                        data_ao['aos'][-1].extend(split_numbers(searchlines[charge_line]))
 
-            charge_line += 1
+                    charge_line += 1
+
+            elif fnmatch(line.strip(), '*ATOM*Z*CHARGE*SHELL*POPULATION*'):
+                charge_line = j + 2
+
+                while searchlines[charge_line].strip() and not searchlines[charge_line].strip()[0].isalpha():
+                    fields = searchlines[charge_line].strip().split()
+                    # shell population can wrap multiple lines
+                    if len(fields) != len(split_numbers(searchlines[charge_line])):
+                        data_shell.setdefault('ids', []).append(int(fields[0]))
+                        data_shell.setdefault('symbols', []).append(fields[1].lower().capitalize())
+                        data_shell.setdefault('atomic_numbers', []).append(int(fields[2]))
+                        data_shell.setdefault('charges', []).append(float(fields[3]))
+                        data_shell.setdefault('shells', []).append([float(f) for f in fields[4:]])
+                    else:
+                        data_shell['shells'][-1].extend(split_numbers(searchlines[charge_line]))
+
+                    charge_line += 1
+
+        # TODO check consistency of ids, ...
+        data_ao.update(data_shell)
+
+        mulliken[key_name] = data_ao
 
     return ParsedSection(mulliken_indices[0], mulliken)
 
 
 def extract_final_info(parsed_data):
-    """extract the final energies and primitive geometry/symmetry
+    """Extract the final energies and primitive geometry/symmetry
     from the relevant sections of the parse data
     (depending if it was an optimisation or not)
     """

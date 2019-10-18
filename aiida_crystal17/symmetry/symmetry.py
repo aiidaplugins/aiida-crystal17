@@ -182,13 +182,16 @@ def cartesian_to_frac(lattice, ccoords):
     return np.linalg.solve(np.array(lattice).T, np.array(ccoords).T).T.tolist()
 
 
-def prepare_for_spglib(structure):
+def prepare_for_spglib(structure, use_kinds=True):
     """ prepare an AiiDa Structure for parsing to spglib,
     labelling sites with the same **Kind** as equivalent
 
     Parameters
     ----------
     structure: aiida.StructureData
+    use_kinds: bool
+        if True use kind names to define inequivalent sites,
+        else use symbols
 
     Returns
     -------
@@ -203,14 +206,22 @@ def prepare_for_spglib(structure):
     lattice = structure.cell
     ccoords = [s.position for s in structure.sites]
     fcoords = cartesian_to_frac(lattice, ccoords)
-    kind2int_map = {name: i for i, name in enumerate(structure.get_kind_names())}
+
+    if use_kinds:
+        names = structure.get_kind_names()
+        site_names = structure.get_site_kindnames()
+    else:
+        names = list(structure.get_symbols_set())
+        site_names = [structure.get_kind(s.kind_name).symbol for s in structure.sites]
+
+    kind2int_map = {name: i for i, name in enumerate(names)}
     int2kind_map = {i: name for name, i in kind2int_map.items()}
-    inequivalent = [kind2int_map[name] for name in structure.get_site_kindnames()]
+    inequivalent = [kind2int_map[name] for name in site_names]
 
     return (lattice, fcoords, inequivalent), int2kind_map
 
 
-def compute_symmetry_dataset(structure, symprec, angle_tolerance):
+def compute_symmetry_dataset(structure, symprec, angle_tolerance, use_kinds=True):
     """ compute the symmetry of a Structure, with
     periodic boundary conditions in all axes, using spglib.
 
@@ -226,6 +237,9 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
         Symmetry search tolerance in the unit of angle degrees.
         If the value is negative or None, an internally optimized routine
         is used to judge symmetry.
+    use_kinds: bool
+        if True use kind names to define inequivalent sites,
+        else use symbols
 
     Returns
     -------
@@ -233,15 +247,16 @@ def compute_symmetry_dataset(structure, symprec, angle_tolerance):
         spglib symmetry dataset
 
     """
-    cell, int2kind_map = prepare_for_spglib(structure)
+    cell, int2kind_map = prepare_for_spglib(structure, use_kinds=use_kinds)
 
-    dataset = spglib.get_symmetry_dataset(
-        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    dataset = spglib.get_symmetry_dataset(cell,
+                                          symprec=symprec,
+                                          angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
 
     return dataset
 
 
-def compute_symmetry_dict(structure, symprec, angle_tolerance):
+def compute_symmetry_dict(structure, symprec, angle_tolerance, use_kinds=True):
     """ compute the symmetry of a Structure, with
     periodic boundary conditions in all axes, using spglib
 
@@ -257,6 +272,9 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
         Symmetry search tolerance in the unit of angle degrees.
         If the value is negative or None, an internally optimized routine
         is used to judge symmetry.
+    use_kinds: bool
+        if True use kind names to define inequivalent sites,
+        else use symbols
 
     Returns
     -------
@@ -264,10 +282,11 @@ def compute_symmetry_dict(structure, symprec, angle_tolerance):
         data required to create an AiiDA SymmetryData object
 
     """
-    cell, int2kind_map = prepare_for_spglib(structure)
+    cell, int2kind_map = prepare_for_spglib(structure, use_kinds=use_kinds)
 
-    dataset = spglib.get_symmetry_dataset(
-        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    dataset = spglib.get_symmetry_dataset(cell,
+                                          symprec=symprec,
+                                          angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
 
     operations = []
     for rotation, trans in zip(dataset['rotations'], dataset['translations']):
@@ -340,8 +359,9 @@ def find_primitive(structure, symprec, angle_tolerance):
 
     cell, int2kind_map = prepare_for_spglib(structure)
 
-    new_cell = spglib.find_primitive(
-        cell, symprec=symprec, angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    new_cell = spglib.find_primitive(cell,
+                                     symprec=symprec,
+                                     angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
     if new_cell is None:
         raise ValueError('standardization of cell failed')
 
@@ -386,12 +406,11 @@ def standardize_cell(structure, symprec, angle_tolerance, to_primitive=False, no
 
     cell, int2kind_map = prepare_for_spglib(structure)
 
-    new_cell = spglib.standardize_cell(
-        cell,
-        to_primitive=to_primitive,
-        no_idealize=no_idealize,
-        symprec=symprec,
-        angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
+    new_cell = spglib.standardize_cell(cell,
+                                       to_primitive=to_primitive,
+                                       no_idealize=no_idealize,
+                                       symprec=symprec,
+                                       angle_tolerance=-1 if angle_tolerance is None else angle_tolerance)
     if new_cell is None:
         raise ValueError('standardization of cell failed')
 
@@ -667,12 +686,11 @@ def convert_structure(structure, out_type):
         if isinstance(structure, structure_data_cls):
             return structure.get_ase()
         if isinstance(structure, dict):
-            return Atoms(
-                numbers=structure['atomic_numbers'],
-                cell=structure['lattice'],
-                positions=structure['ccoords'],
-                pbc=structure['pbc'],
-                tags=structure.get('equivalent', None))
+            return Atoms(numbers=structure['atomic_numbers'],
+                         cell=structure['lattice'],
+                         positions=structure['ccoords'],
+                         pbc=structure['pbc'],
+                         tags=structure.get('equivalent', None))
         raise TypeError('structure: {}'.format(structure))
     elif out_type == 'aiida':
         if isinstance(structure, structure_data_cls):
@@ -691,12 +709,11 @@ def convert_structure(structure, out_type):
                     struct.append_site(Site(position=ccoord, kind_name=kind.name))
                 return struct
             else:
-                atoms = Atoms(
-                    numbers=structure['atomic_numbers'],
-                    cell=structure['lattice'],
-                    positions=structure['ccoords'],
-                    pbc=structure['pbc'],
-                    tags=structure.get('equivalent', None))
+                atoms = Atoms(numbers=structure['atomic_numbers'],
+                              cell=structure['lattice'],
+                              positions=structure['ccoords'],
+                              pbc=structure['pbc'],
+                              tags=structure.get('equivalent', None))
                 return structure_data_cls(ase=atoms)
     raise ValueError('out_type: {}'.format(out_type))
 

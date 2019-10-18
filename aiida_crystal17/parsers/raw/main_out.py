@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-parse the main output file and create the required output nodes
-"""
+"""Parse the main output file and create the required output nodes."""
 from collections import Mapping
 import traceback
 from aiida_crystal17.symmetry import convert_structure
@@ -26,9 +24,7 @@ from aiida_crystal17.parsers.raw import crystal_stdout
 
 
 class OutputNodes(Mapping):
-    """
-    a mapping of output nodes, with attribute access
-    """
+    """A mapping of output nodes, with attribute access."""
 
     def __init__(self):
         self._dict = {'results': None, 'structure': None, 'symmetry': None}
@@ -84,7 +80,7 @@ class ParserResult(object):
 
 # pylint: disable=too-many-locals,too-many-statements
 def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
-    """ parse the main output file and create the required output nodes
+    """Parse the main output file and create the required output nodes.
 
     :param fileobj: handle to main output file
     :param parser_class: a string denoting the parser class
@@ -120,7 +116,6 @@ def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
     # TODO could also read .gui file for definitive final (primitive) geometry,
     # with symmetries
     # TODO could also read .SCFLOG, to get scf output for each opt step
-    # TODO could also read files in .optstory folder,
     # to get (primitive) geometries (+ symmetries) for each opt step
     # Note the above files are only available for optimisation runs
 
@@ -159,6 +154,7 @@ def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
     _extract_symmetry(final_info, init_settings, results_data, parser_result, exit_codes)
 
     if mulliken_analysis is not None:
+        # TODO output Mulliken analysis as separate ArrayData node
         _extract_mulliken(mulliken_analysis, results_data)
 
     parser_result.nodes.results = DataFactory('dict')(dict=results_data)
@@ -170,8 +166,7 @@ def parse_main_out(fileobj, parser_class, init_struct=None, init_settings=None):
 
 
 def _extract_symmetry(final_data, init_settings, param_data, parser_result, exit_codes):
-    """extract symmetry operations"""
-
+    """Extract symmetry operations."""
     if 'primitive_symmops' not in final_data:
         param_data['parser_errors'].append('primitive symmops were not found in the output file')
         parser_result.exit_code = exit_codes.ERROR_SYMMETRY_NOT_FOUND
@@ -189,14 +184,13 @@ def _extract_symmetry(final_data, init_settings, param_data, parser_result, exit
         #         "those input: {}".format(differences))
         #     parser_result.success = False
     else:
-        from aiida.plugins import DataFactory
         symmetry_data_cls = DataFactory('crystal17.symmetry')
         data_dict = {'operations': final_data['primitive_symmops'], 'basis': 'fractional', 'hall_number': None}
         parser_result.nodes.symmetry = symmetry_data_cls(data=data_dict)
 
 
 def _extract_structure(final_data, init_struct, results_data, parser_result, exit_codes):
-    """create a StructureData object of the final configuration"""
+    """Create a StructureData object of the final configuration."""
     if 'primitive_cell' not in final_data:
         results_data['parser_errors'].append('final primitive cell was not found in the output file')
         parser_result.exit_code = exit_codes.ERROR_PARSING_STDOUT
@@ -207,9 +201,19 @@ def _extract_structure(final_data, init_struct, results_data, parser_result, exi
     results_data['number_of_atoms'] = len(cell_data['atomic_numbers'])
     results_data['number_of_assymetric'] = sum(cell_data['assymetric'])
 
-    cell_vectors = []
-    for n in 'a b c'.split():
-        cell_vectors.append(cell_data['cell_vectors'][n])
+    if 'cell_vectors' in cell_data:
+        cell_vectors = []
+        for n in 'a b c'.split():
+            cell_vectors.append(cell_data['cell_vectors'][n])
+    elif cell_data['pbc'] == [False, False, False]:
+        # 0D structure outputs do contain cell_vectors, only cell_parameters
+        # but obviously this should not matter, and CRYSTAL should set defaults
+        # TODO check consistency with 'cell_parameters'
+        cell_vectors = [[500., 0., 0.], [0., 500., 0.], [0., 0., 500.]]
+    else:
+        # TODO check 1D/2D geometry contain cell_vectors key
+        results_data['parser_warnings'].append('final structure does not contain "cell_vectors" key')
+        return None
 
     # we want to reuse the kinds from the input structure, if available
     if not init_struct:
@@ -217,19 +221,24 @@ def _extract_structure(final_data, init_struct, results_data, parser_result, exi
         kinds = None
     else:
         kinds = [init_struct.get_kind(n) for n in init_struct.get_site_kindnames()]
-    structure = convert_structure({
-        'lattice': cell_vectors,
-        'pbc': cell_data['pbc'],
-        'symbols': cell_data['symbols'],
-        'ccoords': cell_data['ccoords'],
-        'kinds': kinds
-    }, 'aiida')
+    structure = convert_structure(
+        {
+            'lattice': cell_vectors,
+            'pbc': cell_data['pbc'],
+            'symbols': cell_data['symbols'],
+            'ccoords': cell_data['ccoords'],
+            'kinds': kinds
+        }, 'aiida')
     results_data['volume'] = structure.get_cell_volume()
     return structure
 
 
 def _extract_mulliken(data, param_data):
-    """extract mulliken electronic charge partition data"""
+    """Extract mulliken electronic charge partition data."""
+    for mtype in ['alpha+beta_electrons', 'alpha-beta_electrons']:
+        data.get(mtype, {}).pop('aos', None)
+        data.get(mtype, {}).pop('shells', None)
+
     if 'alpha+beta_electrons' in data:
         electrons = data['alpha+beta_electrons']['charges']
         anum = data['alpha+beta_electrons']['atomic_numbers']

@@ -22,21 +22,18 @@ from aiida_crystal17.validation import validate_against_schema
 
 # TODO check float format and rounding, e.g. "{}".format(0.00001) -> 1e-05, can CRYSTAL handle that?
 
-# TODO SHRINK where IS=0 and IS1 IS2 IS3 given
 # TODO FIELD/FIELDCON
 # TODO FREQCALC
 # TODO ANHARM
 # TODO EOS
 
-# TODO RESTART (need to provide files from previous remote folder)
-
-# TODO incompatability tests e.g. using ATOMSPIN without SPIN (and spin value of SPINLOCK)
+# TODO incompatibility tests e.g. using ATOMSPIN without SPIN (and spin value of SPINLOCK)
 
 # TODO look at https://gitlab.com/ase/ase/blob/master/ase/calculators/crystal.py to see if anything can be used
 
 
 def format_value(dct, keys):
-    """return the value + a new line, or empty string if keys not found"""
+    """Return the value + a new line, or empty string if keys not found."""
     value = get_keys(dct, keys, None)
     if value is None:
         return ''
@@ -57,7 +54,7 @@ def format_value(dct, keys):
 
 
 def write_input(indict, basis_sets, atom_props=None):
-    """write input of a validated input dictionary
+    """Write input of a validated input dictionary.
 
     Parameters
     ----------

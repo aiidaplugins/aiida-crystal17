@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""
-Plugin to create a CRYSTAL17 output file from a supplied input file.
-"""
+"""Plugin for running CRYSTAL17 computations."""
 import six
 
 from aiida.plugins import DataFactory
@@ -23,8 +21,7 @@ from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 
 
 class CryBasicCalculation(CryAbstractCalculation):
-    """
-    AiiDA calculation plugin to run the runcry17 executable,
+    """AiiDA calculation plugin to run the crystal17 executable,
     by supplying a normal .d12 input file and (optional) .gui file
     """
 
@@ -37,14 +34,15 @@ class CryBasicCalculation(CryAbstractCalculation):
         # TODO this has to be fort.34 for crystal exec (but not for parser),
         # so maybe should be fixed
 
-        spec.input(
-            'input_file', valid_type=DataFactory('singlefile'), required=True, help='the input .d12 file content.')
-        spec.input(
-            'input_external',
-            valid_type=DataFactory('singlefile'),
-            required=False,
-            help=('optional input fort.34 (gui) file content '
-                  '(for use with EXTERNAL keyword).'))
+        spec.input('input_file',
+                   valid_type=DataFactory('singlefile'),
+                   required=True,
+                   help='the input .d12 file content.')
+        spec.input('input_external',
+                   valid_type=DataFactory('singlefile'),
+                   required=False,
+                   help=('optional input fort.34 (gui) file content '
+                         '(for use with EXTERNAL keyword).'))
 
     def prepare_for_submission(self, tempfolder):
         """

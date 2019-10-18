@@ -29,13 +29,14 @@
     "restructuredtext.confPath": "${workspaceFolder}/docs/source",
     "restructuredtext.linter.extraArgs": ["--max-line-length", "120"],
     "cSpell.words": [
-        "aiida"
+        "aiida",
+        "pytest"
     ],
-    "todo-tree.tags": [
+    "todo-tree.general.tags": [
         "TODO",
         "todo::",
         "FIXME",
         "NOTE"
-      ],
-    "todo-tree.regex": "((//|#-?|<!--|\\.\\.|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])"
+    ],
+    "todo-tree.regex.regex": "((//|#-?|<!--|\\.\\.|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])"
 }

@@ -1,6 +1,72 @@
 Changelog
 =========
 
+v0.10.0b5 (2019-10-18)
+----------------------
+
+- Large improvement/refactor of properties calculations and workchains:
+
+  - Rename ``cry_`` -> ``prop_``
+  - Renamed ``crystal17.fermi`` -> ``crystal17.newk``
+  - Subclass calculations from base ``PropAbstractCalculation``;
+      - all calculation take as input a wf_folder and parameter dict
+      - all calculations output a result dict
+      - no longer options to symlink wf_folder (it doesn't work)
+      - wf_folder can now be a standard folder (or remote)
+  - Add raw parsers for parsing properties stdout and gaussian cube files.
+  - Parsers all use ``read_properties_stdout`` to parse standard output data, and check for errors,
+    also exit codes are saved for each step, then the highest priority code is returned at the end.
+  - Changed inputs/outputs of ``crystal17.fermi``.
+  - Add ``crystal17.ech3`` calculation and parser (stores cube files as ``GaussianCube`` data objects).
+  - Updated CryPropertiesWorkChain to run multiple properties calculation.
+  - Add creation of VESTA file, from cube data file.
+  - ``crystal17.doss``; fix parsing of projections.
+  - Update band_gap calcfunction, to use correct energy units format.
+  - Add documentation: ``calc_doss``, ``workflow_properties``, ``calc_ech3``.
+
+- Improve CRYSTAL main stdout parser.
+
+  - Extract mulliken orbital and shell populations.
+  - parse 0D (MOLECULE) cartesian coordinates
+  - improve regex for removing PROCESS and Fortran warning lines
+  - ignore ``all open_hca: getaddr_netdev ERROR`` lines, that can occur before program start.
+  - fix issues with computations that converge after the 1st cycle.
+
+- Add fort.9 raw parser.
+
+- Symmetry: allow for use of symbol (rather than kind) to define
+  inequivalent sites.
+
+- Improved `BasisSetData.set_file` and `BasisSetData.upload_basisset_family`,
+  to accept `pathlib.Path` and filelike objects.
+
+- Programatically Access Resource Files:
+
+  Non-python files (JSON schema and raw files) are now accessed programatically,
+  using the `importlib_resources` package.
+  This means that (a) they can be accessed even if the package is zipped and,
+  (b) these files can be moved to a separate package in the future.
+
+- Replace Travis flake8/version tests with a pre-commit test:
+
+  - Updated `pre-commit` and `yapf` versions have been updated, and
+  - `pre-commit run -a` has been applied to the repository.
+  - Added conda test, to check the `conda_dev_env.yml` works.
+
+- Add pytest plugin configuration:
+
+  - Use pytest command-line arguments to control run configuration.
+  - Replace ``MOCK_CRY17_EXECUTABLES`` environmental variable with
+    ``pytest --cry17-no-mock``,
+    and ``CRY17_TEST_WORKDIR`` with ``pytest --cry17-workdir "test_workdir"``.
+  - Add ``--cry17-skip-exec``, for skipping tests call executable.
+  - Add ``pytest-notebook`` dependency and test function, to test and regenerate tutorial notebooks.
+
+- GULP: improve ReaxFF parser:
+
+  - correctly handle read/write of ``X`` symbol
+  - allow reaxff tolerance value to be set, when reading file to dict.
+
 v0.9.2b5 (2019-08-01)
 ---------------------
 
@@ -234,8 +300,6 @@ v0.6.0b3 (2019-06-22)
 - Retrieve input file for GULP computations.
 - Add method for getting the spacegroup info of a symmetry node.
 - Require correct symmetry input node type (crystal17.symmetry)
-- Version bump.
-- Spelling error fix.
 - Remove pypi deployment flag from python=2.7 tests.
 
 
@@ -271,10 +335,8 @@ v0.4.0 (2019-03-02)
 - Update geometry.py.
 - Update test_cry_basic.py.
 - Remove pymatgen dependency from tests.
-- Fix pymatgen dependecies.
 - Update .travis.yml.
 - Setup for conda dist.
-- Test style fix.
 - Updated computer get method for develop (1.0.0a2)
 
 
@@ -285,11 +347,7 @@ v0.3.2a1 (2018-09-15)
 
 v0.3.1a1 (2018-09-15)
 ---------------------
-- Remove file.
-- Install in development mode.
-- Fix coverage (4)
-- Fix coverage (3)
-- Only cover package.
+
 - Omit tests from coverage report.
 - Updated doc on installation.
 - Updated readme and added pypi deployment.
@@ -297,24 +355,19 @@ v0.3.1a1 (2018-09-15)
 
 v0.3.0a1 (2018-09-12)
 ---------------------
-- Update version.
-- Finished documentation.
+
 - Updated documentation.
 - Potential fix for aiida v0.12 process runs.
 - Added cmndline tests.
 - Added cmnd line plugins.
-- Add to test.
 - Don't output structure in no optimisation.
-- Added test.
 - Store fractional symops instead of cartesian.
 - Convert output operations fractional coordinates to cartesian
   coordinates.
 - Compare_operations improvement.
 - Moved operation comparison to StructSettingsData.
-- Test update.
 - Replaced output_arrays with output_settings.
 - Refactored structure manipulation as two-step process.
-- Tests fix.
 - Added full run test for main calc.
 - Use input structure to get kinds.
 - Added run_get_node util.
@@ -338,19 +391,14 @@ v0.3.0a1 (2018-09-12)
 - Added pytest-tornado.
 - Added pytest-timeout.
 - Added migration workflow function.
-- Doc fix.
 - Api documentation update.
 - Refactored parser to extract mainout parsing.
 - Added immigrant as plugin.
 - Add to test.
 - Added CryMainImmigrant (and tests)
-- Sqlalchemy fix.
-- Aiida v1 test fix.
-- V1 test fix.
 - Added computer configuration to computer configuration.
 - Added migrate.create_inputs.
 - Added basis set validation.
-- Style test fix.
 - Added read_inputd12 (and tests)
 - Removed diff modules and updated version.
 
@@ -371,13 +419,11 @@ v0.2.0a0 (2018-09-05)
 - Added test with spin.
 - Added atom specific properties to output d12.
 - Move validation to separate module.
-- Pre-commit test fix.
 - Break symmetry by kind.
 - Added kinds section to settings dict.
 - Added BasisSetData input to .d12 creation.
 - Refactored BasisSetData to store file content separately to metadata.
 - Added python 3 compatabilty.
-- Prospector test fix.
 - Added BasisSetData plugin (and tests)
 - Added settings schema.
 - Added inputd12 writer.
@@ -408,7 +454,6 @@ v0.2.0a0 (2018-09-05)
 - Added user guide for ``crystal17.basic``
 - Added example and documentation.
 - Remove ase install.
-- Attempt to fix build failure of readthedocs.
 - Added to readme.
 - Updated some things in line with aiida-plugin-cutter.
 
@@ -435,7 +480,6 @@ v0.2.0a0 (2018-09-05)
 
   As per https://docs.pytest.org/en/latest/fixture.html#conftest-py-sharing-fixture-functions.
 - Changes to pass pylint test.
-- Pre commit fix.
 - Revert "try adding pre-commit test (6)"
 
   This reverts commit 6e7a33d1ac4baa2f406f200e799484376d087f13.

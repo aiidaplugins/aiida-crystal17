@@ -418,7 +418,7 @@ initial_scf:
     - 4.0
     charge_normalization_factor: 1.0
 parser_errors:
-- Did not find end of SCF section (starting on line 311)
+- Did not find end of SCF section (starting on line 313)
 parser_exceptions: []
 units:
   angle: degrees

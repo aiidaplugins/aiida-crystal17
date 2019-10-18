@@ -17,6 +17,7 @@ import sys
 import time
 
 import six
+
 import aiida_crystal17
 
 # -- AiiDA-related setup --------------------------------------------------
@@ -108,6 +109,7 @@ intersphinx_mapping = {
 }
 
 intersphinx_aliases = {
+    ('py:class', 'file-like'): ('py:class', 'io.TextIOWrapper'),
     ('py:class', 'json.encoder.JSONEncoder'): ('py:class', 'json.JSONEncoder'),
     ('py:class', 'aiida.StructureData'): ('py:class', 'aiida.orm.nodes.data.structure.StructureData'),
     ('py:class', 'aiida.orm.Dict'): ('py:class', 'aiida.orm.nodes.data.dict.Dict'),
@@ -205,67 +207,25 @@ napoleon_use_rtype = True
 
 # Warnings to ignore when using the -n (nitpicky) option
 # We should ignore any python built-in exception, for instance
-nitpick_ignore = [
-    ('py:exc', 'ArithmeticError'),
-    ('py:exc', 'AssertionError'),
-    ('py:exc', 'AttributeError'),
-    ('py:exc', 'BaseException'),
-    ('py:exc', 'BufferError'),
-    ('py:exc', 'DeprecationWarning'),
-    ('py:exc', 'EOFError'),
-    ('py:exc', 'EnvironmentError'),
-    ('py:exc', 'Exception'),
-    ('py:exc', 'FloatingPointError'),
-    ('py:exc', 'FutureWarning'),
-    ('py:exc', 'GeneratorExit'),
-    ('py:exc', 'IOError'),
-    ('py:exc', 'ImportError'),
-    ('py:exc', 'ImportWarning'),
-    ('py:exc', 'IndentationError'),
-    ('py:exc', 'IndexError'),
-    ('py:exc', 'KeyError'),
-    ('py:exc', 'KeyboardInterrupt'),
-    ('py:exc', 'LookupError'),
-    ('py:exc', 'MemoryError'),
-    ('py:exc', 'NameError'),
-    ('py:exc', 'NotImplementedError'),
-    ('py:exc', 'OSError'),
-    ('py:exc', 'OverflowError'),
-    ('py:exc', 'PendingDeprecationWarning'),
-    ('py:exc', 'ReferenceError'),
-    ('py:exc', 'RuntimeError'),
-    ('py:exc', 'RuntimeWarning'),
-    ('py:exc', 'StandardError'),
-    ('py:exc', 'StopIteration'),
-    ('py:exc', 'SyntaxError'),
-    ('py:exc', 'SyntaxWarning'),
-    ('py:exc', 'SystemError'),
-    ('py:exc', 'SystemExit'),
-    ('py:exc', 'TabError'),
-    ('py:exc', 'TypeError'),
-    ('py:exc', 'UnboundLocalError'),
-    ('py:exc', 'UnicodeDecodeError'),
-    ('py:exc', 'UnicodeEncodeError'),
-    ('py:exc', 'UnicodeError'),
-    ('py:exc', 'UnicodeTranslateError'),
-    ('py:exc', 'UnicodeWarning'),
-    ('py:exc', 'UserWarning'),
-    ('py:exc', 'VMSError'),
-    ('py:exc', 'ValueError'),
-    ('py:exc', 'Warning'),
-    ('py:exc', 'WindowsError'),
-    ('py:exc', 'ZeroDivisionError'),
-    ('py:class', '_abcoll.MutableMapping'),
-    ('py:class', 'tuple'),
-    ('py:obj', 'str'),
-    ('py:obj', 'list'),
-    ('py:obj', 'tuple'),
-    ('py:obj', 'int'),
-    ('py:obj', 'float'),
-    ('py:obj', 'bool'),
-    ('py:obj', 'Mapping'),
-    ('py:obj', 'MutableMapping'),
-]
+nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'), ('py:exc', 'AttributeError'),
+                  ('py:exc', 'BaseException'), ('py:exc', 'BufferError'), ('py:exc', 'DeprecationWarning'),
+                  ('py:exc', 'EOFError'), ('py:exc', 'EnvironmentError'), ('py:exc', 'Exception'),
+                  ('py:exc', 'FloatingPointError'), ('py:exc', 'FutureWarning'), ('py:exc', 'GeneratorExit'),
+                  ('py:exc', 'IOError'), ('py:exc', 'ImportError'), ('py:exc', 'ImportWarning'),
+                  ('py:exc', 'IndentationError'), ('py:exc', 'IndexError'), ('py:exc', 'KeyError'),
+                  ('py:exc', 'KeyboardInterrupt'), ('py:exc', 'LookupError'), ('py:exc', 'MemoryError'),
+                  ('py:exc', 'NameError'), ('py:exc', 'NotImplementedError'), ('py:exc', 'OSError'),
+                  ('py:exc', 'OverflowError'), ('py:exc', 'PendingDeprecationWarning'), ('py:exc', 'ReferenceError'),
+                  ('py:exc', 'RuntimeError'), ('py:exc', 'RuntimeWarning'), ('py:exc', 'StandardError'),
+                  ('py:exc', 'StopIteration'), ('py:exc', 'SyntaxError'), ('py:exc', 'SyntaxWarning'),
+                  ('py:exc', 'SystemError'), ('py:exc', 'SystemExit'), ('py:exc', 'TabError'), ('py:exc', 'TypeError'),
+                  ('py:exc', 'UnboundLocalError'), ('py:exc', 'UnicodeDecodeError'), ('py:exc', 'UnicodeEncodeError'),
+                  ('py:exc', 'UnicodeError'), ('py:exc', 'UnicodeTranslateError'), ('py:exc', 'UnicodeWarning'),
+                  ('py:exc', 'UserWarning'), ('py:exc', 'VMSError'), ('py:exc', 'ValueError'), ('py:exc', 'Warning'),
+                  ('py:exc', 'WindowsError'), ('py:exc', 'ZeroDivisionError'), ('py:class', '_abcoll.MutableMapping'),
+                  ('py:class', 'tuple'), ('py:obj', 'str'), ('py:obj', 'list'), ('py:obj', 'tuple'), ('py:obj', 'int'),
+                  ('py:obj', 'float'), ('py:obj', 'bool'), ('py:obj', 'Mapping'), ('py:obj', 'MutableMapping'),
+                  ('py:class', 'filelike')]
 
 # autodoc options, see
 # http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
@@ -273,7 +233,8 @@ autoclass_content = 'both'
 
 
 def run_apidoc(_):
-    """Runs sphinx-apidoc when building the documentation.
+    """Run sphinx-apidoc when building the documentation.
+
     Needs to be done in conf.py in order to include the APIdoc in the
     build on readthedocs.
     See also https://github.com/rtfd/readthedocs.org/issues/1139
@@ -281,6 +242,10 @@ def run_apidoc(_):
     source_dir = os.path.abspath(os.path.dirname(__file__))
     apidoc_dir = os.path.join(source_dir, 'apidoc')
     package_dir = os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17')
+    exclude_paths = [
+        os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17', 'tests', 'test_*'),
+        os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17', 'tests', 'raw_files')
+    ]
 
     # In #1139, they suggest the route below, but this ended up
     # calling sphinx-build, not sphinx-apidoc
@@ -294,22 +259,25 @@ def run_apidoc(_):
         cmd_path = os.path.abspath(os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
 
     options = [
-        '-o',
-        apidoc_dir,
-        package_dir,
         '--private',
         '--force',
         '--no-toc',
+        '-o',
+        apidoc_dir,
+        package_dir,
     ]
 
     # See https://stackoverflow.com/a/30144019
     env = os.environ.copy()
     env['SPHINX_APIDOC_OPTIONS'] = 'members,undoc-members,show-inheritance'
-    subprocess.check_call([cmd_path] + options, env=env)
+    subprocess.check_call([cmd_path] + options + exclude_paths, env=env)
 
 
 def add_intersphinx_aliases_to_inv(app):
-    """see https://github.com/sphinx-doc/sphinx/issues/5603"""
+    """Add type aliases for intersphinx.
+
+    see https://github.com/sphinx-doc/sphinx/issues/5603
+    """
     from sphinx.ext.intersphinx import InventoryAdapter
     inventories = InventoryAdapter(app.builder.env)
 
@@ -327,6 +295,7 @@ def add_intersphinx_aliases_to_inv(app):
 
 
 def setup(app):
+    """Add functions to the Sphinx setup."""
     app.connect('builder-inited', run_apidoc)
     app.add_config_value('intersphinx_aliases', {}, 'env')
     app.connect('builder-inited', add_intersphinx_aliases_to_inv)

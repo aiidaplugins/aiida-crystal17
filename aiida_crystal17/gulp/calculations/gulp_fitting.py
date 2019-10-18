@@ -80,65 +80,67 @@ class GulpFittingCalculation(CalcJob):
         spec.input('metadata.options.allow_create_potential_fail', valid_type=bool, default=False)
         spec.input('metadata.options.parser_name', valid_type=six.string_types, default='gulp.fitting')
 
-        spec.input(
-            'settings',
-            valid_type=Dict,
-            required=True,
-            validator=cls.validate_settings,
-            serializer=to_aiida_type,
-            help=('Settings for the fitting, '
-                  'see `GulpFittingCalculation.settings_schema` for the accepted format'))
+        spec.input('settings',
+                   valid_type=Dict,
+                   required=True,
+                   validator=cls.validate_settings,
+                   serializer=to_aiida_type,
+                   help=('Settings for the fitting, '
+                         'see `GulpFittingCalculation.settings_schema` for the accepted format'))
 
-        spec.input(
-            'potential',
-            valid_type=DataFactory('gulp.potential'),
-            required=True,
-            serializer=to_aiida_type,
-            validator=cls.validate_potential,
-            help=('a dictionary defining the potential. '
-                  'Note this should have been created with fitting flags initialised'))
+        spec.input('potential',
+                   valid_type=DataFactory('gulp.potential'),
+                   required=True,
+                   serializer=to_aiida_type,
+                   validator=cls.validate_potential,
+                   help=('a dictionary defining the potential. '
+                         'Note this should have been created with fitting flags initialised'))
 
-        spec.input_namespace(
-            'structures', valid_type=StructureData, dynamic=True, help='a dict of structures to fit the potential to')
+        spec.input_namespace('structures',
+                             valid_type=StructureData,
+                             dynamic=True,
+                             help='a dict of structures to fit the potential to')
 
-        spec.input_namespace(
-            'observables', valid_type=Dict, dynamic=True, help='a dictionary of observables for each structure')
+        spec.input_namespace('observables',
+                             valid_type=Dict,
+                             dynamic=True,
+                             help='a dictionary of observables for each structure')
 
         # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
 
         # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
-        spec.exit_code(
-            200, 'ERROR_NO_RETRIEVED_FOLDER', message='The retrieved folder data node could not be accessed.')
+        spec.exit_code(200,
+                       'ERROR_NO_RETRIEVED_FOLDER',
+                       message='The retrieved folder data node could not be accessed.')
         spec.exit_code(210, 'ERROR_OUTPUT_FILE_MISSING', message='the main (stdout) output file was not found')
         spec.exit_code(211, 'ERROR_TEMP_FOLDER_MISSING', message='the temporary retrieved folder was not found')
 
         # Unrecoverable errors: required retrieved files could not be read, parsed or are otherwise incomplete
-        spec.exit_code(
-            300, 'ERROR_PARSING_STDOUT', message=('An error was flagged trying to parse the '
-                                                  'gulp exec stdout file'))
+        spec.exit_code(300,
+                       'ERROR_PARSING_STDOUT',
+                       message=('An error was flagged trying to parse the '
+                                'gulp exec stdout file'))
         spec.exit_code(301, 'ERROR_STDOUT_EMPTY', message=('The stdout file is empty'))
-        spec.exit_code(
-            310,
-            'ERROR_NOT_ENOUGH_OBSERVABLES',
-            message=('The number of fitting variables exceeds the number of observables'))
+        spec.exit_code(310,
+                       'ERROR_NOT_ENOUGH_OBSERVABLES',
+                       message=('The number of fitting variables exceeds the number of observables'))
         spec.exit_code(311, 'ERROR_FIT_UNSUCCESFUL', message=('The fit was not successful'))
-        spec.exit_code(
-            312,
-            'ERROR_GULP_UNKNOWN',
-            message=('An error was flagged by GULP, which is not accounted for in another exit code'))
-        spec.exit_code(
-            313, 'ERROR_CREATING_NEW_POTENTIAL', message=('An error occurred trying to create the new potential'))
+        spec.exit_code(312,
+                       'ERROR_GULP_UNKNOWN',
+                       message=('An error was flagged by GULP, which is not accounted for in another exit code'))
+        spec.exit_code(313,
+                       'ERROR_CREATING_NEW_POTENTIAL',
+                       message=('An error occurred trying to create the new potential'))
 
         # Significant errors but calculation can be used to restart
 
         spec.output('results', valid_type=Dict, required=True, help='the data extracted from the main output file')
         spec.default_output_node = 'results'
 
-        spec.output(
-            'potential',
-            valid_type=DataFactory('gulp.potential'),
-            required=False,
-            help=('a dictionary defining the fitted potential.'))
+        spec.output('potential',
+                    valid_type=DataFactory('gulp.potential'),
+                    required=False,
+                    help=('a dictionary defining the fitted potential.'))
 
     def create_observable_map(self, settings):
         observables = settings['observables']
@@ -193,13 +195,12 @@ class GulpFittingCalculation(CalcJob):
                                        'is less than the number of variables required to be fit ({})'.format(
                                            len(observe_keys), self.inputs.potential.number_of_variables))
 
-        content_lines, snames = create_input_lines(
-            self.inputs.potential,
-            self.inputs.structures,
-            self.inputs.observables,
-            observables=self.create_observable_map(settings),
-            delta=settings.get('gradient_delta', None),
-            dump_file=self.metadata.options.output_dump_file_name)
+        content_lines, snames = create_input_lines(self.inputs.potential,
+                                                   self.inputs.structures,
+                                                   self.inputs.observables,
+                                                   observables=self.create_observable_map(settings),
+                                                   delta=settings.get('gradient_delta', None),
+                                                   dump_file=self.metadata.options.output_dump_file_name)
 
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
             f.write(six.ensure_text('\n'.join(content_lines)))

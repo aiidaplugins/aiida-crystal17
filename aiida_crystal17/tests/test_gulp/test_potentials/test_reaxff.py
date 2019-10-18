@@ -3,8 +3,7 @@ from textwrap import dedent
 import six
 
 from aiida_crystal17.gulp.potentials.common import filter_by_species
-from aiida_crystal17.gulp.potentials.raw_reaxff import (
-    read_lammps_format, write_lammps_format, write_gulp_format)
+from aiida_crystal17.gulp.potentials.raw_reaxff import (read_lammps_format, write_lammps_format, write_gulp_format)
 
 lammps_file = dedent("""\
         Reactive MD-force field: Cr/O/Fe/S/C/H force field 2014
@@ -52,10 +51,6 @@ lammps_file = dedent("""\
         alfa;gammavdW;valency;Eunder;Eover;chiEEM;etaEEM;n.u.
         cov r3;Elp;Heat inc.;n.u.;n.u.;n.u.;n.u.
         ov/un;val1;n.u.;val3,vval4
-        X -0.1000 2.0000 1.0080 2.0000 0.0000 0.0100 -0.1000 6.0000
-        10.0000 2.5000 4.0000 0.0000 0.0000 5.0001 9999.0000 0.0000
-        -0.1000 0.0000 -2.3700 8.7410 13.3640 0.6690 0.9745 0.0000
-        -11.0000 2.7466 1.0338 2.0000 2.8793 0.0000 0.0000 0.0000
         C 1.3817 4.0000 12.0000 1.8903 0.1838 0.9000 1.1341 4.0000
         9.7559 2.1346 4.0000 34.9350 79.5548 5.9666 7.0000 0.0000
         1.2114 0.0000 202.5551 8.9539 34.9289 13.5366 0.8563 0.0000
@@ -80,6 +75,10 @@ lammps_file = dedent("""\
         10.3177 2.8702 6.0000 0.0000 18.3190 1.4546 8.9500 0.0000
         -1.2000 0.0000 102.1000 25.3430 10.1260 0.7590 0.8563 0.0000
         -11.1953 2.6997 1.0338 6.0000 2.5791 0.0000 0.0000 0.0000
+        X -0.1000 2.0000 1.0080 2.0000 0.0000 0.0100 -0.1000 6.0000
+        10.0000 2.5000 4.0000 0.0000 0.0000 5.0001 9999.0000 0.0000
+        -0.1000 0.0000 -2.3700 8.7410 13.3640 0.6690 0.9745 0.0000
+        -11.0000 2.7466 1.0338 2.0000 2.8793 0.0000 0.0000 0.0000
         21 ! Nr of bonds; Edis1;LPpen;n.u.;pbe1;pbo5;13corr;pbo6
         pbe2;pbo3;pbo4;n.u.;pbo1;pbo2;ovcorr
         1 1 158.2004 99.1897 78.0000 -0.7738 -0.4550 1.0000 37.6117 0.4147
@@ -307,10 +306,10 @@ def test_read_lammps_format(data_regression):
     data_regression.check(output)
 
 
-def test_round_trip_lammps_format():
+def test_round_trip_lammps_format(file_regression):
     data = read_lammps_format(lammps_file.splitlines())
     output = write_lammps_format(data)
-    output == lammps_file
+    file_regression.check(six.ensure_text(output))
 
 
 def test_write_gulp_format(file_regression):
@@ -321,7 +320,7 @@ def test_write_gulp_format(file_regression):
 
 def test_write_gulp_format_with_filter(data_regression, file_regression):
     data = read_lammps_format(lammps_file.splitlines())
-    data = filter_by_species(data, ["Fe core", "S core"])
+    data = filter_by_species(data, ['Fe core', 'S core'])
     data_regression.check(data)
     output, nflags, nfit = write_gulp_format(data)
     file_regression.check(six.ensure_text(output))
@@ -329,21 +328,21 @@ def test_write_gulp_format_with_filter(data_regression, file_regression):
 
 def test_write_gulp_format_with_fitting(data_regression, file_regression):
     data = read_lammps_format(lammps_file.splitlines())
-    data = filter_by_species(data, ["Fe core", "S core"])
+    data = filter_by_species(data, ['Fe core', 'S core'])
     fitting_data = {
-        "species": ["Fe core", "S core"],
-        "global": ["reaxff0_val7"],
-        "1body": {
-            "0": ["reaxff1_valence3"]
+        'species': ['Fe core', 'S core'],
+        'global': ['reaxff0_val7'],
+        '1body': {
+            '0': ['reaxff1_valence3']
         },
-        "2body": {
-            "0-1": ["reaxff2_bond3"]
+        '2body': {
+            '0-1': ['reaxff2_bond3']
         },
-        "3body": {
-            "0-1-1": ["reaxff3_penalty"]
+        '3body': {
+            '0-1-1': ['reaxff3_penalty']
         },
-        "4body": {
-            "1-1-1-1": ["reaxff4_torsion4"]
+        '4body': {
+            '1-1-1-1': ['reaxff4_torsion4']
         }
     }
     output, nflags, nfit = write_gulp_format(data, fitting_data)

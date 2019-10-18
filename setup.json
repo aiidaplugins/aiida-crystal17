@@ -13,7 +13,7 @@
     "Topic :: Scientific/Engineering :: Physics",
     "Framework :: AiiDA"
   ],
-  "version": "0.9.2b5",
+  "version": "0.10.0b5",
   "entry_points": {
     "console_scripts": [
       "mock_crystal17 = aiida_crystal17.tests.mock_crystal17:main",
@@ -25,13 +25,15 @@
       "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetData",
       "crystal17.symmetry = aiida_crystal17.data.symmetry:SymmetryData",
       "crystal17.kinds = aiida_crystal17.data.kinds:KindData",
+      "crystal17.gcube = aiida_crystal17.data.gcube:GaussianCube",
       "gulp.potential = aiida_crystal17.gulp.data.potential:EmpiricalPotential"
     ],
     "aiida.calculations": [
       "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
       "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation",
-      "crystal17.doss = aiida_crystal17.calculations.cry_doss:CryDossCalculation",
-      "crystal17.fermi = aiida_crystal17.calculations.cry_fermi:CryFermiCalculation",
+      "crystal17.doss = aiida_crystal17.calculations.prop_doss:CryDossCalculation",
+      "crystal17.ech3 = aiida_crystal17.calculations.prop_ech3:CryEch3Calculation",
+      "crystal17.newk = aiida_crystal17.calculations.prop_newk:CryNewkCalculation",
       "gulp.single = aiida_crystal17.gulp.calculations.gulp_single:GulpSingleCalculation",
       "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation",
       "gulp.fitting = aiida_crystal17.gulp.calculations.gulp_fitting:GulpFittingCalculation"
@@ -39,7 +41,8 @@
     "aiida.parsers": [
       "crystal17.main = aiida_crystal17.parsers.cry_main:CryMainParser",
       "crystal17.doss = aiida_crystal17.parsers.cry_doss:CryDossParser",
-      "crystal17.fermi = aiida_crystal17.parsers.cry_fermi:CryFermiParser",
+      "crystal17.ech3 = aiida_crystal17.parsers.cry_ech3:CryEch3Parser",
+      "crystal17.newk = aiida_crystal17.parsers.cry_newk:CryNewkParser",
       "gulp.single = aiida_crystal17.gulp.parsers.parse_single:GulpSingleParser",
       "gulp.optimize = aiida_crystal17.gulp.parsers.parse_opt:GulpOptParser",
       "gulp.fitting = aiida_crystal17.gulp.parsers.parse_fitting:GulpFittingParser"
@@ -47,7 +50,7 @@
     "aiida.workflows": [
       "crystal17.sym3d = aiida_crystal17.workflows.symmetrise_3d_struct:Symmetrise3DStructure",
       "crystal17.main.base = aiida_crystal17.workflows.crystal_main.base:CryMainBaseWorkChain",
-      "crystal17.properties = aiida_crystal17.workflows.crystal_props.cry_doss:CryPropertiesWorkChain"
+      "crystal17.properties = aiida_crystal17.workflows.crystal_props.base:CryPropertiesWorkChain"
     ],
     "aiida.cmdline.data": [
       "crystal17.symmetry = aiida_crystal17.cmndline.symmetry:symmetry",
@@ -72,7 +75,9 @@
     "ase>=3.12.0,<3.18.0; python_version < '3'",
     "ase>=3.12.0,<4.0.0; python_version >= '3'",
     "PyCifRW==4.2.1; python_version < '3'",
-    "PyCifRW==4.4; python_version >= '3'"
+    "PyCifRW==4.4; python_version >= '3'",
+    "pathlib2; python_version < '3.4'",
+    "importlib_resources"
   ],
   "extras_require": {
     "testing": [
@@ -84,12 +89,13 @@
       "coverage",
       "pytest-cov",
       "pytest-timeout",
-      "pytest-regressions"
+      "pytest-regressions",
+      "pytest-notebook; python_version >= '3.5'"
     ],
     "code_style": [
       "flake8<3.8.0,>=3.7.0",
-      "yapf==0.26.0",
-      "pre-commit==1.14.4",
+      "yapf==0.28.0",
+      "pre-commit==1.17.0",
       "doc8<0.9.0,>=0.8.0"
     ],
     "docs": [

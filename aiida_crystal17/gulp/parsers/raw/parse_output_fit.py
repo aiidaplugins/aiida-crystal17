@@ -103,13 +103,15 @@ def parse_file(file_obj, parser_class=None):
         if section == 'post_info':
             try:
                 if line.strip().startswith('Final values of parameters'):
-                    lineno, output['final_parameters'] = read_gulp_table(
-                        lines, lineno, ['parameter', 'original', 'final', 'type'], [int, float, float, assess_species])
+                    lineno, output['final_parameters'] = read_gulp_table(lines, lineno,
+                                                                         ['parameter', 'original', 'final', 'type'],
+                                                                         [int, float, float, assess_species])
                     continue
 
                 if line.strip().startswith('Final values of numerical parameter gradients'):
-                    lineno, output['final_gradients'] = read_gulp_table(
-                        lines, lineno, ['parameter', 'gradient', 'type'], [int, float, assess_species])
+                    lineno, output['final_gradients'] = read_gulp_table(lines, lineno,
+                                                                        ['parameter', 'gradient', 'type'],
+                                                                        [int, float, assess_species])
                     continue
 
                 if line.strip().startswith('Final values of residuals'):
@@ -125,8 +127,9 @@ def parse_file(file_obj, parser_class=None):
                     continue
 
                 if line.strip().startswith('Energy shifts for configurations'):
-                    lineno, output['energy_shifts'] = read_gulp_table(
-                        lines, lineno, ['configuration', 'energy', 'scale_factor'], [int, float, float])
+                    lineno, output['energy_shifts'] = read_gulp_table(lines, lineno,
+                                                                      ['configuration', 'energy', 'scale_factor'],
+                                                                      [int, float, float])
                     continue
 
                 if line.strip().startswith('Peak dynamic memory used'):

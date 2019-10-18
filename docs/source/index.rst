@@ -23,6 +23,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    user_guide/calc_main
    user_guide/calc_main_immigrant
    user_guide/calc_doss
+   user_guide/calc_ech3
    user_guide/calc_gulp
 
 .. toctree::
@@ -42,8 +43,7 @@ The aiida-crystal17 plugin for `AiiDA`_
    changelog
    api_index
 
-If you use this plugin for your research, please cite the Github repository
-(paper to come).
+If you use this plugin for your research, please cite |Zenodo|.
 
 If you use AiiDA for your research, please cite the following work:
 
@@ -65,3 +65,6 @@ Indices and tables
 * :ref:`search`
 
 .. _AiiDA: http://www.aiida.net
+
+.. |Zenodo| image:: https://zenodo.org/badge/145867218.svg
+   :target: https://zenodo.org/badge/latestdoi/145867218

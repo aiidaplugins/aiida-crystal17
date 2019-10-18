@@ -1,0 +1,57 @@
+charge:
+  cell:
+  - - 0.0
+    - 2.215792
+    - 2.215792
+  - - 2.215792
+    - 0.0
+    - 2.215792
+  - - 2.215792
+    - 2.215792
+    - 0.0
+  compression_method: 8
+  cube_filename: gaussian.cube
+  elements:
+  - Mg
+  - O
+  header:
+  - Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk
+  - 5.62556267     5.62556267     5.62556267    60.000000  60.000000  60.000000
+  units:
+    conversion: CODATA2014
+    length: angstrom
+  voxel_grid:
+  - 20
+  - 20
+  - 20
+  zip_filename: gcube.zip
+results:
+  errors: []
+  execution_time_seconds: 0
+  header:
+    crystal_subversion: 1.0.1
+    crystal_version: 17
+  parser_class: CryEch3Parser
+  parser_errors: []
+  parser_exceptions: []
+  parser_version: 0.10.0b5
+  units:
+    conversion: CODATA2014
+    energy: eV
+  warnings: []
+  wf_input:
+    energy_fermi: -4.0000737
+    energy_kinetic: 7268.9523469
+    energy_total: -7380.2216052
+    gilat_net: 8
+    k_points:
+    - 8
+    - 8
+    - 8
+    n_ao: 14
+    n_atoms: 2
+    n_core_el: 12
+    n_electrons: 20
+    n_kpoints_ibz: 29
+    n_shells: 5
+    n_symops: 48

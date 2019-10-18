@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "structure symmetry settings",
+    "type": "object",
+    "required": [
+        "hall_number",
+        "operations",
+        "basis"
+    ],
+    "additionalProperties": true,
+    "properties": {
+        "hall_number": {
+            "description": "Hall number defining the symmetry group",
+            "type": ["null", "integer"],
+            "minimum": 1,
+            "maximum": 530
+        },
+        "operations": {
+            "description": "symmetry operations, should at least include the unity operation",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "description": "each item should be a list of [r00,r10,r20,r01,r11,r21,r02,r12,r22,t0,t1,t2]",
+                "type": "array",
+                "minItems": 12,
+                "maxItems": 12,
+                "items": {
+                    "type": "number"
+                }
+            },
+            "uniqueItems": true
+        },
+        "basis": {
+            "description": "whether the symmetry operations are fractional or cartesian",
+            "type": "string",
+            "enum": ["fractional", "cartesian"]
+        },
+        "equivalent_sites": {
+            "description": "mapping table to equivalent atomic sites",
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "computation": {
+            "description": "details of the computation",
+            "type": "object"
+        }
+    }
+}

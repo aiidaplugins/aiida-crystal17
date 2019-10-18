@@ -10,8 +10,7 @@ def test_read_atom_section():
         H B 3.00000000E+00 4.00000000E+00 0.00 12.00000 1 0
         """).splitlines()
 
-    output = PotentialWriterAbstract.read_atom_section(
-        section, lineno=0, number_atoms=2, global_args=None)
+    output = PotentialWriterAbstract.read_atom_section(section, lineno=0, number_atoms=2, global_args=None)
 
     assert output == (1, {'B core', 'H core', 'He shell'}, {
         ('H core', 'He shell'): {
@@ -33,8 +32,7 @@ def test_read_atom_section_with_break():
         lennard 6 12
         """).splitlines()
 
-    output = PotentialWriterAbstract.read_atom_section(
-        section, lineno=0, number_atoms=2, global_args=None)
+    output = PotentialWriterAbstract.read_atom_section(section, lineno=0, number_atoms=2, global_args=None)
 
     assert output == (1, {'B core', 'H core', 'He shell'}, {
         ('H core', 'He shell'): {
@@ -56,8 +54,7 @@ def test_read_atom_section_with_line_break():
             0.00 12.00000 1 0
         """).splitlines()
 
-    output = PotentialWriterAbstract.read_atom_section(
-        section, lineno=0, number_atoms=2, global_args=None)
+    output = PotentialWriterAbstract.read_atom_section(section, lineno=0, number_atoms=2, global_args=None)
 
     assert output == (2, {'B core', 'H core', 'He shell'}, {
         ('H core', 'He shell'): {

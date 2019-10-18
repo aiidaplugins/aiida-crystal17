@@ -13,12 +13,12 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-"""common parsing functions for GULP output files """
+"""Common parsing functions for GULP output files."""
 import re
 
 
 def read_gulp_table(lines, lineno, field_names, field_conversions, star_to_none=True):
-    """ read tables of the format:
+    """Read tables of the format:
 
     ::
 
@@ -240,7 +240,7 @@ def read_reaxff_econtribs(lines, lineno):
 
     energies = {}
 
-    while '=' in line:
+    while '=' in line and not line.strip().startswith('**'):
 
         energy_match = re.findall('E\\((.+)\\)[\\s]*=[\\s]*([^\\s]+) eV', line)
         if not energy_match:
@@ -253,19 +253,31 @@ def read_reaxff_econtribs(lines, lineno):
     return energies, lineno
 
 
-REAXFF_ENAME_MAP = {
-    'bond': 'Bond',
-    'bpen': 'Double-Bond Valence Angle Penalty',
-    'lonepair': 'Lone-Pair',
-    'over': 'Coordination (over)',
-    'under': 'Coordination (under)',
-    'val': 'Valence Angle',
-    'pen': 'Double-Bond Valence Angle Penalty',
-    'coa': 'Valence Angle Conjugation',
-    'tors': 'Torsion',
-    'conj': 'Conjugation',
-    'hb': 'Hydrogen Bond',
-    'vdw': 'van der Waals',
-    'coulomb': 'Coulomb',
-    'self': 'Charge Equilibration'
-}
+REAXFF_ENAME_MAP = (
+    # original: eb, lammps: c_reax[1], it is assumed this is bond + bpen
+    ('bond', 'Bond'),
+    ('bpen', 'Bond Penalty'),
+    # original: ea, lammps: c_reax[2], it is assumed this is eover + eunder
+    ('over', 'Coordination (over)'),
+    ('under', 'Coordination (under)'),
+    # original: elp, lammps: c_reax[3]
+    ('lonepair', 'Lone-Pair'),
+    # original: ev, lammps: c_reax[5]
+    ('val', 'Valence Angle'),
+    # original: epen, lammps: c_reax[6]
+    ('pen', 'Valence Angle Penalty'),  # Double-Bond
+    # original: ecoa, lammps: c_reax[7]
+    ('coa', 'Valence Angle Conjugation'),
+    # original: ehb, lammps: c_reax[8]
+    ('hb', 'Hydrogen Bond'),
+    # original: et, lammps: c_reax[9]
+    ('tors', 'Torsional'),
+    # original: eco, lammps: c_reax[10]
+    ('conj', 'Conjugation'),
+    # original: ew, lammps: c_reax[11]
+    ('vdw', 'van der Waals'),
+    # original: ep, lammps: c_reax[12]
+    ('coulomb', 'Coulomb'),
+    # original: eqeq, lammps: c_reax[14]
+    ('self', 'Charge Equilibration'),
+)

@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "a schema for the settings dictionary of a GulpFittingCalculation",
+    "type": "object",
+    "required": [
+        "observables"
+    ],
+    "definitions": {
+        "weighting": {
+            "description": "the weighting of an observable",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "default": 100.0
+        }
+    },
+    "properties": {
+        "gradient_delta": {
+            "description": "differencing interval for gradients (default 0.00001 or 0.0001 for relax)",
+            "type": "number",
+            "exclusiveMinimum": 0
+        },
+        "observables": {
+            "description": "the observables to use in the fitting",
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+                "energy": {
+                    "type": "object",
+                    "properties": {
+                        "units": {
+                            "enum": [
+                                "eV",
+                                "kcal",
+                                "au",
+                                "kjmol-1"
+                            ],
+                            "default": "eV"
+                        },
+                        "units_key": {
+                            "description": "the key in the observables data from which to get the energy units",
+                            "type": "string",
+                            "default": "energy_units"
+                        },
+                        "energy_key": {
+                            "description": "the key in the observables data from which to get the energy",
+                            "type": "string",
+                            "default": "energy"
+                        },
+                        "weighting": {
+                            "$ref": "#/definitions/weighting"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

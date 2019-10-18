@@ -32,9 +32,7 @@ from aiida_crystal17.symmetry import convert_structure
 
 
 class CryMainParser(Parser):
-    """
-    Parser class for parsing (stdout) output of a standard CRYSTAL17 run
-    """
+    """Parser class for parsing (stdout) output of a standard CRYSTAL17 run."""
 
     def parse(self, retrieved_temporary_folder=None, **kwargs):
         """
@@ -83,7 +81,7 @@ class CryMainParser(Parser):
         return ExitCode()
 
     def parse_stdout(self, file_name):
-        """parse the main stdout file """
+        """Parse the main stdout file."""
         init_struct = None
         init_settings = None
         if 'structure' in self.node.inputs:
@@ -91,8 +89,10 @@ class CryMainParser(Parser):
         if 'symmetry' in self.node.inputs:
             init_settings = self.node.inputs.symmetry
         with self.retrieved.open(file_name) as fileobj:
-            parser_result = parse_main_out(
-                fileobj, parser_class=self.__class__.__name__, init_struct=init_struct, init_settings=init_settings)
+            parser_result = parse_main_out(fileobj,
+                                           parser_class=self.__class__.__name__,
+                                           init_struct=init_struct,
+                                           init_settings=init_settings)
 
         for etype in ['errors', 'parser_errors', 'parser_exceptions']:
             errors = parser_result.nodes.results.get_attribute(etype)
@@ -109,8 +109,7 @@ class CryMainParser(Parser):
         return parser_result.exit_code
 
     def parse_temporary_folder(self, retrieved_temporary_folder):
-        """parse the temporary folder """
-
+        """Parse the temporary folder."""
         if retrieved_temporary_folder is None:
             return None
         if not os.path.exists(retrieved_temporary_folder):

@@ -13,28 +13,32 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-""" a data type to store CRYSTAL17 basis sets
-"""
+"""A data type to store CRYSTAL17 basis sets."""
 from __future__ import absolute_import
 
 import hashlib
-import io
 import os
-import tempfile
 
-import six
 from ruamel.yaml import YAML
+import six
+
 from aiida.common.utils import classproperty
 from aiida.orm import Data, Str
+
 from aiida_crystal17.common import flatten_dict, unflatten_dict
 from aiida_crystal17.common.atoms import SYMBOLS_R
 from aiida_crystal17.parsers.raw.parse_bases import parse_bsets_stdin
 
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
+
 BASISGROUP_TYPE = 'crystal17.basisset'
 
 
-def _retrieve_basis_sets(files, stop_if_existing):
-    """ get existing basis sets or create if not
+def retrieve_basis_sets(files, stop_if_existing):
+    """Retrieve existing basis sets or create if them, if they do not exist.
 
     :param files: list of basis set file paths
     :param stop_if_existing: if True, check for the md5 of the files and,
@@ -45,8 +49,8 @@ def _retrieve_basis_sets(files, stop_if_existing):
     from aiida.orm.querybuilder import QueryBuilder
 
     basis_and_created = []
-    for f in files:
-        _, content = parse_basis(f)
+    for basis_file in files:
+        _, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
         qb = QueryBuilder()
         qb.append(BasisSetData, filters={'attributes.md5': {'==': md5sum}})
@@ -54,7 +58,7 @@ def _retrieve_basis_sets(files, stop_if_existing):
 
         if existing_basis is None:
             # return the basis set data instances, not stored
-            basisset, created = BasisSetData.get_or_create(f, use_first=True, store_basis=False)
+            basisset, created = BasisSetData.get_or_create(basis_file, use_first=True, store_basis=False)
             # to check whether only one basis set per element exists
             # NOTE: actually, created has the meaning of "to_be_created"
             basis_and_created.append((basisset, created))
@@ -62,17 +66,17 @@ def _retrieve_basis_sets(files, stop_if_existing):
             if stop_if_existing:
                 raise ValueError('A Basis Set with identical MD5 to '
                                  ' {} cannot be added with stop_if_existing'
-                                 ''.format(f))
+                                 ''.format(basis_file))
             existing_basis = existing_basis[0]
             basis_and_created.append((existing_basis, False))
 
     return basis_and_created
 
 
-def parse_basis(fname):
-    """get relevant information from the basis file
+def parse_basis(basis_file):
+    """Get relevant information from the basis file.
 
-    :param fname: the file path
+    :param basis_file: absolute path to a file or open filelike object
     :return: (metadata_dict, content_str)
 
     - The basis file must contain one basis set in the CRYSTAL17 format
@@ -104,12 +108,19 @@ def parse_basis(fname):
     parsing_data = False
     content = []
 
-    try:
-        contentlines = fname.readlines()
-        fname = fname.name
-    except AttributeError:
-        with io.open(fname, encoding='utf8') as f:
-            contentlines = f.read().splitlines()
+    if isinstance(basis_file, six.string_types):
+        basis_file = pathlib.Path(basis_file)
+
+    if isinstance(basis_file, pathlib.Path):
+        contentlines = basis_file.read_text().splitlines()
+        basis_file_name = basis_file.name
+    else:
+        basis_file.seek(0)
+        contentlines = basis_file.read().splitlines()
+        try:
+            basis_file_name = basis_file.name
+        except AttributeError:
+            basis_file_name = 'StringIO'
 
     for line in contentlines:
         # ignore commented and blank lines
@@ -124,10 +135,10 @@ def parse_basis(fname):
                 head_data = yaml.load('\n'.join(yaml_lines))
                 head_data = {} if not head_data else head_data
                 if not isinstance(head_data, dict):
-                    raise ParsingError('the header data could not be read for file: {}'.format(fname))
+                    raise ParsingError('the header data could not be read for file: {}'.format(basis_file_name))
                 if set(head_data.keys()).intersection(protected_keys):
                     raise ParsingError('the header data contained a forbidden key(s) '
-                                       '{} for file: {}'.format(protected_keys, fname))
+                                       '{} for file: {}'.format(protected_keys, basis_file_name))
                 meta_data = head_data
                 in_yaml = False
                 parsing_data = True
@@ -156,7 +167,7 @@ def parse_basis(fname):
     if len(first_line) != 2 or first_line[1] != str(num_shells):
         raise ParsingError(
             "The first line should contain only the atomic id and num shells ({}): '{}' for file {}".format(
-                num_shells, line, fname))
+                num_shells, line, basis_file_name))
     newline = '{0} {1}'.format(atomic_number if basis_type == 'all-electron' else 200 + atomic_number, num_shells)
     content[0] = newline
 
@@ -164,7 +175,7 @@ def parse_basis(fname):
 
 
 def md5_from_string(string, encoding='utf-8'):
-    """ return md5 hash of string
+    """Return md5 hash of a string.
 
     :param string: the string to hash
     :param encoding: the encoding to use
@@ -175,9 +186,9 @@ def md5_from_string(string, encoding='utf-8'):
 
 
 class BasisSetData(Data):
-    """
-    a data type to store CRYSTAL17 basis sets
-    it is intended to work much like the UpfData type
+    """A data type to store CRYSTAL17 basis sets.
+
+    It is intended to work much like the UpfData type
 
     - The basis file must contain one basis set in the CRYSTAL17 format
     - lines beginning # will be ignored
@@ -203,34 +214,46 @@ class BasisSetData(Data):
     """
 
     def __init__(self, filepath, **kwargs):
+        """Read and store a file containing a single basis set.
+
+        Parameters
+        ----------
+        filepath : str or filelike
+
+        """
         super(BasisSetData, self).__init__(**kwargs)
         self.set_file(filepath)
 
     @property
     def filename(self):
-        """
-        Returns the name of the file stored
-        """
+        """Return the name of the file stored."""
         return self.get_attribute('filename')
 
     @property
     def md5sum(self):
-        """ return the md5 hash of the basis set
+        """Return the md5 hash of the basis set.
 
         :return:
         """
         return self.get_attribute('md5', None)
 
-    def set_file(self, filepath):
+    def set_file(self, basis_file):
+        """Pre-parse the file to store the attributes and content separately.
+
+        Parameters
+        ----------
+        basis_file : str or filelike
+
+        Raises
+        ------
+        ValueError
+            a file has already been set for this BasisSetData instance
+
         """
-        pre-parse the file to store the attributes and content separately.
-        """
-        # to keep things simple,
-        # we only allow one file to ever be set for one class instance
         if 'filename' in list(self.attributes_keys()):
             raise ValueError('a file has already been set for this BasisSetData instance')
 
-        metadata, content = parse_basis(filepath)
+        metadata, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
 
         # store the metadata and md5 in the database
@@ -239,13 +262,13 @@ class BasisSetData(Data):
         self.set_attribute('md5', md5sum)
 
         # store the rest of the file content as a file in the file repository
-        filename = os.path.basename(filepath)
-        with tempfile.NamedTemporaryFile() as f:
-            with io.open(f.name, 'w', encoding='utf8') as fobj:
-                fobj.writelines(content)
-
-            super(BasisSetData, self).put_object_from_file(
-                path=f.name, key=filename, mode='w', encoding='utf8', force=False)
+        if isinstance(basis_file, six.string_types):
+            filename = os.path.basename(basis_file)
+        elif hasattr(basis_file, 'name'):
+            filename = os.path.basename(basis_file.name)
+        else:
+            filename = 'stringio.txt'
+        self.put_object_from_filelike(six.StringIO(content), key=filename, mode='w', force=False)
 
         self.set_attribute('filename', filename)
 
@@ -264,7 +287,7 @@ class BasisSetData(Data):
 
     @property
     def metadata(self):
-        """return the attribute data as a nested dictionary
+        """Return the attribute data as a nested dictionary.
 
         :return: metadata dict
         """
@@ -280,7 +303,7 @@ class BasisSetData(Data):
 
     @property
     def content(self):
-        """return the content string for insertion into .d12 file
+        """Return the content string for insertion into .d12 file.
 
         :return: content_str
         """
@@ -291,45 +314,39 @@ class BasisSetData(Data):
 
     @property
     def element(self):
-        """return the element symbol associated with the basis set"""
+        """Return the element symbol associated with the basis set."""
         return self.get_attribute('element', None)
 
     def get_data(self):
-        """ return the basis set content, parsed to a JSON format"""
+        """Return the basis set content, parsed to a JSON format."""
         return parse_bsets_stdin(self.content, isolated=True)[self.element]
 
     @classmethod
-    def get_or_create(cls, filepath, use_first=False, store_basis=True):
-        """
-        Pass the same parameter of the init; if a file with the same md5
-        is found, that BasisSetData is returned.
+    def get_or_create(cls, basis_file, use_first=False, store_basis=True):
+        """Pass the same parameter of the init; if a file with the same md5 is found, that BasisSetData is returned.
 
-        :param filepath: an absolute filename on disk
-        :param use_first: if False (default), raise an exception if more than \
-                one basis set is found.\
+        :param basis_file: an absolute filename on disk, or a filelike object
+        :param use_first: if False (default), raise an exception if more than
+                one basis set is found.
                 If it is True, instead, use the first available basis set.
-        :param bool store_basis: If false, \
-        the BasisSetData objects are not stored in
-                the database. default=True.
-        :return (basis, created): where basis is the BasisSetData object, \
-            and create is either True if the object was created, \
+        :param bool store_basis: If false, the BasisSetData objects are not stored in the database.
+        :return (basis, created): where basis is the BasisSetData object,
+                and create is either True if the object was created,
                 or False if the object was retrieved from the DB.
         """
-        if not os.path.isabs(filepath):
-            raise ValueError('filepath must be an absolute path')
+        if isinstance(basis_file, six.string_types) and not os.path.isabs(basis_file):
+            raise ValueError('basis_file must be an absolute path')
 
-        _, content = parse_basis(filepath)
-        print()
-        print(content)
+        _, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
 
         basissets = cls.from_md5(md5sum)
         if not basissets:
             if store_basis:
-                instance = cls(filepath=filepath).store()
+                instance = cls(filepath=basis_file).store()
                 return (instance, True)
 
-            instance = cls(filepath=filepath)
+            instance = cls(filepath=basis_file)
             return (instance, True)
         else:
             if len(basissets) > 1:
@@ -342,8 +359,7 @@ class BasisSetData(Data):
             return basissets[0], False
 
     def store(self, with_transaction=True, use_cache=None):
-        """
-        Store a new node in the DB, also saving its repository directory
+        """Store a new node in the DB, also saving its repository directory
         and attributes, and reparsing the file so that the md5 and the element
         are correctly reset.
 
@@ -427,25 +443,21 @@ class BasisSetData(Data):
         return BASISGROUP_TYPE
 
     def get_basis_family_names(self):
-        """
-        Get the list of all basiset family names to which the basis belongs
-        """
+        """Get the list of all basiset family names to which the basis belongs."""
         from aiida.orm import Group
 
         return [_.name for _ in Group.query(nodes=self, type_string=self.basisfamily_type_string)]
 
     @classmethod
     def get_basis_group(cls, group_name):
-        """
-        Return the BasisFamily group with the given name.
-        """
+        """Return the BasisFamily group with the given name."""
         from aiida.orm import Group
 
         return Group.objects.get(label=group_name, type_string=cls.basisfamily_type_string)
 
     @classmethod
     def get_basis_group_map(cls, group_name):
-        """get a mapping of elements to basissets in a basis set family
+        """Get a mapping of elements to basissets in a basis set family.
 
         Parameters
         ----------
@@ -476,9 +488,7 @@ class BasisSetData(Data):
 
     @classmethod
     def get_basis_groups(cls, filter_elements=None, user=None):
-        """
-        Return all names of groups of type BasisFamily,
-        possibly with some filters.
+        """Return all names of groups of type BasisFamily, possibly with some filters.
 
         :param filter_elements: A string or a list of strings.
                If present, returns only the groups that contains one Basis for
@@ -623,8 +633,8 @@ class BasisSetData(Data):
         """
         Upload a set of Basis Set files in a given group.
 
-        :param folder: a path containing all Basis Set files to be added.
-            Only files ending in set extension (case-insensitive) considered
+        :param folder: a path (str or pathlib.Path) containing all Basis Set files to be added.
+            Only files ending in set extension (case-sensitive) considered
         :param group_name: the name of the group to create. If it exists and is
             non-empty, a UniquenessError is raised.
         :param group_description: a string to be set as the group description.
@@ -638,24 +648,18 @@ class BasisSetData(Data):
         from aiida.orm import Group, User
         from aiida.common.exceptions import UniquenessError
 
-        if not os.path.isdir(folder):
+        if isinstance(folder, six.string_types):
+            folder = pathlib.Path(folder)
+
+        if not folder.is_dir():
             raise ValueError('folder must be a directory')
 
-        # only files, and only those ending with specified exension;
-        # go to the real file if it is a symlink
-        files = []
-        for i in os.listdir(folder):
-            if not os.path.isfile(os.path.join(folder, i)):
-                continue
-            if not i.lower().endswith(extension):
-                continue
-            files.append(os.path.realpath(os.path.join(folder, i)))
-
-        nfiles = len(files)
+        paths = [p.resolve() for p in folder.glob('*{}'.format(extension)) if p.is_file()]
 
         automatic_user = User.objects.get_default()
-        group, group_created = Group.objects.get_or_create(
-            label=group_name, type_string=BASISGROUP_TYPE, user=automatic_user)
+        group, group_created = Group.objects.get_or_create(label=group_name,
+                                                           type_string=BASISGROUP_TYPE,
+                                                           user=automatic_user)
 
         if group.user.email != automatic_user.email:
             raise UniquenessError('There is already a BasisFamily group with name {}'
@@ -667,7 +671,7 @@ class BasisSetData(Data):
 
         # NOTE: GROUP SAVED ONLY AFTER CHECKS OF UNICITY
 
-        basis_and_created = _retrieve_basis_sets(files, stop_if_existing)
+        basis_and_created = retrieve_basis_sets(paths, stop_if_existing)
         # check whether basisset are unique per element
         elements = [(i[0].element, i[0].md5sum) for i in basis_and_created]
         # If group already exists, check also that I am not inserting more than
@@ -694,19 +698,8 @@ class BasisSetData(Data):
 
         # save the basis set in the database, and add them to group
         for basisset, created in basis_and_created:
-            if created:
-                if not dry_run:
-                    basisset.store()
-                # TODO what happened to aiidalogger?
-                # pylint: disable=logging-format-interpolation
-                # aiidalogger.debug(
-                # "New node {0} created for file {1}".format(
-                #     basisset.uuid, basisset.filename))
-            else:
-                pass
-                # pylint: disable=logging-format-interpolation
-                # aiidalogger.debug("Reusing node {0} for file {1}".format(
-                #     basisset.uuid, basisset.filename))
+            if created and not dry_run:
+                basisset.store()
 
         # Add elements to the group all together
         if not dry_run:
@@ -714,4 +707,4 @@ class BasisSetData(Data):
 
         nuploaded = len([_ for _, created in basis_and_created if created])
 
-        return nfiles, nuploaded
+        return len(paths), nuploaded

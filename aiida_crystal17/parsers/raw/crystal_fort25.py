@@ -13,11 +13,8 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-import traceback
-
 import numpy as np
 
-from aiida_crystal17 import __version__
 from aiida_crystal17.common.parsing import split_numbers, convert_units
 
 IHFERM_MAP = {
@@ -29,7 +26,7 @@ IHFERM_MAP = {
 
 
 def parse_crystal_fort25(content):
-    """ parse the fort.25 output from CRYSTAL
+    """Parse the fort.25 output from CRYSTAL.
 
     Notes
     -----
@@ -170,27 +167,18 @@ def parse_crystal_fort25(content):
     }
 
 
-def parse_crystal_fort25_aiida(fileobj, parser_class):
-    """ takes the result from `parse_crystal_fort25` and prepares it for AiiDA output"""
-    results_data = {
-        'parser_version': str(__version__),
-        'parser_class': str(parser_class),
-        'parser_errors': [],
-        'parser_warnings': [],
-        'errors': [],
-        'warnings': []
-    }
+def parse_crystal_fort25_aiida(fileobj):
+    """Take the result from `parse_crystal_fort25` and prepares it for AiiDA output."""
 
-    try:
-        read_data = parse_crystal_fort25(fileobj.read())
-    except IOError as err:
-        traceback.print_exc()
-        results_data['parser_errors'].append('Error parsing CRYSTAL 17 main output: {0}'.format(err))
-        return results_data, None
+    content = fileobj.read()
+    if not content.strip():
+        raise IOError('the file is empty')
+
+    read_data = parse_crystal_fort25(content)
+    results_data = {}
 
     results_data['fermi_energy'] = read_data['fermi_energy']
-    results_data['energy_units'] = read_data['units']['energy']
-    results_data['units_conversion'] = read_data['units']['conversion']
+    results_data['units'] = read_data['units']
     results_data['system_type'] = read_data['system_type']
 
     array_data = {}
@@ -224,9 +212,9 @@ def parse_crystal_fort25_aiida(fileobj, parser_class):
 
     if read_data['projections_alpha'] is not None:
         if read_data['projections_beta'] is not None:
-            array_data['projections_alpha'] = total_alpha
-            array_data['projections_beta'] = total_beta
+            array_data['projections_alpha'] = projected_alpha
+            array_data['projections_beta'] = projected_beta
         else:
-            array_data['projections'] = total_alpha
+            array_data['projections'] = projected_alpha
 
     return results_data, array_data

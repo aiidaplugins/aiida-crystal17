@@ -1,60 +1,70 @@
 # Install pre-commit hooks via
 # pre-commit install
 
-- repo: git://github.com/pre-commit/pre-commit-hooks
-  sha: v2.2.3
-  hooks:
-  - id: check-json
-  - id: check-yaml
-  - id: end-of-file-fixer
-  - id: trailing-whitespace
-  - id: double-quote-string-fixer
-  - id: flake8
+exclude: >
+  (?x)^(
+      aiida_crystal17/tests/raw_files/.*|
+      cry17_scripts/.*
+  )$
 
-- repo: local
-  hooks:
+repos:
 
-  - id: yapf
-    name: Yet Another Python Formatter
-    entry: yapf
-    language: system
-    types: [python]
-    args: ["-i", "-vv"]
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+    - id: check-json
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: double-quote-string-fixer
+    - id: flake8
 
-  - id: version-number
-    name: Check version numbers
-    entry: python ./.travis-data/check_version.py version
-    language: system
-    files: >-
-      (?x)^(
-        setup.json|
-        .travis-data/check_version.py|
-        aiida_crystal17/__init__.py
-      )$
-    pass_filenames: false
+  - repo: local
+    hooks:
 
-  - id: conda
-    name: Create environment.yml
-    entry: python ./.travis-data/check_version.py conda
-    language: system
-    files: >-
-      (?x)^(
-        setup.json|
-        setup.py|
-        .travis-data/check_version.py|
-        conda_dev_env.yml|
-      )$
-    pass_filenames: false
+    - id: yapf
+      name: Yet Another Python Formatter
+      entry: yapf
+      language: system
+      types: [python]
+      args: ["-i", "-vv"]
 
-  - id: travis-linter
-    name: Travis Lint
-    entry: travis lint
-    files: .travis.yml
-    language: ruby
-    additional_dependencies: ['travis']
+    - id: version-number
+      name: Check version numbers
+      entry: python ./.pre-commit/check_version.py version
+      language: system
+      files: >-
+        (?x)^(
+          setup.json|
+          .pre-commit/check_version.py|
+          aiida_crystal17/__init__.py
+        )$
+      pass_filenames: false
 
-  - id: doc8
-    entry: doc8
-    language: system
-    types: [rst]
-    name: doc8 - Lint the documentation.
+    - id: conda
+      name: Create environment.yml
+      entry: python ./.pre-commit/check_version.py conda
+      language: system
+      files: >-
+        (?x)^(
+          setup.json|
+          setup.py|
+          .pre-commit/check_version.py|
+          conda_dev_env.yml|
+        )$
+      pass_filenames: false
+
+    - id: travis-linter
+      name: Travis Lint
+      entry: travis lint
+      files: .travis.yml
+      language: ruby
+      additional_dependencies: ['travis']
+
+    - id: doc8
+      entry: doc8
+      language: system
+      types: [rst]
+      name: doc8 - Lint the documentation.
+
+    # TODO could also add check-manifest

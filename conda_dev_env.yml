@@ -11,6 +11,7 @@ dependencies:
 # install_requires
 - aiida-core==1.0.0b5
 - ase>=3.12.0,<4.0.0
+- importlib_resources
 - jsonextended>=0.7.10
 - jsonschema
 - pycifrw==4.4
@@ -22,6 +23,7 @@ dependencies:
 - mock==2.0.0
 - pgtest==1.2.0
 - pytest-cov
+- pytest-notebook
 - pytest-regressions
 - pytest-timeout
 - pytest==3.6.3
@@ -30,8 +32,8 @@ dependencies:
 # code_style
 - doc8<0.9.0,>=0.8.0
 - flake8<3.8.0,>=3.7.0
-- pre_commit==1.14.4
-- yapf==0.26.0
+- pre_commit==1.17.0
+- yapf==0.28.0
 # docs
 - ipypublish>=0.10.7
 - sphinx>=1.6
