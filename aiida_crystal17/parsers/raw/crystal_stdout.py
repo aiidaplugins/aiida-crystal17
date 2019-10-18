@@ -73,14 +73,14 @@ KNOWN_ERRORS = (
     ('MPI_Abort', 'ERROR_MPI_ABORT'))
 
 SYSTEM_INFO_REGEXES = (
-    ('n_atoms', re.compile(r'\sN. OF ATOMS PER CELL\s*(\d*)', re.DOTALL)),
-    ('n_shells', re.compile(r'\sNUMBER OF SHELLS\s*(\d*)', re.DOTALL)),
-    ('n_ao', re.compile(r'\sNUMBER OF AO\s*(\d*)', re.DOTALL)),
-    ('n_electrons', re.compile(r'\sN. OF ELECTRONS PER CELL\s*(\d*)', re.DOTALL)),
-    ('n_core_el', re.compile(r'\sCORE ELECTRONS PER CELL\s*(\d*)', re.DOTALL)),
-    ('n_symops', re.compile(r'\sN. OF SYMMETRY OPERATORS\s*(\d*)', re.DOTALL)),
-    ('n_kpoints_ibz', re.compile(r'\sNUMBER OF K POINTS IN THE IBZ\s*(\d*)', re.DOTALL)),
-    ('n_kpoints_gilat', re.compile(r'\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d*)', re.DOTALL)),
+    ('n_atoms', re.compile(r'\sN. OF ATOMS PER CELL\s*(\d+)', re.DOTALL)),
+    ('n_shells', re.compile(r'\sNUMBER OF SHELLS\s*(\d+)', re.DOTALL)),
+    ('n_ao', re.compile(r'\sNUMBER OF AO\s*(\d+)', re.DOTALL)),
+    ('n_electrons', re.compile(r'\sN. OF ELECTRONS PER CELL\s*(\d+)', re.DOTALL)),
+    ('n_core_el', re.compile(r'\sCORE ELECTRONS PER CELL\s*(\d+)', re.DOTALL)),
+    ('n_symops', re.compile(r'\sN. OF SYMMETRY OPERATORS\s*(\d+)', re.DOTALL)),
+    ('n_kpoints_ibz', re.compile(r'\sNUMBER OF K POINTS IN THE IBZ\s*(\d+)', re.DOTALL)),
+    ('n_kpoints_gilat', re.compile(r'\s NUMBER OF K POINTS\(GILAT NET\)\s*(\d+)', re.DOTALL)),
 )
 
 
@@ -849,7 +849,7 @@ def parse_optimisation(lines, initial_lineno):
 
                 if not fnmatch(line, '*E(AU)*'):
                     raise IOError('was expecting units in a.u. on line:' ' {0}, got: {1}'.format(curr_lineno, line))
-                data = [{'energy': {'total_corrected': convert_units(split_numbers(lines[-1])[0], 'hartree', 'eV')}}]
+                data = [{'energy': {'total_corrected': convert_units(split_numbers(line)[0], 'hartree', 'eV')}}]
 
                 return ParsedSection(curr_lineno, data)
 
