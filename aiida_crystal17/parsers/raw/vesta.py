@@ -32,6 +32,7 @@ SymbolInfo = namedtuple('SymbolInfo', ['radius', 'r2', 'r3', 'r', 'g', 'b'])
 def get_default_settings():
     """Return dict of default settings."""
     return {
+        'sites': {},
         'bounds': {
             'xmin': 0,
             'xmax': 1,
@@ -183,15 +184,23 @@ def create_vesta_input(atoms, cube_filepath=None, settings=None):
     lines.append('STRUC')
     for i, ((x, y, z), symbol) in enumerate(zip(atoms.get_scaled_positions(),
                                                 atoms.get_chemical_symbols())):  # type: (int, ase.Atom)
-        lines.append('  {idx:<2d} {sym:<2s} {sym:>2s}{idx:<2d} {occ:.6f} {x:.6f} {y:.6f} {z:.6f} {wyck} -'.format(
-            idx=i + 1, sym=symbol, occ=1.0, x=x, y=y, z=z, wyck='1'))
-        lines.append('    0.000000   0.000000   0.000000  0.00')
+        label = settings['sites'].get(str(i + 1), {}).get('label', '{sym:s}{idx:d}'.format(sym=symbol, idx=i + 1))
+        lines.append('  {idx:<2d} {sym:<2s} {label:4s} {occ:.6f} {x:.6f} {y:.6f} {z:.6f} {wyck} -'.format(idx=i + 1,
+                                                                                                          sym=symbol,
+                                                                                                          label=label,
+                                                                                                          occ=1.0,
+                                                                                                          x=x,
+                                                                                                          y=y,
+                                                                                                          z=z,
+                                                                                                          wyck='1'))
+        lines.append('    0.000000   0.000000   0.000000  {charge:.6f}'.format(charge=0))
     lines.append('  0 0 0 0 0 0 0')
 
     # isotropic displacement parameter
     lines.append('THERI 0')
     for i, atom in enumerate(atoms):  # type: (int, ase.Atom)
-        lines.append('  {idx:<2d} {sym:>2s}{idx:<2d}  1.000000'.format(idx=i + 1, sym=atom.symbol))
+        label = settings['sites'].get(str(i + 1), {}).get('label', '{sym:s}{idx:d}'.format(sym=atom.symbol, idx=i + 1))
+        lines.append('  {idx:<2d} {label:4s}  1.000000'.format(idx=i + 1, label=label))
     lines.append('  0 0 0')
 
     lines.extend(['SHAPE', '  0       0       0       0   0.000000  0   192   192   192   192'])
@@ -222,18 +231,27 @@ def create_vesta_input(atoms, cube_filepath=None, settings=None):
     lines.append('  0 0 0 0')
 
     # site radii and colors
-    # TODO allow bespoke site colors
     lines.append('SITET')
-    lines.extend([
-        '  {idx:<2d} {sym:>2s}{idx:<2d} {rad:.6f} {r} {g} {b} {r} {g} {b}  100  0'.format(
+    for i, atom in enumerate(atoms):
+        symbol = atom.symbol
+        if str(i + 1) in settings.get('sites', {}):
+            label = settings['sites'][str(i + 1)].get('label', '{sym:s}{idx:d}'.format(sym=symbol, idx=i + 1))
+            radius = settings['sites'][str(i + 1)].get('radius', el_info[symbol].radius)
+            red, green, blue = settings['sites'][str(i + 1)].get(
+                'color', (el_info[symbol].r, el_info[symbol].g, el_info[symbol].b))
+        else:
+            label = '{sym:s}{idx:d}'.format(sym=symbol, idx=i + 1)
+            radius = el_info[symbol].radius
+            red, green, blue = (el_info[symbol].r, el_info[symbol].g, el_info[symbol].b)
+        lines.append('  {idx:<2d} {label:4s} {rad:.6f} {r} {g} {b} {r} {g} {b}  100  {show_label}'.format(
             idx=i + 1,
-            sym=a.symbol,
-            rad=el_info[a.symbol].radius,
-            r=int(el_info[a.symbol].r * 255),
-            g=int(el_info[a.symbol].g * 255),
-            b=int(el_info[a.symbol].b * 255),
-        ) for i, a in enumerate(atoms)
-    ])
+            label=label,
+            rad=radius,
+            r=int(red * 255),
+            g=int(green * 255),
+            b=int(blue * 255),
+            show_label=0  # NB: needs to be used in conjunction with LBLAT
+        ))
     lines.append('  0 0 0 0 0 0')
 
     # additional lines (currently hardcoded)

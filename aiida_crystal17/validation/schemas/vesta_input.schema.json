@@ -3,11 +3,35 @@
     "description": "Settings for creating a VESTA input file",
     "type": "object",
     "properties": {
+        "sites": {
+            "description": "settings for individual atomic sites, defined e.g. H1, H2",
+            "patternProperties": {
+                "[1-9][0-9]*": {
+                    "type": "object",
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "radius": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "color": {
+                            "description": "r, g, b",
+                            "type": "array",
+                            "minLength": 3,
+                            "maxLength": 3,
+                            "items": {"type": "number", "minimum": 0, "maximum": 1}
+                        }
+                    }
+                }
+            }
+        },
         "cube_filepath": {
             "type": "string"
         },
         "bounds": {
-            "dexcription": "bounds for repeating cell",
+            "description": "bounds for repeating cell",
             "type": "object",
             "patternProperties": {
                 "(x|y|z)(min|max)": {
