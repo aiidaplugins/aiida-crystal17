@@ -1,6 +1,72 @@
 Changelog
 =========
 
+v0.10.0b5 (2019-10-18)
+----------------------
+
+- Large improvement/refactor of properties calculations and workchains:
+
+  - Rename ``cry_`` -> ``prop_``
+  - Renamed ``crystal17.fermi`` -> ``crystal17.newk``
+  - Subclass calculations from base ``PropAbstractCalculation``;
+      - all calculation take as input a wf_folder and parameter dict
+      - all calculations output a result dict
+      - no longer options to symlink wf_folder (it doesn't work)
+      - wf_folder can now be a standard folder (or remote)
+  - Add raw parsers for parsing properties stdout and gaussian cube files.
+  - Parsers all use ``read_properties_stdout`` to parse standard output data, and check for errors,
+    also exit codes are saved for each step, then the highest priority code is returned at the end.
+  - Changed inputs/outputs of ``crystal17.fermi``.
+  - Add ``crystal17.ech3`` calculation and parser (stores cube files as ``GaussianCube`` data objects).
+  - Updated CryPropertiesWorkChain to run multiple properties calculation.
+  - Add creation of VESTA file, from cube data file.
+  - ``crystal17.doss``; fix parsing of projections.
+  - Update band_gap calcfunction, to use correct energy units format.
+  - Add documentation: ``calc_doss``, ``workflow_properties``, ``calc_ech3``.
+
+- Improve CRYSTAL main stdout parser.
+
+  - Extract mulliken orbital and shell populations.
+  - parse 0D (MOLECULE) cartesian coordinates
+  - improve regex for removing PROCESS and Fortran warning lines
+  - ignore ``all open_hca: getaddr_netdev ERROR`` lines, that can occur before program start.
+  - fix issues with computations that converge after the 1st cycle.
+
+- Add fort.9 raw parser.
+
+- Symmetry: allow for use of symbol (rather than kind) to define
+  inequivalent sites.
+
+- Improved `BasisSetData.set_file` and `BasisSetData.upload_basisset_family`,
+  to accept `pathlib.Path` and filelike objects.
+
+- Programatically Access Resource Files:
+
+  Non-python files (JSON schema and raw files) are now accessed programatically,
+  using the `importlib_resources` package.
+  This means that (a) they can be accessed even if the package is zipped and,
+  (b) these files can be moved to a separate package in the future.
+
+- Replace Travis flake8/version tests with a pre-commit test:
+
+  - Updated `pre-commit` and `yapf` versions have been updated, and
+  - `pre-commit run -a` has been applied to the repository.
+  - Added conda test, to check the `conda_dev_env.yml` works.
+
+- Add pytest plugin configuration:
+
+  - Use pytest command-line arguments to control run configuration.
+  - Replace ``MOCK_CRY17_EXECUTABLES`` environmental variable with
+    ``pytest --cry17-no-mock``,
+    and ``CRY17_TEST_WORKDIR`` with ``pytest --cry17-workdir "test_workdir"``.
+  - Add ``--cry17-skip-exec``, for skipping tests call executable.
+  - Add ``pytest-notebook`` dependency and test function, to test and regenerate tutorial notebooks.
+
+- GULP: improve ReaxFF parser:
+
+  - correctly handle read/write of ``X`` symbol
+  - allow reaxff tolerance value to be set, when reading file to dict.
+
 v0.9.2b5 (2019-08-01)
 ---------------------
 

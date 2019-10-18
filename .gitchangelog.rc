@@ -94,6 +94,13 @@ ignore_regexps = [
     r'^([cC]hg|[fF]ix|[nN]ew)\s*:\s*[d|D]ev:',
     r'^(.{3,3}\s*:)?\s*[fF]irst commit.?\s*$',
     r'^$',  # ignore commits with empty messages
+
+    # one time removals
+    r'^[Pp]re commit( test)? fix\.$',
+    r'^Add test for aiida development version.*$',
+    r'^Test correction\.$',
+    r'^Minor improvements\.$',
+    r'^Style test fix\.$',
 ]
 
 # ``section_regexps`` is a list of 2-tuples associating a string label and a
