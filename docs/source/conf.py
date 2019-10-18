@@ -242,6 +242,10 @@ def run_apidoc(_):
     source_dir = os.path.abspath(os.path.dirname(__file__))
     apidoc_dir = os.path.join(source_dir, 'apidoc')
     package_dir = os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17')
+    exclude_paths = [
+        os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17', 'tests', 'test_*'),
+        os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17', 'tests', 'raw_files')
+    ]
 
     # In #1139, they suggest the route below, but this ended up
     # calling sphinx-build, not sphinx-apidoc
@@ -255,18 +259,18 @@ def run_apidoc(_):
         cmd_path = os.path.abspath(os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
 
     options = [
-        '-o',
-        apidoc_dir,
-        package_dir,
         '--private',
         '--force',
         '--no-toc',
+        '-o',
+        apidoc_dir,
+        package_dir,
     ]
 
     # See https://stackoverflow.com/a/30144019
     env = os.environ.copy()
     env['SPHINX_APIDOC_OPTIONS'] = 'members,undoc-members,show-inheritance'
-    subprocess.check_call([cmd_path] + options, env=env)
+    subprocess.check_call([cmd_path] + options + exclude_paths, env=env)
 
 
 def add_intersphinx_aliases_to_inv(app):
