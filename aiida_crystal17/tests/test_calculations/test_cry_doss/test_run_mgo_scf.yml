@@ -33,8 +33,8 @@ calc:
   sealed: true
   stdout_file_name: main.out
   version:
-    core: 1.0.0b5
-    plugin: 0.10.0b5
+    core: 1.0.0b6
+    plugin: 0.10.0b6
   withmpi: false
 results:
   energy_max: 10.4040617
@@ -57,7 +57,7 @@ results:
   parser_class: CryDossParser
   parser_errors: []
   parser_exceptions: []
-  parser_version: 0.10.0b5
+  parser_version: 0.10.0b6
   spin: false
   system_type: closed shell, insulating system
   units:

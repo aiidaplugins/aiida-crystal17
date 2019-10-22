@@ -27,6 +27,6 @@ scheduler_stderr: _scheduler-stderr.txt
 scheduler_stdout: _scheduler-stdout.txt
 sealed: true
 version:
-  core: 1.0.0b5
-  plugin: 0.10.0b5
+  core: 1.0.0b6
+  plugin: 0.10.0b6
 withmpi: false
