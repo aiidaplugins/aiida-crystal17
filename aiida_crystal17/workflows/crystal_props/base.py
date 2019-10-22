@@ -13,9 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-import copy
-
-from plumpy.ports import PortNamespace
+from plumpy import ProcessSpec
 from six import PY2
 
 from aiida import orm
@@ -33,28 +31,6 @@ if PY2:
     from collections import Mapping
 else:
     from collections.abc import Mapping
-
-
-def expose_ports(port, port_namespace, exclude):
-    for sub_port_name, sub_port in port_namespace.items():
-        if isinstance(sub_port, PortNamespace):
-            sub_port_copy = copy.copy(sub_port)
-            sub_port_copy._ports = {}
-            # sub_port_copy.required = False
-            sub_port_copy.populate_defaults = False
-            port[sub_port_name] = sub_port_copy
-            expose_ports(port[sub_port_name], sub_port, exclude)
-        elif exclude is not None and sub_port_name in exclude:
-            pass
-        else:
-            sub_port_copy = copy.deepcopy(sub_port)
-            sub_port_copy.required = False
-            port[sub_port_name] = sub_port_copy
-
-
-def expose_optional_inputs(spec, namespace, process_class, exclude=None):
-    spec.input_namespace(namespace, required=False)
-    expose_ports(spec.inputs[namespace], process_class.spec().inputs, exclude)
 
 
 def strip_empty_namespaces(data):
@@ -114,13 +90,14 @@ class CryPropertiesWorkChain(WorkChain):
         and will fail validation if these empty namespaces are present.
 
         """
-        # TODO This may have been fixed in fff3cadcc9572bbad32144d7db27da41c2c89c14, raise an issue on aiida-core?
+        # TODO This has been fixed in fff3cadcc9572bbad32144d7db27da41c2c89c14, and can be removed for aiida-core>1.0.0b6
         if kwargs.get('inputs', None):
             kwargs['inputs'] = strip_empty_namespaces(kwargs['inputs'])
         super(CryPropertiesWorkChain, self).__init__(**kwargs)
 
     @classmethod
     def define(cls, spec):
+        # type: (ProcessSpec) -> None
         # yapf: disable
         super(CryPropertiesWorkChain, cls).define(spec)
 
@@ -130,7 +107,6 @@ class CryPropertiesWorkChain(WorkChain):
                    valid_type=(orm.FolderData, orm.RemoteData, orm.SinglefileData),
                    required=False,
                    help='the folder containing the wavefunction fort.9 file')
-        # expose_optional_inputs(spec, cls._scf_namespace, CryMainCalculation)
         spec.expose_inputs(cls._scf_class, namespace=cls._scf_name,
                            namespace_options={'required': False, 'populate_defaults': False})
 
