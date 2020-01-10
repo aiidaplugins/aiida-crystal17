@@ -1,0 +1,19 @@
+# Mulliken Populations: 
+# NSPIN,NATOM
+# IAT,NSHELL
+# Xiat,Yiat,Ziat (AU)
+# QTOT shell charges
+# NORB
+# orbital charges
+         1          2
+        12          3
+     0.000     0.000     0.000
+    11.223     1.999     7.622     1.602
+         9
+     1.999     1.961     1.887     1.887     1.887     0.549     0.351     0.351
+     0.351
+         8          2
+     3.978    -3.978     3.978
+     8.777     1.998     6.779
+         5
+     1.998     1.867     1.637     1.637     1.637

@@ -184,6 +184,7 @@ def db_test_app(aiida_environment, pytestconfig):
             'crystal17.doss': 'mock_properties17',
             'crystal17.ech3': 'mock_properties17',
             'crystal17.newk': 'mock_properties17',
+            'crystal17.ppan': 'mock_properties17',
             'gulp.single': 'mock_gulp',
             'gulp.optimize': 'mock_gulp',
             'gulp.fitting': 'mock_gulp'
@@ -195,6 +196,7 @@ def db_test_app(aiida_environment, pytestconfig):
             'crystal17.doss': 'properties17',
             'crystal17.ech3': 'properties17',
             'crystal17.newk': 'properties17',
+            'crystal17.ppan': 'properties17',
             'gulp.single': 'gulp',
             'gulp.optimize': 'gulp',
             'gulp.fitting': 'gulp'
