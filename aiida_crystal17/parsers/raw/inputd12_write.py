@@ -171,6 +171,19 @@ def _geometry_block(outstr, indict, atom_props):
         outstr += '{}\n'.format(keyword)
     for keyword in get_keys(indict, ['geometry', 'info_external'], []):
         outstr += '{}\n'.format(keyword)
+    if 'ROTCRY' in indict.get('geometry', {}):
+        outstr += 'ROTCRY\n'
+        rotcry = indict['geometry']['ROTCRY']
+        if rotcry is None:
+            outstr += 'AUTO\n'
+        elif isinstance(rotcry[0], (int, float)):
+            outstr += 'ANGROT\n'
+            outstr += '{0:.6f} {1:.6f} {2:.6f}\n'.format(*rotcry)
+        else:
+            outstr += 'MATROT\n'
+            for row in rotcry:
+                outstr += '{0:.6f} {1:.6f} {2:.6f}\n'.format(*row)
+
     if indict.get('geometry', {}).get('optimise', False):
         outstr += 'OPTGEOM\n'
         outstr += format_value(indict, ['geometry', 'optimise', 'type'])
