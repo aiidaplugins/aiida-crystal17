@@ -7,6 +7,7 @@ def test_input_full():
         'geometry': {
             'info_print': ['ATOMSYMM', 'SYMMOPS'],
             'info_external': ['STRUCPRT'],
+            'ROTCRY': [[1.0, 0, 0], [0, 1, 0], [0, 0, -1]],
             'optimise': {
                 'type': 'FULLOPTG',
                 'hessian': 'HESSIDEN',
@@ -82,6 +83,11 @@ EXTERNAL
 ATOMSYMM
 SYMMOPS
 STRUCPRT
+ROTCRY
+MATROT
+1.000000 0.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 0.000000 -1.000000
 OPTGEOM
 FULLOPTG
 HESSIDEN
