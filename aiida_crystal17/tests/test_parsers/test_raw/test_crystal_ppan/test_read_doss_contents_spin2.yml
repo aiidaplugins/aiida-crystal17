@@ -1,0 +1,41 @@
+alpha+beta_electrons:
+  atoms:
+  - atomic_number: 12.0
+    coordinate:
+    - 0.0
+    - 0.0
+    - 0.0
+    orbital_charges:
+    - 1.999
+    - 1.961
+    - 1.887
+    - 1.887
+    - 1.887
+    - 0.549
+    - 0.351
+    - 0.351
+    - 0.351
+    shell_charges:
+    - 1.999
+    - 7.622
+    - 1.602
+    total_charge: 11.223
+  summed_charge: 11.223
+alpha-beta_electrons:
+  atoms:
+  - atomic_number: 8.0
+    coordinate:
+    - 3.978
+    - -3.978
+    - 3.978
+    orbital_charges:
+    - 1.998
+    - 1.867
+    - 1.637
+    - 1.637
+    - 1.637
+    shell_charges:
+    - 1.998
+    - 6.779
+    total_charge: 8.777
+  summed_charge: 8.777
