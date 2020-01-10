@@ -16,7 +16,7 @@ dependencies:
 - jsonschema
 - pycifrw==4.4
 - ruamel.yaml
-- six >=1.12.0
+- six ==1.12.0
 - spglib>=1.10.0,<2.0.0
 # testing
 - coverage
