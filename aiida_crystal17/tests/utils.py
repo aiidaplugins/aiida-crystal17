@@ -203,7 +203,7 @@ class AiidaTestApp(object):
             path to a local work directory (used when creating computers)
         executable_map : dict
             mapping of computation entry points to the executable name
-        environment : None or aiida.manage.fixtures.FixtureManager
+        environment : None or aiida.manage.tests.TestManager
             manager of a temporary AiiDA environment
 
         """
