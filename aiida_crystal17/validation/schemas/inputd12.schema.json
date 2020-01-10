@@ -49,6 +49,26 @@
             ]
           }
         },
+        "ROTCRY": {
+          "description": "Rotation of the crystal with respect to the reference system cell. Can be null (AUTO), array(3) (ANGROT), or array((3,3)) (MATROT)",
+          "type": [
+            "null",
+            "array"
+          ],
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": [
+              "number",
+              "array"
+            ],
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "number"
+            }
+          }
+        },
         "optimise": {
           "description": "optimisation block inputs",
           "type": [
@@ -190,7 +210,10 @@
           "maxItems": 2,
           "items": [
             {
-              "type": ["integer", "array"],
+              "type": [
+                "integer",
+                "array"
+              ],
               "minimum": 1,
               "minItems": 3,
               "maxItems": 3,

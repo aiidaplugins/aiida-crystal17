@@ -295,3 +295,14 @@ def _read_geom_block(lines, output_dict, schema):
         elif line in get_keys(schema, ['properties', 'geometry', 'properties', 'info_external', 'items', 'enum'],
                               raise_error=True):
             _append_key(output_dict, 'geometry.info_external', line)
+        elif line == 'ROTCRY':
+            line = _pop_line(lines)
+            if line == 'AUTO':
+                output_dict['geometry.ROTCRY'] = None
+            elif line == 'ANGROT':
+                line = _pop_line(lines)
+                output_dict['geometry.ROTCRY'] = _split_line(line)
+            elif line == 'MATROT':
+                output_dict['geometry.ROTCRY'] = [_split_line(_pop_line(lines)) for _ in range(3)]
+            else:
+                raise IOError('After ROTCRY, expected one of AUTO, ANGROT, MATROT: {}'.format(line))

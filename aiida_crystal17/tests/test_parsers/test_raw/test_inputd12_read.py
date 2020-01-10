@@ -13,6 +13,11 @@ EXTERNAL
 ATOMSYMM
 SYMMOPS
 STRUCPRT
+ROTCRY
+MATROT
+1.0 0 0
+0 1 0
+0 0 -1
 OPTGEOM
 FULLOPTG
 HESSIDEN
@@ -149,6 +154,7 @@ def test_full_read(cry_stdin_str):
         'geometry': {
             'info_print': ['ATOMSYMM', 'SYMMOPS'],
             'info_external': ['STRUCPRT'],
+            'ROTCRY': [[1.0, 0, 0], [0, 1, 0], [0, 0, -1]],
             'optimise': {
                 'type': 'FULLOPTG',
                 'hessian': 'HESSIDEN',
