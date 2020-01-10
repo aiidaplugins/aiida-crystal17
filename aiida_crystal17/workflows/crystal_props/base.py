@@ -28,6 +28,7 @@ from aiida_crystal17.data.input_params import CryInputParamsData
 from aiida_crystal17.calculations.cry_main import CryMainCalculation
 from aiida_crystal17.calculations.prop_doss import CryDossCalculation
 from aiida_crystal17.calculations.prop_ech3 import CryEch3Calculation
+from aiida_crystal17.calculations.prop_ppan import CryPpanCalculation
 
 if PY2:
     from collections import Mapping
@@ -101,7 +102,7 @@ class CryPropertiesWorkChain(WorkChain):
     _wf_fname = 'fort.9'
     _scf_name = 'scf'
     _scf_class = CryMainCalculation
-    _cry_props = {'doss': CryDossCalculation, 'ech3': CryEch3Calculation}
+    _cry_props = {'doss': CryDossCalculation, 'ech3': CryEch3Calculation, 'ppan': CryPpanCalculation}
 
     def __init__(self, **kwargs):
         """Initialize inputs.
