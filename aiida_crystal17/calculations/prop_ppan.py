@@ -17,7 +17,7 @@
 import six
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
-from aiida_crystal17.parsers.raw.ppan_input import create_ppan_content
+from aiida_crystal17.parsers.raw.prop_inputs import create_rotref_content
 from aiida_crystal17.validation import validate_against_schema
 
 
@@ -30,7 +30,7 @@ class CryPpanCalculation(PropAbstractCalculation):
     @classmethod
     def validate_parameters(cls, data):
         dct = data.get_dict()
-        validate_against_schema(dct, 'prop.ppan.schema.json')
+        validate_against_schema(dct, 'prop.rotref.schema.json')
 
     @classmethod
     def define(cls, spec):
@@ -40,12 +40,16 @@ class CryPpanCalculation(PropAbstractCalculation):
 
         spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.ppan')
 
+        # TODO make dict optional
+
         spec.exit_code(352, 'ERROR_PPAN_FILE_MISSING', message='parser could not find the output PPAN.dat file')
         spec.exit_code(353, 'ERROR_PARSING_PPAN_FILE', message='error parsing output PPAN.dat file')
 
     def create_input_content(self):
         dct = self.inputs.parameters.get_dict()
-        lines = create_ppan_content(dct)
+        lines = create_rotref_content(dct)
+        lines.append('PPAN')
+        lines.append('END')
         return '\n'.join(lines)
 
     def get_retrieve_list(self):

@@ -18,7 +18,7 @@ import numpy as np
 from aiida_crystal17.validation import validate_against_schema
 
 
-def create_ppan_content(params, validate=True):
+def create_rotref_content(params, validate=True):
     """create the contents of a ppan.d3 input file
 
     Parameters
@@ -33,7 +33,7 @@ def create_ppan_content(params, validate=True):
 
     """
     if validate:
-        validate_against_schema(params, 'prop.ppan.schema.json')
+        validate_against_schema(params, 'prop.rotref.schema.json')
 
     lines = []
 
@@ -56,8 +56,6 @@ def create_ppan_content(params, validate=True):
                 lines.append('{0}'.format(row[0]))
                 lines.append('{0} {1} {2}'.format(*row[1:]))
 
-    lines.append('PPAN')
-    lines.append('END')
     return lines
 
 
