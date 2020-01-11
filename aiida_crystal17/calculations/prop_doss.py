@@ -20,6 +20,7 @@ from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.parsers.raw.doss_input import create_doss_content
+from aiida_crystal17.parsers.raw.prop_inputs import create_rotref_content
 from aiida_crystal17.validation import validate_against_schema
 
 
@@ -38,6 +39,9 @@ class CryDossCalculation(PropAbstractCalculation):
         dct = data.get_dict()
         k_points = dct.pop('k_points')
         validate_against_schema({'k_points': k_points}, 'prop.newk.schema.json')
+        if 'ROTREF' in dct:
+            rotref = dct.pop('ROTREF')
+            validate_against_schema({'ROTREF': rotref}, 'prop.rotref.schema.json')
         validate_against_schema(dct, 'prop.doss.schema.json')
 
     @classmethod
@@ -58,6 +62,7 @@ class CryDossCalculation(PropAbstractCalculation):
     def create_input_content(self):
         dct = self.inputs.parameters.get_dict()
         lines = self.create_newk_lines(dct)
+        lines.extend(create_rotref_content(dct, validate=False))
         lines.extend(create_doss_content(dct))
         return '\n'.join(lines)
 

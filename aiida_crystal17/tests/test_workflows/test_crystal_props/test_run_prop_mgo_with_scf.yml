@@ -21,3 +21,6 @@ outgoing:
 - doss__remote_folder
 - doss__results
 - doss__retrieved
+- scf__remote_folder
+- scf__results
+- scf__retrieved
