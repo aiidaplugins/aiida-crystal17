@@ -46,7 +46,7 @@ def create_rotref_content(params, validate=True):
                 'MATRIX',
             ])
             for row in params['ROTREF']['MATRIX']:
-                lines.append('{0:.6f} {1:.6f} {2:.6f}'.format(*row))
+                lines.append('{0:.8f} {1:.8f} {2:.8f}'.format(*row))
         if 'ATOMS' in params['ROTREF']:
             lines.extend([
                 'ROTREF',
