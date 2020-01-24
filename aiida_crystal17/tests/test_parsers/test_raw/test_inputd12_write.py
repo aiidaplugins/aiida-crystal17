@@ -41,6 +41,14 @@ def test_input_full():
                     'TOLLDENS': 6,
                     'TOLLGRID': 14,
                     'LIMBEK': 400
+                },
+                'd3': {
+                    'VERSION': 4,
+                    'ABC': True,
+                    'S6': 1.0000,
+                    'S8': 1.9889,
+                    'A1': 0.3981,
+                    'A2': 4.4211
                 }
             },
             # or
@@ -122,6 +130,19 @@ TOLLDENS
 6
 TOLLGRID
 14
+END
+DFTD3
+A1
+0.3981
+A2
+4.4211
+ABC
+S6
+1.0
+S8
+1.9889
+VERSION
+4
 END
 SHRINK
 8 8
