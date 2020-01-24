@@ -397,6 +397,47 @@
                   "exclusiveMinimum": true
                 }
               }
+            },
+            "d3": {
+              "description": "C6 based London dispersion correction",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "VERSION": {
+                  "type": "integer",
+                  "minimum": 2,
+                  "maximum": 4,
+                  "default": 4
+                },
+                "ABC": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "S6": {
+                  "type": "number"
+                },
+                "S8": {
+                  "type": "number"
+                },
+                "A1": {
+                  "type": "number"
+                },
+                "A2": {
+                  "type": "number"
+                },
+                "RS6": {
+                  "type": "number"
+                },
+                "RS8": {
+                  "type": "number"
+                },
+                "RADIUS": {
+                  "type": "number"
+                },
+                "CNRADIUS": {
+                  "type": "number"
+                }
+              }
             }
           }
         },
