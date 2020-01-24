@@ -61,12 +61,14 @@ def read_doss_contents(content):
     return params
 
 
-def create_doss_content(params):
+def create_doss_content(params, validate=True):
     """create the contents of a doss.d3 input file
 
     Parameters
     ----------
     params : dict
+    validate : bool
+        Validate the parameters against the JSON schema
 
     Returns
     -------
@@ -86,7 +88,8 @@ def create_doss_content(params):
     Unit of measurement:  energy:  hartree; DOSS: state/hartree/cell.
 
     """
-    validate_against_schema(params, 'prop.doss.schema.json')
+    if validate:
+        validate_against_schema(params, 'prop.doss.schema.json')
 
     lines = ['DOSS']
 

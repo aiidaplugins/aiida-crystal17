@@ -41,7 +41,11 @@ hash_map = {
     '9b8e9a41b49014c1c91fc9142210c611': {
         'stdout': ('ech3', 'mgo_sto3g_scf', 'main.out'),
         'output': [[('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT'), ('DENS_CUBE.DAT',)]]
-    }
+    },
+    '4fd8478e455d6507657124c96937d7b5': {
+        'stdout': ('ppan', 'mgo_sto3g_scf', 'main.out'),
+        'output': [[('ppan', 'mgo_sto3g_scf', 'PPAN.DAT'), ('PPAN.DAT',)]]
+    },
 }
 
 

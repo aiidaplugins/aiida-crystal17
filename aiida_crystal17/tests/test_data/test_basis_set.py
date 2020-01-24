@@ -140,3 +140,5 @@ def test_bases_from_struct(db_test_app):
     # print(bases_dict)
 
     assert set(bases_dict.keys()) == set(['Mg', 'Mg1', 'O'])
+
+    assert bases_dict['Mg'].get_basis_family_names() == ['sto3g']

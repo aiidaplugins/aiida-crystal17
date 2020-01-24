@@ -445,8 +445,12 @@ class BasisSetData(Data):
     def get_basis_family_names(self):
         """Get the list of all basiset family names to which the basis belongs."""
         from aiida.orm import Group
+        from aiida.orm import QueryBuilder
 
-        return [_.name for _ in Group.query(nodes=self, type_string=self.basisfamily_type_string)]
+        query = QueryBuilder()
+        query.append(Group, filters={'type_string': {'==': self.basisfamily_type_string}}, tag='group', project='label')
+        query.append(self.__class__, filters={'id': {'==': self.id}}, with_group='group')
+        return [_[0] for _ in query.all()]
 
     @classmethod
     def get_basis_group(cls, group_name):

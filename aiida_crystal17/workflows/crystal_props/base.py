@@ -28,6 +28,7 @@ from aiida_crystal17.data.input_params import CryInputParamsData
 from aiida_crystal17.calculations.cry_main import CryMainCalculation
 from aiida_crystal17.calculations.prop_doss import CryDossCalculation
 from aiida_crystal17.calculations.prop_ech3 import CryEch3Calculation
+from aiida_crystal17.calculations.prop_ppan import CryPpanCalculation
 
 if PY2:
     from collections import Mapping
@@ -101,7 +102,7 @@ class CryPropertiesWorkChain(WorkChain):
     _wf_fname = 'fort.9'
     _scf_name = 'scf'
     _scf_class = CryMainCalculation
-    _cry_props = {'doss': CryDossCalculation, 'ech3': CryEch3Calculation}
+    _cry_props = {'doss': CryDossCalculation, 'ech3': CryEch3Calculation, 'ppan': CryPpanCalculation}
 
     def __init__(self, **kwargs):
         """Initialize inputs.
@@ -133,6 +134,8 @@ class CryPropertiesWorkChain(WorkChain):
         # expose_optional_inputs(spec, cls._scf_namespace, CryMainCalculation)
         spec.expose_inputs(cls._scf_class, namespace=cls._scf_name,
                            namespace_options={'required': False, 'populate_defaults': False})
+        spec.expose_outputs(cls._scf_class, namespace=cls._scf_name,
+                            namespace_options={'required': False})
 
         # available property computations
         for pname, process_class in cls._cry_props.items():
@@ -243,6 +246,12 @@ class CryPropertiesWorkChain(WorkChain):
             return self.exit_codes.ERROR_SCF_CALC_FAILED
         self.report('{} finished successfully'.format(self.ctx.calc_scf))
         self.ctx.wf_folder = self.ctx.calc_scf.outputs.remote_folder
+
+        # TODO exposed_outputs for CalcJobs is fixed in aiida-core v1.0.0b6
+        # self.out_many(self.exposed_outputs(calc_node, process_class, namespace=name))
+        namespace_separator = self.spec().namespace_separator
+        for link_triple in self.ctx.calc_scf.get_outgoing(link_type=LinkType.CREATE).link_triples:
+            self.out(self._scf_name + namespace_separator + link_triple.link_label, link_triple.node)
 
     def submit_prop_calculations(self):
         """Create and submit all property calculations."""

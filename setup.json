@@ -34,6 +34,7 @@
       "crystal17.doss = aiida_crystal17.calculations.prop_doss:CryDossCalculation",
       "crystal17.ech3 = aiida_crystal17.calculations.prop_ech3:CryEch3Calculation",
       "crystal17.newk = aiida_crystal17.calculations.prop_newk:CryNewkCalculation",
+      "crystal17.ppan = aiida_crystal17.calculations.prop_ppan:CryPpanCalculation",
       "gulp.single = aiida_crystal17.gulp.calculations.gulp_single:GulpSingleCalculation",
       "gulp.optimize = aiida_crystal17.gulp.calculations.gulp_optimize:GulpOptCalculation",
       "gulp.fitting = aiida_crystal17.gulp.calculations.gulp_fitting:GulpFittingCalculation"
@@ -43,6 +44,7 @@
       "crystal17.doss = aiida_crystal17.parsers.cry_doss:CryDossParser",
       "crystal17.ech3 = aiida_crystal17.parsers.cry_ech3:CryEch3Parser",
       "crystal17.newk = aiida_crystal17.parsers.cry_newk:CryNewkParser",
+      "crystal17.ppan = aiida_crystal17.parsers.cry_ppan:CryPpanParser",
       "gulp.single = aiida_crystal17.gulp.parsers.parse_single:GulpSingleParser",
       "gulp.optimize = aiida_crystal17.gulp.parsers.parse_opt:GulpOptParser",
       "gulp.fitting = aiida_crystal17.gulp.parsers.parse_fitting:GulpFittingParser"
