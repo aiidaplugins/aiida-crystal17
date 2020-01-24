@@ -131,6 +131,7 @@ def _read_hamiltonian_block(atom_props, lines, output_dict, schema):
             _read_dft_block(lines, output_dict, schema)
 
             line = _pop_line(lines)
+        # TODO read DFTD3 block
         elif line == 'SHRINK':
             line = _pop_line(lines)
             try:

@@ -128,6 +128,11 @@ def _hamiltonian_block(outstr, indict, atom_props):
 
         outstr += 'END\n'
 
+        if get_keys(indict, ['scf', 'dft', 'd3'], False):
+            outstr += 'DFTD3\n'
+            outstr += format_value(indict, ['scf', 'dft', 'd3'])
+            outstr += 'END\n'
+
     # # K-POINTS (SHRINK\nPMN Gilat)
     k_is, k_isp = get_keys(indict, ['scf', 'k_points'], raise_error=True)
     outstr += 'SHRINK\n'
