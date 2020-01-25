@@ -64,7 +64,8 @@ def change_kind_names(structure, settings):
 @calcfunction
 def compute_symmetry(structure, settings):
     atol = settings.get_attribute('angle_tolerance', None)
-    data = compute_symmetry_dict(structure, settings['symprec'], atol)
+    use_kinds = settings.get_attribute('symmetry_usekinds', True)
+    data = compute_symmetry_dict(structure, settings['symprec'], atol, use_kinds=use_kinds)
     return SymmetryData(data=data)
 
 
@@ -153,6 +154,11 @@ class Symmetrise3DStructure(WorkChain):
                                     'using obtained symmetry operations'),
                     'type': 'boolean',
                     'default': False
+                },
+                'symmetry_usekinds': {
+                    'description': 'if True use kind names to define inequivalent sites, else use symbols',
+                    'type': 'boolean',
+                    'default': True
                 }
             }
         }
