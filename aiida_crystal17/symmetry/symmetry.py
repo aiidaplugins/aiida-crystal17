@@ -715,7 +715,8 @@ def convert_structure(structure, out_type):
                               pbc=structure['pbc'],
                               tags=structure.get('equivalent', None))
                 return structure_data_cls(ase=atoms)
-    raise ValueError('out_type: {}'.format(out_type))
+        raise ValueError('input type: {}'.format(structure))
+    raise ValueError('output type: {}'.format(out_type))
 
 
 def structure_to_dict(structure):
