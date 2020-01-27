@@ -195,7 +195,11 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
 
         elif len(parts) == 5:
             # orbital section
-            gbasis[atomic_symbol]['bs'].append({'type': bs_sequence[int(parts[1])], 'functions': []})
+            gbasis[atomic_symbol]['bs'].append({
+                'type': bs_sequence[int(parts[1])],
+                'functions': [],
+                'charge': float(parts[3])
+            })
             parts = list(map(int, parts[0:3]))
 
             if parts[0] == 0:
