@@ -1,21 +1,25 @@
 Ni:
   bs:
-  - functions:
+  - charge: 2.0
+    functions:
     - - 1.257
       - 1.0
       - 1.0
     type: SP
-  - functions:
+  - charge: 0.0
+    functions:
     - - 1.052
       - 1.0
       - 1.0
     type: SP
-  - functions:
+  - charge: 0.0
+    functions:
     - - 0.079
       - 1.0
       - 1.0
     type: SP
-  - functions:
+  - charge: 8.0
+    functions:
     - - 43.58
       - 0.03204
     - - 11.997
@@ -25,7 +29,8 @@ Ni:
     - - 1.271
       - 0.46122
     type: D
-  - functions:
+  - charge: 0.0
+    functions:
     - - 0.385
       - 1.0
     type: D
