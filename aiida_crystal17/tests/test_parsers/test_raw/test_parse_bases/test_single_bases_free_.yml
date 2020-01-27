@@ -1,6 +1,7 @@
 Si:
   bs:
-  - functions:
+  - charge: 2.0
+    functions:
     - - 16115.9
       - 0.00195948
     - - 2425.58
@@ -14,7 +15,8 @@ Si:
     - - 17.0178
       - 0.325002
     type: S
-  - functions:
+  - charge: 4.0
+    functions:
     - - 1.07913
       - -0.376108
       - 0.067103
@@ -22,7 +24,8 @@ Si:
       - 1.25165
       - 0.956883
     type: SP
-  - functions:
+  - charge: 0.0
+    functions:
     - - 0.123
       - 1.0
       - 1.0

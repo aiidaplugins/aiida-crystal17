@@ -1,15 +1,19 @@
 Si:
   bs:
-  - functions:
+  - charge: 2.0
+    functions:
     - 3(6)-21G(nd) type 3-21G core shell
     type: S
-  - functions:
+  - charge: 8.0
+    functions:
     - 3(6)-21G(nd) type 3-21G core shell
     type: SP
-  - functions:
+  - charge: 4.0
+    functions:
     - 3(6)-21G(nd) type n-21G inner valence shell
     type: SP
-  - functions:
+  - charge: 0.0
+    functions:
     - 3(6)-21G(nd) type n-21G outer valence shell
     type: SP
   type: all-electron

@@ -1,21 +1,26 @@
 Mg:
   bs:
-  - functions:
+  - charge: 2.0
+    functions:
     - STO-nG(nd) type 3-21G core shell
     type: S
-  - functions:
+  - charge: 8.0
+    functions:
     - STO-nG(nd) type 3-21G core shell
     type: SP
-  - functions:
+  - charge: 2.0
+    functions:
     - STO-nG(nd) type 3-21G core shell
     type: SP
   type: all-electron
 O:
   bs:
-  - functions:
+  - charge: 2.0
+    functions:
     - STO-nG(nd) type 3-21G core shell
     type: S
-  - functions:
+  - charge: 6.0
+    functions:
     - STO-nG(nd) type 3-21G core shell
     type: SP
   type: all-electron
