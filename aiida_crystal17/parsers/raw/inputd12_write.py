@@ -79,7 +79,7 @@ def write_input(indict, basis_sets, atom_props=None):
         raise ValueError('basis_sets must be either all strings' 'or all objects with a `content` property')
     if atom_props is None:
         atom_props = {}
-    if not set(atom_props.keys()).issubset(['spin_alpha', 'spin_beta', 'unfixed', 'ghosts']):
+    if not set(atom_props.keys()).issubset(['spin_alpha', 'spin_beta', 'unfixed', 'ghosts', 'chemod']):
         raise ValueError('atom_props should only contain: ' "'spin_alpha', 'spin_beta', 'unfixed', 'ghosts'")
     # validate that a index isn't in both spin_alpha and spin_beta
     allspin = atom_props.get('spin_alpha', []) + atom_props.get('spin_beta', [])
@@ -222,6 +222,14 @@ def _basis_set_block(outstr, indict, basis_sets, atom_props):
         outstr += 'GHOSTS\n'
         outstr += '{}\n'.format(len(ghosts))
         outstr += ' '.join([str(a) for a in sorted(ghosts)]) + '\n'
+    # CHEMOD
+    chemod = atom_props.get('chemod', {})
+    if chemod:
+        outstr += 'CHEMOD\n'
+        outstr += '{}\n'.format(len(chemod))
+        for anum in sorted(chemod.keys()):
+            outstr += str(anum) + '\n'
+            outstr += ' '.join(['{:.6f}'.format(v) for v in chemod[anum]]) + '\n'
 
     # Basis Sets Optional Keywords
     outstr += format_value(indict, ['basis_set'])
@@ -246,7 +254,7 @@ def create_atom_properties(structure, kinds_data=None):
         raise AssertionError('kind names are different for structure data and kind data: '
                              '{0} != {1}'.format(set(structure.get_kind_names()), set(kinds_data.data.kind_names)))
 
-    atom_props = {'spin_alpha': [], 'spin_beta': [], 'fixed': [], 'unfixed': [], 'ghosts': []}
+    atom_props = {'spin_alpha': [], 'spin_beta': [], 'fixed': [], 'unfixed': [], 'ghosts': [], 'chemod': {}}
 
     kind_dict = kinds_data.kind_dict
 
@@ -261,6 +269,8 @@ def create_atom_properties(structure, kinds_data=None):
             atom_props['fixed'].append(i + 1)
         if not kind_dict[kind_name].get('fixed', False):
             atom_props['unfixed'].append(i + 1)
+        if 'chemod' in kind_dict[kind_name]:
+            atom_props['chemod'][i + 1] = kind_dict[kind_name]['chemod']
 
     # we only need unfixed if there are fixed
     if not atom_props.pop('fixed'):

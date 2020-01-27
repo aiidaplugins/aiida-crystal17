@@ -103,6 +103,9 @@ class PropAbstractCalculation(CalcJob):
         spec.exit_code(351,
                        'ERROR_WAVEFUNCTION_NOT_FOUND',
                        message='CRYSTAL could not find the required wavefunction file')
+        spec.exit_code(352, 'UNIT_CELL_NOT_NEUTRAL', message='Possibly due to erroneous CHEMOD basis set modification')
+        spec.exit_code(353, 'SHELL_SYMMETRY_ERROR', message='Possibly due to erroneous CHEMOD basis set modification')
+        spec.exit_code(354, 'CHEMMOD_ERROR', message='Error in CHEMOD basis set modification')
 
         # Significant errors but calculation can be used to restart
         spec.exit_code(400,

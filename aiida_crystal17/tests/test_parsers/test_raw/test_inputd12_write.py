@@ -189,7 +189,16 @@ END
 def test_input_with_atom_props():
     indict = {'scf': {'k_points': [16, 8]}, 'geometry': {'optimise': {'type': 'FULLOPTG'}}}
 
-    atomprops = {'spin_alpha': [1, 3], 'spin_beta': [2, 4], 'unfixed': [1, 3], 'ghosts': [5, 6]}
+    atomprops = {
+        'spin_alpha': [1, 3],
+        'spin_beta': [2, 4],
+        'unfixed': [1, 3],
+        'ghosts': [5, 6],
+        'chemod': {
+            1: [1, 2, 3],
+            3: [4, 5, 6]
+        }
+    }
 
     outstr = write_input(indict, ['basis_set1', 'basis_set2'], atomprops)
 
@@ -208,6 +217,12 @@ basis_set2
 GHOSTS
 2
 5 6
+CHEMOD
+2
+1
+1.000000 2.000000 3.000000
+3
+4.000000 5.000000 6.000000
 END
 SHRINK
 16 8
