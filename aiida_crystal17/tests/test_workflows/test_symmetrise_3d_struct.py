@@ -48,6 +48,7 @@ def test_with_cif(db_test_app, get_cif, data_regression):
     """test computing symmetry from CifData """
     results, node = run_get_node(WorkflowFactory('crystal17.sym3d'),
                                  settings=DataFactory('dict')(dict={
+                                     'cif_parser': 'ase',
                                      'symprec': 0.01
                                  }),
                                  cif=get_cif('pyrite'))

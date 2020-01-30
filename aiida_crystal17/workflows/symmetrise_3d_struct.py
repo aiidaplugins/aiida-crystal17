@@ -15,15 +15,13 @@
 # GNU Lesser General Public License for more details.
 """a work flow to symmetrise a structure and compute the symmetry operations"""
 import traceback
+from aiida.engine import ExitCode, WorkChain, calcfunction
+from aiida.orm import Str, StructureData
+from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import DataFactory
-from aiida.engine import WorkChain, calcfunction
+from aiida_crystal17.data.symmetry import SymmetryData
 from aiida_crystal17.symmetry import (reset_kind_names, standardize_cell, find_primitive, compute_symmetry_dict)
 from aiida_crystal17.validation import validate_against_schema
-
-from aiida.orm.nodes.data.base import to_aiida_type
-StructureData = DataFactory('structure')
-DictData = DataFactory('dict')
-SymmetryData = DataFactory('crystal17.symmetry')
 
 
 @calcfunction
@@ -70,8 +68,14 @@ def compute_symmetry(structure, settings):
 
 
 @calcfunction
-def cif_to_structure(cif):
-    return cif.get_structure(converter='ase')
+def cif_to_structure(cif, converter=None):
+    if converter is None:
+        converter_type = 'ase'
+    elif isinstance(converter, Str):
+        converter_type = converter.value
+    else:
+        return ExitCode(300, 'ERROR_INVALID_CONVERTER_TYPE')
+    return cif.get_structure(converter=converter_type)
 
 
 class Symmetrise3DStructure(WorkChain):
@@ -116,6 +120,12 @@ class Symmetrise3DStructure(WorkChain):
             'type': 'object',
             'required': ['symprec'],
             'properties': {
+                'cif_parser': {
+                    'description': 'Package for parsing cif to structures',
+                    'type': 'string',
+                    'enum': ['ase', 'pymatgen'],
+                    'default': 'ase'
+                },
                 'symprec': {
                     'description': ('Length tolerance for symmetry finding: '
                                     '0.01 is fairly strict and works well for properly refined structures'),
@@ -159,7 +169,7 @@ class Symmetrise3DStructure(WorkChain):
                     'description': 'if True use kind names to define inequivalent sites, else use symbols',
                     'type': 'boolean',
                     'default': True
-                }
+                },
             }
         }
 
@@ -171,13 +181,17 @@ class Symmetrise3DStructure(WorkChain):
     def validate_inputs(self):
 
         self.ctx.new_structure = False
+        settings_dict = self.inputs.settings.get_dict()
 
         if 'structure' in self.inputs:
             if 'cif' in self.inputs:
                 return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
             self.ctx.structure = self.inputs.structure
         elif 'cif' in self.inputs:
-            self.ctx.structure = cif_to_structure(self.inputs.cif)
+            cif_parser = None
+            if 'cif_parser' in settings_dict:
+                cif_parser = Str(settings_dict['cif_parser'])
+            self.ctx.structure = cif_to_structure(self.inputs.cif, converter=cif_parser)
             self.ctx.new_structure = True
         else:
             return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
@@ -185,7 +199,6 @@ class Symmetrise3DStructure(WorkChain):
         if not all(self.ctx.structure.pbc):
             return self.exit_codes.ERROR_NON_3D_STRUCTURE
 
-        settings_dict = self.inputs.settings.get_dict()
         self.ctx.kind_names = settings_dict.get('kind_names', None)
         self.ctx.compute_primitive = settings_dict.get('compute_primitive', False)
         self.ctx.standardize_cell = settings_dict.get('standardize_cell', False)
