@@ -269,7 +269,7 @@ def create_atom_properties(structure, kinds_data=None):
             atom_props['fixed'].append(i + 1)
         if not kind_dict[kind_name].get('fixed', False):
             atom_props['unfixed'].append(i + 1)
-        if 'chemod' in kind_dict[kind_name]:
+        if kind_dict[kind_name].get('chemod', None) is not None:
             atom_props['chemod'][i + 1] = kind_dict[kind_name]['chemod']
 
     # we only need unfixed if there are fixed
