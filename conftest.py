@@ -8,14 +8,12 @@ For more information on writing pytest plugins see:
 - https://github.com/pytest-dev/cookiecutter-pytest-plugin
 
 """
-import os
 import shutil
 import tempfile
 
 from _pytest.config import Config  # noqa: F401
 from _pytest.config.argparsing import Parser  # noqa: F401
 from _pytest.nodes import Item  # noqa: F401
-from aiida.manage.tests import test_manager
 import pytest
 
 from aiida_crystal17.tests import (
@@ -26,7 +24,7 @@ from aiida_crystal17.tests import (
 )
 from aiida_crystal17.tests.utils import AiidaTestApp
 
-pytest_plugins = ['aiida.manage.tests.pytest_fixtures'] 
+pytest_plugins = ["aiida.manage.tests.pytest_fixtures"]
 
 
 CRY17_CALL_EXEC_MARKER = "cry17_calls_executable"

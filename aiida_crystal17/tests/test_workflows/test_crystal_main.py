@@ -1,5 +1,6 @@
 from aiida.cmdline.utils.common import get_workchain_report  # noqa: F401
 from aiida.engine import run_get_node
+from aiida.orm import Bool
 import pytest
 
 from aiida_crystal17.data.kinds import KindData
@@ -55,7 +56,7 @@ def test_init_steps(
 
     wc_builder = CryMainBaseWorkChain.get_builder()
     wc_builder.cry = dict(calc_builder)
-    wc_builder.clean_workdir = False
+    wc_builder.clean_workdir = Bool(False)
     wc_builder.kpoints_distance = 0.5
     wc_builder.kpoints_force_parity = True
 
@@ -72,7 +73,11 @@ def test_init_steps(
 
 @pytest.mark.cry17_calls_executable
 def test_base_nio_afm_scf_maxcyc(
-    db_test_app, get_structure_and_symm, upload_basis_set_family, sanitise_calc_attr, data_regression
+    db_test_app,
+    get_structure_and_symm,
+    upload_basis_set_family,
+    sanitise_calc_attr,
+    data_regression,
 ):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the scf convergence fails, on the 1st iteration,
@@ -121,7 +126,7 @@ def test_base_nio_afm_scf_maxcyc(
 
     wc_builder = CryMainBaseWorkChain.get_builder()
     wc_builder.cry = dict(calc_builder)
-    wc_builder.clean_workdir = False
+    wc_builder.clean_workdir = Bool(False)
 
     outputs, wc_node = run_get_node(wc_builder)
     print(get_workchain_report(wc_node, "REPORT"))
@@ -142,7 +147,11 @@ def test_base_nio_afm_scf_maxcyc(
     skip_non_mock=True, reason="the calculation was run on a HPC"
 )
 def test_base_nio_afm_opt_walltime(
-    db_test_app, get_structure_and_symm, upload_basis_set_family, sanitise_calc_attr, data_regression
+    db_test_app,
+    get_structure_and_symm,
+    upload_basis_set_family,
+    sanitise_calc_attr,
+    data_regression,
 ):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the optimisation fails, on the 1st iteration, due to reaching walltime."""
@@ -190,7 +199,7 @@ def test_base_nio_afm_opt_walltime(
 
     wc_builder = CryMainBaseWorkChain.get_builder()
     wc_builder.cry = dict(calc_builder)
-    wc_builder.clean_workdir = True
+    wc_builder.clean_workdir = Bool(True)
 
     outputs, wc_node = run_get_node(wc_builder)
     print(get_workchain_report(wc_node, "REPORT"))

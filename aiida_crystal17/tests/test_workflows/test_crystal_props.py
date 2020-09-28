@@ -2,7 +2,7 @@ import sys
 
 from aiida.cmdline.utils.common import get_workchain_report  # noqa: F401
 from aiida.engine import run_get_node
-from aiida.orm import Dict, SinglefileData
+from aiida.orm import Bool, Dict, SinglefileData
 import pytest
 
 from aiida_crystal17.data.input_params import CryInputParamsData
@@ -127,7 +127,11 @@ def test_run_prop_mgo_no_scf(db_test_app, sanitise_calc_attr, data_regression):
 
 @pytest.mark.cry17_calls_executable
 def test_run_prop_mgo_with_scf(
-    db_test_app, get_structure_and_symm, upload_basis_set_family, sanitise_calc_attr, data_regression
+    db_test_app,
+    get_structure_and_symm,
+    upload_basis_set_family,
+    sanitise_calc_attr,
+    data_regression,
 ):
     """Test the workchains when computation inputs are supplied to calculate the wavefunction."""
     clear_spec()
@@ -148,7 +152,7 @@ def test_run_prop_mgo_with_scf(
     wc_builder.doss.parameters = get_parameters()["doss"]
     wc_builder.doss.metadata = db_test_app.get_default_metadata()
 
-    wc_builder.clean_workdir = True
+    wc_builder.clean_workdir = Bool(True)
 
     outputs, wc_node = run_get_node(wc_builder)
     sys.stderr.write(get_workchain_report(wc_node, "REPORT"))

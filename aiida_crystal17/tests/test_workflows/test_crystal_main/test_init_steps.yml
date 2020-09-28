@@ -1,4 +1,4 @@
-calc_name: CryMainCalculation
+handler_overrides: {}
 inputs:
   basissets:
     Ni: <class 'aiida_crystal17.data.basis_set.BasisSetData'>
@@ -50,6 +50,7 @@ inputs:
 is_finished: false
 is_optimisation: false
 iteration: 0
+process_name: CryMainCalculation
 restart_calc: null
-unexpected_failure: false
+unhandled_failure: false
 use_fort9_restart: false
