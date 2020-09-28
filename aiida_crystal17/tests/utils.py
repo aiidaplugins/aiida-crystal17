@@ -3,9 +3,7 @@ import os
 import sys
 import distutils.spawn
 
-from ruamel.yaml import YAML
-from ruamel.yaml.compat import StringIO
-
+import yaml
 
 
 def get_path_to_executable(executable):
@@ -412,7 +410,6 @@ class AiidaTestApp(object):
         call a list of methods (that should be part of `spec.outline`),
         then return a sanitized version of the workchain context for testing
         """
-        import yaml
         from aiida.engine import ProcessBuilder
         from aiida.engine.utils import instantiate_process
         from aiida.common.extendeddicts import AttributeDict
@@ -454,10 +451,8 @@ class AiidaTestApp(object):
         exit_status = calc_node.get_attribute('exit_status')
         proc_state = calc_node.get_attribute('process_state')
         if exit_status != 0 or proc_state != 'finished':
-            yaml = YAML()
-            stream = StringIO()
-            yaml.dump(calc_node.attributes, stream=stream)
-            message = ('Process Failed:\n{}'.format(stream.getvalue()))
+            text = yaml.dump(calc_node.attributes)
+            message = ('Process Failed:\n{}'.format(text))
             out_link_manager = calc_node.get_outgoing()
             out_links = out_link_manager.all_link_labels()
             message += '\noutgoing_nodes: {}'.format(out_links)
