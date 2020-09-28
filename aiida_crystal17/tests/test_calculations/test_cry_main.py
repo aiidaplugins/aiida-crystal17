@@ -382,7 +382,7 @@ def test_run_nio_afm_fullopt(
     skip_non_mock=True, reason="the calculation was run on a HPC"
 )
 def test_run_nio_afm_failed_opt(
-    db_test_app, get_structure, upload_basis_set_family, data_regression
+    db_test_app, get_structure, upload_basis_set_family, sanitise_calc_attr, data_regression
 ):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the optimisation fails, due to reaching walltime."""
@@ -437,16 +437,7 @@ def test_run_nio_afm_failed_opt(
     assert "optimisation" in outputs
     assert "results" in outputs
 
-    calc_attributes = calc_node.attributes
-    for key in [
-        "job_id",
-        "last_jobinfo",
-        "remote_workdir",
-        "scheduler_lastchecktime",
-        "retrieve_singlefile_list",
-        "version",
-    ]:
-        calc_attributes.pop(key, None)
+    calc_attributes = sanitise_calc_attr(calc_node.attributes)
     calc_attributes["retrieve_list"] = sorted(calc_attributes["retrieve_list"])
 
     results_attributes = outputs["results"].attributes

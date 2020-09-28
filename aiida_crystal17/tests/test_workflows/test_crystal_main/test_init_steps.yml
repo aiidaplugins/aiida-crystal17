@@ -24,6 +24,7 @@ inputs:
         num_mpiprocs_per_machine: 1
       scheduler_stderr: _scheduler-stderr.txt
       scheduler_stdout: _scheduler-stdout.txt
+      submit_script_filename: _aiidasubmit.sh
       withmpi: false
     store_provenance: true
   parameters:

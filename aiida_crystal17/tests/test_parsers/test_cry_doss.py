@@ -1,3 +1,5 @@
+from io import StringIO
+
 from aiida.orm import FolderData
 import pytest
 
@@ -35,10 +37,8 @@ def test_missing_stdout(db_test_app, plugin_name):
 def test_empty_stdout(db_test_app, plugin_name):
 
     retrieved = FolderData()
-    with retrieved.open("main.out", "w"):
-        pass
-    with retrieved.open("fort.25", "w"):
-        pass
+    retrieved.put_object_from_filelike(StringIO(""), "main.out")
+    retrieved.put_object_from_filelike(StringIO(""), "fort.25")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)
@@ -89,8 +89,7 @@ def test_empty_isofile(db_test_app, plugin_name):
         "doss", "cubic_rocksalt_orbitals", "cubic-rocksalt_2x1_pdos.doss.out"
     ) as handle:
         retrieved.put_object_from_filelike(handle, "main.out", mode="wb")
-    with retrieved.open("fort.25", "w"):
-        pass
+    retrieved.put_object_from_filelike(StringIO(""), "fort.25")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)

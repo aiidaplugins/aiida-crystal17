@@ -17,7 +17,7 @@
 import os
 
 from aiida.common.datastructures import CalcInfo, CodeInfo
-from aiida.engine import CalcJob
+from aiida.engine import CalcJob, CalcJobProcessSpec
 from aiida.orm import FolderData, RemoteData, SinglefileData
 from aiida.plugins import DataFactory
 
@@ -38,7 +38,7 @@ class PropAbstractCalculation(CalcJob):
     requires_newk = True
 
     @classmethod
-    def validate_parameters(cls, data):
+    def validate_parameters(cls, data, _):
         raise NotImplementedError
 
     @staticmethod
@@ -64,7 +64,7 @@ class PropAbstractCalculation(CalcJob):
         raise NotImplementedError
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(PropAbstractCalculation, cls).define(spec)
 

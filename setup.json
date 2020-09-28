@@ -56,7 +56,7 @@
   "reentry_register": true,
   "python_requires": ">=3.6",
   "install_requires": [
-    "aiida-core==1.0.0b5",
+    "aiida-core>=1.4.0,<2.0.0",
     "pyyaml",
     "jsonextended>=0.7.10",
     "jsonschema",
@@ -68,7 +68,6 @@
   "extras_require": {
     "testing": [
       "pgtest",
-      "sqlalchemy-diff==0.1.3",
       "pytest",
       "coverage",
       "pytest-cov",

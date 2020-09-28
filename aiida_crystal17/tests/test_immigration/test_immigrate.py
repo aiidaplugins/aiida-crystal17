@@ -82,7 +82,7 @@ def test_full_nio_afm(db_test_app, data_regression):
 
     attributes = node.attributes
     attributes["remote_workdir"] = "path/to/remote"
-    attributes.pop("retrieve_singlefile_list", None)  # removed post v1.0.0b4
+    attributes["version"] = None
 
     data_regression.check(attributes)
 
@@ -121,7 +121,7 @@ def test_full_mgo_opt(db_test_app, data_regression):
 
     attributes = node.attributes
     attributes["remote_workdir"] = "path/to/remote"
-    attributes.pop("retrieve_singlefile_list", None)  # removed post v1.0.0b4
+    attributes["version"] = None
 
     data_regression.check(attributes)
 

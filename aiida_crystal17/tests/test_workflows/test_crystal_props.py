@@ -93,7 +93,7 @@ def test_init_steps(db_test_app, data_regression):
 
 
 @pytest.mark.cry17_calls_executable
-def test_run_prop_mgo_no_scf(db_test_app, data_regression):
+def test_run_prop_mgo_no_scf(db_test_app, sanitise_calc_attr, data_regression):
     """Test the workchains when a folder is supplied that contains the wavefunction file."""
     clear_spec()
 
@@ -113,9 +113,7 @@ def test_run_prop_mgo_no_scf(db_test_app, data_regression):
     outputs, wc_node = run_get_node(wc_builder)
     sys.stderr.write(get_workchain_report(wc_node, "REPORT"))
 
-    wk_attributes = wc_node.attributes
-    for key in ["job_id", "last_jobinfo", "scheduler_lastchecktime", "version"]:
-        wk_attributes.pop(key, None)
+    wk_attributes = sanitise_calc_attr(wc_node.attributes)
 
     data_regression.check(
         {
@@ -129,7 +127,7 @@ def test_run_prop_mgo_no_scf(db_test_app, data_regression):
 
 @pytest.mark.cry17_calls_executable
 def test_run_prop_mgo_with_scf(
-    db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression
+    db_test_app, get_structure_and_symm, upload_basis_set_family, sanitise_calc_attr, data_regression
 ):
     """Test the workchains when computation inputs are supplied to calculate the wavefunction."""
     clear_spec()
@@ -155,9 +153,7 @@ def test_run_prop_mgo_with_scf(
     outputs, wc_node = run_get_node(wc_builder)
     sys.stderr.write(get_workchain_report(wc_node, "REPORT"))
 
-    wk_attributes = wc_node.attributes
-    for key in ["job_id", "last_jobinfo", "scheduler_lastchecktime", "version"]:
-        wk_attributes.pop(key, None)
+    wk_attributes = sanitise_calc_attr(wc_node.attributes)
 
     data_regression.check(
         {

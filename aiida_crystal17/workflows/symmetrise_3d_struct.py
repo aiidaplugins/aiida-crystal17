@@ -16,7 +16,7 @@
 """a work flow to symmetrise a structure and compute the symmetry operations"""
 import traceback
 
-from aiida.engine import ExitCode, WorkChain, calcfunction
+from aiida.engine import ExitCode, WorkChain, calcfunction, CalcJobProcessSpec
 from aiida.orm import Str, StructureData
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import DataFactory
@@ -102,7 +102,7 @@ class Symmetrise3DStructure(WorkChain):
     """
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
         super(Symmetrise3DStructure, cls).define(spec)
         spec.input("structure", valid_type=StructureData, required=False)
         spec.input("cif", valid_type=DataFactory("cif"), required=False)
@@ -212,7 +212,7 @@ class Symmetrise3DStructure(WorkChain):
         }
 
     @classmethod
-    def validate_settings(cls, settings_data):
+    def validate_settings(cls, settings_data, _):
         settings_dict = settings_data.get_dict()
         validate_against_schema(settings_dict, cls.get_settings_schema())
 
