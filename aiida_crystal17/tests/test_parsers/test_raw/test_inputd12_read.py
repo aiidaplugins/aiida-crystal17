@@ -5,7 +5,7 @@ from aiida_crystal17.parsers.raw.inputd12_read import extract_data
 from aiida_crystal17.tests import read_resource_text
 
 
-@pytest.fixture('function')
+@pytest.fixture()
 def cry_stdin_str():
     """Return a test STDIN file content for CRYSTAL17."""
     return """a title
