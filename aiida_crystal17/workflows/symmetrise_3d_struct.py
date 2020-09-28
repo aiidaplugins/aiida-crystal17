@@ -15,66 +15,83 @@
 # GNU Lesser General Public License for more details.
 """a work flow to symmetrise a structure and compute the symmetry operations"""
 import traceback
+
 from aiida.engine import ExitCode, WorkChain, calcfunction
 from aiida.orm import Str, StructureData
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import DataFactory
+
 from aiida_crystal17.data.symmetry import SymmetryData
-from aiida_crystal17.symmetry import (reset_kind_names, standardize_cell, find_primitive, compute_symmetry_dict)
+from aiida_crystal17.symmetry import (
+    compute_symmetry_dict,
+    find_primitive,
+    reset_kind_names,
+    standardize_cell,
+)
 from aiida_crystal17.validation import validate_against_schema
 
 
 @calcfunction
 def standard_structure(structure, settings):
-    atol = settings.get_attribute('angle_tolerance', None)
-    return standardize_cell(structure, settings['symprec'], atol, to_primitive=False, no_idealize=True)
+    atol = settings.get_attribute("angle_tolerance", None)
+    return standardize_cell(
+        structure, settings["symprec"], atol, to_primitive=False, no_idealize=True
+    )
 
 
 @calcfunction
 def standard_primitive_structure(structure, settings):
-    atol = settings.get_attribute('angle_tolerance', None)
-    return standardize_cell(structure, settings['symprec'], atol, to_primitive=True, no_idealize=True)
+    atol = settings.get_attribute("angle_tolerance", None)
+    return standardize_cell(
+        structure, settings["symprec"], atol, to_primitive=True, no_idealize=True
+    )
 
 
 @calcfunction
 def standard_primitive_ideal_structure(structure, settings):
-    atol = settings.get_attribute('angle_tolerance', None)
-    return standardize_cell(structure, settings['symprec'], atol, to_primitive=True, no_idealize=False)
+    atol = settings.get_attribute("angle_tolerance", None)
+    return standardize_cell(
+        structure, settings["symprec"], atol, to_primitive=True, no_idealize=False
+    )
 
 
 @calcfunction
 def standard_ideal_structure(structure, settings):
-    atol = settings.get_attribute('angle_tolerance', None)
-    return standardize_cell(structure, settings['symprec'], atol, to_primitive=False, no_idealize=False)
+    atol = settings.get_attribute("angle_tolerance", None)
+    return standardize_cell(
+        structure, settings["symprec"], atol, to_primitive=False, no_idealize=False
+    )
 
 
 @calcfunction
 def primitive_structure(structure, settings):
-    atol = settings.get_attribute('angle_tolerance', None)
-    return find_primitive(structure, settings['symprec'], atol)
+    atol = settings.get_attribute("angle_tolerance", None)
+    return find_primitive(structure, settings["symprec"], atol)
 
 
 @calcfunction
 def change_kind_names(structure, settings):
-    return reset_kind_names(structure, settings['kind_names'])
+    return reset_kind_names(structure, settings["kind_names"])
 
 
 @calcfunction
 def compute_symmetry(structure, settings):
-    atol = settings.get_attribute('angle_tolerance', None)
-    use_kinds = settings.get_attribute('symmetry_usekinds', True)
-    data = compute_symmetry_dict(structure, settings['symprec'], atol, use_kinds=use_kinds)
+    atol = settings.get_attribute("angle_tolerance", None)
+    use_kinds = settings.get_attribute("symmetry_usekinds", True)
+    data = compute_symmetry_dict(
+        structure, settings["symprec"], atol, use_kinds=use_kinds
+    )
     return SymmetryData(data=data)
 
 
 @calcfunction
 def cif_to_structure(cif, converter=None):
     if converter is None:
-        converter_type = 'ase'
+        converter_type = "ase"
     elif isinstance(converter, Str):
         converter_type = converter.value
     else:
-        return ExitCode(300, 'ERROR_INVALID_CONVERTER_TYPE')
+        return ExitCode(300, "ERROR_INVALID_CONVERTER_TYPE")
     return cif.get_structure(converter=converter_type)
 
 
@@ -87,90 +104,111 @@ class Symmetrise3DStructure(WorkChain):
     @classmethod
     def define(cls, spec):
         super(Symmetrise3DStructure, cls).define(spec)
-        spec.input('structure', valid_type=StructureData, required=False)
-        spec.input('cif', valid_type=DataFactory('cif'), required=False)
-        spec.input('settings',
-                   valid_type=DataFactory('dict'),
-                   serializer=to_aiida_type,
-                   required=True,
-                   validator=cls.validate_settings)
+        spec.input("structure", valid_type=StructureData, required=False)
+        spec.input("cif", valid_type=DataFactory("cif"), required=False)
+        spec.input(
+            "settings",
+            valid_type=DataFactory("dict"),
+            serializer=to_aiida_type,
+            required=True,
+            validator=cls.validate_settings,
+        )
 
         spec.outline(cls.validate_inputs, cls.compute)
 
-        spec.output('symmetry', valid_type=SymmetryData, required=True)
-        spec.output('structure', valid_type=StructureData, required=False)
+        spec.output("symmetry", valid_type=SymmetryData, required=True)
+        spec.output("structure", valid_type=StructureData, required=False)
 
-        spec.exit_code(300,
-                       'ERROR_INVALID_INPUT_RESOURCES',
-                       message='one of either a structure or cif input must be supplied')
-        spec.exit_code(301,
-                       'ERROR_NON_3D_STRUCTURE',
-                       message='the supplied structure must be 3D (i.e. have all dimensions pbc=True)"')
-        spec.exit_code(302, 'ERROR_COMPUTE_OPTIONS', message='idealize can only be used when standardize=True')
-        spec.exit_code(303,
-                       'ERROR_RESET_KIND_NAMES',
-                       message='the kind names supplied are not compatible with the structure')
-        spec.exit_code(304, 'ERROR_NEW_STRUCTURE', message='error creating new structure')
-        spec.exit_code(305, 'ERROR_COMPUTING_SYMMETRY', message='error computing symmetry operations')
+        spec.exit_code(
+            300,
+            "ERROR_INVALID_INPUT_RESOURCES",
+            message="one of either a structure or cif input must be supplied",
+        )
+        spec.exit_code(
+            301,
+            "ERROR_NON_3D_STRUCTURE",
+            message='the supplied structure must be 3D (i.e. have all dimensions pbc=True)"',
+        )
+        spec.exit_code(
+            302,
+            "ERROR_COMPUTE_OPTIONS",
+            message="idealize can only be used when standardize=True",
+        )
+        spec.exit_code(
+            303,
+            "ERROR_RESET_KIND_NAMES",
+            message="the kind names supplied are not compatible with the structure",
+        )
+        spec.exit_code(
+            304, "ERROR_NEW_STRUCTURE", message="error creating new structure"
+        )
+        spec.exit_code(
+            305,
+            "ERROR_COMPUTING_SYMMETRY",
+            message="error computing symmetry operations",
+        )
 
     @classmethod
     def get_settings_schema(cls):
         return {
-            '$schema': 'http://json-schema.org/draft-07/schema',
-            'type': 'object',
-            'required': ['symprec'],
-            'properties': {
-                'cif_parser': {
-                    'description': 'Package for parsing cif to structures',
-                    'type': 'string',
-                    'enum': ['ase', 'pymatgen'],
-                    'default': 'ase'
+            "$schema": "http://json-schema.org/draft-07/schema",
+            "type": "object",
+            "required": ["symprec"],
+            "properties": {
+                "cif_parser": {
+                    "description": "Package for parsing cif to structures",
+                    "type": "string",
+                    "enum": ["ase", "pymatgen"],
+                    "default": "ase",
                 },
-                'symprec': {
-                    'description': ('Length tolerance for symmetry finding: '
-                                    '0.01 is fairly strict and works well for properly refined structures'),
-                    'default': 0.01,
-                    'type': 'number',
-                    'exclusiveMinimum': 0
+                "symprec": {
+                    "description": (
+                        "Length tolerance for symmetry finding: "
+                        "0.01 is fairly strict and works well for properly refined structures"
+                    ),
+                    "default": 0.01,
+                    "type": "number",
+                    "exclusiveMinimum": 0,
                 },
-                'angle_tolerance': {
-                    'description': 'Angle tolerance for symmetry finding, in the unit of angle degrees',
-                    'default': None,
-                    'type': ['number', 'null'],
-                    'exclusiveMinimum': 0
+                "angle_tolerance": {
+                    "description": "Angle tolerance for symmetry finding, in the unit of angle degrees",
+                    "default": None,
+                    "type": ["number", "null"],
+                    "exclusiveMinimum": 0,
                 },
-                'kind_names': {
-                    'description': 'a list of kind names, to assign each Site of the StructureData',
-                    'type': 'array',
-                    'minItems': 1,
-                    'items': {
-                        'type': 'string'
-                    }
+                "kind_names": {
+                    "description": "a list of kind names, to assign each Site of the StructureData",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {"type": "string"},
                 },
-                'compute_primitive': {
-                    'description': 'whether to convert the structure to its primitive form',
-                    'type': 'boolean',
-                    'default': False
+                "compute_primitive": {
+                    "description": "whether to convert the structure to its primitive form",
+                    "type": "boolean",
+                    "default": False,
                 },
-                'standardize_cell': {
-                    'description':
-                        ('whether to standardize the structure, see '
-                         'https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell'),
-                    'type': 'boolean',
-                    'default': False
+                "standardize_cell": {
+                    "description": (
+                        "whether to standardize the structure, see "
+                        "https://atztogo.github.io/spglib/definition.html#conventions-of-standardized-unit-cell"
+                    ),
+                    "type": "boolean",
+                    "default": False,
                 },
-                'idealize_cell': {
-                    'description': ("whether to remove distortions of the unit cell's atomic positions, "
-                                    'using obtained symmetry operations'),
-                    'type': 'boolean',
-                    'default': False
+                "idealize_cell": {
+                    "description": (
+                        "whether to remove distortions of the unit cell's atomic positions, "
+                        "using obtained symmetry operations"
+                    ),
+                    "type": "boolean",
+                    "default": False,
                 },
-                'symmetry_usekinds': {
-                    'description': 'if True use kind names to define inequivalent sites, else use symbols',
-                    'type': 'boolean',
-                    'default': True
+                "symmetry_usekinds": {
+                    "description": "if True use kind names to define inequivalent sites, else use symbols",
+                    "type": "boolean",
+                    "default": True,
                 },
-            }
+            },
         }
 
     @classmethod
@@ -183,14 +221,14 @@ class Symmetrise3DStructure(WorkChain):
         self.ctx.new_structure = False
         settings_dict = self.inputs.settings.get_dict()
 
-        if 'structure' in self.inputs:
-            if 'cif' in self.inputs:
+        if "structure" in self.inputs:
+            if "cif" in self.inputs:
                 return self.exit_codes.ERROR_INVALID_INPUT_RESOURCES
             self.ctx.structure = self.inputs.structure
-        elif 'cif' in self.inputs:
+        elif "cif" in self.inputs:
             cif_parser = None
-            if 'cif_parser' in settings_dict:
-                cif_parser = Str(settings_dict['cif_parser'])
+            if "cif_parser" in settings_dict:
+                cif_parser = Str(settings_dict["cif_parser"])
             self.ctx.structure = cif_to_structure(self.inputs.cif, converter=cif_parser)
             self.ctx.new_structure = True
         else:
@@ -199,10 +237,10 @@ class Symmetrise3DStructure(WorkChain):
         if not all(self.ctx.structure.pbc):
             return self.exit_codes.ERROR_NON_3D_STRUCTURE
 
-        self.ctx.kind_names = settings_dict.get('kind_names', None)
-        self.ctx.compute_primitive = settings_dict.get('compute_primitive', False)
-        self.ctx.standardize_cell = settings_dict.get('standardize_cell', False)
-        self.ctx.idealize_cell = settings_dict.get('idealize_cell', False)
+        self.ctx.kind_names = settings_dict.get("kind_names", None)
+        self.ctx.compute_primitive = settings_dict.get("compute_primitive", False)
+        self.ctx.standardize_cell = settings_dict.get("standardize_cell", False)
+        self.ctx.idealize_cell = settings_dict.get("idealize_cell", False)
 
         if self.ctx.idealize_cell and not self.ctx.standardize_cell:
             return self.exit_codes.ERROR_COMPUTE_OPTIONS
@@ -216,20 +254,26 @@ class Symmetrise3DStructure(WorkChain):
                 structure = change_kind_names(structure, self.inputs.settings)
             except AssertionError as err:
                 traceback.print_exc()
-                self.logger.error('reset_kind_names: {}'.format(err))
+                self.logger.error("reset_kind_names: {}".format(err))
                 return self.exit_codes.ERROR_RESET_KIND_NAMES
             self.ctx.new_structure = True
 
         try:
             if self.ctx.standardize_cell:
                 if self.ctx.compute_primitive and self.ctx.idealize_cell:
-                    structure = standard_primitive_ideal_structure(structure, self.inputs.settings)
+                    structure = standard_primitive_ideal_structure(
+                        structure, self.inputs.settings
+                    )
                     self.ctx.new_structure = True
                 elif self.ctx.compute_primitive:
-                    structure = standard_primitive_structure(structure, self.inputs.settings)
+                    structure = standard_primitive_structure(
+                        structure, self.inputs.settings
+                    )
                     self.ctx.new_structure = True
                 elif self.ctx.idealize_cell:
-                    structure = standard_ideal_structure(structure, self.inputs.settings)
+                    structure = standard_ideal_structure(
+                        structure, self.inputs.settings
+                    )
                     self.ctx.new_structure = True
                 else:
                     structure = standard_structure(structure, self.inputs.settings)
@@ -239,17 +283,17 @@ class Symmetrise3DStructure(WorkChain):
                 self.ctx.new_structure = True
         except Exception as err:
             traceback.print_exc()
-            self.logger.error('structure creation: {}'.format(err))
+            self.logger.error("structure creation: {}".format(err))
             return self.exit_codes.ERROR_NEW_STRUCTURE
 
         if self.ctx.new_structure:
-            self.out('structure', structure)
+            self.out("structure", structure)
 
         try:
             symmetry = compute_symmetry(structure, self.inputs.settings)
         except Exception as err:
             traceback.print_exc()
-            self.logger.error('symmetry computation: {}'.format(err))
+            self.logger.error("symmetry computation: {}".format(err))
             return self.exit_codes.ERROR_COMPUTING_SYMMETRY
 
-        self.out('symmetry', symmetry)
+        self.out("symmetry", symmetry)

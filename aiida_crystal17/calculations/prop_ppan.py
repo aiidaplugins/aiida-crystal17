@@ -30,30 +30,43 @@ class CryPpanCalculation(PropAbstractCalculation):
     @classmethod
     def validate_parameters(cls, data):
         dct = data.get_dict()
-        validate_against_schema(dct, 'prop.rotref.schema.json')
+        validate_against_schema(dct, "prop.rotref.schema.json")
 
     @classmethod
     def define(cls, spec):
         super(CryPpanCalculation, cls).define(spec)
 
-        spec.input('metadata.options.output_ppan_fname', valid_type=str, default='PPAN.DAT')
+        spec.input(
+            "metadata.options.output_ppan_fname", valid_type=str, default="PPAN.DAT"
+        )
 
-        spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.ppan')
+        spec.input(
+            "metadata.options.parser_name", valid_type=str, default="crystal17.ppan"
+        )
 
         # TODO make dict optional
 
-        spec.exit_code(352, 'ERROR_PPAN_FILE_MISSING', message='parser could not find the output PPAN.dat file')
-        spec.exit_code(353, 'ERROR_PARSING_PPAN_FILE', message='error parsing output PPAN.dat file')
+        spec.exit_code(
+            352,
+            "ERROR_PPAN_FILE_MISSING",
+            message="parser could not find the output PPAN.dat file",
+        )
+        spec.exit_code(
+            353, "ERROR_PARSING_PPAN_FILE", message="error parsing output PPAN.dat file"
+        )
 
     def create_input_content(self):
         dct = self.inputs.parameters.get_dict()
         lines = create_rotref_content(dct)
-        lines.append('PPAN')
-        lines.append('END')
-        return '\n'.join(lines)
+        lines.append("PPAN")
+        lines.append("END")
+        return "\n".join(lines)
 
     def get_retrieve_list(self):
-        return [self.metadata.options.stdout_file_name, self.metadata.options.output_ppan_fname]
+        return [
+            self.metadata.options.stdout_file_name,
+            self.metadata.options.output_ppan_fname,
+        ]
 
     def get_retrieve_temp_list(self):
         return []

@@ -58,7 +58,9 @@ def immigrate_existing(builder, remote_data, seal=True):
     # link remote folder to calc_node
     if not remote_data.is_stored:
         remote_data.store()
-    remote_data.add_incoming(calc_node, link_type=LinkType.CREATE, link_label='remote_folder')
+    remote_data.add_incoming(
+        calc_node, link_type=LinkType.CREATE, link_label="remote_folder"
+    )
     calc_node.set_remote_workdir(remote_data.get_remote_path())
     transport = remote_data.computer.get_transport()
 
@@ -81,7 +83,7 @@ def immigrate_existing(builder, remote_data, seal=True):
         calc_node.seal()
 
     # record that the node was created via immigration
-    calc_node.set_extra('immigrated', True)
-    calc_node.set_extra('immigration_func', __name__)
+    calc_node.set_extra("immigrated", True)
+    calc_node.set_extra("immigration_func", __name__)
 
     return calc_node

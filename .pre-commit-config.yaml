@@ -10,25 +10,40 @@ exclude: >
 repos:
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v2.2.3
+    rev: v3.2.0
     hooks:
     - id: check-json
     - id: check-yaml
     - id: end-of-file-fixer
     - id: trailing-whitespace
-    - id: double-quote-string-fixer
+
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.5.3
+    hooks:
+    - id: isort
+
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+    - id: black
+      exclude: >
+        (?x)^(
+            aiida_crystal17/tests/raw_files/.*|
+            cry17_scripts/.*|
+            aiida_crystal17/workflows/common/restart.py
+        )$
+
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
     - id: flake8
+      # additional_dependencies:
+      # - flake8-bugbear==20.1.4
+      # - flake8-builtins==1.5.3
+      # - flake8-comprehensions==3.2.3
 
   - repo: local
     hooks:
-
-    - id: yapf
-      name: Yet Another Python Formatter
-      entry: yapf
-      language: system
-      types: [python]
-      args: ["-i", "-vv"]
-
     - id: version-number
       name: Check version numbers
       entry: python ./.pre-commit/check_version.py version
@@ -40,6 +55,8 @@ repos:
           aiida_crystal17/__init__.py
         )$
       pass_filenames: false
+      additional_dependencies:
+        - click
 
     - id: conda
       name: Create environment.yml
@@ -53,18 +70,8 @@ repos:
           conda_dev_env.yml|
         )$
       pass_filenames: false
-
-    - id: travis-linter
-      name: Travis Lint
-      entry: travis lint
-      files: .travis.yml
-      language: ruby
-      additional_dependencies: ['travis']
-
-    - id: doc8
-      entry: doc8
-      language: system
-      types: [rst]
-      name: doc8 - Lint the documentation.
+      additional_dependencies:
+        - click
+        - ruamel.yaml
 
     # TODO could also add check-manifest

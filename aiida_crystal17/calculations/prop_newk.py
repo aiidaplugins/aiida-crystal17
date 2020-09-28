@@ -29,16 +29,18 @@ class CryNewkCalculation(PropAbstractCalculation):
     def define(cls, spec):
         super(CryNewkCalculation, cls).define(spec)
 
-        spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.newk')
+        spec.input(
+            "metadata.options.parser_name", valid_type=str, default="crystal17.newk"
+        )
 
     @classmethod
     def validate_parameters(cls, data):
-        validate_against_schema(data.get_dict(), 'prop.newk.schema.json')
+        validate_against_schema(data.get_dict(), "prop.newk.schema.json")
 
     def create_input_content(self):
         lines = self.create_newk_lines(self.inputs.parameters.get_dict())
-        lines.append('END')
-        return '\n'.join(lines)
+        lines.append("END")
+        return "\n".join(lines)
 
     def get_retrieve_list(self):
         return [self.metadata.options.stdout_file_name]

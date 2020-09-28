@@ -16,23 +16,36 @@
 """Parse the stdout content from a CRYSTAL Properties computation."""
 import re
 
-from aiida_crystal17.common.parsing import split_numbers, convert_units
-from .crystal_stdout import (strip_non_program_output, assign_exit_code, parse_section, parse_pre_header,
-                             parse_calculation_header, SYSTEM_INFO_REGEXES, ParsedSection)
+from aiida_crystal17.common.parsing import convert_units, split_numbers
+from .crystal_stdout import (
+    SYSTEM_INFO_REGEXES,
+    ParsedSection,
+    assign_exit_code,
+    parse_calculation_header,
+    parse_pre_header,
+    parse_section,
+    strip_non_program_output,
+)
 
 INPUT_WF_REGEXES = (
-    ('k_points', re.compile(r'\sSHRINK. FACT.\(MONKH.\)\s*(\d+)\s*(\d+)\s*(\d+)', re.DOTALL)),
-    ('gilat_net', re.compile(r'\sSHRINKING FACTOR\(GILAT NET\)\s*(\d+)', re.DOTALL)),
-    ('energy_total', re.compile(r'TOTAL ENERGY\s*([\+\-\d\.E]+)', re.DOTALL)),
-    ('energy_kinetic', re.compile(r'KIN. ENERGY\s*([\+\-\d\.E]+)', re.DOTALL)),
-    ('energy_fermi', re.compile(r'FERMI ENERGY\s*([\+\-\d\.E]+)', re.DOTALL)),
+    (
+        "k_points",
+        re.compile(r"\sSHRINK. FACT.\(MONKH.\)\s*(\d+)\s*(\d+)\s*(\d+)", re.DOTALL),
+    ),
+    ("gilat_net", re.compile(r"\sSHRINKING FACTOR\(GILAT NET\)\s*(\d+)", re.DOTALL)),
+    ("energy_total", re.compile(r"TOTAL ENERGY\s*([\+\-\d\.E]+)", re.DOTALL)),
+    ("energy_kinetic", re.compile(r"KIN. ENERGY\s*([\+\-\d\.E]+)", re.DOTALL)),
+    ("energy_fermi", re.compile(r"FERMI ENERGY\s*([\+\-\d\.E]+)", re.DOTALL)),
 )
 
 NEWK_WF_REGEXES = (
-    ('k_points', re.compile(r'\sSHRINK FACTORS\(MONK.\)\s*(\d*)\s*(\d*)\s*(\d*)', re.DOTALL)),
-    ('gilat_net', re.compile(r'\sSHRINK FACTOR\(GILAT\)\s*(\d*)', re.DOTALL)),
-    ('n_kpoints_ibz', re.compile(r'\sPOINTS IN THE IBZ\s*(\d*)', re.DOTALL)),
-    ('n_kpoints_gilat', re.compile(r'\sPOINTS\(GILAT NET\)\s*(\d*)', re.DOTALL)),
+    (
+        "k_points",
+        re.compile(r"\sSHRINK FACTORS\(MONK.\)\s*(\d*)\s*(\d*)\s*(\d*)", re.DOTALL),
+    ),
+    ("gilat_net", re.compile(r"\sSHRINK FACTOR\(GILAT\)\s*(\d*)", re.DOTALL)),
+    ("n_kpoints_ibz", re.compile(r"\sPOINTS IN THE IBZ\s*(\d*)", re.DOTALL)),
+    ("n_kpoints_gilat", re.compile(r"\sPOINTS\(GILAT NET\)\s*(\d*)", re.DOTALL)),
 )
 
 
@@ -42,55 +55,54 @@ def read_properties_stdout(content):
     NOTE: this function expects that NEWK is the initial part of the computation
     """
     output = {
-        'units': {
-            'conversion': 'CODATA2014',
-            'energy': 'eV'
-        },
-        'errors': [],
-        'warnings': [],
-        'parser_errors': [],
-        'parser_exceptions': []
+        "units": {"conversion": "CODATA2014", "energy": "eV"},
+        "errors": [],
+        "warnings": [],
+        "parser_errors": [],
+        "parser_exceptions": [],
     }
 
     # strip non program output
     content, warnings = strip_non_program_output(content)
-    output['warnings'] += warnings
+    output["warnings"] += warnings
     lines = content.splitlines()
 
     if not lines:
-        output['parser_errors'] += ['the file is empty']
+        output["parser_errors"] += ["the file is empty"]
         return assign_exit_code(output)
 
     # make an initial parse to find all errors/warnings and start lines for sections
-    errors, run_warnings, parser_errors, telapse_seconds, start_lines = initial_parse(lines)
-    output['errors'] += errors
-    output['warnings'] += run_warnings
-    output['parser_errors'] += errors
+    errors, run_warnings, parser_errors, telapse_seconds, start_lines = initial_parse(
+        lines
+    )
+    output["errors"] += errors
+    output["warnings"] += run_warnings
+    output["parser_errors"] += errors
     if telapse_seconds is not None:
-        output['execution_time_seconds'] = telapse_seconds
+        output["execution_time_seconds"] = telapse_seconds
 
     lineno = 0
 
     # parse until the program header
-    outcome = parse_section(parse_pre_header, lines, lineno, output, 'non_program')
+    outcome = parse_section(parse_pre_header, lines, lineno, output, "non_program")
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # parse the program header section
-    outcome = parse_section(parse_calculation_header, lines, lineno, output, 'header')
+    outcome = parse_section(parse_calculation_header, lines, lineno, output, "header")
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
     # TODO parse geometry
 
-    outcome = parse_section(parse_calculation_inputs, lines, lineno, output, 'wf_input')
+    outcome = parse_section(parse_calculation_inputs, lines, lineno, output, "wf_input")
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
 
-    outcome = parse_section(parse_newk_params, lines, lineno, output, 'newk')
+    outcome = parse_section(parse_newk_params, lines, lineno, output, "newk")
     if outcome is None or outcome.parser_error is not None:
         return assign_exit_code(output)
     lineno = outcome.next_lineno
@@ -112,34 +124,34 @@ def initial_parse(lines):
 
     for lineno, line in enumerate(lines):
 
-        if 'WARNING' in line.upper():
+        if "WARNING" in line.upper():
             warnings.append(line.strip())
-        elif 'ERROR' in line:
+        elif "ERROR" in line:
             # TODO ignore errors before program execution (e.g. in mpiexec setup)?
-            if 'open_hca: getaddr_netdev ERROR' not in line:
+            if "open_hca: getaddr_netdev ERROR" not in line:
                 errors.append(line.strip())
-        elif 'MPI_Abort' in line:
+        elif "MPI_Abort" in line:
             # only record one mpi_abort event (to not clutter output)
             if not mpi_abort:
                 errors.append(line.strip())
                 mpi_abort = True
-        elif 'CONVERGENCE TESTS UNSATISFIED' in line.upper():
+        elif "CONVERGENCE TESTS UNSATISFIED" in line.upper():
             errors.append(line.strip())
-        elif 'TELAPSE' in line:
+        elif "TELAPSE" in line:
             telapse_line = lineno
-        elif line.strip().startswith('ENDPROP'):
+        elif line.strip().startswith("ENDPROP"):
             found_endprop = True
 
     total_seconds = None
     if telapse_line:
-        total_seconds = int(split_numbers(lines[telapse_line].split('TELAPSE')[1])[0])
+        total_seconds = int(split_numbers(lines[telapse_line].split("TELAPSE")[1])[0])
         # m, s = divmod(total_seconds, 60)
         # h, m = divmod(m, 60)
         # elapsed_time = "%d:%02d:%02d" % (h, m, s)
 
     if not found_endprop:
         # TODO separate exit code?
-        parser_errors.append('No ENDPROP found in stdout')
+        parser_errors.append("No ENDPROP found in stdout")
 
     return errors, warnings, parser_errors, total_seconds, start_lines
 
@@ -148,22 +160,24 @@ def parse_calculation_inputs(lines, initial_lineno):
     data = {}
     found_end = False
     for i, line in enumerate(lines[initial_lineno:]):
-        if line.strip().startswith('NUMBER OF K POINTS IN THE IBZ'):
+        if line.strip().startswith("NUMBER OF K POINTS IN THE IBZ"):
             found_end = True
             break
     final_lineno = initial_lineno + i + 1
     if not found_end:
-        return ParsedSection(final_lineno, data, "couldn't find end of calculation setup")
+        return ParsedSection(
+            final_lineno, data, "couldn't find end of calculation setup"
+        )
 
     # parse input system information
-    content = '\n'.join(lines[initial_lineno:final_lineno])
+    content = "\n".join(lines[initial_lineno:final_lineno])
     for name, regex in list(SYSTEM_INFO_REGEXES) + list(INPUT_WF_REGEXES):
         match = regex.search(content)
         if match is not None:
-            if name == 'k_points':
-                data['k_points'] = [int(match.groups()[i]) for i in range(3)]
-            elif name.startswith('energy'):
-                data[name] = convert_units(float(match.groups()[0]), 'hartree', 'eV')
+            if name == "k_points":
+                data["k_points"] = [int(match.groups()[i]) for i in range(3)]
+            elif name.startswith("energy"):
+                data[name] = convert_units(float(match.groups()[0]), "hartree", "eV")
             else:
                 data[name] = int(match.groups()[0])
 
@@ -186,13 +200,13 @@ def parse_newk_params(lines, initial_lineno):
     data = {}
 
     # parse newk information
-    content = '\n'.join(lines[initial_lineno:])
+    content = "\n".join(lines[initial_lineno:])
 
     for name, regex in NEWK_WF_REGEXES:
         match = regex.search(content)
         if match is not None:
-            if name == 'k_points':
-                data['k_points'] = [int(match.groups()[i]) for i in range(3)]
+            if name == "k_points":
+                data["k_points"] = [int(match.groups()[i]) for i in range(3)]
             else:
                 data[name] = int(match.groups()[0])
 

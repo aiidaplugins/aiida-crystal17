@@ -137,7 +137,7 @@ END
 
 
 def test_read_fail(cry_stdin_str):
-    cry_stdin_str = cry_stdin_str.replace('PPAN', 'WRONG')
+    cry_stdin_str = cry_stdin_str.replace("PPAN", "WRONG")
     with pytest.raises(NotImplementedError):
         extract_data(cry_stdin_str)
 
@@ -147,95 +147,94 @@ def test_full_read(cry_stdin_str):
 
     assert len(basis_sets) == 2
 
-    assert atom_props == {'fragment': [1, 3], 'ghosts': [5, 6], 'spin_alpha': [1, 3], 'spin_beta': [2, 4]}
+    assert atom_props == {
+        "fragment": [1, 3],
+        "ghosts": [5, 6],
+        "spin_alpha": [1, 3],
+        "spin_beta": [2, 4],
+    }
 
     expected = {
-        'title': 'a title',
-        'geometry': {
-            'info_print': ['ATOMSYMM', 'SYMMOPS'],
-            'info_external': ['STRUCPRT'],
-            'ROTCRY': [[1.0, 0, 0], [0, 1, 0], [0, 0, -1]],
-            'optimise': {
-                'type': 'FULLOPTG',
-                'hessian': 'HESSIDEN',
-                'gradient': 'NUMGRATO',
-                'info_print': ['PRINTOPT', 'PRINTFORCES'],
-                'convergence': {
-                    'TOLDEG': 0.0003,
-                    'TOLDEX': 0.0012,
-                    'TOLDEE': 7,
-                    'MAXCYCLE': 50,
-                    'FINALRUN': 4
+        "title": "a title",
+        "geometry": {
+            "info_print": ["ATOMSYMM", "SYMMOPS"],
+            "info_external": ["STRUCPRT"],
+            "ROTCRY": [[1.0, 0, 0], [0, 1, 0], [0, 0, -1]],
+            "optimise": {
+                "type": "FULLOPTG",
+                "hessian": "HESSIDEN",
+                "gradient": "NUMGRATO",
+                "info_print": ["PRINTOPT", "PRINTFORCES"],
+                "convergence": {
+                    "TOLDEG": 0.0003,
+                    "TOLDEX": 0.0012,
+                    "TOLDEE": 7,
+                    "MAXCYCLE": 50,
+                    "FINALRUN": 4,
                 },
-            }
+            },
         },
-        'basis_set': {
-            'CHARGED': True,
+        "basis_set": {
+            "CHARGED": True,
         },
-        'scf': {
-            'dft': {
-                'xc': ['LDA', 'PZ'],
+        "scf": {
+            "dft": {
+                "xc": ["LDA", "PZ"],
                 # or
                 # "xc": "HSE06",
                 # or
                 # "xc": {
                 #     "LSRSH-PBE": [0.11, 0.25, 0.00001]
                 # },
-                'SPIN': True,
-                'grid': 'XLGRID',
-                'grid_weights': 'BECKE',
-                'numerical': {
-                    'TOLLDENS': 6,
-                    'TOLLGRID': 14,
-                    'LIMBEK': 400
-                }
+                "SPIN": True,
+                "grid": "XLGRID",
+                "grid_weights": "BECKE",
+                "numerical": {"TOLLDENS": 6, "TOLLGRID": 14, "LIMBEK": 400},
             },
             # or
             # "single": "UHF",
-            'k_points': [8, 8],
-            'numerical': {
-                'BIPOLAR': [18, 14],
-                'BIPOSIZE': 4000000,
-                'EXCHSIZE': 4000000,
-                'EXCHPERM': True,
-                'ILASIZE': 6000,
-                'INTGPACK': 0,
-                'MADELIND': 50,
-                'POLEORDR': 4,
-                'TOLINTEG': [6, 6, 6, 6, 12],
-                'TOLPSEUD': 6,
-                'FMIXING': 0,
-                'MAXCYCLE': 50,
-                'TOLDEE': 6,
-                'LEVSHIFT': [2, 1],
-                'SMEAR': 0.1
+            "k_points": [8, 8],
+            "numerical": {
+                "BIPOLAR": [18, 14],
+                "BIPOSIZE": 4000000,
+                "EXCHSIZE": 4000000,
+                "EXCHPERM": True,
+                "ILASIZE": 6000,
+                "INTGPACK": 0,
+                "MADELIND": 50,
+                "POLEORDR": 4,
+                "TOLINTEG": [6, 6, 6, 6, 12],
+                "TOLPSEUD": 6,
+                "FMIXING": 0,
+                "MAXCYCLE": 50,
+                "TOLDEE": 6,
+                "LEVSHIFT": [2, 1],
+                "SMEAR": 0.1,
             },
-            'fock_mixing': 'DIIS',
+            "fock_mixing": "DIIS",
             # or
             # "fock_mixing": ["BROYDEN", 0.0001, 50, 2],
-            'spinlock': {
-                'SPINLOCK': [1, 10]
-            },
-            'post_scf': ['GRADCAL', 'PPAN']
-        }
+            "spinlock": {"SPINLOCK": [1, 10]},
+            "post_scf": ["GRADCAL", "PPAN"],
+        },
     }
 
     assert edict.diff(output_dict, expected) == {}
 
 
 def test_mgo_sto3g_scf():
-    content = read_resource_text('crystal', 'mgo_sto3g_scf', 'INPUT')
+    content = read_resource_text("crystal", "mgo_sto3g_scf", "INPUT")
     output_dict, basis_sets, atom_props = extract_data(content)
 
     assert len(basis_sets) == 2
 
     assert atom_props == {}
 
-    assert output_dict == {'scf': {'k_points': (8, 8)}, 'title': 'MgO bulk'}
+    assert output_dict == {"scf": {"k_points": (8, 8)}, "title": "MgO bulk"}
 
 
 def test_mgo_sto3g_opt():
-    content = read_resource_text('crystal', 'mgo_sto3g_opt', 'INPUT')
+    content = read_resource_text("crystal", "mgo_sto3g_opt", "INPUT")
     output_dict, basis_sets, atom_props = extract_data(content)
 
     assert len(basis_sets) == 2
@@ -243,37 +242,27 @@ def test_mgo_sto3g_opt():
     assert atom_props == {}
 
     assert output_dict == {
-        'geometry': {
-            'optimise': {
-                'type': 'FULLOPTG'
-            }
-        },
-        'scf': {
-            'k_points': (8, 8)
-        },
-        'title': 'MgO bulk'
+        "geometry": {"optimise": {"type": "FULLOPTG"}},
+        "scf": {"k_points": (8, 8)},
+        "title": "MgO bulk",
     }
 
 
 def test_nio_sto3g_afm():
-    content = read_resource_text('crystal', 'nio_sto3g_afm_scf', 'INPUT')
+    content = read_resource_text("crystal", "nio_sto3g_afm_scf", "INPUT")
     output_dict, basis_sets, atom_props = extract_data(content)
 
     assert len(basis_sets) == 2
 
-    assert atom_props == {'spin_alpha': [1], 'spin_beta': [2]}
+    assert atom_props == {"spin_alpha": [1], "spin_beta": [2]}
 
     assert output_dict == {
-        'scf': {
-            'single': 'UHF',
-            'numerical': {
-                'FMIXING': 30
-            },
-            'post_scf': ['PPAN'],
-            'spinlock': {
-                'SPINLOCK': [0, 15]
-            },
-            'k_points': (8, 8)
+        "scf": {
+            "single": "UHF",
+            "numerical": {"FMIXING": 30},
+            "post_scf": ["PPAN"],
+            "spinlock": {"SPINLOCK": [0, 15]},
+            "k_points": (8, 8),
         },
-        'title': 'NiO Bulk with AFM spin'
+        "title": "NiO Bulk with AFM spin",
     }

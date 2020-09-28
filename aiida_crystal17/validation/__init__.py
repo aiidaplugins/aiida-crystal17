@@ -14,4 +14,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Package for validating JSON objects against schemas."""
-from aiida_crystal17.validation.utils import load_schema, load_validator, validate_against_schema  # noqa: F401
+from aiida_crystal17.validation.utils import (  # noqa: F401
+    load_schema,
+    load_validator,
+    validate_against_schema,
+)
