@@ -16,7 +16,6 @@
 import copy
 
 from plumpy.ports import PortNamespace
-from six import PY2
 
 from aiida import orm
 from aiida.common import AttributeDict, LinkType
@@ -30,10 +29,7 @@ from aiida_crystal17.calculations.prop_doss import CryDossCalculation
 from aiida_crystal17.calculations.prop_ech3 import CryEch3Calculation
 from aiida_crystal17.calculations.prop_ppan import CryPpanCalculation
 
-if PY2:
-    from collections import Mapping
-else:
-    from collections.abc import Mapping
+from collections.abc import Mapping
 
 
 def expose_ports(port, port_namespace, exclude):

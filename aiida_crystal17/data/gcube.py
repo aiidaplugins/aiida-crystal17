@@ -22,7 +22,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import ase
 import numpy as np
-import six
+
 
 from aiida.orm import Data
 
@@ -59,7 +59,7 @@ class GaussianCube(Data):
         """
         super(GaussianCube, self).__init__(**kwargs)
 
-        if isinstance(fileobj, six.string_types):
+        if isinstance(fileobj, str):
             self.set_from_filepath(fileobj)
         else:
             self.set_from_fileobj(fileobj, binary=binary)

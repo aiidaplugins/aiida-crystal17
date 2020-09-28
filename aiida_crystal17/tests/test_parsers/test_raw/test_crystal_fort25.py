@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-import six
+
 
 from aiida_crystal17.tests import open_resource_text
 from aiida_crystal17.common import recursive_round
@@ -57,7 +57,7 @@ def test_create_doss_content(file_regression):
                  119
              ], [98, 99, 100, 101, 102, 120, 121, 122, 123, 124]]
     }
-    file_regression.check(six.ensure_text('\n'.join(create_doss_content(params))))
+    file_regression.check('\n'.join(create_doss_content(params)))
 
 
 def test_read_crystal_fort25(data_regression):

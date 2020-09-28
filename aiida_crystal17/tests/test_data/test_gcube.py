@@ -1,4 +1,4 @@
-import six
+
 
 from aiida.plugins import DataFactory
 
@@ -28,7 +28,7 @@ def test_open_gcube(db_test_app):
     with open_resource_binary('ech3', 'mgo_sto3g_scf', 'DENS_CUBE.DAT') as handle:
         node = GaussianCube(handle)
     with node.open_cube_file() as handle:
-        line = six.ensure_str(handle.readline().strip())
+        line = handle.readline().strip()
     assert line == 'Charge density - 3D GRID - GAUSSIAN CUBE FORMAT MgO Bulk'
 
 

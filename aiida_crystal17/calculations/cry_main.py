@@ -15,7 +15,6 @@
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 computations."""
 import os
-import six
 
 from aiida.common.exceptions import InputValidationError
 from aiida.orm import Code, RemoteData, StructureData, TrajectoryData
@@ -130,7 +129,7 @@ class CryMainCalculation(CryAbstractCalculation):
         if kinds is not None:
             builder.kinds = kinds
         if code is not None:
-            if isinstance(code, six.string_types):
+            if isinstance(code, str):
                 code = Code.get_from_string(code)
             builder.code = code
         if metadata is not None:
@@ -141,7 +140,7 @@ class CryMainCalculation(CryAbstractCalculation):
         write_input(parameters.get_dict(), ['test_basis'], atom_props)
 
         # validate basis sets
-        if isinstance(bases, six.string_types):
+        if isinstance(bases, str):
             symbol_to_basis_map = BasisSetData.get_basissets_from_structure(structure, bases, by_kind=False)
         else:
             elements_required = set([kind.symbol for kind in structure.kinds])
@@ -195,7 +194,7 @@ class CryMainCalculation(CryAbstractCalculation):
         # create fort.34 external geometry file and place it in tempfolder
         gui_content = gui_file_write(self.inputs.structure, self.inputs.get('symmetry', None))
         with tempfolder.open('fort.34', 'w') as f:
-            f.write(six.u('\n'.join(gui_content)))
+            f.write('\n'.join(gui_content))
 
         # create .d12 input file and place it in tempfolder
         atom_props = create_atom_properties(self.inputs.structure, self.inputs.get('kinds', None))

@@ -17,8 +17,6 @@ import copy
 from hashlib import md5
 import json
 
-import six
-
 from aiida.common import exceptions
 from aiida.orm import Data
 from aiida.plugins.entry_point import load_entry_point, get_entry_point_names
@@ -64,14 +62,14 @@ class EmpiricalPotential(Data):
         output = potential_writer.create_content(potential_data, fitting_data=fitting_data)
 
         with self.open(self._default_potential_filename, 'w') as handle:
-            handle.write(six.ensure_text(output.content))
+            handle.write(output.content)
 
         with self.open(self._default_potential_json, 'w') as handle:
-            handle.write(six.ensure_text(json.dumps(potential_data)))
+            handle.write(json.dumps(potential_data))
 
         if fitting_data is not None:
             with self.open(self._default_fitting_json, 'w') as handle:
-                handle.write(six.ensure_text(json.dumps(fitting_data)))
+                handle.write(json.dumps(fitting_data))
 
         dictionary = {
             'pair_style': pair_style,

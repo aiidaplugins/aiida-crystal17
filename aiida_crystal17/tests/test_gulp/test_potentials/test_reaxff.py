@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-import six
+
 
 from aiida_crystal17.gulp.potentials.common import filter_by_species
 from aiida_crystal17.gulp.potentials.raw_reaxff import (read_lammps_format, write_lammps_format, write_gulp_format)
@@ -309,13 +309,13 @@ def test_read_lammps_format(data_regression):
 def test_round_trip_lammps_format(file_regression):
     data = read_lammps_format(lammps_file.splitlines())
     output = write_lammps_format(data)
-    file_regression.check(six.ensure_text(output))
+    file_regression.check(output)
 
 
 def test_write_gulp_format(file_regression):
     data = read_lammps_format(lammps_file.splitlines())
     output, nflags, nfit = write_gulp_format(data)
-    file_regression.check(six.ensure_text(output))
+    file_regression.check(output)
 
 
 def test_write_gulp_format_with_filter(data_regression, file_regression):
@@ -323,7 +323,7 @@ def test_write_gulp_format_with_filter(data_regression, file_regression):
     data = filter_by_species(data, ['Fe core', 'S core'])
     data_regression.check(data)
     output, nflags, nfit = write_gulp_format(data)
-    file_regression.check(six.ensure_text(output))
+    file_regression.check(output)
 
 
 def test_write_gulp_format_with_fitting(data_regression, file_regression):
@@ -346,6 +346,6 @@ def test_write_gulp_format_with_fitting(data_regression, file_regression):
         }
     }
     output, nflags, nfit = write_gulp_format(data, fitting_data)
-    file_regression.check(six.ensure_text(output))
+    file_regression.check(output)
     assert nfit == 5
     assert nflags == 209

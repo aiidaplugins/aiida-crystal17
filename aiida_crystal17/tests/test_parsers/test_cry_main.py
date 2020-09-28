@@ -1,5 +1,5 @@
 import pytest
-import six
+
 
 from aiida.orm import FolderData
 from aiida.cmdline.utils.common import get_calcjob_report  # noqa: F401
@@ -47,7 +47,7 @@ def test_failed_pbs(db_test_app, plugin_name, fcontent, error_msg):
 
     retrieved = FolderData()
     with retrieved.open('_scheduler-stderr.txt', 'w') as handle:
-        handle.write(six.ensure_text(fcontent))
+        handle.write(fcontent)
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)

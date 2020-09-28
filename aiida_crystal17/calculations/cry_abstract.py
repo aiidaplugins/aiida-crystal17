@@ -15,7 +15,6 @@
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 computations."""
 import os
-import six
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.engine import CalcJob
@@ -37,10 +36,10 @@ class CryAbstractCalculation(CalcJob):
 
         super(CryAbstractCalculation, cls).define(spec)
 
-        spec.input('metadata.options.input_file_name', valid_type=six.string_types, default='INPUT')
-        spec.input('metadata.options.output_main_file_name', valid_type=six.string_types, default='main.out')
+        spec.input('metadata.options.input_file_name', valid_type=str, default='INPUT')
+        spec.input('metadata.options.output_main_file_name', valid_type=str, default='main.out')
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.main')
+        spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.main')
 
         # TODO review aiidateam/aiida_core#2997, when closed, for exit code formalization
 

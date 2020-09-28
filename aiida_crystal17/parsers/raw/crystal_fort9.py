@@ -16,7 +16,7 @@
 from collections import namedtuple
 
 from scipy.io import FortranFile
-import six
+
 
 from aiida_crystal17.common.parsing import convert_units
 
@@ -41,7 +41,7 @@ def parse_fort9(file_obj, length_units='angstrom'):
     Fort9Results
 
     """
-    if isinstance(file_obj, six.string_types):
+    if isinstance(file_obj, str):
         with FortranFile(file_obj) as handle:
             data = [handle.read_record(rtype) for rtype in RECORD_DTYPES]
     else:

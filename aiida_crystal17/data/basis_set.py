@@ -17,10 +17,11 @@
 from __future__ import absolute_import
 
 import hashlib
+from io import StringIO
 import os
 
 from ruamel.yaml import YAML
-import six
+
 
 from aiida.common.utils import classproperty
 from aiida.orm import Data, Str
@@ -108,7 +109,7 @@ def parse_basis(basis_file):
     parsing_data = False
     content = []
 
-    if isinstance(basis_file, six.string_types):
+    if isinstance(basis_file, str):
         basis_file = pathlib.Path(basis_file)
 
     if isinstance(basis_file, pathlib.Path):
@@ -262,13 +263,13 @@ class BasisSetData(Data):
         self.set_attribute('md5', md5sum)
 
         # store the rest of the file content as a file in the file repository
-        if isinstance(basis_file, six.string_types):
+        if isinstance(basis_file, str):
             filename = os.path.basename(basis_file)
         elif hasattr(basis_file, 'name'):
             filename = os.path.basename(basis_file.name)
         else:
             filename = 'stringio.txt'
-        self.put_object_from_filelike(six.StringIO(content), key=filename, mode='w', force=False)
+        self.put_object_from_filelike(StringIO(content), key=filename, mode='w', force=False)
 
         self.set_attribute('filename', filename)
 
@@ -334,7 +335,7 @@ class BasisSetData(Data):
                 and create is either True if the object was created,
                 or False if the object was retrieved from the DB.
         """
-        if isinstance(basis_file, six.string_types) and not os.path.isabs(basis_file):
+        if isinstance(basis_file, str) and not os.path.isabs(basis_file):
             raise ValueError('basis_file must be an absolute path')
 
         _, content = parse_basis(basis_file)
@@ -514,7 +515,7 @@ class BasisSetData(Data):
         if user is not None:
             query.append(User, filters={'email': {'==': user}}, with_group='group')
 
-        if isinstance(filter_elements, six.string_types):
+        if isinstance(filter_elements, str):
             filter_elements = [filter_elements]
 
         if filter_elements is not None:
@@ -652,7 +653,7 @@ class BasisSetData(Data):
         from aiida.orm import Group, User
         from aiida.common.exceptions import UniquenessError
 
-        if isinstance(folder, six.string_types):
+        if isinstance(folder, str):
             folder = pathlib.Path(folder)
 
         if not folder.is_dir():

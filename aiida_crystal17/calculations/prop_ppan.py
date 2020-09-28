@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-import six
+
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.parsers.raw.prop_inputs import create_rotref_content
@@ -36,9 +36,9 @@ class CryPpanCalculation(PropAbstractCalculation):
     def define(cls, spec):
         super(CryPpanCalculation, cls).define(spec)
 
-        spec.input('metadata.options.output_ppan_fname', valid_type=six.string_types, default='PPAN.DAT')
+        spec.input('metadata.options.output_ppan_fname', valid_type=str, default='PPAN.DAT')
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.ppan')
+        spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.ppan')
 
         # TODO make dict optional
 
