@@ -382,7 +382,11 @@ def test_run_nio_afm_fullopt(
     skip_non_mock=True, reason="the calculation was run on a HPC"
 )
 def test_run_nio_afm_failed_opt(
-    db_test_app, get_structure, upload_basis_set_family, sanitise_calc_attr, data_regression
+    db_test_app,
+    get_structure,
+    upload_basis_set_family,
+    sanitise_calc_attr,
+    data_regression,
 ):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the optimisation fails, due to reaching walltime."""

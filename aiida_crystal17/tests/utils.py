@@ -347,7 +347,11 @@ class AiidaTestApp(object):
 
         calc_node = CalcJobNode(computer=computer, process_type=entry_point)
         calc_node.set_options(
-            {k: v.default() if callable(v.default) else v.default for k, v in process.spec_options.items() if v.has_default()}
+            {
+                k: v.default() if callable(v.default) else v.default
+                for k, v in process.spec_options.items()
+                if v.has_default()
+            }
         )
         calc_node.set_option(
             "resources", {"num_machines": 1, "num_mpiprocs_per_machine": 1}

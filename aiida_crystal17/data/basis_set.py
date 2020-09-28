@@ -288,9 +288,7 @@ class BasisSetData(Data):
             filename = os.path.basename(basis_file.name)
         else:
             filename = "stringio.txt"
-        self.put_object_from_filelike(
-            StringIO(content), path=filename, mode="w"
-        )
+        self.put_object_from_filelike(StringIO(content), path=filename, mode="w")
 
         self.set_attribute("filename", filename)
 

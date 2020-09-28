@@ -16,7 +16,7 @@
 """a work flow to symmetrise a structure and compute the symmetry operations"""
 import traceback
 
-from aiida.engine import ExitCode, WorkChain, calcfunction, CalcJobProcessSpec
+from aiida.engine import CalcJobProcessSpec, ExitCode, WorkChain, calcfunction
 from aiida.orm import Str, StructureData
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import DataFactory

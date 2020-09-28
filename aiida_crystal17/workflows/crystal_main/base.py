@@ -16,17 +16,18 @@
 from aiida import orm
 from aiida.common import AttributeDict
 from aiida.common.exceptions import InputValidationError
-from aiida.engine import while_, CalcJobProcessSpec
+from aiida.engine import (
+    BaseRestartWorkChain,
+    CalcJobProcessSpec,
+    ProcessHandlerReport,
+    process_handler,
+    while_,
+)
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import CalculationFactory, DataFactory
 
 from aiida_crystal17.common.kpoints import create_kpoints_from_distance
 from aiida_crystal17.data.basis_set import BasisSetData
-from aiida_crystal17.workflows.common.restart import (
-    BaseRestartWorkChain,
-    ErrorHandlerReport,
-    register_error_handler,
-)
 
 CryCalculation = CalculationFactory("crystal17.main")
 CryInputParamsData = DataFactory("crystal17.parameters")
@@ -42,7 +43,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
     with automated error handling and restarts.
     """
 
-    _calculation_class = CryCalculation
+    _process_class = CryCalculation
     _error_handler_entry_point = "aiida_crystal17.workflow_error_handlers.main.base"
 
     _calc_namespace = "cry"
@@ -107,10 +108,10 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
             cls.validate_parameters,
             cls.validate_basis_sets,
             cls.validate_resources,
-            while_(cls.should_run_calculation)(
+            while_(cls.should_run_process)(
                 cls.prepare_calculation,
-                cls.run_calculation,
-                cls.inspect_calculation,
+                cls.run_process,
+                cls.inspect_process,
             ),
             cls.results,
         )
@@ -162,6 +163,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
         self.ctx.inputs = AttributeDict(
             self.exposed_inputs(CryCalculation, self._calc_namespace)
         )
+        self.ctx.restart_calc = None
         self.ctx.use_fort9_restart = False
 
     def validate_parameters(self):
@@ -294,50 +296,42 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
         self.report("{}<{}> failed with exit status {}: {}".format(*arguments))
         self.report("Action taken: {}".format(action))
 
+    @process_handler(priority=500)
+    def _handle_unrecoverable_failure(self, calculation):
+        """Calculations with an exit status below 400 are unrecoverable,
+        so abort the work chain."""
+        if (not calculation.is_finished_ok) and calculation.exit_status < 400:
+            self.report_error_handled(calculation, "unrecoverable error, aborting...")
+            return ProcessHandlerReport(
+                True, self.exit_codes.ERROR_UNRECOVERABLE_FAILURE
+            )
 
-@register_error_handler(CryMainBaseWorkChain, 500)
-def _handle_unrecoverable_failure(self, calculation):
-    """Calculations with an exit status below 400 are unrecoverable,
-    so abort the work chain."""
-    if calculation.exit_status < 400:
-        self.report_error_handled(calculation, "unrecoverable error, aborting...")
-        return ErrorHandlerReport(
-            True, True, self.exit_codes.ERROR_UNRECOVERABLE_FAILURE
-        )
-
-
-@register_error_handler(CryMainBaseWorkChain, 420)
-def _handle_out_of_walltime(self, calculation):
-    """In the case of `ERROR_OUT_OF_WALLTIME`,
-    restart from the last recorded configuration."""
-    if (
-        calculation.exit_status
-        == CryCalculation.spec().exit_codes.ERROR_OUT_OF_WALLTIME.status
-    ):
+    @process_handler(
+        priority=420, exit_codes=CryCalculation.exit_codes.ERROR_OUT_OF_WALLTIME
+    )
+    def _handle_out_of_walltime(self, calculation):
+        """In the case of `ERROR_OUT_OF_WALLTIME`,
+        restart from the last recorded configuration."""
         if not self.ctx.is_optimisation:
             self.report_error_handled(
                 calculation,
                 "there is currently no restart facility for a killed scf calculation",
             )
-            return ErrorHandlerReport(
-                True, True, self.exit_codes.ERROR_UNRECOVERABLE_FAILURE
+            return ProcessHandlerReport(
+                True, self.exit_codes.ERROR_UNRECOVERABLE_FAILURE
             )
         self.ctx.restart_calc = calculation
         self.ctx.use_fort9_restart = False  # the fort.9 is wiped in-between SCF
         self.report_error_handled(
             calculation, "simply restart from the last calculation"
         )
-        return ErrorHandlerReport(True, True)
+        return ProcessHandlerReport(True)
 
+    @process_handler(priority=410, exit_codes=CryCalculation.exit_codes.UNCONVERGED_SCF)
+    def _handle_electronic_convergence_not_achieved(self, calculation):
+        """In the case of `UNCONVERGED_SCF`,
+        decrease the function mixing and restart from the last recorded configuration."""
 
-@register_error_handler(CryMainBaseWorkChain, 410)
-def _handle_electronic_convergence_not_achieved(self, calculation):
-    """In the case of `UNCONVERGED_SCF`,
-    decrease the function mixing and restart from the last recorded configuration."""
-    if (
-        calculation.exit_status
-        == CryCalculation.spec().exit_codes.UNCONVERGED_SCF.status
-    ):
         factor = self.defaults.delta_factor_fmixing
         fmixing = (
             self.ctx.inputs.parameters["scf"]
@@ -358,21 +352,18 @@ def _handle_electronic_convergence_not_achieved(self, calculation):
             )
         )
         self.report_error_handled(calculation, action)
-        return ErrorHandlerReport(True, True)
+        return ProcessHandlerReport(True)
 
-
-@register_error_handler(CryMainBaseWorkChain, 400)
-def _handle_geometric_convergence_not_achieved(self, calculation):
-    """In the case of `UNCONVERGED_GEOMETRY`,
-    restart from the last recorded configuration.
-    """
-    if (
-        calculation.exit_status
-        == CryCalculation.spec().exit_codes.UNCONVERGED_GEOMETRY.status
-    ):
+    @process_handler(
+        priority=400, exit_codes=CryCalculation.exit_codes.UNCONVERGED_GEOMETRY
+    )
+    def _handle_geometric_convergence_not_achieved(self, calculation):
+        """In the case of `UNCONVERGED_GEOMETRY`,
+        restart from the last recorded configuration.
+        """
         self.ctx.restart_calc = calculation
         self.ctx.use_fort9_restart = True
         self.report_error_handled(
             calculation, "simply restart from the last calculation"
         )
-        return ErrorHandlerReport(True, True)
+        return ProcessHandlerReport(True)
