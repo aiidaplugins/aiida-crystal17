@@ -26,7 +26,7 @@ from functools import wraps
 from aiida import orm
 from aiida.common import AiidaException, exceptions
 from aiida.common.lang import override
-from aiida.engine import CalcJob, ExitCode, ToContext, WorkChain, append_
+from aiida.engine import CalcJob, CalcJobProcessSpec, ExitCode, ToContext, WorkChain, append_
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins.entry_point import get_entry_point_names, load_entry_point
 
@@ -118,15 +118,15 @@ class BaseRestartWorkChain(WorkChain):
                                         entry_point_name, self._error_handler_entry_point, exception)
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(BaseRestartWorkChain, cls).define(spec)
         spec.input(
-            'max_iterations', valid_type=orm.Int, default=orm.Int(5),
+            'max_iterations', valid_type=orm.Int, default=lambda: orm.Int(5),
             serializer=to_aiida_type,
             help='Maximum number of iterations the work chain will restart the calculation to finish successfully.')
         spec.input(
-            'clean_workdir', valid_type=orm.Bool, default=orm.Bool(False),
+            'clean_workdir', valid_type=orm.Bool, default=lambda: orm.Bool(False),
             serializer=to_aiida_type,
             help='If ``True``, work directories of all called calculation will be cleaned at the end of execution.')
         spec.exit_code(

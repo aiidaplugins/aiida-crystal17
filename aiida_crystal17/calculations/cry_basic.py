@@ -14,6 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 computations."""
+from aiida.engine import CalcJobProcessSpec
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
@@ -25,7 +26,7 @@ class CryBasicCalculation(CryAbstractCalculation):
     """
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(CryBasicCalculation, cls).define(spec)
 

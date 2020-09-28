@@ -1,3 +1,5 @@
+from io import StringIO
+
 from aiida.orm import FolderData
 import pytest
 
@@ -36,8 +38,7 @@ def test_missing_output(db_test_app, plugin_name):
 def test_empty_output(db_test_app, plugin_name):
 
     retrieved = FolderData()
-    with retrieved.open("main.out", "w"):
-        pass
+    retrieved.put_object_from_filelike(StringIO(""), "main.out")
 
     calc_node = db_test_app.generate_calcjob_node(plugin_name, retrieved)
     results, calcfunction = db_test_app.parse_from_node(plugin_name, calc_node)

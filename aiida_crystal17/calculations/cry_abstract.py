@@ -17,7 +17,7 @@
 import os
 
 from aiida.common.datastructures import CalcInfo, CodeInfo
-from aiida.engine import CalcJob
+from aiida.engine import CalcJob, CalcJobProcessSpec
 from aiida.plugins import DataFactory
 
 
@@ -33,7 +33,7 @@ class CryAbstractCalculation(CalcJob):
     link_output_symmetry = "symmetry"
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(CryAbstractCalculation, cls).define(spec)
 

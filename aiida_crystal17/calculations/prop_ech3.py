@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-
+from aiida.engine import CalcJobProcessSpec
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.data.gcube import GaussianCube
@@ -27,11 +27,11 @@ class CryEch3Calculation(PropAbstractCalculation):
     requires_newk = False
 
     @classmethod
-    def validate_parameters(cls, data):
+    def validate_parameters(cls, data, _):
         validate_against_schema(data.get_dict(), "prop.ech3.schema.json")
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
         super(CryEch3Calculation, cls).define(spec)
 
         spec.input(

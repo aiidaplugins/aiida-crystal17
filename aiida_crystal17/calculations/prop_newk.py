@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-
+from aiida.engine import CalcJobProcessSpec
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.validation import validate_against_schema
@@ -26,7 +26,7 @@ class CryNewkCalculation(PropAbstractCalculation):
     """
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
         super(CryNewkCalculation, cls).define(spec)
 
         spec.input(
@@ -34,7 +34,7 @@ class CryNewkCalculation(PropAbstractCalculation):
         )
 
     @classmethod
-    def validate_parameters(cls, data):
+    def validate_parameters(cls, data, _):
         validate_against_schema(data.get_dict(), "prop.newk.schema.json")
 
     def create_input_content(self):

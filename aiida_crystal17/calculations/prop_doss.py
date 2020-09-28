@@ -14,8 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-
-
+from aiida.engine import CalcJobProcessSpec
 from aiida.plugins import DataFactory
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
@@ -35,7 +34,7 @@ class CryDossCalculation(PropAbstractCalculation):
     """
 
     @classmethod
-    def validate_parameters(cls, data):
+    def validate_parameters(cls, data, _):
         dct = data.get_dict()
         k_points = dct.pop("k_points")
         validate_against_schema({"k_points": k_points}, "prop.newk.schema.json")
@@ -45,7 +44,7 @@ class CryDossCalculation(PropAbstractCalculation):
         validate_against_schema(dct, "prop.doss.schema.json")
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
         super(CryDossCalculation, cls).define(spec)
 
         spec.input(

@@ -16,7 +16,7 @@
 from aiida import orm
 from aiida.common import AttributeDict
 from aiida.common.exceptions import InputValidationError
-from aiida.engine import while_
+from aiida.engine import while_, CalcJobProcessSpec
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.plugins import CalculationFactory, DataFactory
 
@@ -32,7 +32,7 @@ CryCalculation = CalculationFactory("crystal17.main")
 CryInputParamsData = DataFactory("crystal17.parameters")
 
 
-def _validate_kpoint_distance(float_data):
+def _validate_kpoint_distance(float_data, _):
     if float_data and not float_data.value > 0:
         raise InputValidationError("kpoints_distance must be greater than 0")
 
@@ -50,7 +50,7 @@ class CryMainBaseWorkChain(BaseRestartWorkChain):
     defaults = AttributeDict({"fmixing": 30, "delta_factor_fmixing": 0.8})
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(CryMainBaseWorkChain, cls).define(spec)
         spec.expose_inputs(CryCalculation, namespace=cls._calc_namespace, exclude=())

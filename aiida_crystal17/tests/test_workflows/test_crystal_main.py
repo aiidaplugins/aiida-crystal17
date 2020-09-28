@@ -72,7 +72,7 @@ def test_init_steps(
 
 @pytest.mark.cry17_calls_executable
 def test_base_nio_afm_scf_maxcyc(
-    db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression
+    db_test_app, get_structure_and_symm, upload_basis_set_family, sanitise_calc_attr, data_regression
 ):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the scf convergence fails, on the 1st iteration,
@@ -126,9 +126,7 @@ def test_base_nio_afm_scf_maxcyc(
     outputs, wc_node = run_get_node(wc_builder)
     print(get_workchain_report(wc_node, "REPORT"))
 
-    wk_attributes = wc_node.attributes
-    for key in ["job_id", "last_jobinfo", "scheduler_lastchecktime", "version"]:
-        wk_attributes.pop(key, None)
+    wk_attributes = sanitise_calc_attr(wc_node.attributes)
 
     data_regression.check(
         {
@@ -144,7 +142,7 @@ def test_base_nio_afm_scf_maxcyc(
     skip_non_mock=True, reason="the calculation was run on a HPC"
 )
 def test_base_nio_afm_opt_walltime(
-    db_test_app, get_structure_and_symm, upload_basis_set_family, data_regression
+    db_test_app, get_structure_and_symm, upload_basis_set_family, sanitise_calc_attr, data_regression
 ):
     # type: (AiidaTestApp) -> None
     """Test running a calculation where the optimisation fails, on the 1st iteration, due to reaching walltime."""
@@ -197,9 +195,7 @@ def test_base_nio_afm_opt_walltime(
     outputs, wc_node = run_get_node(wc_builder)
     print(get_workchain_report(wc_node, "REPORT"))
 
-    wk_attributes = wc_node.attributes
-    for key in ["job_id", "last_jobinfo", "scheduler_lastchecktime", "version"]:
-        wk_attributes.pop(key, None)
+    wk_attributes = sanitise_calc_attr(wc_node.attributes)
 
     data_regression.check(
         {
