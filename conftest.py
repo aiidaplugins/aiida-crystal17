@@ -150,9 +150,9 @@ def pytest_collection_modifyitems(config, items):
 def pytest_report_header(config):
     """Add header information for pytest execution."""
     if use_mock_exec(config):
-        header = ['CRYSTAL17 Executables: mock_crystal17 mock_properties17 mock_gulp']
+        header = ['CRYSTAL17 Executables: mock_crystal17 mock_properties17']
     else:
-        header = ['CRYSTAL17 Executables: crystal17 properties17 gulp']
+        header = ['CRYSTAL17 Executables: crystal17 properties17']
     workdir = get_work_directory(config)
     workdir = workdir or '<TEMP>'
     header.append('CRYSTAL17 Work Directory: {}'.format(workdir))
@@ -185,9 +185,6 @@ def db_test_app(aiida_environment, pytestconfig):
             'crystal17.ech3': 'mock_properties17',
             'crystal17.newk': 'mock_properties17',
             'crystal17.ppan': 'mock_properties17',
-            'gulp.single': 'mock_gulp',
-            'gulp.optimize': 'mock_gulp',
-            'gulp.fitting': 'mock_gulp'
         }
     else:
         executables = {
@@ -197,9 +194,6 @@ def db_test_app(aiida_environment, pytestconfig):
             'crystal17.ech3': 'properties17',
             'crystal17.newk': 'properties17',
             'crystal17.ppan': 'properties17',
-            'gulp.single': 'gulp',
-            'gulp.optimize': 'gulp',
-            'gulp.fitting': 'gulp'
         }
 
     test_workdir = get_work_directory(pytestconfig)
