@@ -30,10 +30,12 @@ def get_logging_container():
 
     :return: :py:class:`~aiida.common.extendeddicts.AttributeDict`
     """
-    return AttributeDict({
-        'warning': [],
-        'error': [],
-    })
+    return AttributeDict(
+        {
+            "warning": [],
+            "error": [],
+        }
+    )
 
 
 def update_mapping(original, source):
@@ -59,8 +61,10 @@ def update_mapping(original, source):
         if key not in original:
             original[key] = value
             continue
-        mappable_value = (isinstance(value, Mapping) or isinstance(value, Dict))
-        mappable_original = (isinstance(original[key], Mapping) or isinstance(original[key], Dict))
+        mappable_value = isinstance(value, Mapping) or isinstance(value, Dict)
+        mappable_original = isinstance(original[key], Mapping) or isinstance(
+            original[key], Dict
+        )
         if mappable_value and mappable_original:
             original[key] = update_mapping(original[key], value)
         else:

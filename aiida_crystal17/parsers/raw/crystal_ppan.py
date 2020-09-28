@@ -37,14 +37,14 @@ def parse_crystal_ppan(content):
         NORB
         orbital charges
     """
-    spin_names = ['alpha+beta_electrons', 'alpha-beta_electrons']
+    spin_names = ["alpha+beta_electrons", "alpha-beta_electrons"]
     data = {}
     lines = content.splitlines()
     line = _new_line(lines)
     nspin, natoms = split_numbers(line)
     for spin_num in range(int(nspin)):
         spin_name = spin_names[spin_num]
-        spin_data = data.setdefault(spin_name, {'atoms': []})
+        spin_data = data.setdefault(spin_name, {"atoms": []})
         for atom_num in range(int(natoms)):
             line = _new_line(lines)
             atomic_number, nshell = split_numbers(line)
@@ -63,22 +63,24 @@ def parse_crystal_ppan(content):
             while len(orbital_charges) < norbitals:
                 line = _new_line(lines)
                 orbital_charges.extend(split_numbers(line))
-            spin_data['atoms'].append({
-                'atomic_number': atomic_number,
-                'coordinate': coordinate,
-                'total_charge': total_charge,
-                'shell_charges': shell_charges,
-                'orbital_charges': orbital_charges
-            })
-        spin_data['summed_charge'] = sum(a['total_charge'] for a in spin_data['atoms'])
+            spin_data["atoms"].append(
+                {
+                    "atomic_number": atomic_number,
+                    "coordinate": coordinate,
+                    "total_charge": total_charge,
+                    "shell_charges": shell_charges,
+                    "orbital_charges": orbital_charges,
+                }
+            )
+        spin_data["summed_charge"] = sum(a["total_charge"] for a in spin_data["atoms"])
     return data
 
 
 def _new_line(lines):
     try:
         line = lines.pop(0).strip()
-        while not line or line.startswith('#'):
+        while not line or line.startswith("#"):
             line = lines.pop(0).strip()
         return line
     except IndexError:
-        raise IOError('Reached bottom of file, before parsing all data')
+        raise IOError("Reached bottom of file, before parsing all data")

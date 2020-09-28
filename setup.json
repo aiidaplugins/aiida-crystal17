@@ -77,8 +77,7 @@
       "pytest-notebook"
     ],
     "code_style": [
-      "ruamel.yaml",
-      "pre-commit"
+      "pre-commit~=2.6"
     ],
     "docs": [
       "sphinx>=1.6",

@@ -25,23 +25,23 @@ import numpy as np
 from aiida_crystal17.common.parsing import convert_units, split_numbers
 
 GcubeResult = namedtuple(
-    'GcubeResult',
+    "GcubeResult",
     [
-        'header',
-        'cell',
-        'voxel_cell',
-        'voxel_grid',
-        'origin',
-        'atoms_positions',
-        'atoms_nuclear_charge',
-        'atoms_atomic_number',
-        'units',
-        'density',
+        "header",
+        "cell",
+        "voxel_cell",
+        "voxel_grid",
+        "origin",
+        "atoms_positions",
+        "atoms_nuclear_charge",
+        "atoms_atomic_number",
+        "units",
+        "density",
     ],
 )
 
 
-def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
+def read_gaussian_cube(handle, return_density=False, dist_units="angstrom"):
     """Parse gaussian cube files to a data structure.
 
     The specification can be found at:
@@ -63,25 +63,27 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
     aiida_crystal17.parsers.raw.gaussian_cube.GcubeResult
 
     """
-    in_dunits = 'bohr'
+    in_dunits = "bohr"
 
     header = [handle.readline().strip(), handle.readline().strip()]
     settings = split_numbers(handle.readline().strip())
 
     if len(settings) > 4 and settings[4] != 1:
         # TODO implement NVAL != 1
-        raise NotImplementedError('not yet implemented NVAL != 1')
+        raise NotImplementedError("not yet implemented NVAL != 1")
 
     natoms = settings[0]
     origin = convert_units(np.array(settings[1:4]), in_dunits, dist_units)
     if natoms < 0:
         # TODO implement DSET_IDS
-        raise NotImplementedError('not yet implemented DSET_IDS')
+        raise NotImplementedError("not yet implemented DSET_IDS")
     an, ax, ay, az = split_numbers(handle.readline().strip())
     bn, bx, by, bz = split_numbers(handle.readline().strip())
     cn, cx, cy, cz = split_numbers(handle.readline().strip())
 
-    voxel_cell = convert_units(np.array([[ax, ay, az], [bx, by, bz], [cx, cy, cz]]), in_dunits, dist_units)
+    voxel_cell = convert_units(
+        np.array([[ax, ay, az], [bx, by, bz], [cx, cy, cz]]), in_dunits, dist_units
+    )
 
     avec = convert_units(np.array([ax, ay, az]) * an, in_dunits, dist_units)
     bvec = convert_units(np.array([bx, by, bz]) * bn, in_dunits, dist_units)
@@ -113,6 +115,6 @@ def read_gaussian_cube(handle, return_density=False, dist_units='angstrom'):
         ccoords,
         nuclear_charges,
         atomic_numbers,
-        {'conversion': 'CODATA2014', 'length': dist_units},
+        {"conversion": "CODATA2014", "length": dist_units},
         density,
-    )  # yapf: disable
+    )

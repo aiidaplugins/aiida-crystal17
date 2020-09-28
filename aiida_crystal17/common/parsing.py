@@ -17,22 +17,22 @@ from decimal import Decimal
 import re
 
 
-def convert_units(value, in_units, out_units, standard='codata2014'):
+def convert_units(value, in_units, out_units, standard="codata2014"):
     """Convert a value, from one unit to another."""
     # TODO use units.yaml
     if in_units == out_units:
         return value
-    if standard != 'codata2014':
-        raise NotImplementedError('{}'.format(standard))
-    if in_units == 'hartree' and out_units == 'eV':
+    if standard != "codata2014":
+        raise NotImplementedError("{}".format(standard))
+    if in_units == "hartree" and out_units == "eV":
         return value * 27.21138602
-    elif in_units == 'bohr' and out_units == 'angstrom':
+    elif in_units == "bohr" and out_units == "angstrom":
         return value * 0.5291772105638411
-    raise NotImplementedError('{} -> {}'.format(in_units, out_units))
+    raise NotImplementedError("{} -> {}".format(in_units, out_units))
 
 
 def split_numbers(string, as_decimal=False):
-    """ get a list of numbers from a string (even with no spacing)
+    """get a list of numbers from a string (even with no spacing)
 
     :type string: str
     :type as_decimal: bool
@@ -61,7 +61,10 @@ def split_numbers(string, as_decimal=False):
     [0.001, -2.0]
 
     """
-    _match_number = re.compile('-?\\ *[0-9]+\\.?[0-9]*(?:[Ee]\\ *[+-]?\\ *[0-9]+)?')
-    string = string.replace(' .', ' 0.')
-    string = string.replace('-.', '-0.')
-    return [Decimal(s) if as_decimal else float(s) for s in re.findall(_match_number, string)]
+    _match_number = re.compile("-?\\ *[0-9]+\\.?[0-9]*(?:[Ee]\\ *[+-]?\\ *[0-9]+)?")
+    string = string.replace(" .", " 0.")
+    string = string.replace("-.", "-0.")
+    return [
+        Decimal(s) if as_decimal else float(s)
+        for s in re.findall(_match_number, string)
+    ]

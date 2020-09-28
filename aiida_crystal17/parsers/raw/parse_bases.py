@@ -13,10 +13,15 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
+from collections import namedtuple
 import copy
 
-from collections import namedtuple
-from aiida_crystal17.common.atoms import (GAUSSIAN_ORBITALS, ELECTRON_CONFIGURATIONS, SYMBOLS, SYMBOLS_R)
+from aiida_crystal17.common.atoms import (
+    ELECTRON_CONFIGURATIONS,
+    GAUSSIAN_ORBITALS,
+    SYMBOLS,
+    SYMBOLS_R,
+)
 
 
 def parse_bsets_stdin(content, allow_comments=False, isolated=False):
@@ -78,28 +83,28 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
     gbasis = {}
 
     if not content:
-        raise IOError('content is empty')
+        raise IOError("content is empty")
 
-    comment_signals = '#/*<!'
-    bs_sequence = {0: 'S', 1: 'SP', 2: 'P', 3: 'D', 4: 'F', 5: 'G'}
+    comment_signals = "#/*<!"
+    bs_sequence = {0: "S", 1: "SP", 2: "P", 3: "D", 4: "F", 5: "G"}
     bs_type = {
-        1: 'STO-nG(nd) type ',  # Pople standard STO-nG (Z=1-54);
-        2: '3(6)-21G(nd) type '  # Pople standard 3(6)-21G (Z=1-54(18)) + standard polarization functions
+        1: "STO-nG(nd) type ",  # Pople standard STO-nG (Z=1-54);
+        2: "3(6)-21G(nd) type ",  # Pople standard 3(6)-21G (Z=1-54(18)) + standard polarization functions
     }
     bs_notation = {
-        1: 'n-21G outer valence shell',
-        2: 'n-21G inner valence shell',
-        3: '3-21G core shell',
-        6: '6-21G core shell'
+        1: "n-21G outer valence shell",
+        2: "n-21G inner valence shell",
+        3: "3-21G core shell",
+        6: "6-21G core shell",
     }
     ps_keywords = {
-        'INPUT': None,
-        'HAYWLC': 'Hay-Wadt large core',
-        'HAYWSC': 'Hay-Wadt small core',
-        'BARTHE': 'Durand-Barthelat',
-        'DURAND': 'Durand-Barthelat'
+        "INPUT": None,
+        "HAYWLC": "Hay-Wadt large core",
+        "HAYWSC": "Hay-Wadt small core",
+        "BARTHE": "Durand-Barthelat",
+        "DURAND": "Durand-Barthelat",
     }
-    ps_sequence = ['W0', 'P0', 'P1', 'P2', 'P3', 'P4']
+    ps_sequence = ["W0", "P0", "P1", "P2", "P3", "P4"]
 
     in_basis_section = isolated
     in_pseudo, in_basis = False, False
@@ -108,7 +113,7 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
     for lineno, line in enumerate(content.splitlines(), 1):
 
         # ignore input until reaching the end of the geometry/optimisation section
-        if line.startswith('END'):
+        if line.startswith("END"):
             in_basis_section = True
             continue
 
@@ -131,44 +136,48 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
         if len(parts) == 1 and parts[0].upper() in ps_keywords:
             # start of pseudo
             if atomic_symbol is None:
-                raise IOError('line {}; reached pseudo before setting atom type'.format(lineno))
+                raise IOError(
+                    "line {}; reached pseudo before setting atom type".format(lineno)
+                )
 
             if not 200 < atomic_number_id < 999:
                 raise IOError(
-                    'line {}; the basis contains an ecp, but the atomic_id {} is not in the range [200, 999]'.format(
-                        lineno, atomic_number_id))
+                    "line {}; the basis contains an ecp, but the atomic_id {} is not in the range [200, 999]".format(
+                        lineno, atomic_number_id
+                    )
+                )
 
-            if parts[0] != 'INPUT':
-                gbasis[atomic_symbol]['ecp'].append(ps_keywords[parts[0].upper()])
+            if parts[0] != "INPUT":
+                gbasis[atomic_symbol]["ecp"].append(ps_keywords[parts[0].upper()])
 
             continue
 
         # sanity check
         try:
-            [float(p.replace('D', 'E')) for p in parts]
+            [float(p.replace("D", "E")) for p in parts]
         except ValueError:
             in_basis_section = False
             continue
 
         if len(parts) in [2, 3]:
 
-            if parts[0] == '99' and parts[1] == '0':
+            if parts[0] == "99" and parts[1] == "0":
                 # end of basis set section
                 break
 
-            elif '.' in parts[0] or '.' in parts[1]:
+            elif "." in parts[0] or "." in parts[1]:
                 # exponent section for bs or ecp
-                parts = [float(x.replace('D', 'E')) for x in parts]
+                parts = [float(x.replace("D", "E")) for x in parts]
 
                 if in_pseudo:
                     # distribute exponents into ecp-types according to counter, that we now calculate
                     if distrib in list(ps_indices_map.keys()):
-                        gbasis[atomic_symbol]['ecp'].append([ps_indices_map[distrib]])
-                    gbasis[atomic_symbol]['ecp'][-1].append(tuple(parts))
+                        gbasis[atomic_symbol]["ecp"].append([ps_indices_map[distrib]])
+                    gbasis[atomic_symbol]["ecp"][-1].append(tuple(parts))
                     distrib += 1
                 elif in_basis:
                     # distribute exponents into orbitals according to counter, that we already defined
-                    gbasis[atomic_symbol]['bs'][-1]['functions'].append(tuple(parts))
+                    gbasis[atomic_symbol]["bs"][-1]["functions"].append(tuple(parts))
 
             else:
                 # atom type definition section
@@ -176,30 +185,43 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
                 atomic_number = atomic_number_id % 100
 
                 if atomic_number == 0:
-                    atomic_symbol = 'X'
+                    atomic_symbol = "X"
                 else:
                     if atomic_number not in SYMBOLS:
-                        raise IOError('line {}; atomic number not recognised: {}'.format(lineno, atomic_number))
+                        raise IOError(
+                            "line {}; atomic number not recognised: {}".format(
+                                lineno, atomic_number
+                            )
+                        )
                     atomic_symbol = SYMBOLS[atomic_number]
 
                 if atomic_symbol in gbasis:
-                    if atomic_symbol + '1' in gbasis:
-                        raise NotImplementedError('line {}; More than two different basis sets for element {}'.format(
-                            lineno, atomic_symbol))
-                    atomic_symbol += '1'
+                    if atomic_symbol + "1" in gbasis:
+                        raise NotImplementedError(
+                            "line {}; More than two different basis sets for element {}".format(
+                                lineno, atomic_symbol
+                            )
+                        )
+                    atomic_symbol += "1"
 
                 if 200 < atomic_number_id < 999:
-                    gbasis[atomic_symbol] = {'type': 'valence-electron', 'bs': [], 'ecp': []}
+                    gbasis[atomic_symbol] = {
+                        "type": "valence-electron",
+                        "bs": [],
+                        "ecp": [],
+                    }
                 else:
-                    gbasis[atomic_symbol] = {'type': 'all-electron', 'bs': []}
+                    gbasis[atomic_symbol] = {"type": "all-electron", "bs": []}
 
         elif len(parts) == 5:
             # orbital section
-            gbasis[atomic_symbol]['bs'].append({
-                'type': bs_sequence[int(parts[1])],
-                'functions': [],
-                'charge': float(parts[3])
-            })
+            gbasis[atomic_symbol]["bs"].append(
+                {
+                    "type": bs_sequence[int(parts[1])],
+                    "functions": [],
+                    "charge": float(parts[3]),
+                }
+            )
             parts = list(map(int, parts[0:3]))
 
             if parts[0] == 0:
@@ -209,9 +231,13 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
             elif parts[0] in bs_type:
                 # pre-defined insert
                 if parts[2] in bs_notation:
-                    gbasis[atomic_symbol]['bs'][-1]['functions'].append(bs_type[parts[0]] + bs_notation[parts[2]])
+                    gbasis[atomic_symbol]["bs"][-1]["functions"].append(
+                        bs_type[parts[0]] + bs_notation[parts[2]]
+                    )
                 else:
-                    gbasis[atomic_symbol]['bs'][-1]['functions'].append(bs_type[parts[0]] + 'n=' + str(parts[2]))
+                    gbasis[atomic_symbol]["bs"][-1]["functions"].append(
+                        bs_type[parts[0]] + "n=" + str(parts[2])
+                    )
 
         elif 6 <= len(parts) <= 7:
             # pseudo - INPUT section
@@ -229,14 +255,17 @@ def parse_bsets_stdin(content, allow_comments=False, isolated=False):
 
     for k, v in gbasis.items():
         # sometimes no BS for host atom is printed when it is replaced by Xx: account for it
-        if not len(v['bs']) and k != 'X' and 'X' in gbasis:
-            gbasis[k] = copy.deepcopy(gbasis['X'])
+        if not len(v["bs"]) and k != "X" and "X" in gbasis:
+            gbasis[k] = copy.deepcopy(gbasis["X"])
         # NOTE: no GHOST deletion should be performed, since it breaks orbitals order for band structure plotting
 
     return gbasis
 
 
-OrbitalResult = namedtuple('OrbitalResult', ['electrons', 'core_electrons', 'number_ao', 'orbital_types', 'ao_indices'])
+OrbitalResult = namedtuple(
+    "OrbitalResult",
+    ["electrons", "core_electrons", "number_ao", "orbital_types", "ao_indices"],
+)
 
 
 def compute_orbitals(atoms, basis_sets):
@@ -267,24 +296,34 @@ def compute_orbitals(atoms, basis_sets):
         except (TypeError, ValueError):
             symbol = atom
             electrons = SYMBOLS_R[atom]
-        if basis_sets[symbol]['type'] == 'valence-electron':
-            raise NotImplementedError('computing for bases with core pseudopotentials')
-        outer_electrons = sum([i for n, i in ELECTRON_CONFIGURATIONS[electrons]['outer']])
+        if basis_sets[symbol]["type"] == "valence-electron":
+            raise NotImplementedError("computing for bases with core pseudopotentials")
+        outer_electrons = sum(
+            [i for n, i in ELECTRON_CONFIGURATIONS[electrons]["outer"]]
+        )
         total_electrons += electrons
         total_core_electrons += electrons - outer_electrons
         type_count = {}
-        for orbital in basis_sets[symbol]['bs']:
-            type_count.setdefault(orbital['type'], 0)
-            type_count[orbital['type']] += 1
-            for i in range(GAUSSIAN_ORBITALS[orbital['type']]):
+        for orbital in basis_sets[symbol]["bs"]:
+            type_count.setdefault(orbital["type"], 0)
+            type_count[orbital["type"]] += 1
+            for i in range(GAUSSIAN_ORBITALS[orbital["type"]]):
                 total_aos += 1
-                if (symbol, orbital['type'], type_count[orbital['type']]) not in orbital_types:
-                    orbital_types.append((symbol, orbital['type'], type_count[orbital['type']]))
+                if (
+                    symbol,
+                    orbital["type"],
+                    type_count[orbital["type"]],
+                ) not in orbital_types:
+                    orbital_types.append(
+                        (symbol, orbital["type"], type_count[orbital["type"]])
+                    )
                 aos_indices[total_aos] = {
-                    'atom': atom_index,
-                    'element': symbol,
-                    'type': orbital['type'],
-                    'index': type_count[orbital['type']]
+                    "atom": atom_index,
+                    "element": symbol,
+                    "type": orbital["type"],
+                    "index": type_count[orbital["type"]],
                 }
 
-    return OrbitalResult(total_electrons, total_core_electrons, total_aos, orbital_types, aos_indices)
+    return OrbitalResult(
+        total_electrons, total_core_electrons, total_aos, orbital_types, aos_indices
+    )

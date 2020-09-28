@@ -15,8 +15,7 @@ dependencies:
 - jsonextended>=0.7.10
 - jsonschema
 - pycifrw>=4.4.1,<5.0.0
-- ruamel.yaml
-- six ==1.12.0
+- pyyaml
 - spglib>=1.10.0,<2.0.0
 # testing
 - coverage
@@ -28,7 +27,9 @@ dependencies:
 - pytest-timeout
 - sqlalchemy-diff==0.1.3
 # code_style
+- click
 - pre_commit
+- ruamel.yaml
 # docs
 - ipypublish>=0.10.7
 - sphinx>=1.6
