@@ -20,7 +20,7 @@ import hashlib
 from io import StringIO
 import os
 
-from ruamel.yaml import YAML
+import yaml
 
 
 from aiida.common.utils import classproperty
@@ -132,8 +132,7 @@ def parse_basis(basis_file):
                 in_yaml = True
                 continue
             else:
-                yaml = YAML(typ='safe')
-                head_data = yaml.load('\n'.join(yaml_lines))
+                head_data = yaml.safe_load('\n'.join(yaml_lines))
                 head_data = {} if not head_data else head_data
                 if not isinstance(head_data, dict):
                     raise ParsingError('the header data could not be read for file: {}'.format(basis_file_name))
@@ -414,7 +413,7 @@ class BasisSetData(Data):
             with self.open('r') as handle:
                 metadata, content = parse_basis(handle)
         except (ParsingError, IOError, NotImplementedError) as err:
-            raise ValidationError("The file '{}' could not be " 'parsed: {}'.format(err))
+            raise ValidationError(f"The file '{filename}' could not be 'parsed: {err}")
         md5 = md5_from_string(content)
 
         try:
