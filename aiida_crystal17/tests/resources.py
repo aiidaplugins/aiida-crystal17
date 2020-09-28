@@ -1,16 +1,12 @@
 """Retrieval of test resources."""
 from contextlib import contextmanager
+import pathlib
 import shutil
 import tempfile
 
 import importlib_resources
 
 from aiida_crystal17.tests import raw_files as resource_module
-
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib  # noqa: F401
 
 # __package__ returns None in python 2.7
 RESOURCE_MODULE = resource_module.__package__ or "aiida_crystal17.tests.raw_files"
