@@ -1,1 +1,0 @@
-This is example 1 from GULP website
