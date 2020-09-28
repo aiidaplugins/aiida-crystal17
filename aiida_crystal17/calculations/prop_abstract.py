@@ -15,7 +15,6 @@
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
 import os
-import six
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.engine import CalcJob
@@ -69,9 +68,9 @@ class PropAbstractCalculation(CalcJob):
 
         super(PropAbstractCalculation, cls).define(spec)
 
-        spec.input('metadata.options.input_file_name', valid_type=six.string_types, default='INPUT')
-        spec.input('metadata.options.input_wf_name', valid_type=six.string_types, default='fort.9')
-        spec.input('metadata.options.stdout_file_name', valid_type=six.string_types, default='main.out')
+        spec.input('metadata.options.input_file_name', valid_type=str, default='INPUT')
+        spec.input('metadata.options.input_wf_name', valid_type=str, default='fort.9')
+        spec.input('metadata.options.stdout_file_name', valid_type=str, default='main.out')
 
         spec.input('wf_folder',
                    valid_type=(FolderData, RemoteData, SinglefileData),
@@ -84,7 +83,7 @@ class PropAbstractCalculation(CalcJob):
                    help='the input parameters to create the properties input file.')
 
         # subclasses should implement
-        # spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.')
+        # spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.')
 
         # Unrecoverable errors: resources like the retrieved folder or its expected contents are missing
         spec.exit_code(200,
@@ -141,7 +140,7 @@ class PropAbstractCalculation(CalcJob):
 
         input_content = self.create_input_content()
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write(six.ensure_text(input_content))
+            f.write(input_content)
 
         remote_files = None
         local_copy_list = None

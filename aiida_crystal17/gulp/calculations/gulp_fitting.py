@@ -19,7 +19,7 @@ given a set of structures and observables
 import copy
 import json
 
-import six
+
 
 from aiida.common.utils import classproperty
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
@@ -73,12 +73,12 @@ class GulpFittingCalculation(CalcJob):
         """ define the process specification """
         super(GulpFittingCalculation, cls).define(spec)
 
-        spec.input('metadata.options.input_file_name', valid_type=six.string_types, default='main.gin')
-        spec.input('metadata.options.output_main_file_name', valid_type=six.string_types, default='main.gout')
-        spec.input('metadata.options.output_stderr_file_name', valid_type=six.string_types, default='main_stderr.txt')
-        spec.input('metadata.options.output_dump_file_name', valid_type=six.string_types, default='fitting.grs')
+        spec.input('metadata.options.input_file_name', valid_type=str, default='main.gin')
+        spec.input('metadata.options.output_main_file_name', valid_type=str, default='main.gout')
+        spec.input('metadata.options.output_stderr_file_name', valid_type=str, default='main_stderr.txt')
+        spec.input('metadata.options.output_dump_file_name', valid_type=str, default='fitting.grs')
         spec.input('metadata.options.allow_create_potential_fail', valid_type=bool, default=False)
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='gulp.fitting')
+        spec.input('metadata.options.parser_name', valid_type=str, default='gulp.fitting')
 
         spec.input('settings',
                    valid_type=Dict,
@@ -203,10 +203,10 @@ class GulpFittingCalculation(CalcJob):
                                                    dump_file=self.metadata.options.output_dump_file_name)
 
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
-            f.write(six.ensure_text('\n'.join(content_lines)))
+            f.write('\n'.join(content_lines))
 
         with tempfolder.open('structure_names.json', 'w') as handle:
-            handle.write(six.ensure_text(json.dumps(snames)))
+            handle.write(json.dumps(snames))
 
         # Prepare CodeInfo object for aiida,
         # describes how a code has to be executed

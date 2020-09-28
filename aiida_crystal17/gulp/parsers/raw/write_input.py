@@ -16,7 +16,7 @@
 import hashlib
 import io
 
-import six
+
 
 from aiida_crystal17.validation import validate_against_schema
 from aiida_crystal17.gulp.unit_styles import get_pressure
@@ -56,14 +56,14 @@ class InputCreationBase(object):
     def get_content_hash(self):
         """get md5 hex hash of content"""
         content = self.get_content()
-        return hashlib.md5(six.u(content).encode(self._encoding)).hexdigest()
+        return hashlib.md5(content.encode(self._encoding)).hexdigest()
 
     def write_content(self, file_like):
         """write the content to file_like object
         (path string or object with `write` method)
         """
-        content = six.u(self.get_content())
-        if isinstance(file_like, six.string_types):
+        content = self.get_content()
+        if isinstance(file_like, str):
             with io.open(file_like, 'w', encoding=self._encoding) as handle:
                 handle.write(content)
         else:

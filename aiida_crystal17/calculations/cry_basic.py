@@ -14,8 +14,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 computations."""
-import six
-
 from aiida.plugins import DataFactory
 from aiida_crystal17.calculations.cry_abstract import CryAbstractCalculation
 
@@ -30,7 +28,7 @@ class CryBasicCalculation(CryAbstractCalculation):
 
         super(CryBasicCalculation, cls).define(spec)
 
-        spec.input('metadata.options.external_file_name', valid_type=six.string_types, default='fort.34')
+        spec.input('metadata.options.external_file_name', valid_type=str, default='fort.34')
         # TODO this has to be fort.34 for crystal exec (but not for parser),
         # so maybe should be fixed
 

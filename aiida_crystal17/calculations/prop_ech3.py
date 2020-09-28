@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-import six
+
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.data.gcube import GaussianCube
@@ -34,10 +34,10 @@ class CryEch3Calculation(PropAbstractCalculation):
     def define(cls, spec):
         super(CryEch3Calculation, cls).define(spec)
 
-        spec.input('metadata.options.output_charge_fname', valid_type=six.string_types, default='DENS_CUBE.DAT')
-        spec.input('metadata.options.output_spin_fname', valid_type=six.string_types, default='SPIN_CUBE.DAT')
+        spec.input('metadata.options.output_charge_fname', valid_type=str, default='DENS_CUBE.DAT')
+        spec.input('metadata.options.output_spin_fname', valid_type=str, default='SPIN_CUBE.DAT')
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.ech3')
+        spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.ech3')
 
         spec.exit_code(352, 'ERROR_DENSITY_FILE_MISSING', message='parser could not find the output density file')
         spec.exit_code(353, 'ERROR_PARSING_DENSITY_FILE', message='error parsing output density file')

@@ -1,5 +1,5 @@
 import ase
-import six
+
 
 from aiida_crystal17.data.gcube import GaussianCube
 from aiida_crystal17.parsers.raw.gaussian_cube import read_gaussian_cube
@@ -27,7 +27,7 @@ def test_create_vesta_input(file_regression):
                                          'compute': [['Mg', 'O', 0, 3, 0, 0, True, False]]
                                      }
                                  })
-    file_regression.check(six.ensure_text(content), extension='.vesta')
+    file_regression.check(content, extension='.vesta')
 
 
 def test_write_gcube_to_vesta(db_test_app):

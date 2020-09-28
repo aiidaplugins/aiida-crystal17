@@ -16,7 +16,7 @@
 """
 Plugin to run GULP
 """
-import six
+
 
 from aiida.common.datastructures import (CalcInfo, CodeInfo)
 from aiida.engine import CalcJob
@@ -42,9 +42,9 @@ class GulpAbstractCalculation(CalcJob):
 
         super(GulpAbstractCalculation, cls).define(spec)
 
-        spec.input('metadata.options.input_file_name', valid_type=six.string_types, default='main.gin')
-        spec.input('metadata.options.output_main_file_name', valid_type=six.string_types, default='main.gout')
-        spec.input('metadata.options.output_stderr_file_name', valid_type=six.string_types, default='main_stderr.txt')
+        spec.input('metadata.options.input_file_name', valid_type=str, default='main.gin')
+        spec.input('metadata.options.output_main_file_name', valid_type=str, default='main.gout')
+        spec.input('metadata.options.output_stderr_file_name', valid_type=str, default='main_stderr.txt')
 
         spec.input('structure',
                    valid_type=DataFactory('structure'),
@@ -109,8 +109,6 @@ class GulpAbstractCalculation(CalcJob):
         content = self.create_input(self.inputs.structure, self.inputs.potential, self.inputs.get('parameters', None),
                                     self.inputs.get('symmetry', None))
 
-        if not isinstance(content, six.text_type):
-            content = six.u(content)
         with tempfolder.open(self.metadata.options.input_file_name, 'w') as f:
             f.write(content)
 

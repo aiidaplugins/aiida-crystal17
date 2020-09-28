@@ -13,7 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-import six
+
 from aiida.plugins import DataFactory
 from aiida_crystal17.gulp.calculations.gulp_abstract import GulpAbstractCalculation
 from aiida_crystal17.gulp.parsers.raw.write_input import InputCreationOpt
@@ -30,10 +30,10 @@ class GulpOptCalculation(GulpAbstractCalculation):
 
         super(GulpOptCalculation, cls).define(spec)
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='gulp.optimize')
+        spec.input('metadata.options.parser_name', valid_type=str, default='gulp.optimize')
 
         spec.input('metadata.options.out_cif_file_name',
-                   valid_type=six.string_types,
+                   valid_type=str,
                    default='output.cif',
                    help='name of the cif file to output with final geometry')
         spec.input('metadata.options.use_input_kinds',
@@ -42,7 +42,7 @@ class GulpOptCalculation(GulpAbstractCalculation):
                    help=('if True, use the atoms kinds from the input structure, '
                          'when creating the output structure'))
         # spec.input('metadata.options.out_str_file_name',
-        #            valid_type=six.string_types, default='output.str',
+        #            valid_type=str, default='output.str',
         #            help="name of the str file (i.e. a CRYSTAL98 .gui file)")
 
         spec.input('symmetry',

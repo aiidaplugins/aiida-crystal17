@@ -70,7 +70,6 @@
   "python_requires": ">=3.6",
   "install_requires": [
     "aiida-core==1.0.0b5",
-    "six ==1.12.0",
     "ruamel.yaml",
     "jsonextended>=0.7.10",
     "jsonschema",

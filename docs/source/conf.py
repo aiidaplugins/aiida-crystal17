@@ -16,7 +16,7 @@ import subprocess
 import sys
 import time
 
-import six
+
 
 import aiida_crystal17
 
@@ -116,10 +116,7 @@ intersphinx_aliases = {
     ('py:class', 'aiida.orm.ArrayData'): ('py:class', 'aiida.orm.nodes.data.array.array.ArrayData')
 }
 
-if six.PY2:
-    intersphinx_aliases[('py:class', 'callable')] = ('py:class', 'dict')
-else:
-    intersphinx_aliases[('py:class', 'callable')] = ('py:class', 'collections.abc.Callable')
+intersphinx_aliases[('py:class', 'callable')] = ('py:class', 'collections.abc.Callable')
 
 # The master toctree document.
 master_doc = 'index'

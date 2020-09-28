@@ -5,7 +5,7 @@ import distutils.spawn
 
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-import six
+
 
 
 def get_path_to_executable(executable):
@@ -72,7 +72,7 @@ def get_or_create_code(entry_point, computer, executable, exec_path=None):
     from aiida.orm import Code, Computer
     from aiida.common import NotExistent
 
-    if isinstance(computer, six.string_types):
+    if isinstance(computer, str):
         computer = Computer.objects.get(name=computer)
 
     try:
