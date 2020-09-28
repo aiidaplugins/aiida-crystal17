@@ -16,8 +16,6 @@ import subprocess
 import sys
 import time
 
-
-
 import aiida_crystal17
 
 # -- AiiDA-related setup --------------------------------------------------
@@ -27,23 +25,25 @@ import aiida_crystal17
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 # Enable rtd mode via `export READTHEDOCS=True`
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-on_vscode = os.environ.get('VSCODE_LOGS', None) is not None
-os.environ['DJANGO_SETTINGS_MODULE'] = 'rtd_settings'
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+on_vscode = os.environ.get("VSCODE_LOGS", None) is not None
+os.environ["DJANGO_SETTINGS_MODULE"] = "rtd_settings"
 
 # if on_rtd or on_vscode:
 if True:
     # Back-end settings for readthedocs online documentation -
     sys.path.append(os.path.split(__file__)[0])  # to find rtd_settings.py
     from aiida.manage import configuration
+
     configuration.IN_RT_DOC_MODE = True
-    configuration.BACKEND = 'django'
+    configuration.BACKEND = "django"
 
 else:
     # import and set the theme if we're building docs locally
     try:
         import sphinx_rtd_theme
-        html_theme = 'sphinx_rtd_theme'
+
+        html_theme = "sphinx_rtd_theme"
         html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
     except ImportError:
         # No sphinx_rtd_theme installed
@@ -51,6 +51,7 @@ else:
     # Load the database environment by first loading the profile and then loading the backend through the manager
     from aiida.manage.configuration import get_config, load_profile
     from aiida.manage.manager import get_manager
+
     config = get_config()
     load_profile(config.default_profile_name)
     get_manager().get_backend()
@@ -58,28 +59,33 @@ else:
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.6'
+needs_sphinx = "1.6"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.mathjax', 'sphinx.ext.intersphinx', 'sphinx.ext.viewcode', 'sphinx.ext.todo',
-    'sphinx.ext.napoleon', 'ipypublish.sphinx.notebook'
+    "sphinx.ext.autodoc",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.todo",
+    "sphinx.ext.napoleon",
+    "ipypublish.sphinx.notebook",
 ]
 
-ipysphinx_export_config = 'sphinx_ipypublish_all.ext.noexec'
+ipysphinx_export_config = "sphinx_ipypublish_all.ext.noexec"
 ipysphinx_show_prompts = True
-ipysphinx_input_prompt = 'In:'
-ipysphinx_output_prompt = 'Out:'
+ipysphinx_input_prompt = "In:"
+ipysphinx_output_prompt = "Out:"
 ipysphinx_input_toggle = True
 ipysphinx_output_toggle = True
 
-git_commands = ['git', 'rev-parse', 'HEAD']
+git_commands = ["git", "rev-parse", "HEAD"]
 try:
-    git_commit = subprocess.check_output(git_commands).decode('utf8').strip()
+    git_commit = subprocess.check_output(git_commands).decode("utf8").strip()
 except subprocess.CalledProcessError:
-    git_commit = 'v{}'.format(aiida_crystal17.__version__)
+    git_commit = "v{}".format(aiida_crystal17.__version__)
 
 ipysphinx_prolog = r"""
 {{% set docname = env.doc2path(env.docname, base='docs/source') %}}
@@ -96,50 +102,66 @@ ipysphinx_prolog = r"""
 
     __ https://github.com/chrisjsewell/aiida-crystal17/blob/{git_commit}/{{{{ docname }}}}
 
-""".format(git_commit=git_commit)  # noqa: E501
+""".format(
+    git_commit=git_commit
+)  # noqa: E501
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.6', None),
-    'jsonshema': ('https://python-jsonschema.readthedocs.io/en/stable/', None),
-    'aiida': ('http://aiida-core.readthedocs.io/en/latest/', None),
-    'aiida_quantumespresso': ('http://aiida-quantumespresso.readthedocs.io/en/latest/', None),
-    'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
-    'pathlib': ('https://pathlib.readthedocs.io/en/latest/', None),
-    'spglib': ('https://atztogo.github.io/spglib/', None)
+    "python": ("https://docs.python.org/3.6", None),
+    "jsonshema": ("https://python-jsonschema.readthedocs.io/en/stable/", None),
+    "aiida": ("http://aiida-core.readthedocs.io/en/latest/", None),
+    "aiida_quantumespresso": (
+        "http://aiida-quantumespresso.readthedocs.io/en/latest/",
+        None,
+    ),
+    "ase": ("https://wiki.fysik.dtu.dk/ase/", None),
+    "pathlib": ("https://pathlib.readthedocs.io/en/latest/", None),
+    "spglib": ("https://atztogo.github.io/spglib/", None),
 }
 
 intersphinx_aliases = {
-    ('py:class', 'file-like'): ('py:class', 'io.TextIOWrapper'),
-    ('py:class', 'json.encoder.JSONEncoder'): ('py:class', 'json.JSONEncoder'),
-    ('py:class', 'aiida.StructureData'): ('py:class', 'aiida.orm.nodes.data.structure.StructureData'),
-    ('py:class', 'aiida.orm.Dict'): ('py:class', 'aiida.orm.nodes.data.dict.Dict'),
-    ('py:class', 'aiida.orm.ArrayData'): ('py:class', 'aiida.orm.nodes.data.array.array.ArrayData')
+    ("py:class", "file-like"): ("py:class", "io.TextIOWrapper"),
+    ("py:class", "json.encoder.JSONEncoder"): ("py:class", "json.JSONEncoder"),
+    ("py:class", "aiida.StructureData"): (
+        "py:class",
+        "aiida.orm.nodes.data.structure.StructureData",
+    ),
+    ("py:class", "aiida.orm.Dict"): ("py:class", "aiida.orm.nodes.data.dict.Dict"),
+    ("py:class", "aiida.orm.ArrayData"): (
+        "py:class",
+        "aiida.orm.nodes.data.array.array.ArrayData",
+    ),
 }
 
-intersphinx_aliases[('py:class', 'callable')] = ('py:class', 'collections.abc.Callable')
+intersphinx_aliases[("py:class", "callable")] = ("py:class", "collections.abc.Callable")
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
 # General information about the project.
-project = u'aiida-crystal17'
-copyright_first_year = '2018'
-copyright_owners = 'Chris Sewell'
+project = u"aiida-crystal17"
+copyright_first_year = "2018"
+copyright_owners = "Chris Sewell"
 
 current_year = str(time.localtime().tm_year)
-copyright_year_string = current_year if current_year == copyright_first_year else '{}-{}'.format(
-    copyright_first_year, current_year)
+copyright_year_string = (
+    current_year
+    if current_year == copyright_first_year
+    else "{}-{}".format(copyright_first_year, current_year)
+)
 # pylint: disable=redefined-builtin
-copyright = u'{}, {}. All rights reserved'.format(copyright_year_string, copyright_owners)
+copyright = u"{}, {}. All rights reserved".format(
+    copyright_year_string, copyright_owners
+)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -148,7 +170,7 @@ copyright = u'{}, {}. All rights reserved'.format(copyright_year_string, copyrig
 # The full version, including alpha/beta/rc tags.
 release = aiida_crystal17.__version__
 # The short X.Y version.
-version = '.'.join(release.split('.')[:2])
+version = ".".join(release.split(".")[:2])
 
 # The language for content autogenerated by Sphinx. Refer to documentation
 # for a list of supported languages.
@@ -165,7 +187,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['**/.ipynb_checkpoints']
+exclude_patterns = ["**/.ipynb_checkpoints"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -183,7 +205,7 @@ exclude_patterns = ['**/.ipynb_checkpoints']
 show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -204,29 +226,72 @@ napoleon_use_rtype = True
 
 # Warnings to ignore when using the -n (nitpicky) option
 # We should ignore any python built-in exception, for instance
-nitpick_ignore = [('py:exc', 'ArithmeticError'), ('py:exc', 'AssertionError'), ('py:exc', 'AttributeError'),
-                  ('py:exc', 'BaseException'), ('py:exc', 'BufferError'), ('py:exc', 'DeprecationWarning'),
-                  ('py:exc', 'EOFError'), ('py:exc', 'EnvironmentError'), ('py:exc', 'Exception'),
-                  ('py:exc', 'FloatingPointError'), ('py:exc', 'FutureWarning'), ('py:exc', 'GeneratorExit'),
-                  ('py:exc', 'IOError'), ('py:exc', 'ImportError'), ('py:exc', 'ImportWarning'),
-                  ('py:exc', 'IndentationError'), ('py:exc', 'IndexError'), ('py:exc', 'KeyError'),
-                  ('py:exc', 'KeyboardInterrupt'), ('py:exc', 'LookupError'), ('py:exc', 'MemoryError'),
-                  ('py:exc', 'NameError'), ('py:exc', 'NotImplementedError'), ('py:exc', 'OSError'),
-                  ('py:exc', 'OverflowError'), ('py:exc', 'PendingDeprecationWarning'), ('py:exc', 'ReferenceError'),
-                  ('py:exc', 'RuntimeError'), ('py:exc', 'RuntimeWarning'), ('py:exc', 'StandardError'),
-                  ('py:exc', 'StopIteration'), ('py:exc', 'SyntaxError'), ('py:exc', 'SyntaxWarning'),
-                  ('py:exc', 'SystemError'), ('py:exc', 'SystemExit'), ('py:exc', 'TabError'), ('py:exc', 'TypeError'),
-                  ('py:exc', 'UnboundLocalError'), ('py:exc', 'UnicodeDecodeError'), ('py:exc', 'UnicodeEncodeError'),
-                  ('py:exc', 'UnicodeError'), ('py:exc', 'UnicodeTranslateError'), ('py:exc', 'UnicodeWarning'),
-                  ('py:exc', 'UserWarning'), ('py:exc', 'VMSError'), ('py:exc', 'ValueError'), ('py:exc', 'Warning'),
-                  ('py:exc', 'WindowsError'), ('py:exc', 'ZeroDivisionError'), ('py:class', '_abcoll.MutableMapping'),
-                  ('py:class', 'tuple'), ('py:obj', 'str'), ('py:obj', 'list'), ('py:obj', 'tuple'), ('py:obj', 'int'),
-                  ('py:obj', 'float'), ('py:obj', 'bool'), ('py:obj', 'Mapping'), ('py:obj', 'MutableMapping'),
-                  ('py:class', 'filelike')]
+nitpick_ignore = [
+    ("py:exc", "ArithmeticError"),
+    ("py:exc", "AssertionError"),
+    ("py:exc", "AttributeError"),
+    ("py:exc", "BaseException"),
+    ("py:exc", "BufferError"),
+    ("py:exc", "DeprecationWarning"),
+    ("py:exc", "EOFError"),
+    ("py:exc", "EnvironmentError"),
+    ("py:exc", "Exception"),
+    ("py:exc", "FloatingPointError"),
+    ("py:exc", "FutureWarning"),
+    ("py:exc", "GeneratorExit"),
+    ("py:exc", "IOError"),
+    ("py:exc", "ImportError"),
+    ("py:exc", "ImportWarning"),
+    ("py:exc", "IndentationError"),
+    ("py:exc", "IndexError"),
+    ("py:exc", "KeyError"),
+    ("py:exc", "KeyboardInterrupt"),
+    ("py:exc", "LookupError"),
+    ("py:exc", "MemoryError"),
+    ("py:exc", "NameError"),
+    ("py:exc", "NotImplementedError"),
+    ("py:exc", "OSError"),
+    ("py:exc", "OverflowError"),
+    ("py:exc", "PendingDeprecationWarning"),
+    ("py:exc", "ReferenceError"),
+    ("py:exc", "RuntimeError"),
+    ("py:exc", "RuntimeWarning"),
+    ("py:exc", "StandardError"),
+    ("py:exc", "StopIteration"),
+    ("py:exc", "SyntaxError"),
+    ("py:exc", "SyntaxWarning"),
+    ("py:exc", "SystemError"),
+    ("py:exc", "SystemExit"),
+    ("py:exc", "TabError"),
+    ("py:exc", "TypeError"),
+    ("py:exc", "UnboundLocalError"),
+    ("py:exc", "UnicodeDecodeError"),
+    ("py:exc", "UnicodeEncodeError"),
+    ("py:exc", "UnicodeError"),
+    ("py:exc", "UnicodeTranslateError"),
+    ("py:exc", "UnicodeWarning"),
+    ("py:exc", "UserWarning"),
+    ("py:exc", "VMSError"),
+    ("py:exc", "ValueError"),
+    ("py:exc", "Warning"),
+    ("py:exc", "WindowsError"),
+    ("py:exc", "ZeroDivisionError"),
+    ("py:class", "_abcoll.MutableMapping"),
+    ("py:class", "tuple"),
+    ("py:obj", "str"),
+    ("py:obj", "list"),
+    ("py:obj", "tuple"),
+    ("py:obj", "int"),
+    ("py:obj", "float"),
+    ("py:obj", "bool"),
+    ("py:obj", "Mapping"),
+    ("py:obj", "MutableMapping"),
+    ("py:class", "filelike"),
+]
 
 # autodoc options, see
 # http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
-autoclass_content = 'both'
+autoclass_content = "both"
 
 
 def run_apidoc(_):
@@ -237,11 +302,15 @@ def run_apidoc(_):
     See also https://github.com/rtfd/readthedocs.org/issues/1139
     """
     source_dir = os.path.abspath(os.path.dirname(__file__))
-    apidoc_dir = os.path.join(source_dir, 'apidoc')
-    package_dir = os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17')
+    apidoc_dir = os.path.join(source_dir, "apidoc")
+    package_dir = os.path.join(source_dir, os.pardir, os.pardir, "aiida_crystal17")
     exclude_paths = [
-        os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17', 'tests', 'test_*'),
-        os.path.join(source_dir, os.pardir, os.pardir, 'aiida_crystal17', 'tests', 'raw_files')
+        os.path.join(
+            source_dir, os.pardir, os.pardir, "aiida_crystal17", "tests", "test_*"
+        ),
+        os.path.join(
+            source_dir, os.pardir, os.pardir, "aiida_crystal17", "tests", "raw_files"
+        ),
     ]
 
     # In #1139, they suggest the route below, but this ended up
@@ -250,23 +319,24 @@ def run_apidoc(_):
     # main([None, '-e', '-o', apidoc_dir, package_dir, '--force'])
 
     import subprocess
-    cmd_path = 'sphinx-apidoc'
-    if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+
+    cmd_path = "sphinx-apidoc"
+    if hasattr(sys, "real_prefix"):  # Check to see if we are in a virtualenv
         # If we are, assemble the path manually
-        cmd_path = os.path.abspath(os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
+        cmd_path = os.path.abspath(os.path.join(sys.prefix, "bin", "sphinx-apidoc"))
 
     options = [
-        '--private',
-        '--force',
-        '--no-toc',
-        '-o',
+        "--private",
+        "--force",
+        "--no-toc",
+        "-o",
         apidoc_dir,
         package_dir,
     ]
 
     # See https://stackoverflow.com/a/30144019
     env = os.environ.copy()
-    env['SPHINX_APIDOC_OPTIONS'] = 'members,undoc-members,show-inheritance'
+    env["SPHINX_APIDOC_OPTIONS"] = "members,undoc-members,show-inheritance"
     subprocess.check_call([cmd_path] + options + exclude_paths, env=env)
 
 
@@ -276,6 +346,7 @@ def add_intersphinx_aliases_to_inv(app):
     see https://github.com/sphinx-doc/sphinx/issues/5603
     """
     from sphinx.ext.intersphinx import InventoryAdapter
+
     inventories = InventoryAdapter(app.builder.env)
 
     for alias, target in app.config.intersphinx_aliases.items():
@@ -293,9 +364,9 @@ def add_intersphinx_aliases_to_inv(app):
 
 def setup(app):
     """Add functions to the Sphinx setup."""
-    app.connect('builder-inited', run_apidoc)
-    app.add_config_value('intersphinx_aliases', {}, 'env')
-    app.connect('builder-inited', add_intersphinx_aliases_to_inv)
+    app.connect("builder-inited", run_apidoc)
+    app.add_config_value("intersphinx_aliases", {}, "env")
+    app.connect("builder-inited", add_intersphinx_aliases_to_inv)
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -379,7 +450,7 @@ html_show_sourcelink = False
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-html_use_opensearch = 'http://aiida-crystal17.readthedocs.io'
+html_use_opensearch = "http://aiida-crystal17.readthedocs.io"
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 # html_file_suffix = None
@@ -388,7 +459,7 @@ html_use_opensearch = 'http://aiida-crystal17.readthedocs.io'
 # Sphinx supports the following languages:
 #   'da', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'ja'
 #   'nl', 'no', 'pt', 'ro', 'ru', 'sv', 'tr'
-html_search_language = 'en'
+html_search_language = "en"
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'aiida-crystal17-doc'
+htmlhelp_basename = "aiida-crystal17-doc"

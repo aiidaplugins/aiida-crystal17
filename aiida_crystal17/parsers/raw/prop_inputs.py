@@ -33,28 +33,36 @@ def create_rotref_content(params, validate=True):
 
     """
     if validate:
-        validate_against_schema(params, 'prop.rotref.schema.json')
+        validate_against_schema(params, "prop.rotref.schema.json")
 
     lines = []
 
-    if 'ROTREF' in params:
-        if 'MATRIX' in params['ROTREF']:
-            if not _test_unitary(params['ROTREF']['MATRIX']):
-                raise ValueError('The ROTREF matrix must be unitary: {}'.format(params['ROTREF']['MATRIX']))
-            lines.extend([
-                'ROTREF',
-                'MATRIX',
-            ])
-            for row in params['ROTREF']['MATRIX']:
-                lines.append('{0:.8f} {1:.8f} {2:.8f}'.format(*row))
-        if 'ATOMS' in params['ROTREF']:
-            lines.extend([
-                'ROTREF',
-                'ATOMS',
-            ])
-            for row in params['ROTREF']['ATOMS']:
-                lines.append('{0}'.format(row[0]))
-                lines.append('{0} {1} {2}'.format(*row[1:]))
+    if "ROTREF" in params:
+        if "MATRIX" in params["ROTREF"]:
+            if not _test_unitary(params["ROTREF"]["MATRIX"]):
+                raise ValueError(
+                    "The ROTREF matrix must be unitary: {}".format(
+                        params["ROTREF"]["MATRIX"]
+                    )
+                )
+            lines.extend(
+                [
+                    "ROTREF",
+                    "MATRIX",
+                ]
+            )
+            for row in params["ROTREF"]["MATRIX"]:
+                lines.append("{0:.8f} {1:.8f} {2:.8f}".format(*row))
+        if "ATOMS" in params["ROTREF"]:
+            lines.extend(
+                [
+                    "ROTREF",
+                    "ATOMS",
+                ]
+            )
+            for row in params["ROTREF"]["ATOMS"]:
+                lines.append("{0}".format(row[0]))
+                lines.append("{0} {1} {2}".format(*row[1:]))
 
     return lines
 

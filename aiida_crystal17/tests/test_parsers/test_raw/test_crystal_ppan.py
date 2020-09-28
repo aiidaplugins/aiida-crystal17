@@ -4,7 +4,8 @@ from aiida_crystal17.parsers.raw.crystal_ppan import parse_crystal_ppan
 
 
 def test_read_doss_contents_spin1(data_regression):
-    contents = dedent("""\
+    contents = dedent(
+        """\
         # Mulliken Populations:
         # NSPIN,NATOM
         # IAT,NSHELL
@@ -26,12 +27,14 @@ def test_read_doss_contents_spin1(data_regression):
             2.000     1.999     1.999     1.999     1.999     1.997     1.973     1.973
             1.974     1.102     0.501     0.501     0.628     1.001     1.992     1.992
             0.999     1.007
-    """)
+    """
+    )
     data_regression.check(parse_crystal_ppan(contents))
 
 
 def test_read_doss_contents_spin2(data_regression):
-    contents = dedent("""\
+    contents = dedent(
+        """\
         # Mulliken Populations:
         # NSPIN,NATOM
         # IAT,NSHELL
@@ -51,5 +54,6 @@ def test_read_doss_contents_spin2(data_regression):
             8.777     1.998     6.779
                 5
             1.998     1.867     1.637     1.637     1.637
-    """)
+    """
+    )
     data_regression.check(parse_crystal_ppan(contents))

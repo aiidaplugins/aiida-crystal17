@@ -15,38 +15,32 @@
 # GNU Lesser General Public License for more details.
 import copy
 
-import jsonschema
-from jsonschema import ValidationError as SchemeError
-
-from aiida.common.utils import classproperty
 from aiida.common.exceptions import ValidationError
 from aiida.common.extendeddicts import AttributeDict
+from aiida.common.utils import classproperty
 from aiida.orm import Data
+import jsonschema
+from jsonschema import ValidationError as SchemeError
 
 
 class KindData(Data):
     """stores additional data for StructureData Kinds"""
+
     _data_schema = {
-        '$schema': 'http://json-schema.org/draft-07/schema',
-        'title': 'additional kind data',
-        'type': 'object',
-        'required': ['kind_names'],
-        'additionalProperties': False,
-        'properties': {
-            'kind_names': {
-                'type': 'array',
-                'minimum': 1,
-                'items': {
-                    'type': 'string'
-                },
-                'uniqueItems': True,
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "title": "additional kind data",
+        "type": "object",
+        "required": ["kind_names"],
+        "additionalProperties": False,
+        "properties": {
+            "kind_names": {
+                "type": "array",
+                "minimum": 1,
+                "items": {"type": "string"},
+                "uniqueItems": True,
             }
         },
-        'patternProperties': {
-            '.+': {
-                'type': 'array'
-            }
-        }
+        "patternProperties": {".+": {"type": "array"}},
     }
 
     def __init__(self, data=None, **kwargs):
@@ -71,10 +65,12 @@ class KindData(Data):
         except SchemeError as err:
             raise ValidationError(err)
 
-        kinds = self.data['kind_names']
+        kinds = self.data["kind_names"]
         for key, value in self.get_dict().items():
             if len(value) != len(kinds):
-                raise ValidationError("'{}' array not the same length as 'kind_names'" ''.format(key))
+                raise ValidationError(
+                    "'{}' array not the same length as 'kind_names'" "".format(key)
+                )
 
     def set_data(self, data):
         """
@@ -90,10 +86,12 @@ class KindData(Data):
         except SchemeError as err:
             raise ValidationError(err)
 
-        kinds = data['kind_names']
+        kinds = data["kind_names"]
         for key, value in data.items():
             if len(value) != len(kinds):
-                raise ValidationError("'{}' array not the same length as 'kind_names'" ''.format(key))
+                raise ValidationError(
+                    "'{}' array not the same length as 'kind_names'" "".format(key)
+                )
 
         # store all but the symmetry operations as attributes
         backup_dict = copy.deepcopy(self.get_dict())
@@ -130,6 +128,7 @@ class KindData(Data):
         :return: an instance of the `AttributeResultManager`.
         """
         from aiida.orm.utils.managers import AttributeManager
+
         return AttributeManager(self)
 
     def get_dict(self):
@@ -146,7 +145,7 @@ class KindData(Data):
         Return an AttributeDict with nested keys <kind_name>.<field> = value
         """
         data = dict(self.attributes)
-        kind_names = data.pop('kind_names')
+        kind_names = data.pop("kind_names")
         dct = {k: {} for k in kind_names}
         for key, values in data.items():
             for kind, value in zip(kind_names, values):
@@ -159,7 +158,7 @@ class KindData(Data):
         Return an AttributeDict with nested keys <field>.<kind_name> = value
         """
         data = dict(self.attributes)
-        kind_names = data.pop('kind_names')
+        kind_names = data.pop("kind_names")
         dct = {}
         for key, values in data.items():
             dct[key] = {}

@@ -4,7 +4,7 @@ from aiida_crystal17.tests import open_resource_binary
 
 
 def test_parse_fort9(data_regression):
-    with open_resource_binary('ech3', 'mgo_sto3g_scf', 'fort.9') as handle:
+    with open_resource_binary("ech3", "mgo_sto3g_scf", "fort.9") as handle:
         results = parse_fort9(handle)
 
     data_regression.check(recursive_round(results._asdict(), 7))

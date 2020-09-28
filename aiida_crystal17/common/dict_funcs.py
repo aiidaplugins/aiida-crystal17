@@ -16,14 +16,15 @@
 from collections import Mapping
 import json
 from textwrap import wrap
+
 from jsonextended import edict
 
 
-def unflatten_dict(indict, delimiter='.'):
+def unflatten_dict(indict, delimiter="."):
     return edict.unflatten(indict, key_as_tuple=False, delim=delimiter)
 
 
-def flatten_dict(indict, delimiter='.'):
+def flatten_dict(indict, delimiter="."):
     return edict.flatten(indict, key_as_tuple=False, sep=delimiter)
 
 
@@ -42,7 +43,7 @@ def get_keys(dct, keys, default=None, raise_error=False):
             subdct = subdct[key]
         except (KeyError, IndexError):
             if raise_error:
-                raise ValueError('could not find key path: {}'.format(keys[0:i + 1]))
+                raise ValueError("could not find key path: {}".format(keys[0 : i + 1]))
             else:
                 return default
     return subdct
@@ -70,7 +71,6 @@ def recursive_round(dct, dp):
 
 
 class BuilderEncoder(json.JSONEncoder):
-
     def default(self, obj):
         try:
             return dict(obj)
@@ -82,4 +82,10 @@ class BuilderEncoder(json.JSONEncoder):
 def display_json(builder, indent=2):
     """Pretty print a dictionary object in a Jupyter Notebook."""
     from IPython.display import display_markdown
-    return display_markdown('```json\n{}\n```'.format(json.dumps(builder, cls=BuilderEncoder, indent=indent)), raw=True)
+
+    return display_markdown(
+        "```json\n{}\n```".format(
+            json.dumps(builder, cls=BuilderEncoder, indent=indent)
+        ),
+        raw=True,
+    )
