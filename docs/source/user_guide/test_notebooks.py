@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
         'calc_main.ipynb',
         'calc_basic.ipynb',
         'calc_main_immigrant.ipynb',
-        'calc_gulp.ipynb',
         'workflow_base.ipynb',
     ),
 )
