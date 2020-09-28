@@ -20,7 +20,7 @@ import io
 import os
 import sys
 
-import six
+
 
 from aiida_crystal17.tests import read_resource_binary, read_resource_text
 
@@ -106,7 +106,7 @@ def main(sys_args=None):
         # this used in the conda recipe, to test the executable is present
         return
 
-    content = six.ensure_text(sys.stdin.read())
+    content = sys.stdin.read()
     hashkey = hashlib.md5(content.encode()).hexdigest()
 
     if str(hashkey) not in hash_map:
@@ -117,7 +117,7 @@ def main(sys_args=None):
     else:
         gui_path = os.path.join(os.getcwd(), 'fort.34')
         with open(gui_path) as handle:
-            content = six.ensure_text(handle.read())
+            content = handle.read()
         gui_hashkey = hashlib.md5(content.encode()).hexdigest()
         if str(gui_hashkey) not in hash_map[hashkey]:
             raise IOError('contents from fort.34 not in hash list, hashkey: {0}'.format(str(gui_hashkey)))

@@ -1,6 +1,7 @@
 """Tests for BasisSetData."""
+from io import StringIO
+
 import pytest
-from six import StringIO
 
 from aiida.plugins import DataFactory
 

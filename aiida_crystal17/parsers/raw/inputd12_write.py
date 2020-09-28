@@ -16,7 +16,7 @@
 """
 module to write CRYSTAL17 .d12 files
 """
-import six
+
 from aiida_crystal17.common import get_keys
 from aiida_crystal17.validation import validate_against_schema
 
@@ -75,7 +75,7 @@ def write_input(indict, basis_sets, atom_props=None):
     validate_against_schema(indict, 'inputd12.schema.json')
     if not basis_sets:
         raise ValueError('there must be at least one basis set')
-    elif not all([isinstance(b, six.string_types) or hasattr(b, 'content') for b in basis_sets]):
+    elif not all([isinstance(b, str) or hasattr(b, 'content') for b in basis_sets]):
         raise ValueError('basis_sets must be either all strings' 'or all objects with a `content` property')
     if atom_props is None:
         atom_props = {}
@@ -211,7 +211,7 @@ def _geometry_block(outstr, indict, atom_props):
 
 def _basis_set_block(outstr, indict, basis_sets, atom_props):
     # Basis Sets
-    if isinstance(basis_sets[0], six.string_types):
+    if isinstance(basis_sets[0], str):
         outstr += '\n'.join([basis_set.strip() for basis_set in basis_sets])
     else:
         outstr += '\n'.join([basis_set.content.strip() for basis_set in basis_sets])

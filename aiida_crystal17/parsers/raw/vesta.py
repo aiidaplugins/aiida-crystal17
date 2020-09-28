@@ -21,7 +21,7 @@ import shutil
 from textwrap import dedent
 
 import ase
-import six
+
 
 from aiida_crystal17.parsers.raw.gaussian_cube import read_gaussian_cube
 from aiida_crystal17.validation import validate_against_schema
@@ -486,7 +486,7 @@ def write_gcube_to_vesta(
         )
         content = create_vesta_input(atoms, cube_filepath=os.path.basename(cube_filepath), settings=settings)
         with io.open(vesta_filepath, 'w') as out_handle:
-            out_handle.write(six.ensure_text(content))
+            out_handle.write(content)
     with aiida_gcube.open_cube_file(binary=True) as handle:
         with io.open(cube_filepath, 'wb') as out_handle:
             shutil.copyfileobj(handle, out_handle)

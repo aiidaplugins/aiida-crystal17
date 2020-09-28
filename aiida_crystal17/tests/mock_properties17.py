@@ -20,7 +20,7 @@ import io
 import os
 import sys
 
-import six
+
 
 from aiida_crystal17.tests import read_resource_binary, read_resource_text
 
@@ -58,7 +58,7 @@ def main(sys_args=None):
         # this used in the conda recipe, to test the executable is present
         return
 
-    content = six.ensure_text(sys.stdin.read())
+    content = sys.stdin.read()
     hashkey = hashlib.md5(content.encode()).hexdigest()
 
     if str(hashkey) not in hash_map:

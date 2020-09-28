@@ -1,7 +1,7 @@
 from ase.spacegroup import crystal
 import numpy as np
 import pytest
-import six
+
 
 from aiida_crystal17.symmetry import (prepare_for_spglib, compute_symmetry_dataset, standardize_cell, find_primitive,
                                       operations_cart_to_frac, operations_frac_to_cart, get_hall_number_from_symmetry,
@@ -10,7 +10,7 @@ from aiida_crystal17.symmetry import (prepare_for_spglib, compute_symmetry_datas
 
 def test_struct_info(db_test_app, get_structure):
     string = structure_info(get_structure('MgO'))
-    assert isinstance(string, six.string_types)
+    assert isinstance(string, str)
 
 
 def test_reset_kind_names(db_test_app, get_structure):

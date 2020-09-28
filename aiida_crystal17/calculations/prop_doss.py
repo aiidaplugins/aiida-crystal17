@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-import six
+
 
 from aiida.plugins import DataFactory
 
@@ -48,9 +48,9 @@ class CryDossCalculation(PropAbstractCalculation):
     def define(cls, spec):
         super(CryDossCalculation, cls).define(spec)
 
-        spec.input('metadata.options.output_isovalue_fname', valid_type=six.string_types, default='fort.25')
+        spec.input('metadata.options.output_isovalue_fname', valid_type=str, default='fort.25')
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.doss')
+        spec.input('metadata.options.parser_name', valid_type=str, default='crystal17.doss')
 
         spec.exit_code(352,
                        'ERROR_ISOVALUE_FILE_MISSING',

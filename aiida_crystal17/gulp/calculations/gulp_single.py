@@ -13,7 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-import six
+
 from aiida_crystal17.gulp.calculations.gulp_abstract import GulpAbstractCalculation
 from aiida_crystal17.gulp.parsers.raw.write_input import InputCreationSingle
 
@@ -29,7 +29,7 @@ class GulpSingleCalculation(GulpAbstractCalculation):
 
         super(GulpSingleCalculation, cls).define(spec)
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='gulp.single')
+        spec.input('metadata.options.parser_name', valid_type=str, default='gulp.single')
 
     def create_input(self, structure, potential, parameters=None, symmetry=None):
         # TODO assert potential species contains at least one from structure
