@@ -26,6 +26,9 @@
       "crystal17.kinds = aiida_crystal17.data.kinds:KindData",
       "crystal17.gcube = aiida_crystal17.data.gcube:GaussianCube"
     ],
+    "aiida.groups": [
+      "crystal17.basisset = aiida_crystal17.data.basis_set:BasisSetFamily"
+    ],
     "aiida.calculations": [
       "crystal17.basic = aiida_crystal17.calculations.cry_basic:CryBasicCalculation",
       "crystal17.main = aiida_crystal17.calculations.cry_main:CryMainCalculation",
