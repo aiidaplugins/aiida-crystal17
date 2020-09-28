@@ -15,7 +15,7 @@ import tempfile
 from _pytest.config import Config  # noqa: F401
 from _pytest.config.argparsing import Parser  # noqa: F401
 from _pytest.nodes import Item  # noqa: F401
-from aiida.manage.fixtures import fixture_manager
+from aiida.manage.tests import test_manager
 import pytest
 
 from aiida_crystal17.tests import (
@@ -25,6 +25,9 @@ from aiida_crystal17.tests import (
     resource_context,
 )
 from aiida_crystal17.tests.utils import AiidaTestApp
+
+pytest_plugins = ['aiida.manage.tests.pytest_fixtures'] 
+
 
 CRY17_CALL_EXEC_MARKER = "cry17_calls_executable"
 CRY17_NOTEBOOK_MARKER = "cry17_doc_notebooks"
@@ -196,18 +199,8 @@ def pytest_report_header(config):
     return header
 
 
-@pytest.fixture(scope="session")
-def aiida_environment():
-    """Set up an aiida database, profile and for the duration of the tests."""
-    # TODO this is required locally for click
-    # (see https://click.palletsprojects.com/en/7.x/python3/)
-    os.environ["LC_ALL"] = "en_US.UTF-8"
-    with fixture_manager() as fixture_mgr:
-        yield fixture_mgr
-
-
 @pytest.fixture(scope="function")
-def db_test_app(aiida_environment, pytestconfig):
+def db_test_app(aiida_profile, pytestconfig):
     """Create a clean aiida database, profile and temporary work directory for the duration of a test.
 
     :rtype: aiida_crystal17.tests.utils.AiidaTestApp
@@ -239,8 +232,8 @@ def db_test_app(aiida_environment, pytestconfig):
         work_directory = test_workdir
     else:
         work_directory = tempfile.mkdtemp()
-    yield AiidaTestApp(work_directory, executables, environment=aiida_environment)
-    aiida_environment.reset_db()
+    yield AiidaTestApp(work_directory, executables, environment=aiida_profile)
+    aiida_profile.reset_db()
     if not test_workdir:
         shutil.rmtree(work_directory)
 
@@ -289,3 +282,24 @@ def upload_basis_set_family():
         return BasisSetData.get_basis_group_map(group_name)
 
     return _upload
+
+
+@pytest.fixture()
+def sanitise_calc_attr():
+    def _func(data: dict):
+        return {
+            k: v
+            for k, v in data.items()
+            if k
+            not in [
+                "job_id",
+                "submit_script_filename",
+                "scheduler_lastchecktime",
+                "detailed_job_info",
+                "last_job_info",
+                "remote_workdir",
+                "version",
+            ]
+        }
+
+    return _func

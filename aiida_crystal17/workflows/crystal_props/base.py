@@ -18,7 +18,7 @@ import copy
 
 from aiida import orm
 from aiida.common import AttributeDict, LinkType
-from aiida.engine import ToContext, WorkChain, if_
+from aiida.engine import CalcJobProcessSpec, ToContext, WorkChain, if_
 from aiida.manage.caching import disable_caching
 from aiida.orm.nodes.data.base import to_aiida_type
 from plumpy.ports import PortNamespace
@@ -121,7 +121,7 @@ class CryPropertiesWorkChain(WorkChain):
         super(CryPropertiesWorkChain, self).__init__(**kwargs)
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(CryPropertiesWorkChain, cls).define(spec)
 

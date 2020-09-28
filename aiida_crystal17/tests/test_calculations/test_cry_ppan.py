@@ -70,7 +70,7 @@ def test_calcjob_submit_mgo(db_test_app):
 
 
 @pytest.mark.cry17_calls_executable
-def test_run_mgo_scf(db_test_app, data_regression):
+def test_run_mgo_scf(db_test_app, sanitise_calc_attr, data_regression):
     # type: (AiidaTestApp) -> None
     """Test running a calculation."""
     parameters = Dict(dict={"ROTREF": {"MATRIX": [[1, 0, 0], [0, 1, 0], [0, 0, -1]]}})
@@ -100,12 +100,7 @@ def test_run_mgo_scf(db_test_app, data_regression):
 
     db_test_app.check_calculation(calc_node, ["results"])
 
-    calc_attributes = calc_node.attributes
-    calc_attributes.pop("job_id", None)
-    calc_attributes.pop("scheduler_lastchecktime", None)
-    calc_attributes.pop("last_jobinfo", None)
-    calc_attributes.pop("remote_workdir", None)
-    calc_attributes.pop("retrieve_singlefile_list", None)
+    calc_attributes = sanitise_calc_attr(calc_node.attributes)
 
     results = {
         k: round(i, 7) if isinstance(i, float) else i

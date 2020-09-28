@@ -50,17 +50,18 @@ def get_or_create_local_computer(work_directory, name="localhost"):
     from aiida.orm import Computer
 
     try:
-        computer = Computer.objects.get(name=name)
+        computer = Computer.objects.get(label=name)
     except NotExistent:
         computer = Computer(
-            name=name,
+            label=name,
             hostname="localhost",
-            description=("localhost computer, " "set up by aiida_crystal17 tests"),
+            description="localhost computer, set up by aiida_crystal17 tests",
             transport_type="local",
             scheduler_type="direct",
             workdir=os.path.abspath(work_directory),
         )
         computer.store()
+        computer.set_minimum_job_poll_interval(0.0)
         computer.configure()
 
     return computer
@@ -72,11 +73,11 @@ def get_or_create_code(entry_point, computer, executable, exec_path=None):
     from aiida.orm import Code, Computer
 
     if isinstance(computer, str):
-        computer = Computer.objects.get(name=computer)
+        computer = Computer.objects.get(label=computer)
 
     try:
         code = Code.objects.get(
-            label="{}-{}@{}".format(entry_point, executable, computer.name)
+            label="{}-{}-{}".format(entry_point, executable, computer.label)
         )
     except NotExistent:
         if exec_path is None:
@@ -85,7 +86,7 @@ def get_or_create_code(entry_point, computer, executable, exec_path=None):
             input_plugin_name=entry_point,
             remote_computer_exec=[computer, exec_path],
         )
-        code.label = "{}-{}@{}".format(entry_point, executable, computer.name)
+        code.label = "{}-{}-{}".format(entry_point, executable, computer.label)
         code.store()
 
     return code
@@ -345,10 +346,8 @@ class AiidaTestApp(object):
         entry_point = format_entry_point_string("aiida.calculations", entry_point_name)
 
         calc_node = CalcJobNode(computer=computer, process_type=entry_point)
-        spec_options = process.spec().inputs["metadata"]["options"]
-        # TODO post v1.0.0b2, this can be replaced with process.spec_options
         calc_node.set_options(
-            {k: v.default for k, v in spec_options.items() if v.has_default()}
+            {k: v.default() if callable(v.default) else v.default for k, v in process.spec_options.items() if v.has_default()}
         )
         calc_node.set_option(
             "resources", {"num_machines": 1, "num_mpiprocs_per_machine": 1}
@@ -471,7 +470,7 @@ class AiidaTestApp(object):
             step_outcomes.append(getattr(wkchain, step)())
 
         context = yaml.dump(wkchain.ctx, Dumper=ContextDumper)
-        return wkchain, step_outcomes, yaml.load(context)
+        return wkchain, step_outcomes, yaml.safe_load(context)
 
     @staticmethod
     def check_calculation(

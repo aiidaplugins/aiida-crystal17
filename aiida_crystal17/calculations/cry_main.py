@@ -17,6 +17,7 @@
 import os
 
 from aiida.common.exceptions import InputValidationError
+from aiida.engine import CalcJobProcessSpec
 from aiida.orm import Code, RemoteData, StructureData, TrajectoryData
 from aiida.plugins import DataFactory
 
@@ -36,7 +37,7 @@ class CryMainCalculation(CryAbstractCalculation):
     """
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
 
         super(CryMainCalculation, cls).define(spec)
 
