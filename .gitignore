@@ -7,6 +7,8 @@
 *.egg*
 .DS_Store
 .idea/
+.tox/
+.vscode/
 .pytest_cache/
 .ropeproject/
 .idea/vcs.xml
