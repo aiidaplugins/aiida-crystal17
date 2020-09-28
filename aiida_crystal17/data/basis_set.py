@@ -19,21 +19,24 @@ from __future__ import absolute_import
 import hashlib
 from io import StringIO
 import os
+import pathlib
 
-from aiida.common.utils import classproperty
-from aiida.orm import Data, Str
+from aiida.common.exceptions import (
+    MultipleObjectsError,
+    ParsingError,
+    UniquenessError,
+    ValidationError,
+)
+from aiida.orm import Data, Group, QueryBuilder, Str, User
 import yaml
 
 from aiida_crystal17.common import flatten_dict, unflatten_dict
 from aiida_crystal17.common.atoms import SYMBOLS_R
 from aiida_crystal17.parsers.raw.parse_bases import parse_bsets_stdin
 
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib
 
-BASISGROUP_TYPE = "crystal17.basisset"
+class BasisSetFamily(Group):
+    """Group that represents a basis set family containing `BasisSetData` nodes."""
 
 
 def retrieve_basis_sets(files, stop_if_existing):
@@ -45,8 +48,6 @@ def retrieve_basis_sets(files, stop_if_existing):
         If False, simply adds the existing BasisSetData node to the group.
     :return:
     """
-    from aiida.orm.querybuilder import QueryBuilder
-
     basis_and_created = []
     for basis_file in files:
         _, content = parse_basis(basis_file)
@@ -102,8 +103,6 @@ def parse_basis(basis_file):
         1 1 3  6.  0.
 
     """
-    from aiida.common.exceptions import ParsingError
-
     meta_data = {}
 
     in_yaml = False
@@ -300,11 +299,9 @@ class BasisSetData(Data):
         Note that the hash has to be stored in a _md5 attribute, otherwise
         the basis will not be found.
         """
-        from aiida.orm.querybuilder import QueryBuilder
-
         qb = QueryBuilder()
         qb.append(cls, filters={"attributes.md5": {"==": md5}})
-        return [_ for [_] in qb.all()]
+        return qb.all(flat=True)
 
     @property
     def metadata(self):
@@ -398,8 +395,6 @@ class BasisSetData(Data):
           is meant to be used ONLY if the outer calling function has already
           a transaction open!
         """
-        from aiida.common.exceptions import ValidationError
-
         if self.is_stored:
             return self
 
@@ -472,34 +467,19 @@ class BasisSetData(Data):
                 "parsed instead.".format(attr_md5, md5)
             )
 
-    @classproperty
-    def basisfamily_type_string(cls):
-        return BASISGROUP_TYPE
-
     def get_basis_family_names(self):
         """Get the list of all basiset family names to which the basis belongs."""
-        from aiida.orm import Group, QueryBuilder
-
         query = QueryBuilder()
-        query.append(
-            Group,
-            filters={"type_string": {"==": self.basisfamily_type_string}},
-            tag="group",
-            project="label",
-        )
+        query.append(BasisSetFamily, tag="group", project="label")
         query.append(
             self.__class__, filters={"id": {"==": self.id}}, with_group="group"
         )
-        return [_[0] for _ in query.all()]
+        return query.all(flat=True)
 
     @classmethod
-    def get_basis_group(cls, group_name):
+    def get_basis_group(cls, group_label):
         """Return the BasisFamily group with the given name."""
-        from aiida.orm import Group
-
-        return Group.objects.get(
-            label=group_name, type_string=cls.basisfamily_type_string
-        )
+        return BasisSetFamily.get(label=group_label)
 
     @classmethod
     def get_basis_group_map(cls, group_name):
@@ -521,8 +501,6 @@ class BasisSetData(Data):
             if there is more than one element s
 
         """
-        from aiida.common.exceptions import MultipleObjectsError
-
         family_bases = {}
         family = cls.get_basis_group(group_name)
         for node in family.nodes:
@@ -547,30 +525,26 @@ class BasisSetData(Data):
                If defined, it should be either a DbUser instance, or a string
                for the username (that is, the user email).
         """
-        from aiida.orm import Group, QueryBuilder, User
 
-        query = QueryBuilder()
-        filters = {"type_string": {"==": cls.basisfamily_type_string}}
+        builder = QueryBuilder()
+        builder.append(BasisSetFamily, tag="group", project="*")
 
-        query.append(Group, filters=filters, tag="group", project="*")
-
-        if user is not None:
-            query.append(User, filters={"email": {"==": user}}, with_group="group")
+        if user:
+            builder.append(User, filters={"email": {"==": user}}, with_group="group")
 
         if isinstance(filter_elements, str):
             filter_elements = [filter_elements]
 
         if filter_elements is not None:
-            # actual_filter_elements = [_ for _ in filter_elements]
-            query.append(
-                BasisSetData,
+            builder.append(
+                cls,
                 filters={"attributes.element": {"in": filter_elements}},
                 with_group="group",
             )
 
-        query.order_by({Group: {"id": "asc"}})
-        query.distinct()
-        return [_[0] for _ in query.all()]
+        builder.order_by({BasisSetFamily: {"id": "asc"}})
+
+        return builder.all(flat=True)
 
     @classmethod
     def get_basissets_from_structure(cls, structure, family_name, by_kind=False):
@@ -711,9 +685,6 @@ class BasisSetData(Data):
         :param extension: the filename extension to look for
         :param dry_run: If True, do not change the database.
         """
-        from aiida.common.exceptions import UniquenessError
-        from aiida.orm import Group, User
-
         if isinstance(folder, str):
             folder = pathlib.Path(folder)
 
@@ -725,13 +696,13 @@ class BasisSetData(Data):
         ]
 
         automatic_user = User.objects.get_default()
-        group, group_created = Group.objects.get_or_create(
-            label=group_name, type_string=BASISGROUP_TYPE, user=automatic_user
+        group, group_created = BasisSetFamily.objects.get_or_create(
+            label=group_name, user=automatic_user
         )
 
         if group.user.email != automatic_user.email:
             raise UniquenessError(
-                "There is already a BasisFamily group with name {}"
+                "There is already a BasisSetFamily group with name {}"
                 ", but it belongs to user {}, therefore you "
                 "cannot modify it".format(group_name, group.user.email)
             )
