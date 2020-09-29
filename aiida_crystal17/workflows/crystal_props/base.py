@@ -17,7 +17,7 @@ from collections.abc import Mapping
 import copy
 
 from aiida import orm
-from aiida.common import AttributeDict, LinkType
+from aiida.common import AttributeDict
 from aiida.engine import CalcJobProcessSpec, ToContext, WorkChain, if_
 from aiida.manage.caching import disable_caching
 from aiida.orm.nodes.data.base import to_aiida_type
@@ -296,16 +296,11 @@ class CryPropertiesWorkChain(WorkChain):
         self.report("{} finished successfully".format(self.ctx.calc_scf))
         self.ctx.wf_folder = self.ctx.calc_scf.outputs.remote_folder
 
-        # TODO exposed_outputs for CalcJobs is fixed in aiida-core v1.0.0b6
-        # self.out_many(self.exposed_outputs(calc_node, process_class, namespace=name))
-        namespace_separator = self.spec().namespace_separator
-        for link_triple in self.ctx.calc_scf.get_outgoing(
-            link_type=LinkType.CREATE
-        ).link_triples:
-            self.out(
-                self._scf_name + namespace_separator + link_triple.link_label,
-                link_triple.node,
+        self.out_many(
+            self.exposed_outputs(
+                self.ctx.calc_scf, self._scf_class, namespace=self._scf_name
             )
+        )
 
     def submit_prop_calculations(self):
         """Create and submit all property calculations."""
@@ -346,16 +341,9 @@ class CryPropertiesWorkChain(WorkChain):
                 continue
             self.report("{}; {} finished successfully".format(link_label, calc_node))
 
-            # TODO exposed_outputs for CalcJobs is fixed in aiida-core v1.0.0b6
-            # self.out_many(self.exposed_outputs(calc_node, process_class, namespace=pname))
-            namespace_separator = self.spec().namespace_separator
-            for link_triple in calc_node.get_outgoing(
-                link_type=LinkType.CREATE
-            ).link_triples:
-                self.out(
-                    pname + namespace_separator + link_triple.link_label,
-                    link_triple.node,
-                )
+            self.out_many(
+                self.exposed_outputs(calc_node, process_class, namespace=pname)
+            )
 
         if not all_successful:
             return self.exit_codes.ERROR_PROP_CALC_FAILED
