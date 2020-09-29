@@ -3,6 +3,7 @@ import distutils.spawn
 import os
 import sys
 
+from aiida.plugins import ParserFactory
 import yaml
 
 
@@ -137,66 +138,6 @@ def sanitize_calc_info(calc_info):
     return {"calc_info": calc_info_dict, "code_infos": code_info_dicts}
 
 
-# TODO this can be removed once aiidateam/aiida-core#3061 is implemented
-def parse_from_node(cls, node, store_provenance=True, retrieved_temp=None):
-    """Parse the outputs directly from the `CalcJobNode`.
-
-    If `store_provenance` is set to False, a `CalcFunctionNode` will still be generated, but it will not be stored.
-    It's storing method will also be disabled, making it impossible to store, because storing it afterwards would
-    not have the expected effect, as the outputs it produced will not be stored with it.
-
-    This method is useful to test parsing in unit tests where a `CalcJobNode` can be mocked without actually having
-    to run a `CalcJob`. It can also be useful to actually re-perform the parsing of a completed `CalcJob` with a
-    different parser.
-
-    :param node: a `CalcJobNode` instance
-    :param store_provenance: bool, if True will store the parsing as a `CalcFunctionNode` in the provenance
-    :return: a tuple of the parsed results and the `CalcFunctionNode` representing the process of parsing
-    """
-    from aiida.engine import Process, calcfunction
-    from aiida.orm import Str
-
-    parser = cls(node=node)
-
-    @calcfunction
-    def parse_calcfunction(**kwargs):
-        """A wrapper function that will turn calling the `Parser.parse` method into a `CalcFunctionNode`.
-
-        .. warning:: This implementation of a `calcfunction` uses the `Process.current` to circumvent the limitation
-            of not being able to return both output nodes as well as an exit code. However, since this calculation
-            function is supposed to emulate the parsing of a `CalcJob`, which *does* have that capability, I have
-            to use this method. This method should however not be used in process functions, in other words:
-
-                Do not try this at home!
-
-        :param kwargs: keyword arguments that are passed to `Parser.parse` after it has been constructed
-        """
-        if "retrieved_temporary_folder" in kwargs:
-            string = kwargs.pop("retrieved_temporary_folder").value
-            kwargs["retrieved_temporary_folder"] = string
-
-        exit_code = parser.parse(**kwargs)
-        outputs = parser.outputs
-
-        if exit_code and exit_code.status:
-            # In the case that an exit code was returned, still attach all the registered outputs on the current
-            # process as well, which should represent this `CalcFunctionNode`. Otherwise the caller of the
-            # `parse_from_node` method will get an empty dictionary as a result, despite the `Parser.parse` method
-            # having registered outputs.
-            process = Process.current()
-            process.out_many(outputs)
-            return exit_code
-
-        return dict(outputs)
-
-    inputs = {"metadata": {"store_provenance": store_provenance}}
-    inputs.update(parser.get_outputs_for_parsing())
-    if retrieved_temp is not None:
-        inputs["retrieved_temporary_folder"] = Str(retrieved_temp)
-
-    return parse_calcfunction.run_get_node(**inputs)
-
-
 class AiidaTestApp(object):
     def __init__(self, work_directory, executable_map, environment=None):
         """a class providing methods for testing purposes
@@ -263,10 +204,8 @@ class AiidaTestApp(object):
             entry point name of the parser class
 
         """
-        from aiida.plugins import ParserFactory
-
-        return parse_from_node(
-            ParserFactory(entry_point_name), node, retrieved_temp=retrieved_temp
+        return ParserFactory(entry_point_name).parse_from_node(
+            node, retrieved_temporary_folder=retrieved_temp
         )
 
     @staticmethod
