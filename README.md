@@ -1,7 +1,7 @@
 # aiida-crystal17
 
-[![CI](https://github.com/aiidaplugins/aiida-crystal17/workflows/CI/badge.svg?branch=develop)](https://github.com/aiidaplugins/aiida-crystal17)
-[![Coverage Status](https://codecov.io/gh/aiidaplugins/aiida-crystal17/branch/develop/graph/badge.svg)](https://codecov.io/gh/aiidaplugins/aiida-crystal17)
+[![CI](https://github.com/aiidaplugins/aiida-crystal17/workflows/CI/badge.svg)](https://github.com/aiidaplugins/aiida-crystal17)
+[![Coverage Status](https://codecov.io/gh/aiidaplugins/aiida-crystal17/branch/master/graph/badge.svg)](https://codecov.io/gh/aiidaplugins/aiida-crystal17)
 [![Docs status](https://readthedocs.org/projects/aiida-crystal17/badge)](http://aiida-crystal17.readthedocs.io/)
 [![PyPI](https://img.shields.io/pypi/v/aiida-crystal17.svg)](https://pypi.python.org/pypi/aiida-crystal17/)
 [![Conda](https://anaconda.org/conda-forge/aiida-crystal17/badges/version.svg)](https://anaconda.org/conda-forge/aiida-crystal17)
