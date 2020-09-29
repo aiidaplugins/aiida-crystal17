@@ -95,9 +95,6 @@ unless ``pytest --cry17-no-mock`` is used.
 
 ## Testing
 
-[![Build Status](https://travis-ci.org/aiidaplugins/aiida-crystal17.svg?branch=master)](https://travis-ci.org/aiidaplugins/aiida-crystal17)
-[![Coverage Status](https://coveralls.io/repos/github/aiidaplugins/aiida-crystal17/badge.svg?branch=master)](https://coveralls.io/github/aiidaplugins/aiida-crystal17?branch=master)
-
 Using tox is the best way to run the test-suite:
 
 ```shell
