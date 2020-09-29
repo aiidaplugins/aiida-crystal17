@@ -43,7 +43,7 @@ results:
   parser_class: CryDossParser
   parser_errors: []
   parser_exceptions: []
-  parser_version: 0.10.0b5
+  parser_version: 0.11.0
   spin: true
   system_type: open shell, conducting system
   units:

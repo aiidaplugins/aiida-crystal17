@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-import six
+from aiida.engine import CalcJobProcessSpec
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.data.gcube import GaussianCube
@@ -27,32 +27,63 @@ class CryEch3Calculation(PropAbstractCalculation):
     requires_newk = False
 
     @classmethod
-    def validate_parameters(cls, data):
-        validate_against_schema(data.get_dict(), 'prop.ech3.schema.json')
+    def validate_parameters(cls, data, _):
+        validate_against_schema(data.get_dict(), "prop.ech3.schema.json")
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
         super(CryEch3Calculation, cls).define(spec)
 
-        spec.input('metadata.options.output_charge_fname', valid_type=six.string_types, default='DENS_CUBE.DAT')
-        spec.input('metadata.options.output_spin_fname', valid_type=six.string_types, default='SPIN_CUBE.DAT')
+        spec.input(
+            "metadata.options.output_charge_fname",
+            valid_type=str,
+            default="DENS_CUBE.DAT",
+        )
+        spec.input(
+            "metadata.options.output_spin_fname",
+            valid_type=str,
+            default="SPIN_CUBE.DAT",
+        )
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.ech3')
+        spec.input(
+            "metadata.options.parser_name", valid_type=str, default="crystal17.ech3"
+        )
 
-        spec.exit_code(352, 'ERROR_DENSITY_FILE_MISSING', message='parser could not find the output density file')
-        spec.exit_code(353, 'ERROR_PARSING_DENSITY_FILE', message='error parsing output density file')
+        spec.exit_code(
+            352,
+            "ERROR_DENSITY_FILE_MISSING",
+            message="parser could not find the output density file",
+        )
+        spec.exit_code(
+            353,
+            "ERROR_PARSING_DENSITY_FILE",
+            message="error parsing output density file",
+        )
 
-        spec.output('charge', required=True, valid_type=GaussianCube, help='The charge density cube')
-        spec.output('spin', required=False, valid_type=GaussianCube, help='The spin density cube')
+        spec.output(
+            "charge",
+            required=True,
+            valid_type=GaussianCube,
+            help="The charge density cube",
+        )
+        spec.output(
+            "spin",
+            required=False,
+            valid_type=GaussianCube,
+            help="The spin density cube",
+        )
 
     def create_input_content(self):
         params = self.inputs.parameters.get_dict()
-        lines = ['ECH3', str(params['npoints']), 'END']
+        lines = ["ECH3", str(params["npoints"]), "END"]
         # TODO params for non-periodic dimensions
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def get_retrieve_list(self):
         return [self.metadata.options.stdout_file_name]
 
     def get_retrieve_temp_list(self):
-        return [self.metadata.options.output_charge_fname, self.metadata.options.output_spin_fname]
+        return [
+            self.metadata.options.output_charge_fname,
+            self.metadata.options.output_spin_fname,
+        ]

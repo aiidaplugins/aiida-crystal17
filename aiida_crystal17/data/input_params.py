@@ -18,20 +18,21 @@ import copy
 from aiida.common.utils import classproperty
 from aiida.orm import Data
 
-from aiida_crystal17.validation import load_schema, validate_against_schema
 from aiida_crystal17.common import unflatten_dict
+from aiida_crystal17.validation import load_schema, validate_against_schema
 
 
 class CryInputParamsData(Data):
     """stores a validated dictionary of input parameters for CryMainCalculations"""
+
     _data_schema = None
 
     @classproperty
     def data_schema(cls):
-        """ return the data schema,
+        """return the data schema,
         which is loaded from file the first time it is called"""
         if cls._data_schema is None:
-            cls._data_schema = load_schema('inputd12.schema.json')
+            cls._data_schema = load_schema("inputd12.schema.json")
         return copy.deepcopy(cls._data_schema)
 
     @classmethod
@@ -125,4 +126,5 @@ class CryInputParamsData(Data):
         :return: an instance of the `AttributeResultManager`.
         """
         from aiida.orm.utils.managers import AttributeManager
+
         return AttributeManager(self)

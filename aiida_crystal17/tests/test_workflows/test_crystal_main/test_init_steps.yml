@@ -1,4 +1,4 @@
-calc_name: CryMainCalculation
+handler_overrides: {}
 inputs:
   basissets:
     Ni: <class 'aiida_crystal17.data.basis_set.BasisSetData'>
@@ -24,6 +24,7 @@ inputs:
         num_mpiprocs_per_machine: 1
       scheduler_stderr: _scheduler-stderr.txt
       scheduler_stdout: _scheduler-stdout.txt
+      submit_script_filename: _aiidasubmit.sh
       withmpi: false
     store_provenance: true
   parameters:
@@ -49,6 +50,7 @@ inputs:
 is_finished: false
 is_optimisation: false
 iteration: 0
+process_name: CryMainCalculation
 restart_calc: null
-unexpected_failure: false
+unhandled_failure: false
 use_fort9_restart: false

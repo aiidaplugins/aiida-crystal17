@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
 """Plugin for running CRYSTAL17 properties computations."""
-import six
+from aiida.engine import CalcJobProcessSpec
 
 from aiida_crystal17.calculations.prop_abstract import PropAbstractCalculation
 from aiida_crystal17.validation import validate_against_schema
@@ -26,19 +26,21 @@ class CryNewkCalculation(PropAbstractCalculation):
     """
 
     @classmethod
-    def define(cls, spec):
+    def define(cls, spec: CalcJobProcessSpec):
         super(CryNewkCalculation, cls).define(spec)
 
-        spec.input('metadata.options.parser_name', valid_type=six.string_types, default='crystal17.newk')
+        spec.input(
+            "metadata.options.parser_name", valid_type=str, default="crystal17.newk"
+        )
 
     @classmethod
-    def validate_parameters(cls, data):
-        validate_against_schema(data.get_dict(), 'prop.newk.schema.json')
+    def validate_parameters(cls, data, _):
+        validate_against_schema(data.get_dict(), "prop.newk.schema.json")
 
     def create_input_content(self):
         lines = self.create_newk_lines(self.inputs.parameters.get_dict())
-        lines.append('END')
-        return '\n'.join(lines)
+        lines.append("END")
+        return "\n".join(lines)
 
     def get_retrieve_list(self):
         return [self.metadata.options.stdout_file_name]

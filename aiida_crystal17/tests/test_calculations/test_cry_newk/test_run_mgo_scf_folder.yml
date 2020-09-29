@@ -25,9 +25,6 @@ calc:
   scheduler_stdout: _scheduler-stdout.txt
   sealed: true
   stdout_file_name: main.out
-  version:
-    core: 1.0.0b5
-    plugin: 0.10.0b5
   withmpi: false
 results:
   errors: []
@@ -45,7 +42,7 @@ results:
   parser_class: CryNewkParser
   parser_errors: []
   parser_exceptions: []
-  parser_version: 0.10.0b5
+  parser_version: 0.11.0
   units:
     conversion: CODATA2014
     energy: eV

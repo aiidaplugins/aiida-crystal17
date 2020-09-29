@@ -16,17 +16,35 @@
 from collections import namedtuple
 
 from scipy.io import FortranFile
-import six
 
 from aiida_crystal17.common.parsing import convert_units
 
-RECORD_DTYPES = ('int32', 'float64', 'int32', 'int32', 'float64', 'float64', 'int32', 'float64', 'float64')
+RECORD_DTYPES = (
+    "int32",
+    "float64",
+    "int32",
+    "int32",
+    "float64",
+    "float64",
+    "int32",
+    "float64",
+    "float64",
+)
 
-Fort9Results = namedtuple('Fort9Results',
-                          ['cell', 'atomic_numbers', 'positions', 'transform_matrix', 'n_symops', 'n_orbitals'])
+Fort9Results = namedtuple(
+    "Fort9Results",
+    [
+        "cell",
+        "atomic_numbers",
+        "positions",
+        "transform_matrix",
+        "n_symops",
+        "n_orbitals",
+    ],
+)
 
 
-def parse_fort9(file_obj, length_units='angstrom'):
+def parse_fort9(file_obj, length_units="angstrom"):
     """Parse data from the fort.9 wavefunction.
 
     Parameters
@@ -41,15 +59,17 @@ def parse_fort9(file_obj, length_units='angstrom'):
     Fort9Results
 
     """
-    if isinstance(file_obj, six.string_types):
+    if isinstance(file_obj, str):
         with FortranFile(file_obj) as handle:
             data = [handle.read_record(rtype) for rtype in RECORD_DTYPES]
     else:
         data = [FortranFile(file_obj).read_record(rtype) for rtype in RECORD_DTYPES]
 
-    cell = convert_units(data[5][:9].reshape(3, 3), 'bohr', length_units).tolist()
+    cell = convert_units(data[5][:9].reshape(3, 3), "bohr", length_units).tolist()
     atomic_numbers = data[7].astype(int).tolist()
-    positions = convert_units(data[8].reshape(len(atomic_numbers), 3), 'bohr', length_units).tolist()
+    positions = convert_units(
+        data[8].reshape(len(atomic_numbers), 3), "bohr", length_units
+    ).tolist()
 
     transform_matrix = data[5][9:18].reshape(3, 3).tolist()
     symops_id = data[6].tolist()
@@ -60,4 +80,6 @@ def parse_fort9(file_obj, length_units='angstrom'):
 
     n_orbitals = int(data[3][6])
 
-    return Fort9Results(cell, atomic_numbers, positions, transform_matrix, n_symops, n_orbitals)
+    return Fort9Results(
+        cell, atomic_numbers, positions, transform_matrix, n_symops, n_orbitals
+    )

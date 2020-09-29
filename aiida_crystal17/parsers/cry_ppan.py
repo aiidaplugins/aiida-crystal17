@@ -22,9 +22,9 @@ from aiida.orm import Dict
 from aiida.parsers.parser import Parser
 
 from aiida_crystal17 import __version__
-from aiida_crystal17.parsers.raw.properties_stdout import read_properties_stdout
 from aiida_crystal17.parsers.raw.crystal_ppan import parse_crystal_ppan
 from aiida_crystal17.parsers.raw.pbs import parse_pbs_stderr
+from aiida_crystal17.parsers.raw.properties_stdout import read_properties_stdout
 
 
 class CryPpanParser(Parser):
@@ -39,7 +39,7 @@ class CryPpanParser(Parser):
 
         # parse stderr
         pbs_error = None
-        sterr_file = self.node.get_option('scheduler_stderr')
+        sterr_file = self.node.get_option("scheduler_stderr")
         if sterr_file in output_folder.list_object_names():
             with output_folder.open(sterr_file) as fileobj:
                 pbs_exit_code = parse_pbs_stderr(fileobj)
@@ -49,20 +49,20 @@ class CryPpanParser(Parser):
         # parse stdout file
         stdout_error = None
         stdout_data = {}
-        stdout_fname = self.node.get_option('stdout_file_name')
+        stdout_fname = self.node.get_option("stdout_file_name")
         if stdout_fname not in self.retrieved.list_object_names():
             stdout_error = self.exit_codes.ERROR_OUTPUT_FILE_MISSING
         else:
             with output_folder.open(stdout_fname) as handle:
                 stdout_data = read_properties_stdout(handle.read())
-            stdout_exit_code = stdout_data.pop('exit_code', None)
+            stdout_exit_code = stdout_data.pop("exit_code", None)
             if stdout_exit_code:
                 stdout_error = self.exit_codes[stdout_exit_code]
 
         # parse PPAN.dat file
         ppan_error = None
         ppan_data = {}
-        output_ppan_fname = self.node.get_option('output_ppan_fname')
+        output_ppan_fname = self.node.get_option("output_ppan_fname")
         if output_ppan_fname not in output_folder.list_object_names():
             ppan_error = self.exit_codes.ERROR_PPAN_FILE_MISSING
         else:
@@ -76,15 +76,23 @@ class CryPpanParser(Parser):
         final_data = self.merge_output_dicts(stdout_data, ppan_data)
 
         # log errors
-        errors = final_data.get('errors', [])
-        parser_errors = final_data.get('parser_errors', [])
+        errors = final_data.get("errors", [])
+        parser_errors = final_data.get("parser_errors", [])
         if parser_errors:
-            self.logger.warning('the parser raised the following errors:\n{}'.format('\n\t'.join(parser_errors)))
+            self.logger.warning(
+                "the parser raised the following errors:\n{}".format(
+                    "\n\t".join(parser_errors)
+                )
+            )
         if errors:
-            self.logger.warning('the calculation raised the following errors:\n{}'.format('\n\t'.join(errors)))
+            self.logger.warning(
+                "the calculation raised the following errors:\n{}".format(
+                    "\n\t".join(errors)
+                )
+            )
 
         # make output nodes
-        self.out('results', Dict(dict=final_data))
+        self.out("results", Dict(dict=final_data))
         # if iso_arrays is not None:
         #     array_data = ArrayData()
         #     for name, array in iso_arrays.items():
@@ -106,19 +114,24 @@ class CryPpanParser(Parser):
         """Merge the data returned from the stdout file and iso_data file."""
         final_data = {}
         for key in set(list(stdout_data.keys()) + list(iso_data.keys())):
-            if key in ['errors', 'warnings', 'parser_errors', 'parser_exceptions']:
+            if key in ["errors", "warnings", "parser_errors", "parser_exceptions"]:
                 final_data[key] = stdout_data.get(key, []) + iso_data.get(key, [])
-            elif key == 'units':
+            elif key == "units":
                 units = stdout_data.get(key, {})
                 units.update(iso_data.get(key, {}))
                 final_data[key] = units
             elif key in stdout_data and key in iso_data:
-                self.logger.warning('key in stdout_data and iso_data: {}'.format(key))
+                self.logger.warning("key in stdout_data and iso_data: {}".format(key))
                 final_data[key] = iso_data[key]
             elif key in iso_data:
                 final_data[key] = iso_data[key]
             else:
                 final_data[key] = stdout_data[key]
 
-        final_data.update({'parser_version': str(__version__), 'parser_class': str(self.__class__.__name__)})
+        final_data.update(
+            {
+                "parser_version": str(__version__),
+                "parser_class": str(self.__class__.__name__),
+            }
+        )
         return final_data

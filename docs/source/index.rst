@@ -19,21 +19,19 @@ The aiida-crystal17 plugin for `AiiDA`_
    :caption: Calculations
    :hidden:
 
-   user_guide/calc_basic
-   user_guide/calc_main
-   user_guide/calc_main_immigrant
-   user_guide/calc_doss
-   user_guide/calc_ech3
-   user_guide/calc_gulp
+   notebooks/calc_basic
+   notebooks/calc_main
+   notebooks/calc_main_immigrant
+   notebooks/calc_doss
+   notebooks/calc_ech3
 
 .. toctree::
    :maxdepth: 1
    :caption: Workflows
    :hidden:
 
-   devel_guide/restart_wkchain
-   user_guide/workflow_base
-   user_guide/workflow_properties
+   notebooks/workflow_base
+   notebooks/workflow_properties
 
 .. toctree::
    :maxdepth: 1

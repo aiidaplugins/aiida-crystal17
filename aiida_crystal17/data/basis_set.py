@@ -17,24 +17,26 @@
 from __future__ import absolute_import
 
 import hashlib
+from io import StringIO
 import os
+import pathlib
 
-from ruamel.yaml import YAML
-import six
-
-from aiida.common.utils import classproperty
-from aiida.orm import Data, Str
+from aiida.common.exceptions import (
+    MultipleObjectsError,
+    ParsingError,
+    UniquenessError,
+    ValidationError,
+)
+from aiida.orm import Data, Group, QueryBuilder, Str, User
+import yaml
 
 from aiida_crystal17.common import flatten_dict, unflatten_dict
 from aiida_crystal17.common.atoms import SYMBOLS_R
 from aiida_crystal17.parsers.raw.parse_bases import parse_bsets_stdin
 
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib
 
-BASISGROUP_TYPE = 'crystal17.basisset'
+class BasisSetFamily(Group):
+    """Group that represents a basis set family containing `BasisSetData` nodes."""
 
 
 def retrieve_basis_sets(files, stop_if_existing):
@@ -46,27 +48,29 @@ def retrieve_basis_sets(files, stop_if_existing):
         If False, simply adds the existing BasisSetData node to the group.
     :return:
     """
-    from aiida.orm.querybuilder import QueryBuilder
-
     basis_and_created = []
     for basis_file in files:
         _, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
         qb = QueryBuilder()
-        qb.append(BasisSetData, filters={'attributes.md5': {'==': md5sum}})
+        qb.append(BasisSetData, filters={"attributes.md5": {"==": md5sum}})
         existing_basis = qb.first()
 
         if existing_basis is None:
             # return the basis set data instances, not stored
-            basisset, created = BasisSetData.get_or_create(basis_file, use_first=True, store_basis=False)
+            basisset, created = BasisSetData.get_or_create(
+                basis_file, use_first=True, store_basis=False
+            )
             # to check whether only one basis set per element exists
             # NOTE: actually, created has the meaning of "to_be_created"
             basis_and_created.append((basisset, created))
         else:
             if stop_if_existing:
-                raise ValueError('A Basis Set with identical MD5 to '
-                                 ' {} cannot be added with stop_if_existing'
-                                 ''.format(basis_file))
+                raise ValueError(
+                    "A Basis Set with identical MD5 to "
+                    " {} cannot be added with stop_if_existing"
+                    "".format(basis_file)
+                )
             existing_basis = existing_basis[0]
             basis_and_created.append((existing_basis, False))
 
@@ -99,16 +103,15 @@ def parse_basis(basis_file):
         1 1 3  6.  0.
 
     """
-    from aiida.common.exceptions import ParsingError
     meta_data = {}
 
     in_yaml = False
     yaml_lines = []
-    protected_keys = ['atomic_number', 'num_shells', 'element', 'basis_type', 'content']
+    protected_keys = ["atomic_number", "num_shells", "element", "basis_type", "content"]
     parsing_data = False
     content = []
 
-    if isinstance(basis_file, six.string_types):
+    if isinstance(basis_file, str):
         basis_file = pathlib.Path(basis_file)
 
     if isinstance(basis_file, pathlib.Path):
@@ -120,25 +123,30 @@ def parse_basis(basis_file):
         try:
             basis_file_name = basis_file.name
         except AttributeError:
-            basis_file_name = 'StringIO'
+            basis_file_name = "StringIO"
 
     for line in contentlines:
         # ignore commented and blank lines
-        if line.strip().startswith('#') or not line.strip():
+        if line.strip().startswith("#") or not line.strip():
             continue
-        if line.strip() == '---' and not parsing_data:
+        if line.strip() == "---" and not parsing_data:
             if not in_yaml:
                 in_yaml = True
                 continue
             else:
-                yaml = YAML(typ='safe')
-                head_data = yaml.load('\n'.join(yaml_lines))
+                head_data = yaml.safe_load("\n".join(yaml_lines))
                 head_data = {} if not head_data else head_data
                 if not isinstance(head_data, dict):
-                    raise ParsingError('the header data could not be read for file: {}'.format(basis_file_name))
+                    raise ParsingError(
+                        "the header data could not be read for file: {}".format(
+                            basis_file_name
+                        )
+                    )
                 if set(head_data.keys()).intersection(protected_keys):
-                    raise ParsingError('the header data contained a forbidden key(s) '
-                                       '{} for file: {}'.format(protected_keys, basis_file_name))
+                    raise ParsingError(
+                        "the header data contained a forbidden key(s) "
+                        "{} for file: {}".format(protected_keys, basis_file_name)
+                    )
                 meta_data = head_data
                 in_yaml = False
                 parsing_data = True
@@ -151,30 +159,39 @@ def parse_basis(basis_file):
 
         content.append(line.strip())
 
-    data = parse_bsets_stdin('\n'.join(content), isolated=True)
+    data = parse_bsets_stdin("\n".join(content), isolated=True)
     if len(data) > 1:
-        raise ParsingError('the basis set string contains more than one basis set: {}'.format(list(data.keys())))
+        raise ParsingError(
+            "the basis set string contains more than one basis set: {}".format(
+                list(data.keys())
+            )
+        )
     atomic_symbol = list(data.keys())[0]
 
-    meta_data['atomic_number'] = atomic_number = SYMBOLS_R[atomic_symbol]
-    meta_data['element'] = atomic_symbol
-    meta_data['basis_type'] = basis_type = data[atomic_symbol]['type']
-    meta_data['num_shells'] = num_shells = len(data[atomic_symbol]['bs'])
-    meta_data['orbital_types'] = [o['type'] for o in data[atomic_symbol]['bs']]
+    meta_data["atomic_number"] = atomic_number = SYMBOLS_R[atomic_symbol]
+    meta_data["element"] = atomic_symbol
+    meta_data["basis_type"] = basis_type = data[atomic_symbol]["type"]
+    meta_data["num_shells"] = num_shells = len(data[atomic_symbol]["bs"])
+    meta_data["orbital_types"] = [o["type"] for o in data[atomic_symbol]["bs"]]
 
     # the input atomic number may be > 100, but we should standardise this in the stored file
     first_line = content[0].strip().split()
     if len(first_line) != 2 or first_line[1] != str(num_shells):
         raise ParsingError(
             "The first line should contain only the atomic id and num shells ({}): '{}' for file {}".format(
-                num_shells, line, basis_file_name))
-    newline = '{0} {1}'.format(atomic_number if basis_type == 'all-electron' else 200 + atomic_number, num_shells)
+                num_shells, line, basis_file_name
+            )
+        )
+    newline = "{0} {1}".format(
+        atomic_number if basis_type == "all-electron" else 200 + atomic_number,
+        num_shells,
+    )
     content[0] = newline
 
-    return meta_data, '\n'.join(content)
+    return meta_data, "\n".join(content)
 
 
-def md5_from_string(string, encoding='utf-8'):
+def md5_from_string(string, encoding="utf-8"):
     """Return md5 hash of a string.
 
     :param string: the string to hash
@@ -227,7 +244,7 @@ class BasisSetData(Data):
     @property
     def filename(self):
         """Return the name of the file stored."""
-        return self.get_attribute('filename')
+        return self.get_attribute("filename")
 
     @property
     def md5sum(self):
@@ -235,7 +252,7 @@ class BasisSetData(Data):
 
         :return:
         """
-        return self.get_attribute('md5', None)
+        return self.get_attribute("md5", None)
 
     def set_file(self, basis_file):
         """Pre-parse the file to store the attributes and content separately.
@@ -250,8 +267,10 @@ class BasisSetData(Data):
             a file has already been set for this BasisSetData instance
 
         """
-        if 'filename' in list(self.attributes_keys()):
-            raise ValueError('a file has already been set for this BasisSetData instance')
+        if "filename" in list(self.attributes_keys()):
+            raise ValueError(
+                "a file has already been set for this BasisSetData instance"
+            )
 
         metadata, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
@@ -259,18 +278,18 @@ class BasisSetData(Data):
         # store the metadata and md5 in the database
         for key, val in flatten_dict(metadata).items():
             self.set_attribute(key, val)
-        self.set_attribute('md5', md5sum)
+        self.set_attribute("md5", md5sum)
 
         # store the rest of the file content as a file in the file repository
-        if isinstance(basis_file, six.string_types):
+        if isinstance(basis_file, str):
             filename = os.path.basename(basis_file)
-        elif hasattr(basis_file, 'name'):
+        elif hasattr(basis_file, "name"):
             filename = os.path.basename(basis_file.name)
         else:
-            filename = 'stringio.txt'
-        self.put_object_from_filelike(six.StringIO(content), key=filename, mode='w', force=False)
+            filename = "stringio.txt"
+        self.put_object_from_filelike(StringIO(content), path=filename, mode="w")
 
-        self.set_attribute('filename', filename)
+        self.set_attribute("filename", filename)
 
     @classmethod
     def from_md5(cls, md5):
@@ -280,10 +299,9 @@ class BasisSetData(Data):
         Note that the hash has to be stored in a _md5 attribute, otherwise
         the basis will not be found.
         """
-        from aiida.orm.querybuilder import QueryBuilder
         qb = QueryBuilder()
-        qb.append(cls, filters={'attributes.md5': {'==': md5}})
-        return [_ for [_] in qb.all()]
+        qb.append(cls, filters={"attributes.md5": {"==": md5}})
+        return qb.all(flat=True)
 
     @property
     def metadata(self):
@@ -293,7 +311,7 @@ class BasisSetData(Data):
         """
         return unflatten_dict({k: v for k, v in self.attributes_items()})
 
-    def open(self, mode='r'):  # pylint: disable=arguments-differ
+    def open(self, mode="r"):  # pylint: disable=arguments-differ
         """Return an open file handle to the content of this data node.
 
         :param mode: the mode with which to open the file handle
@@ -315,7 +333,7 @@ class BasisSetData(Data):
     @property
     def element(self):
         """Return the element symbol associated with the basis set."""
-        return self.get_attribute('element', None)
+        return self.get_attribute("element", None)
 
     def get_data(self):
         """Return the basis set content, parsed to a JSON format."""
@@ -334,8 +352,8 @@ class BasisSetData(Data):
                 and create is either True if the object was created,
                 or False if the object was retrieved from the DB.
         """
-        if isinstance(basis_file, six.string_types) and not os.path.isabs(basis_file):
-            raise ValueError('basis_file must be an absolute path')
+        if isinstance(basis_file, str) and not os.path.isabs(basis_file):
+            raise ValueError("basis_file must be an absolute path")
 
         _, content = parse_basis(basis_file)
         md5sum = md5_from_string(content)
@@ -353,9 +371,11 @@ class BasisSetData(Data):
                 if use_first:
                     return (basissets[0], False)
                 else:
-                    raise ValueError('More than one copy of a basis set '
-                                     'with the same MD5 has been found in the '
-                                     'DB. pks={}'.format(','.join([str(i.pk) for i in basissets])))
+                    raise ValueError(
+                        "More than one copy of a basis set "
+                        "with the same MD5 has been found in the "
+                        "DB. pks={}".format(",".join([str(i.pk) for i in basissets]))
+                    )
             return basissets[0], False
 
     def store(self, with_transaction=True, use_cache=None):
@@ -375,26 +395,26 @@ class BasisSetData(Data):
           is meant to be used ONLY if the outer calling function has already
           a transaction open!
         """
-        from aiida.common.exceptions import ValidationError
-
         if self.is_stored:
             return self
 
         if self.md5sum is None:
-            raise ValidationError('No valid Basis Set was passed!')
+            raise ValidationError("No valid Basis Set was passed!")
 
-        with self.open('r') as handle:
+        with self.open("r") as handle:
             metadata, content = parse_basis(handle)
         md5sum = md5_from_string(content)
 
         for key, val in flatten_dict(metadata).items():
             self.set_attribute(key, val)
-        self.set_attribute('md5', md5sum)
+        self.set_attribute("md5", md5sum)
 
-        return super(BasisSetData, self).store(with_transaction=with_transaction, use_cache=use_cache)
+        return super(BasisSetData, self).store(
+            with_transaction=with_transaction, use_cache=use_cache
+        )
 
     def _validate(self):
-        from aiida.common.exceptions import ValidationError, ParsingError
+        from aiida.common.exceptions import ParsingError, ValidationError
 
         super(BasisSetData, self)._validate()
 
@@ -405,59 +425,61 @@ class BasisSetData(Data):
 
         objects = self.list_object_names()
         if [filename] != objects:
-            raise ValidationError('The list of files in the folder does not '
-                                  "match the 'filename' attribute. "
-                                  "_filename='{}', content: {}".format(filename, self.list_object_names()))
+            raise ValidationError(
+                "The list of files in the folder does not "
+                "match the 'filename' attribute. "
+                "_filename='{}', content: {}".format(filename, self.list_object_names())
+            )
 
         try:
-            with self.open('r') as handle:
+            with self.open("r") as handle:
                 metadata, content = parse_basis(handle)
         except (ParsingError, IOError, NotImplementedError) as err:
-            raise ValidationError("The file '{}' could not be " 'parsed: {}'.format(err))
+            raise ValidationError(f"The file '{filename}' could not be 'parsed: {err}")
         md5 = md5_from_string(content)
 
         try:
-            element = metadata['element']
+            element = metadata["element"]
         except KeyError:
-            raise ValidationError("No 'element' could be parsed in the " 'BasisSet file')
+            raise ValidationError(
+                "No 'element' could be parsed in the " "BasisSet file"
+            )
 
         try:
-            attr_element = self.get_attribute('element')
+            attr_element = self.get_attribute("element")
         except AttributeError:
             raise ValidationError("attribute 'element' not set.")
 
         try:
-            attr_md5 = self.get_attribute('md5')
+            attr_md5 = self.get_attribute("md5")
         except AttributeError:
             raise ValidationError("attribute 'md5' not set.")
 
         if attr_element != element:
-            raise ValidationError("Attribute 'element' says '{}' but '{}' was "
-                                  'parsed instead.'.format(attr_element, element))
+            raise ValidationError(
+                "Attribute 'element' says '{}' but '{}' was "
+                "parsed instead.".format(attr_element, element)
+            )
 
         if attr_md5 != md5:
-            raise ValidationError("Attribute 'md5' says '{}' but '{}' was " 'parsed instead.'.format(attr_md5, md5))
-
-    @classproperty
-    def basisfamily_type_string(cls):
-        return BASISGROUP_TYPE
+            raise ValidationError(
+                "Attribute 'md5' says '{}' but '{}' was "
+                "parsed instead.".format(attr_md5, md5)
+            )
 
     def get_basis_family_names(self):
         """Get the list of all basiset family names to which the basis belongs."""
-        from aiida.orm import Group
-        from aiida.orm import QueryBuilder
-
         query = QueryBuilder()
-        query.append(Group, filters={'type_string': {'==': self.basisfamily_type_string}}, tag='group', project='label')
-        query.append(self.__class__, filters={'id': {'==': self.id}}, with_group='group')
-        return [_[0] for _ in query.all()]
+        query.append(BasisSetFamily, tag="group", project="label")
+        query.append(
+            self.__class__, filters={"id": {"==": self.id}}, with_group="group"
+        )
+        return query.all(flat=True)
 
     @classmethod
-    def get_basis_group(cls, group_name):
+    def get_basis_group(cls, group_label):
         """Return the BasisFamily group with the given name."""
-        from aiida.orm import Group
-
-        return Group.objects.get(label=group_name, type_string=cls.basisfamily_type_string)
+        return BasisSetFamily.get(label=group_label)
 
     @classmethod
     def get_basis_group_map(cls, group_name):
@@ -479,14 +501,15 @@ class BasisSetData(Data):
             if there is more than one element s
 
         """
-        from aiida.common.exceptions import MultipleObjectsError
         family_bases = {}
         family = cls.get_basis_group(group_name)
         for node in family.nodes:
             if isinstance(node, cls):
                 if node.element in family_bases:
-                    raise MultipleObjectsError('More than one BasisSetData for element {} found in '
-                                               'family {}'.format(node.element, group_name))
+                    raise MultipleObjectsError(
+                        "More than one BasisSetData for element {} found in "
+                        "family {}".format(node.element, group_name)
+                    )
                 family_bases[node.element] = node
         return family_bases
 
@@ -502,28 +525,26 @@ class BasisSetData(Data):
                If defined, it should be either a DbUser instance, or a string
                for the username (that is, the user email).
         """
-        from aiida.orm import Group
-        from aiida.orm import QueryBuilder
-        from aiida.orm import User
 
-        query = QueryBuilder()
-        filters = {'type_string': {'==': cls.basisfamily_type_string}}
+        builder = QueryBuilder()
+        builder.append(BasisSetFamily, tag="group", project="*")
 
-        query.append(Group, filters=filters, tag='group', project='*')
+        if user:
+            builder.append(User, filters={"email": {"==": user}}, with_group="group")
 
-        if user is not None:
-            query.append(User, filters={'email': {'==': user}}, with_group='group')
-
-        if isinstance(filter_elements, six.string_types):
+        if isinstance(filter_elements, str):
             filter_elements = [filter_elements]
 
         if filter_elements is not None:
-            # actual_filter_elements = [_ for _ in filter_elements]
-            query.append(BasisSetData, filters={'attributes.element': {'in': filter_elements}}, with_group='group')
+            builder.append(
+                cls,
+                filters={"attributes.element": {"in": filter_elements}},
+                with_group="group",
+            )
 
-        query.order_by({Group: {'id': 'asc'}})
-        query.distinct()
-        return [_[0] for _ in query.all()]
+        builder.order_by({BasisSetFamily: {"id": "asc"}})
+
+        return builder.all(flat=True)
 
     @classmethod
     def get_basissets_from_structure(cls, structure, family_name, by_kind=False):
@@ -546,7 +567,11 @@ class BasisSetData(Data):
         for kind in structure.kinds:
             symbol = kind.symbol
             if symbol not in family_bases:
-                raise NotExistent('No BasisSetData for element {} found in family {}'.format(symbol, family_name))
+                raise NotExistent(
+                    "No BasisSetData for element {} found in family {}".format(
+                        symbol, family_name
+                    )
+                )
             if by_kind:
                 basis_list[kind.name] = family_bases[symbol]
             else:
@@ -566,7 +591,9 @@ class BasisSetData(Data):
         from collections import defaultdict
 
         # A dict {kind_name: basis_object}
-        kind_basis_dict = cls.get_basissets_from_structure(structure, family_name, by_kind=True)
+        kind_basis_dict = cls.get_basissets_from_structure(
+            structure, family_name, by_kind=True
+        )
 
         # We have to group the species by basis, I use the basis PK
         # basis_dict will just map PK->basis_object
@@ -610,30 +637,39 @@ class BasisSetData(Data):
         if basissets and basis_family:
             raise ValueError('you cannot specify both "basissets" and "basis_family"')
         elif basissets is None and basis_family is None:
-            raise ValueError('neither an explicit basissets dictionary nor a basis_family was specified')
+            raise ValueError(
+                "neither an explicit basissets dictionary nor a basis_family was specified"
+            )
         elif basis_family:
             if isinstance(basis_family, Str):
                 basis_family = basis_family.value
-            basissets = cls.get_basissets_from_structure(structure, basis_family, by_kind=False)
+            basissets = cls.get_basissets_from_structure(
+                structure, basis_family, by_kind=False
+            )
 
         elements_required = set([kind.symbol for kind in structure.kinds])
         if set(basissets.keys()) != elements_required:
-            err_msg = ('Mismatch between the defined basissets and the list of '
-                       'elements of the structure. Basissets: {}; elements: {}'.format(
-                           set(basissets.keys()), elements_required))
+            err_msg = (
+                "Mismatch between the defined basissets and the list of "
+                "elements of the structure. Basissets: {}; elements: {}".format(
+                    set(basissets.keys()), elements_required
+                )
+            )
             raise ValueError(err_msg)
 
         return basissets
 
     # pylint: disable=too-many-locals,too-many-arguments
     @classmethod
-    def upload_basisset_family(cls,
-                               folder,
-                               group_name,
-                               group_description,
-                               stop_if_existing=True,
-                               extension='.basis',
-                               dry_run=False):
+    def upload_basisset_family(
+        cls,
+        folder,
+        group_name,
+        group_description,
+        stop_if_existing=True,
+        extension=".basis",
+        dry_run=False,
+    ):
         """
         Upload a set of Basis Set files in a given group.
 
@@ -649,26 +685,27 @@ class BasisSetData(Data):
         :param extension: the filename extension to look for
         :param dry_run: If True, do not change the database.
         """
-        from aiida.orm import Group, User
-        from aiida.common.exceptions import UniquenessError
-
-        if isinstance(folder, six.string_types):
+        if isinstance(folder, str):
             folder = pathlib.Path(folder)
 
         if not folder.is_dir():
-            raise ValueError('folder must be a directory')
+            raise ValueError("folder must be a directory")
 
-        paths = [p.resolve() for p in folder.glob('*{}'.format(extension)) if p.is_file()]
+        paths = [
+            p.resolve() for p in folder.glob("*{}".format(extension)) if p.is_file()
+        ]
 
         automatic_user = User.objects.get_default()
-        group, group_created = Group.objects.get_or_create(label=group_name,
-                                                           type_string=BASISGROUP_TYPE,
-                                                           user=automatic_user)
+        group, group_created = BasisSetFamily.objects.get_or_create(
+            label=group_name, user=automatic_user
+        )
 
         if group.user.email != automatic_user.email:
-            raise UniquenessError('There is already a BasisFamily group with name {}'
-                                  ', but it belongs to user {}, therefore you '
-                                  'cannot modify it'.format(group_name, group.user.email))
+            raise UniquenessError(
+                "There is already a BasisSetFamily group with name {}"
+                ", but it belongs to user {}, therefore you "
+                "cannot modify it".format(group_name, group.user.email)
+            )
 
         # Always update description, even if the group already existed
         group.description = group_description
@@ -693,8 +730,12 @@ class BasisSetData(Data):
 
         if not len(elements_names) == len(set(elements_names)):
             duplicates = set([x for x in elements_names if elements_names.count(x) > 1])
-            duplicates_string = ', '.join(i for i in duplicates)
-            raise UniquenessError(('More than one Basis found for the elements: ' '{}').format(duplicates_string))
+            duplicates_string = ", ".join(i for i in duplicates)
+            raise UniquenessError(
+                ("More than one Basis found for the elements: " "{}").format(
+                    duplicates_string
+                )
+            )
 
         # At this point, save the group, if still unstored
         if group_created and not dry_run:

@@ -1,11 +1,11 @@
-[![Build Status](https://travis-ci.org/chrisjsewell/aiida-crystal17.svg?branch=master)](https://travis-ci.org/chrisjsewell/aiida-crystal17)
-[![Coverage Status](https://coveralls.io/repos/github/chrisjsewell/aiida-crystal17/badge.svg?branch=master)](https://coveralls.io/github/chrisjsewell/aiida-crystal17?branch=master)
+# aiida-crystal17
+
+[![CI](https://github.com/aiidaplugins/aiida-crystal17/workflows/CI/badge.svg?branch=develop)](https://github.com/aiidaplugins/aiida-crystal17)
+[![Coverage Status](https://codecov.io/gh/aiidaplugins/aiida-crystal17/branch/develop/graph/badge.svg)](https://codecov.io/gh/aiidaplugins/aiida-crystal17)
 [![Docs status](https://readthedocs.org/projects/aiida-crystal17/badge)](http://aiida-crystal17.readthedocs.io/)
 [![PyPI](https://img.shields.io/pypi/v/aiida-crystal17.svg)](https://pypi.python.org/pypi/aiida-crystal17/)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/aiida-crystal17/badges/version.svg)](https://anaconda.org/conda-forge/aiida-crystal17)
+[![Conda](https://anaconda.org/conda-forge/aiida-crystal17/badges/version.svg)](https://anaconda.org/conda-forge/aiida-crystal17)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3357615.svg)](https://doi.org/10.5281/zenodo.3357615)
-
-# aiida-crystal17
 
 AiiDA plugin for running the [CRYSTAL17](http://www.crystal.unito.it/) code.
 The code is principally tested against CRYSTAL17,
@@ -30,7 +30,7 @@ To install from pypi::
 To install the development version:
 
 ```shell
->> git clone https://github.com/chrisjsewell/aiida-crystal17 .
+>> git clone https://github.com/aiidaplugins/aiida-crystal17 .
 >> cd aiida-crystal17
 >> pip install -e .  # also installs aiida, if missing (but not postgres)
 >> #pip install -e .[pre-commit,testing] # install extras for more features

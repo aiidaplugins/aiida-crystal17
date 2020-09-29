@@ -25,10 +25,10 @@ def create_kpoints_from_distance(structure, distance, force_parity=True):
     :param force_parity: a bool to specify whether the generated mesh should maintain parity
     :returns: a KpointsData with the generated mesh
     """
-    from numpy import linalg
     from aiida.orm import KpointsData
+    from numpy import linalg
 
-    epsilon = 1E-5
+    epsilon = 1e-5
 
     kpoints = KpointsData()
     kpoints.set_cell_from_structure(structure)
@@ -37,7 +37,9 @@ def create_kpoints_from_distance(structure, distance, force_parity=True):
     lengths_vector = [linalg.norm(vector) for vector in structure.cell]
     lengths_kpoint = kpoints.get_kpoints_mesh()[0]
 
-    is_symmetric_cell = all(abs(length - lengths_vector[0]) < epsilon for length in lengths_vector)
+    is_symmetric_cell = all(
+        abs(length - lengths_vector[0]) < epsilon for length in lengths_vector
+    )
     is_symmetric_mesh = all(length == lengths_kpoint[0] for length in lengths_kpoint)
 
     # If the vectors of the cell all have the same length, the kpoint mesh should be isotropic as well
