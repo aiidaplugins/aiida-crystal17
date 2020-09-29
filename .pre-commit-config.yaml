@@ -47,7 +47,7 @@ repos:
     - id: version-number
       name: Check version numbers
       entry: python ./.pre-commit/check_version.py version
-      language: system
+      language: python
       files: >-
         (?x)^(
           setup.json|
@@ -61,7 +61,7 @@ repos:
     - id: conda
       name: Create environment.yml
       entry: python ./.pre-commit/check_version.py conda
-      language: system
+      language: python
       files: >-
         (?x)^(
           setup.json|
