@@ -28,12 +28,12 @@ customdefault:
 
 # similar to customdefault but does raise error on first warning
 debug:
-	$(SPHINXBUILD) -b html -n $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	$(SPHINXBUILD) -b html -nW --keep-going $(ALLSPHINXOPTS) $(BUILDDIR)/html
 
 all: html
 
 clean:
-	rm -r $(BUILDDIR)
+	rm -rf $(BUILDDIR)
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

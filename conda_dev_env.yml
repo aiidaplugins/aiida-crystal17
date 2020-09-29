@@ -28,5 +28,5 @@ dependencies:
 # code_style
 - pre_commit~=2.6
 # docs
-- ipypublish>=0.10.7
-- sphinx>=1.6
+- myst-nb~=0.10.1
+- sphinx-book-theme
