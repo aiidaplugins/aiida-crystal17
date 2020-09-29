@@ -207,8 +207,15 @@ def add_intersphinx_aliases_to_inv(app):
             continue
 
 
+def run_reentry_scan(_):
+    from reentry import manager
+
+    manager.scan()
+
+
 def setup(app):
     """Add functions to the Sphinx setup."""
+    app.connect("builder-inited", run_reentry_scan)
     if os.environ.get("RUN_APIDOC", "").lower() != "false":
         app.connect("builder-inited", run_apidoc)
     app.add_config_value("intersphinx_aliases", {}, "env")
