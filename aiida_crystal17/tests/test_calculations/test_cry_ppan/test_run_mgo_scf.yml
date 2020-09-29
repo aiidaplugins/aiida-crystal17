@@ -74,7 +74,7 @@ results:
   parser_class: CryPpanParser
   parser_errors: []
   parser_exceptions: []
-  parser_version: 0.10.0b5
+  parser_version: 0.11.0
   units:
     conversion: CODATA2014
     energy: eV

@@ -19,4 +19,4 @@ aiida_crystal17
 AiiDA plugin for running the CRYSTAL17 code
 """
 
-__version__ = "0.10.0b5"
+__version__ = "0.11.0"

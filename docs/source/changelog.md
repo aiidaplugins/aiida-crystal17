@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.11.0 (2020-09-29)
+
+✨ Update for compatibility with aiida-core v1.4.0
+
+- ‼️ Drop python 2 support (remove six)
+- ‼️ Remove GULP code (moved to aiidaplugins/aiida-gulp package)
+- ♻️ Drop local version of BaseRestartWorkChain, and use aiida-core's one
+- 👌 Use custom BasisSetFamily group over outdated type string approach
+- 👌 Use `exposed_outputs` method in properties workchain
+- 🔧 replace ruamel.yaml with pyyaml
+
+👌 Support for more input variables:
+
+- Add parsing of CRYSTAL `ROTCRY` input
+- Add validation & writing of `DFTD3` input block
+- Add writing of `CHEMOD` input block
+
+✨ New PPAN properties calculation, and related parsers
+
+👌 Allow `Symmetrise3DStructure` to use the pymatgen CIF parser
+
+📚 Update documentation to use myst-nb
+
+🧪 Move to GH Actions for CI testing, and tox configuration, and improve pre-commit code styling
+
 ## v0.10.0b5 (2019-10-18)
 
 - Large improvement/refactor of properties calculations and workchains:
