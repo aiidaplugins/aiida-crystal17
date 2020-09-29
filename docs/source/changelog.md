@@ -1,18 +1,16 @@
-Changelog
-=========
+# Changelog
 
-v0.10.0b5 (2019-10-18)
-----------------------
+## v0.10.0b5 (2019-10-18)
 
 - Large improvement/refactor of properties calculations and workchains:
 
   - Rename ``cry_`` -> ``prop_``
   - Renamed ``crystal17.fermi`` -> ``crystal17.newk``
   - Subclass calculations from base ``PropAbstractCalculation``;
-      - all calculation take as input a wf_folder and parameter dict
-      - all calculations output a result dict
-      - no longer options to symlink wf_folder (it doesn't work)
-      - wf_folder can now be a standard folder (or remote)
+    - all calculation take as input a wf_folder and parameter dict
+    - all calculations output a result dict
+    - no longer options to symlink wf_folder (it doesn't work)
+    - wf_folder can now be a standard folder (or remote)
   - Add raw parsers for parsing properties stdout and gaussian cube files.
   - Parsers all use ``read_properties_stdout`` to parse standard output data, and check for errors,
     also exit codes are saved for each step, then the highest priority code is returned at the end.
@@ -40,7 +38,7 @@ v0.10.0b5 (2019-10-18)
 - Improved `BasisSetData.set_file` and `BasisSetData.upload_basisset_family`,
   to accept `pathlib.Path` and filelike objects.
 
-- Programatically Access Resource Files:
+- Problematically Access Resource Files:
 
   Non-python files (JSON schema and raw files) are now accessed programatically,
   using the `importlib_resources` package.
@@ -67,8 +65,7 @@ v0.10.0b5 (2019-10-18)
   - correctly handle read/write of ``X`` symbol
   - allow reaxff tolerance value to be set, when reading file to dict.
 
-v0.9.2b5 (2019-08-01)
----------------------
+## v0.9.2b5 (2019-08-01)
 
 - Add documentation.
 - Add doss fort.25 parsing from cmndline.
@@ -85,8 +82,7 @@ v0.9.2b5 (2019-08-01)
   input (these are subsets of 'hexagonal').
 
 
-v0.9.1b5 (2019-07-25)
----------------------
+## v0.9.1b5 (2019-07-25)
 
 - Remove ``version`` key from process attribute comparisons in tests.
 
@@ -135,8 +131,7 @@ v0.9.1b5 (2019-07-25)
   - for ase requirements ase 3.18 is not compatible with python < 3.5.
 
 
-v0.9.0b5 (2019-07-18)
----------------------
+## v0.9.0b5 (2019-07-18)
 
 - Added documentation for ``crystal17.main.base`` workflow.
 - Updated documentation and removed graph.py (now in aiida-core)
@@ -263,8 +258,8 @@ v0.9.0b5 (2019-07-18)
 - Add some helpful methods for manipulating StructureData.
 
 
-v0.6.0b3 (2019-06-22)
----------------------
+## v0.6.0b3 (2019-06-22)
+
 - Improve fractional <-> cartesian conversion.
 
   Use efficient numpy functions.
@@ -303,8 +298,8 @@ v0.6.0b3 (2019-06-22)
 - Remove pypi deployment flag from python=2.7 tests.
 
 
-v0.5.0b3 (2019-06-13)
----------------------
+## v0.5.0b3 (2019-06-13)
+
 - Add GULP calculations (#4)
 
   - update aiida-core to v1.0.0b3
@@ -319,16 +314,15 @@ v0.5.0b3 (2019-06-13)
 
   Essentially rewrote the entire package.
 
+## v0.4.1 (2019-03-03)
 
-v0.4.1 (2019-03-03)
--------------------
 - Bug fix for pbc not 3.
 - Added conda install info.
 - Update test_parse_geometry.py.
 
 
-v0.4.0 (2019-03-02)
--------------------
+## v0.4.0 (2019-03-02)
+
 - Round coordinates.
 - Change mock_runcry17 to an entry_point.
 - Replace aiida_core atomic_tools extras with subset.
@@ -339,22 +333,14 @@ v0.4.0 (2019-03-02)
 - Setup for conda dist.
 - Updated computer get method for develop (1.0.0a2)
 
-
-v0.3.2a1 (2018-09-15)
----------------------
-- Updated version.
-
-
-v0.3.1a1 (2018-09-15)
----------------------
+## v0.3.1a1 (2018-09-15)
 
 - Omit tests from coverage report.
 - Updated doc on installation.
 - Updated readme and added pypi deployment.
 
 
-v0.3.0a1 (2018-09-12)
----------------------
+## v0.3.0a1 (2018-09-12)
 
 - Updated documentation.
 - Potential fix for aiida v0.12 process runs.
@@ -402,9 +388,8 @@ v0.3.0a1 (2018-09-12)
 - Added read_inputd12 (and tests)
 - Removed diff modules and updated version.
 
+## v0.2.0a0 (2018-09-05)
 
-v0.2.0a0 (2018-09-05)
----------------------
 - Finished initial crystal17.main documentation.
 - Refactored geometry and added documentation.
 - Added initial Settings documentation.
