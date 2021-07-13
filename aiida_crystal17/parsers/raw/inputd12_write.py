@@ -120,12 +120,27 @@ def _hamiltonian_block(outstr, indict, atom_props):
         outstr += "DFT\n"
 
         xc = get_keys(indict, ["scf", "dft", "xc"], raise_error=True)
+
+        exact_exchange = None
+        if get_keys(indict, ["scf","dft","exact_exchange"], False):
+            exact_exchange = get_keys(indict, ["scf","dft","exact_exchange"])
+        
+        non_local = None
+        if get_keys(indict, ["scf","dft","non_local"], False):
+            non_local = get_keys(indict, ["scf","dft","non_local"])
+
         if isinstance(xc, (tuple, list)):
             if len(xc) == 2:
                 outstr += "CORRELAT\n"
                 outstr += "{}\n".format(xc[0])
                 outstr += "EXCHANGE\n"
                 outstr += "{}\n".format(xc[1])
+                if exact_exchange is not None:
+                    outstr += "HYBRID\n"
+                    outstr += "{}\n".format(exact_exchange)
+                if non_local is not None:
+                    outstr += "NONLOCAL\n"
+                    outstr += "{} {}\n".format(non_local[0],non_local[1])
         else:
             outstr += format_value(indict, ["scf", "dft", "xc"])
 

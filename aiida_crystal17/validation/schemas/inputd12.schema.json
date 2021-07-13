@@ -365,6 +365,17 @@
                 "XXLGRID"
               ]
             },
+            "exact_exchange": {
+              "description": "the (pruned) integration grid",
+              "type": "integer",
+              "minimum": 0
+            },
+            "non_local": {
+              "description": "the (pruned) integration grid",
+              "type": "array",
+              "minItems":2,
+              "maxItems":2
+            },
             "grid_weights": {
               "description": "the  grid point weights of the integration grid",
               "type": "string",
