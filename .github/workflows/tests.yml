@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master,hybrid_nonlocal]
     tags:
       - 'v*'
   pull_request:
