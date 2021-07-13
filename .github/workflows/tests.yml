@@ -1,11 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches: [master,hybrid_nonlocal]
-    tags:
-      - 'v*'
-  pull_request:
+on: [push,pull_request]
 
 jobs:
 
