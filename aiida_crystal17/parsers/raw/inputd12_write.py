@@ -131,9 +131,9 @@ def _hamiltonian_block(outstr, indict, atom_props):
 
         if isinstance(xc, (tuple, list)):
             if len(xc) == 2:
-                outstr += "CORRELAT\n"
-                outstr += "{}\n".format(xc[0])
                 outstr += "EXCHANGE\n"
+                outstr += "{}\n".format(xc[0])
+                outstr += "CORRELAT\n"
                 outstr += "{}\n".format(xc[1])
                 if exact_exchange is not None:
                     outstr += "HYBRID\n"
