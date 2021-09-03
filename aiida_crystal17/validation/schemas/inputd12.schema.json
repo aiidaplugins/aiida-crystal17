@@ -366,13 +366,26 @@
               ]
             },
             "exact_exchange": {
-              "description": "the (pruned) integration grid",
+              "description": "amount of exact Hartree-Fock exchange into the exchange functional",
               "type": "integer",
-              "minimum": 0
+              "minimum": 0,
+              "maximum": 100
             },
             "non_local": {
-              "description": "the (pruned) integration grid",
+              "description": "setting of non-local weighting parameters",
               "type": "array",
+              "items": [
+                {
+                  "description": "exchange weight of the non-local part of exchange",
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "description": "weight of the non-local correlation",
+                  "type": "number",
+                  "minimum": 0
+                }
+              ],
               "minItems":2,
               "maxItems":2
             },

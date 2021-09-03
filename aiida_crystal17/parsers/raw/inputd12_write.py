@@ -121,14 +121,9 @@ def _hamiltonian_block(outstr, indict, atom_props):
 
         xc = get_keys(indict, ["scf", "dft", "xc"], raise_error=True)
 
-        exact_exchange = None
-        if get_keys(indict, ["scf","dft","exact_exchange"], False):
-            exact_exchange = get_keys(indict, ["scf","dft","exact_exchange"])
+        exact_exchange = get_keys(indict, ["scf","dft","exact_exchange"], None)
+        non_local = get_keys(indict, ["scf","dft","non_local"], None)
         
-        non_local = None
-        if get_keys(indict, ["scf","dft","non_local"], False):
-            non_local = get_keys(indict, ["scf","dft","non_local"])
-
         if isinstance(xc, (tuple, list)):
             if len(xc) == 2:
                 outstr += "EXCHANGE\n"
